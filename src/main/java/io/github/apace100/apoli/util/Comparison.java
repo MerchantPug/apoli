@@ -45,4 +45,13 @@ public enum Comparison {
         }
         return NONE;
     }
+
+    public int getOptimalStoppingIndex(int compareTo) {
+        return switch (this) {
+            case EQUAL, LESS_THAN_OR_EQUAL, GREATER_THAN -> compareTo + 1;
+            case LESS_THAN, GREATER_THAN_OR_EQUAL -> compareTo;
+            default -> -1;
+        };
+    }
+
 }

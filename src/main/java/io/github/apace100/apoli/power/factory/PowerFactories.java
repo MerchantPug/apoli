@@ -51,18 +51,6 @@ public class PowerFactories {
 
     @SuppressWarnings("unchecked")
     public static void register() {
-        register(new PowerFactory<>(Apoli.identifier("simple"), new SerializableData(), data -> Power::new).allowCondition());
-        register(new PowerFactory<>(Apoli.identifier("toggle"),
-            new SerializableData()
-                .add("active_by_default", SerializableDataTypes.BOOLEAN, true)
-                .add("key", ApoliDataTypes.BACKWARDS_COMPATIBLE_KEY, new Active.Key()),
-            data ->
-                (type, player) -> {
-                    TogglePower power = new TogglePower(type, player, data.getBoolean("active_by_default"));
-                    power.setKey((Active.Key)data.get("key"));
-                    return power;
-                })
-            .allowCondition());
         register(new PowerFactory<>(Apoli.identifier("attribute"),
             new SerializableData()
                 .add("modifier", ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIER, null)
@@ -646,21 +634,6 @@ public class PowerFactories {
                     power.setRecurrent(data.getBoolean("recurrent"));
                     return power;
                 }));
-        register(new PowerFactory<>(Apoli.identifier("action_on_callback"),
-            new SerializableData()
-                .add("entity_action_respawned", ApoliDataTypes.ENTITY_ACTION, null)
-                .add("entity_action_removed", ApoliDataTypes.ENTITY_ACTION, null)
-                .add("entity_action_gained", ApoliDataTypes.ENTITY_ACTION, null)
-                .add("entity_action_lost", ApoliDataTypes.ENTITY_ACTION, null)
-                .add("entity_action_added", ApoliDataTypes.ENTITY_ACTION, null),
-            data ->
-                (type, player) -> new ActionOnCallbackPower(type, player,
-                    (ActionFactory<Entity>.Instance)data.get("entity_action_respawned"),
-                    (ActionFactory<Entity>.Instance)data.get("entity_action_removed"),
-                    (ActionFactory<Entity>.Instance)data.get("entity_action_gained"),
-                    (ActionFactory<Entity>.Instance)data.get("entity_action_lost"),
-                    (ActionFactory<Entity>.Instance)data.get("entity_action_added")))
-            .allowCondition());
         register(new PowerFactory<>(Apoli.identifier("walk_on_fluid"),
             new SerializableData()
                 .add("fluid", SerializableDataTypes.FLUID_TAG),
@@ -740,19 +713,6 @@ public class PowerFactories {
                     }
                     return power;
                 })
-            .allowCondition());
-        register(new PowerFactory<>(Apoli.identifier("action_on_block_break"),
-            new SerializableData()
-                .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
-                .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
-                .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
-                .add("only_when_harvested", SerializableDataTypes.BOOLEAN, true),
-            data ->
-                (type, player) -> new ActionOnBlockBreakPower(type, player,
-                    (ConditionFactory<CachedBlockPosition>.Instance)data.get("block_condition"),
-                    (ActionFactory<Entity>.Instance)data.get("entity_action"),
-                    (ActionFactory<Triple<World, BlockPos, Direction>>.Instance)data.get("block_action"),
-                    data.getBoolean("only_when_harvested")))
             .allowCondition());
         register(new PowerFactory<>(Apoli.identifier("action_on_land"),
             new SerializableData()
@@ -871,17 +831,6 @@ public class PowerFactories {
                 (type, player) -> new PreventDeathPower(type, player,
                     (ActionFactory<Entity>.Instance)data.get("entity_action"),
                     (ConditionFactory<Pair<DamageSource, Float>>.Instance)data.get("damage_condition")))
-            .allowCondition());
-        register(new PowerFactory<>(Apoli.identifier("action_on_item_use"),
-            new SerializableData()
-                .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
-                .add("item_action", ApoliDataTypes.ITEM_ACTION, null)
-                .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null),
-            data ->
-                (type, player) -> new ActionOnItemUsePower(type, player,
-                    (ConditionFactory<ItemStack>.Instance)data.get("item_condition"),
-                    (ActionFactory<Entity>.Instance)data.get("entity_action"),
-                    (ActionFactory<ItemStack>.Instance)data.get("item_action")))
             .allowCondition());
         register(new PowerFactory<>(Apoli.identifier("modify_falling"),
             new SerializableData()

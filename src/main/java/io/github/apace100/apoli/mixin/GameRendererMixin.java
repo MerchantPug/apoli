@@ -100,8 +100,8 @@ public abstract class GameRendererMixin {
 /*
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setCameraEntity(Lnet/minecraft/entity/Entity;)V"))
     private void updateShaderPowers(CallbackInfo ci) {
-        if(OriginComponent.hasPower(client.getCameraEntity(), ShaderPower.class)) {
-            OriginComponent.withPower(client.getCameraEntity(), ShaderPower.class, null, shaderPower -> {
+        if(IPowerContainer.hasPower(client.getCameraEntity(), ShaderPower.class)) {
+            IPowerContainer.withPower(client.getCameraEntity(), ShaderPower.class, null, shaderPower -> {
                 Identifier shaderLoc = shaderPower.getShaderLocation();
                 loadShader(shaderLoc);
                 currentlyLoadedShader = shaderLoc;

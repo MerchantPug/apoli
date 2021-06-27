@@ -47,7 +47,7 @@ public abstract class BackgroundRendererMixin {
 
     /*@ModifyVariable(method = "applyFog", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;fogStart(F)V"), ordinal = 0)
     private static float modifyS(float original, Camera camera) {
-        List<LavaVisionPower> powers = OriginComponent.getPowers(camera.getFocusedEntity(), LavaVisionPower.class);
+        List<LavaVisionPower> powers = IPowerContainer.getPowers(camera.getFocusedEntity(), LavaVisionPower.class);
         if(powers.size() > 0) {
             return powers.get(0).getS();
         }
@@ -56,7 +56,7 @@ public abstract class BackgroundRendererMixin {
 
     @ModifyVariable(method = "applyFog", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;fogStart(F)V"), ordinal = 1)
     private static float modifyV(float original, Camera camera) {
-        List<LavaVisionPower> powers = OriginComponent.getPowers(camera.getFocusedEntity(), LavaVisionPower.class);
+        List<LavaVisionPower> powers = IPowerContainer.getPowers(camera.getFocusedEntity(), LavaVisionPower.class);
         if(powers.size() > 0) {
             return powers.get(0).getV();
         }
