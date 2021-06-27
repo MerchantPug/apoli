@@ -45,6 +45,7 @@ public class ModPowers {
 	public static final RegistrySupplier<ModifyDamageTakenPower> MODIFY_DAMAGE_TAKEN = register("modify_damage_taken", ModifyDamageTakenPower::new);
 	public static final RegistrySupplier<ModifyValuePower> MODIFY_EXHAUSTION = register("modify_exhaustion", ModifyValuePower::new);
 	public static final RegistrySupplier<ModifyValuePower> MODIFY_EXPERIENCE = register("modify_xp_gain", ModifyValuePower::new);
+	public static final RegistrySupplier<ModifyFallingPower> MODIFY_FALLING = register("modify_falling", ModifyFallingPower::new);
 	public static final RegistrySupplier<ModifyFoodPower> MODIFY_FOOD = register("modify_food", ModifyFoodPower::new);
 	public static final RegistrySupplier<ModifyHarvestPower> MODIFY_HARVEST = register("modify_harvest", ModifyHarvestPower::new);
 	public static final RegistrySupplier<ModifyJumpPower> MODIFY_JUMP = register("modify_jump", ModifyJumpPower::new);

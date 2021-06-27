@@ -1,30 +1,52 @@
 package dev.experimental.apoli.common.power;
 
-import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
-import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
+import dev.experimental.apoli.common.power.configuration.AttributeConfiguration;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 
-public class AttributePower extends PowerFactory<ListConfiguration<AttributedEntityAttributeModifier>> {
+public class AttributePower extends PowerFactory<AttributeConfiguration> {
 	public AttributePower() {
-		super(ListConfiguration.codec(ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIER, "modifier", "modifiers"), false);
+		super(AttributeConfiguration.CODEC, false);
 	}
 
 	@Override
-	protected void onAdded(ListConfiguration<AttributedEntityAttributeModifier> configuration, LivingEntity player) {
-		configuration.getContent().stream().filter(x -> player.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
-			EntityAttributeInstance attributeInstance = player.getAttributeInstance(mod.attribute());
-			if (!attributeInstance.hasModifier(mod.modifier())) attributeInstance.addTemporaryModifier(mod.modifier());
-		});
+	protected void onAdded(AttributeConfiguration configuration, LivingEntity entity) {
+		if (!entity.world.isClient()) {
+			float previousMaxHealth = entity.getMaxHealth();
+			float previousHealthPercent = entity.getHealth() / previousMaxHealth;
+			configuration.modifiers().getContent().forEach(mod -> {
+				if (entity.getAttributes().hasAttribute(mod.attribute())) {
+					EntityAttributeInstance instance = entity.getAttributeInstance(mod.attribute());
+					assert instance != null;
+					if (!instance.hasModifier(mod.modifier()))
+						instance.addTemporaryModifier(mod.modifier());
+				}
+			});
+			float afterMaxHealth = entity.getMaxHealth();
+			if (configuration.updateHealth() && afterMaxHealth != previousMaxHealth) {
+				entity.setHealth(afterMaxHealth * previousHealthPercent);
+			}
+		}
 	}
 
 	@Override
-	protected void onRemoved(ListConfiguration<AttributedEntityAttributeModifier> configuration, LivingEntity player) {
-		configuration.getContent().stream().filter(x -> player.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
-			EntityAttributeInstance attributeInstance = player.getAttributeInstance(mod.attribute());
-			if (attributeInstance.hasModifier(mod.modifier())) attributeInstance.removeModifier(mod.modifier());
-		});
+	protected void onRemoved(AttributeConfiguration configuration, LivingEntity entity) {
+		if (!entity.world.isClient) {
+			float previousMaxHealth = entity.getMaxHealth();
+			float previousHealthPercent = entity.getHealth() / previousMaxHealth;
+			configuration.modifiers().getContent().forEach(mod -> {
+				if (entity.getAttributes().hasAttribute(mod.attribute())) {
+					EntityAttributeInstance instance = entity.getAttributeInstance(mod.attribute());
+					assert instance != null;
+					if (instance.hasModifier(mod.modifier()))
+						instance.removeModifier(mod.modifier());
+				}
+			});
+			float afterMaxHealth = entity.getMaxHealth();
+			if (configuration.updateHealth() && afterMaxHealth != previousMaxHealth) {
+				entity.setHealth(afterMaxHealth * previousHealthPercent);
+			}
+		}
 	}
 }
