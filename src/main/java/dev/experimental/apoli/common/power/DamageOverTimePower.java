@@ -5,6 +5,7 @@ import dev.experimental.apoli.api.power.factory.power.VariableIntPowerFactory;
 import dev.experimental.apoli.common.power.configuration.DamageOverTimeConfiguration;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.Difficulty;
@@ -17,29 +18,29 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 		this.ticking(true);
 	}
 
-	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PlayerEntity player) {
+	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
 		return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration().initialValue(), 0));
 	}
 
 	@Override
-	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PlayerEntity player) {
+	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
 		return this.getDataContainer(configuration, player).value;
 	}
 
 	@Override
-	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PlayerEntity player, int value) {
+	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player, int value) {
 		this.getDataContainer(configuration, player).value = value;
 	}
 
 	@Override
-	public void tick(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PlayerEntity player) {
+	public void tick(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
 		if (configuration.isActive(player))
 			this.doDamage(configuration, player);
 		else
 			this.resetDamage(configuration, player);
 	}
 
-	protected void doDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PlayerEntity player) {
+	protected void doDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
 		DataContainer dataContainer = this.getDataContainer(configuration, player);
 		dataContainer.outOfDamageTicks = 0;
 		if (this.getValue(configuration, player) <= 0) {
@@ -50,7 +51,7 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 		}
 	}
 
-	protected void resetDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, PlayerEntity player) {
+	protected void resetDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
 		DataContainer dataContainer = this.getDataContainer(configuration, player);
 		if (dataContainer.outOfDamageTicks >= 20)
 			this.assign(configuration, player, this.getDamageBegin(configuration.getConfiguration(), player));
@@ -58,7 +59,7 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 			dataContainer.outOfDamageTicks++;
 	}
 
-	protected int getDamageBegin(DamageOverTimeConfiguration configuration, PlayerEntity player) {
+	protected int getDamageBegin(DamageOverTimeConfiguration configuration, LivingEntity player) {
 		int prot = getProtection(configuration, player);
 		if (prot >= 64)
 			return 24000;
@@ -66,7 +67,7 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 		return configuration.delay() + prot;
 	}
 
-	private int getProtection(DamageOverTimeConfiguration configuration, PlayerEntity player) {
+	private int getProtection(DamageOverTimeConfiguration configuration, LivingEntity player) {
 		if (configuration.protectionEnchantment() == null) {
 			return 0;
 		} else {

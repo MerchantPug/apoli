@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
+import dev.experimental.calio.api.network.CalioCodecHelper;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -18,7 +19,7 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 	public static final PowerData DEFAULT = new PowerData(ImmutableList.of(), false, 0, "", "");
 
 	public static final MapCodec<PowerData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			SerializableDataTypes.listOf(ConfiguredEntityCondition.CODEC).optionalFieldOf("conditions", ImmutableList.of()).forGetter(PowerData::conditions),
+			CalioCodecHelper.listOf(ConfiguredEntityCondition.CODEC).optionalFieldOf("conditions", ImmutableList.of()).forGetter(PowerData::conditions),
 			Codec.BOOL.optionalFieldOf("hidden", false).forGetter(PowerData::hidden),
 			Codec.INT.optionalFieldOf("loading_priority", 0).forGetter(PowerData::loadingPriority),
 			Codec.STRING.optionalFieldOf("name", "").forGetter(PowerData::name),
