@@ -1,5 +1,6 @@
 package dev.experimental.apoli.api.power;
 
+import PowerData;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -7,12 +8,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
 import dev.experimental.calio.api.network.CalioCodecHelper;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
 
 public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolean hidden, int loadingPriority,
 						String name, String description) {
@@ -99,7 +99,7 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 			return this;
 		}
 
-		public Builder withIdentifier(Identifier identifier) {
+		public Builder withIdentifier(ResourceLocation identifier) {
 			this.name = "power." + identifier.getNamespace() + "." + identifier.getPath() + ".name";
 			this.description = "power." + identifier.getNamespace() + "." + identifier.getPath() + ".description";
 			return this;

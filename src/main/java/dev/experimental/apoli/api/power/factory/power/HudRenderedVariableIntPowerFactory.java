@@ -5,11 +5,10 @@ import dev.experimental.apoli.api.power.IHudRenderedPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.configuration.power.IHudRenderedVariableIntPowerConfiguration;
 import io.github.apace100.apoli.util.HudRender;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
-
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 
 public abstract class HudRenderedVariableIntPowerFactory<T extends IHudRenderedVariableIntPowerConfiguration> extends VariableIntPowerFactory<T> implements IHudRenderedPower<T> {
 	protected HudRenderedVariableIntPowerFactory(Codec<T> codec) {
@@ -59,12 +58,12 @@ public abstract class HudRenderedVariableIntPowerFactory<T extends IHudRenderedV
 		}
 
 		@Override
-		public NbtElement serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return NbtInt.of(this.get(configuration, player));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+			return IntTag.valueOf(this.get(configuration, player));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, NbtElement tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
 			if (tag instanceof NbtInt intTag)
 				this.set(configuration, player, intTag.intValue());
 		}

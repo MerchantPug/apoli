@@ -8,7 +8,7 @@ import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.IConditionFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredFluidCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
-import net.minecraft.fluid.FluidState;
+import net.minecraft.world.level.material.FluidState;
 
 public abstract class FluidCondition<T extends IDynamicFeatureConfiguration> extends RegistryEntry<FluidCondition<?>> implements IConditionFactory<T, ConfiguredFluidCondition<T, ?>, FluidCondition<T>> {
 	public static final Codec<FluidCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.FLUID_CONDITION);

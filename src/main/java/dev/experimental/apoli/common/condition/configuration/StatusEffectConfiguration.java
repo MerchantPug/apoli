@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 

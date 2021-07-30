@@ -4,11 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.*;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
-import net.minecraft.util.Pair;
-
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.util.Tuple;
 
 //Validation occurs on every subpower, this should be fine
 public record MultipleConfiguration<V>(Map<String, V> children) implements IDynamicFeatureConfiguration {
@@ -39,10 +38,10 @@ public record MultipleConfiguration<V>(Map<String, V> children) implements IDyna
 				ImmutableSet.Builder<String> failures = ImmutableSet.builder();
 				map.entries().forEach(entry -> {
 					ops.getStringValue(entry.getFirst())
-							.flatMap(name -> codec.decode(ops, entry.getSecond()).map(x -> new Pair<>(name, x.getFirst())))
+							.flatMap(name -> codec.decode(ops, entry.getSecond()).map(x -> new Tuple<>(name, x.getFirst())))
 							.resultOrPartial(failures::add)
-							.filter(x -> this.keyFilter.test(x.getLeft()))
-							.ifPresent(pair -> successes.put(pair.getLeft(), pair.getRight()));
+							.filter(x -> this.keyFilter.test(x.getA()))
+							.ifPresent(pair -> successes.put(pair.getA(), pair.getB()));
 				});
 				ImmutableSet<String> build = failures.build();
 				MultipleConfiguration<V> configuration = new MultipleConfiguration<>(successes.build());

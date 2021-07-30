@@ -3,8 +3,8 @@ package dev.experimental.apoli.common.condition.item;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.factory.ItemCondition;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class IngredientCondition extends ItemCondition<FieldConfiguration<Ingredient>> {
 

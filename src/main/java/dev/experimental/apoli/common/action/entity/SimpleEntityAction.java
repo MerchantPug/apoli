@@ -2,11 +2,10 @@ package dev.experimental.apoli.common.action.entity;
 
 import dev.experimental.apoli.api.configuration.NoConfiguration;
 import dev.experimental.apoli.api.power.factory.EntityAction;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.function.Consumer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class SimpleEntityAction extends EntityAction<NoConfiguration> {
 
@@ -14,7 +13,7 @@ public class SimpleEntityAction extends EntityAction<NoConfiguration> {
 		return new SimpleEntityAction((Entity e) -> {if (e instanceof LivingEntity le) action.accept(le);});
 	}
 
-	public static SimpleEntityAction ofPlayer(Consumer<PlayerEntity> action) {
+	public static SimpleEntityAction ofPlayer(Consumer<Player> action) {
 		return new SimpleEntityAction((Entity e) -> {if (e instanceof PlayerEntity le) action.accept(le);});
 	}
 

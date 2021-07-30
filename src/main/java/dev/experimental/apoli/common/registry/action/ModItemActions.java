@@ -9,11 +9,10 @@ import dev.experimental.apoli.api.registry.ApoliRegistries;
 import dev.experimental.apoli.common.action.item.ConsumeAction;
 import dev.experimental.apoli.common.action.item.DelegatedItemAction;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.item.ItemStack;
-
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
+import net.minecraft.world.item.ItemStack;
 
 public class ModItemActions {
 	public static final BiConsumer<ConfiguredItemAction<?, ?>, ItemStack> EXECUTOR = (action, stack) -> action.execute(stack);

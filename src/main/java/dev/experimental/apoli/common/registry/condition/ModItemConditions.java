@@ -7,19 +7,16 @@ import dev.experimental.apoli.api.power.factory.ItemCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import dev.experimental.apoli.common.condition.item.*;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
+import net.minecraft.world.item.ItemStack;
 
 public class ModItemConditions {
 
 	public static final BiPredicate<ConfiguredItemCondition<?, ?>, ItemStack> PREDICATE = (config, stack) -> config.check(stack);
 
-	public static final RegistrySupplier<SimpleItemCondition> FOOD = register("food", () -> new SimpleItemCondition(ItemStack::isFood));
-	public static final RegistrySupplier<SimpleItemCondition> MEAT = register("meat", () -> new SimpleItemCondition(stack -> stack.isFood() && stack.getItem().getFoodComponent().isMeat()));
+	public static final RegistrySupplier<SimpleItemCondition> FOOD = register("food", () -> new SimpleItemCondition(ItemStack::isEdible));
+	public static final RegistrySupplier<SimpleItemCondition> MEAT = register("meat", () -> new SimpleItemCondition(stack -> stack.isEdible() && stack.getItem().getFoodProperties().isMeat()));
 	public static final RegistrySupplier<IngredientCondition> INGREDIENT = register("ingredient", IngredientCondition::new);
 	public static final RegistrySupplier<ComparingItemCondition> ARMOR_VALUE = register("armor_value", () -> new ComparingItemCondition(value -> value.getItem() instanceof ArmorItem ai ? ai.getProtection() : 0));
 	public static final RegistrySupplier<ComparingItemCondition> HARVEST_LEVEL = register("harvest_level", () -> new ComparingItemCondition(value -> value.getItem() instanceof ToolItem ti ? ti.getMaterial().getMiningLevel() : 0));

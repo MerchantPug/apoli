@@ -3,12 +3,11 @@ package dev.experimental.apoli.common.power;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ActionOverItemConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtByte;
-import net.minecraft.nbt.NbtElement;
-
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguration> {
 	public ActionOverTimePower() {
@@ -39,13 +38,13 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 	}
 
 	@Override
-	public NbtElement serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player) {
-		return NbtByte.of(configuration.getPowerData(player, () -> new AtomicBoolean(false)).get());
+	public Tag serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player) {
+		return ByteTag.valueOf(configuration.getPowerData(player, () -> new AtomicBoolean(false)).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player, NbtElement tag) {
+	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player, Tag tag) {
 		AtomicBoolean data = configuration.getPowerData(player, () -> new AtomicBoolean(false));
-		data.set(!Objects.equals(tag, NbtByte.ZERO));
+		data.set(!Objects.equals(tag, ByteTag.ZERO));
 	}
 }

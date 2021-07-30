@@ -5,11 +5,9 @@ import dev.experimental.apoli.api.power.IValueModifyingPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.List;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public abstract class ValueModifyingPowerFactory<T extends IValueModifyingPowerConfiguration> extends PowerFactory<T> implements IValueModifyingPower<T> {
 	protected ValueModifyingPowerFactory(Codec<T> codec) {
@@ -21,7 +19,7 @@ public abstract class ValueModifyingPowerFactory<T extends IValueModifyingPowerC
 	}
 
 	@Override
-	public List<EntityAttributeModifier> getModifiers(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	public List<AttributeModifier> getModifiers(ConfiguredPower<T, ?> configuration, LivingEntity player) {
 		return configuration.getConfiguration().modifiers().getContent();
 	}
 }

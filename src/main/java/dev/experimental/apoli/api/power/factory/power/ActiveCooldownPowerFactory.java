@@ -1,15 +1,14 @@
 package dev.experimental.apoli.api.power.factory.power;
 
+import Key;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.power.IActivePower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtLong;
-
 import java.util.concurrent.atomic.AtomicLong;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 
 public abstract class ActiveCooldownPowerFactory<T extends IActiveCooldownPowerConfiguration> extends CooldownPowerFactory<T> implements IActivePower<T> {
 	protected ActiveCooldownPowerFactory(Codec<T> codec) {
@@ -62,12 +61,12 @@ public abstract class ActiveCooldownPowerFactory<T extends IActiveCooldownPowerC
 		}
 
 		@Override
-		public NbtElement serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return NbtLong.of(this.getLastUseTime(configuration, player));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+			return LongTag.valueOf(this.getLastUseTime(configuration, player));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, NbtElement tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
 			if (tag instanceof NbtLong longTag)
 				this.setLastUseTime(configuration, player, longTag.longValue());
 		}

@@ -2,17 +2,17 @@ package io.github.apace100.apoli.power;
 
 import io.github.apace100.apoli.mixin.EyeHeightAccess;
 import io.github.apace100.apoli.util.HudRender;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.phys.Vec3;
 
 public class FireProjectilePower extends ActiveCooldownPower {
 
@@ -21,9 +21,9 @@ public class FireProjectilePower extends ActiveCooldownPower {
     private final float speed;
     private final float divergence;
     private final SoundEvent soundEvent;
-    private final NbtCompound tag;
+    private final CompoundTag tag;
 
-    public FireProjectilePower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, EntityType entityType, int projectileCount, float speed, float divergence, SoundEvent soundEvent, NbtCompound tag) {
+    public FireProjectilePower(PowerType<?> type, LivingEntity entity, int cooldownDuration, HudRender hudRender, EntityType entityType, int projectileCount, float speed, float divergence, SoundEvent soundEvent, CompoundTag tag) {
         super(type, entity, cooldownDuration, hudRender, null);
         this.entityType = entityType;
         this.projectileCount = projectileCount;
@@ -43,9 +43,9 @@ public class FireProjectilePower extends ActiveCooldownPower {
 
     private void fireProjectiles() {
         if(soundEvent != null) {
-            entity.world.playSound((PlayerEntity)null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+            entity.level.playSound((Player)null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
         }
-        if (!entity.world.isClient) {
+        if (!entity.level.isClientSide) {
             for(int i = 0; i < projectileCount; i++) {
                 fireProjectile();
             }
@@ -54,40 +54,40 @@ public class FireProjectilePower extends ActiveCooldownPower {
 
     private void fireProjectile() {
         if(entityType != null) {
-            Entity entity = entityType.create(this.entity.world);
+            Entity entity = entityType.create(this.entity.level);
             if(entity == null) {
                 return;
             }
-            Vec3d rotationVector = this.entity.getRotationVector();
-            float yaw = this.entity.getYaw();
-            float pitch = this.entity.getPitch();
-            Vec3d spawnPos = this.entity.getPos().add(0, ((EyeHeightAccess) this.entity).callGetEyeHeight(this.entity.getPose(), this.entity.getDimensions(this.entity.getPose())), 0).add(rotationVector);
-            entity.refreshPositionAndAngles(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(), pitch, yaw);
-            if(entity instanceof ProjectileEntity) {
-                if(entity instanceof ExplosiveProjectileEntity) {
-                    ExplosiveProjectileEntity explosiveProjectileEntity = (ExplosiveProjectileEntity)entity;
-                    explosiveProjectileEntity.powerX = rotationVector.x * speed;
-                    explosiveProjectileEntity.powerY = rotationVector.y * speed;
-                    explosiveProjectileEntity.powerZ = rotationVector.z * speed;
+            Vec3 rotationVector = this.entity.getLookAngle();
+            float yaw = this.entity.getYRot();
+            float pitch = this.entity.getXRot();
+            Vec3 spawnPos = this.entity.position().add(0, ((EyeHeightAccess) this.entity).callGetEyeHeight(this.entity.getPose(), this.entity.getDimensions(this.entity.getPose())), 0).add(rotationVector);
+            entity.moveTo(spawnPos.x(), spawnPos.y(), spawnPos.z(), pitch, yaw);
+            if(entity instanceof Projectile) {
+                if(entity instanceof AbstractHurtingProjectile) {
+                    AbstractHurtingProjectile explosiveProjectileEntity = (AbstractHurtingProjectile)entity;
+                    explosiveProjectileEntity.xPower = rotationVector.x * speed;
+                    explosiveProjectileEntity.yPower = rotationVector.y * speed;
+                    explosiveProjectileEntity.zPower = rotationVector.z * speed;
                 }
-                ProjectileEntity projectile = (ProjectileEntity)entity;
+                Projectile projectile = (Projectile)entity;
                 projectile.setOwner(this.entity);
-                projectile.setProperties(this.entity, pitch, yaw, 0F, speed, divergence);
+                projectile.shootFromRotation(this.entity, pitch, yaw, 0F, speed, divergence);
             } else {
-                float f = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-                float g = -MathHelper.sin(pitch * 0.017453292F);
-                float h = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-                Vec3d vec3d = (new Vec3d(f, g, h)).normalize().add(this.entity.getRandom().nextGaussian() * 0.007499999832361937D * (double)divergence, this.entity.getRandom().nextGaussian() * 0.007499999832361937D * (double)divergence, this.entity.getRandom().nextGaussian() * 0.007499999832361937D * (double)divergence).multiply((double)speed);
-                entity.setVelocity(vec3d);
-                Vec3d entityVelo = this.entity.getVelocity();
-                entity.setVelocity(entity.getVelocity().add(entityVelo.x, this.entity.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
+                float f = -Mth.sin(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
+                float g = -Mth.sin(pitch * 0.017453292F);
+                float h = Mth.cos(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
+                Vec3 vec3d = (new Vec3(f, g, h)).normalize().add(this.entity.getRandom().nextGaussian() * 0.007499999832361937D * (double)divergence, this.entity.getRandom().nextGaussian() * 0.007499999832361937D * (double)divergence, this.entity.getRandom().nextGaussian() * 0.007499999832361937D * (double)divergence).scale((double)speed);
+                entity.setDeltaMovement(vec3d);
+                Vec3 entityVelo = this.entity.getDeltaMovement();
+                entity.setDeltaMovement(entity.getDeltaMovement().add(entityVelo.x, this.entity.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
             }
             if(tag != null) {
-                NbtCompound mergedTag = entity.writeNbt(new NbtCompound());
-                mergedTag.copyFrom(tag);
-                entity.readNbt(mergedTag);
+                CompoundTag mergedTag = entity.saveWithoutId(new CompoundTag());
+                mergedTag.merge(tag);
+                entity.load(mergedTag);
             }
-            this.entity.world.spawnEntity(entity);
+            this.entity.level.addFreshEntity(entity);
         }
     }
 }

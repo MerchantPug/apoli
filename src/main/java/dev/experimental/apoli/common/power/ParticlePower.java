@@ -6,9 +6,7 @@ import dev.experimental.apoli.common.power.configuration.ParticleConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleEffect;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ParticlePower extends PowerFactory<ParticleConfiguration> {
 

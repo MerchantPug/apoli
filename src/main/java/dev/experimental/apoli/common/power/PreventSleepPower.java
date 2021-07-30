@@ -6,16 +6,14 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.PreventSleepConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class PreventSleepPower extends PowerFactory<PreventSleepConfiguration> {
 
-	public static boolean tryPreventSleep(PlayerEntity player, World world, BlockPos pos) {
+	public static boolean tryPreventSleep(Player player, Level world, BlockPos pos) {
 		CachedBlockPosition cbp = new CachedBlockPosition(world, pos, true);
 		boolean flag = false;
 		for (ConfiguredPower<PreventSleepConfiguration, PreventSleepPower> p : IPowerContainer.getPowers(player, ModPowers.PREVENT_SLEEP.get())) {
@@ -33,7 +31,7 @@ public class PreventSleepPower extends PowerFactory<PreventSleepConfiguration> {
 		super(PreventSleepConfiguration.CODEC);
 	}
 
-	public boolean doesPrevent(ConfiguredPower<PreventSleepConfiguration, ?> configuration, CachedBlockPosition cbp) {
+	public boolean doesPrevent(ConfiguredPower<PreventSleepConfiguration, ?> configuration, BlockInWorld cbp) {
 		return ConfiguredBlockCondition.check(configuration.getConfiguration().condition(), cbp);
 	}
 }

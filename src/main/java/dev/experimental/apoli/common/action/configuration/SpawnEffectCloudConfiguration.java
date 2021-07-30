@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.effect.StatusEffectInstance;
 
 public record SpawnEffectCloudConfiguration(float radius, float radiusOnUse, int waitTime,
 											ListConfiguration<StatusEffectInstance> effects) implements IDynamicFeatureConfiguration {

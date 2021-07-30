@@ -6,10 +6,9 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biome;
-
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.biome.Biome;
 
 public class BiomeConditions {
 

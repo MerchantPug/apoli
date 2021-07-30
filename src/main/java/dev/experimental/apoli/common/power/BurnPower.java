@@ -2,8 +2,7 @@ package dev.experimental.apoli.common.power;
 
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.BurnConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class BurnPower extends PowerFactory<BurnConfiguration> {
 	public BurnPower() {
@@ -13,7 +12,7 @@ public class BurnPower extends PowerFactory<BurnConfiguration> {
 
 	@Override
 	protected void tick(BurnConfiguration configuration, LivingEntity player) {
-		player.setOnFireFor(configuration.duration());
+		player.setSecondsOnFire(configuration.duration());
 	}
 
 	@Override

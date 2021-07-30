@@ -7,13 +7,12 @@ import dev.experimental.apoli.api.power.factory.BlockCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import dev.experimental.apoli.common.condition.block.*;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.block.pattern.CachedBlockPosition;
-
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class ModBlockConditions {
-	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, CachedBlockPosition> PREDICATE = (config, position) -> config.check(position);
+	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, BlockInWorld> PREDICATE = (config, position) -> config.check(position);
 
 	public static final RegistrySupplier<SimpleBlockCondition> MOVEMENT_BLOCKING = register("movement_blocking", () -> new SimpleBlockCondition(SimpleBlockCondition.MOVEMENT_BLOCKING));
 	public static final RegistrySupplier<SimpleBlockCondition> REPLACEABLE_LEGACY = register("replacable", () -> new SimpleBlockCondition(SimpleBlockCondition.REPLACEABLE)); //This one has a typo.

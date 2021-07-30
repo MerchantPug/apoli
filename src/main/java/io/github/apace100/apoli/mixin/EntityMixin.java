@@ -13,24 +13,19 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,13 +50,13 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
     }
 
     @Shadow
-    public World world;
+    public Level world;
 
     @Shadow
     public abstract double getFluidHeight(Tag<Fluid> fluid);
 
     @Shadow
-    public abstract Vec3d getVelocity();
+    public abstract Vec3 getVelocity();
 
     @Shadow
     public float distanceTraveled;
@@ -88,14 +83,14 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
     private boolean wasGrounded = false;
 
     @Inject(method = "move", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", args = {"ldc=rest"}))
-    private void checkWasGrounded(MovementType type, Vec3d movement, CallbackInfo ci) {
+    private void checkWasGrounded(MoverType type, Vec3 movement, CallbackInfo ci) {
         wasGrounded = this.onGround;
     }
 
     @Environment(EnvType.CLIENT)
     @Inject(method = "fall", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;fallDistance:F", opcode = Opcodes.PUTFIELD, ordinal = 0))
     private void invokeActionOnSoftLand(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition, CallbackInfo ci) {
-        if(!wasGrounded && (Object)this instanceof ClientPlayerEntity) {
+        if(!wasGrounded && (Object)this instanceof LocalPlayer) {
             List<ActionOnLandPower> powers = PowerHolderComponent.getPowers((Entity)(Object)this, ActionOnLandPower.class);
             powers.forEach(ActionOnLandPower::executeAction);
             if(powers.size() > 0) {
@@ -119,7 +114,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
         if(PowerHolderComponent.hasPower(entity, SwimmingPower.class) && entity.isSwimming() && !(getFluidHeight(FluidTags.WATER) > 0)) {
             return false;
         }
-        return entity.isWet();
+        return entity.isInWaterRainOrBubble();
     }
 
     @Inject(at = @At("HEAD"), method = "isInvisible", cancellable = true)
@@ -143,13 +138,13 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
     private float distanceBefore;
 
     @Inject(method = "move", at = @At("HEAD"))
-    private void saveDistanceTraveled(MovementType type, Vec3d movement, CallbackInfo ci) {
+    private void saveDistanceTraveled(MoverType type, Vec3 movement, CallbackInfo ci) {
         this.isMoving = false;
         this.distanceBefore = this.distanceTraveled;
     }
 
     @Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;pop()V"))
-    private void checkIsMoving(MovementType type, Vec3d movement, CallbackInfo ci) {
+    private void checkIsMoving(MoverType type, Vec3 movement, CallbackInfo ci) {
         if(this.distanceTraveled > this.distanceBefore) {
             this.isMoving = true;
         }
@@ -163,7 +158,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
         if(tag == submergedFluidTag) {
             return true;
         }
-        return Calio.areTagsEqual(Registry.FLUID_KEY, tag, submergedFluidTag);
+        return Calio.areTagsEqual(Registry.FLUID_REGISTRY, tag, submergedFluidTag);
     }
 
     @Override
@@ -175,7 +170,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
             return fluidHeight.getDouble(tag);
         }
         for(Tag<Fluid> ft : fluidHeight.keySet()) {
-            if(Calio.areTagsEqual(Registry.FLUID_KEY, ft, tag)) {
+            if(Calio.areTagsEqual(Registry.FLUID_REGISTRY, ft, tag)) {
                 return fluidHeight.getDouble(ft);
             }
         }

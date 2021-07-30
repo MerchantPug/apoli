@@ -6,9 +6,6 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import dev.experimental.calio.api.network.CalioCodecHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

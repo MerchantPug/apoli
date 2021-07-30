@@ -5,9 +5,8 @@ import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import dev.experimental.apoli.common.power.*;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.screen.Generic3x3ContainerScreenHandler;
-
 import java.util.function.Supplier;
+import net.minecraft.world.inventory.DispenserMenu;
 
 public class ModPowers {
 	public static final RegistrySupplier<ActionOnBlockBreakPower> ACTION_ON_BLOCK_BREAK = register("action_on_block_break", ActionOnBlockBreakPower::new);
@@ -34,7 +33,7 @@ public class ModPowers {
 	public static final RegistrySupplier<DummyPower> FIRE_IMMUNITY = register("fire_immunity", DummyPower::new);
 	public static final RegistrySupplier<FireProjectilePower> FIRE_PROJECTILE = register("fire_projectile", FireProjectilePower::new);
 	public static final RegistrySupplier<DummyPower> IGNORE_WATER = register("ignore_water", DummyPower::new);
-	public static final RegistrySupplier<InventoryPower> INVENTORY = register("inventory", () -> new InventoryPower(9, inventory -> (i, playerInv, player) -> new Generic3x3ContainerScreenHandler(i, playerInv, inventory)));
+	public static final RegistrySupplier<InventoryPower> INVENTORY = register("inventory", () -> new InventoryPower(9, inventory -> (i, playerInv, player) -> new DispenserMenu(i, playerInv, inventory)));
 	public static final RegistrySupplier<InvisibilityPower> INVISIBILITY = register("invisibility", InvisibilityPower::new);
 	public static final RegistrySupplier<InvulnerablePower> INVULNERABILITY = register("invulnerability", InvulnerablePower::new);
 	public static final RegistrySupplier<LaunchPower> LAUNCH = register("launch", LaunchPower::new);

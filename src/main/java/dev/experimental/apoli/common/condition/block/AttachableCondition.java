@@ -3,12 +3,11 @@ package dev.experimental.apoli.common.condition.block;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.configuration.NoConfiguration;
 import dev.experimental.apoli.api.power.factory.BlockCondition;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldView;
-
 import java.util.Arrays;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class AttachableCondition extends BlockCondition<NoConfiguration> {
 
@@ -19,9 +18,9 @@ public class AttachableCondition extends BlockCondition<NoConfiguration> {
 	}
 
 	@Override
-	protected boolean check(NoConfiguration configuration, CachedBlockPosition block) {
-		WorldView world = block.getWorld();
-		BlockPos pos = block.getBlockPos();
-		return Arrays.stream(Direction.values()).anyMatch(d -> world.getBlockState(pos.offset(d)).isSideSolidFullSquare(world, pos, d.getOpposite()));
+	protected boolean check(NoConfiguration configuration, BlockInWorld block) {
+		LevelReader world = block.getLevel();
+		BlockPos pos = block.getPos();
+		return Arrays.stream(Direction.values()).anyMatch(d -> world.getBlockState(pos.relative(d)).isFaceSturdy(world, pos, d.getOpposite()));
 	}
 }

@@ -7,20 +7,11 @@ import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FluidFillable;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.state.property.Property;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.LightType;
-
 import java.util.Collection;
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class BlockConditions {
 
@@ -108,7 +99,7 @@ public class BlockConditions {
         register(new ConditionFactory<>(Apoli.identifier("light_level"), new SerializableData()
             .add("comparison", ApoliDataTypes.COMPARISON)
             .add("compare_to", SerializableDataTypes.INT)
-            .add("light_type", SerializableDataType.enumValue(LightType.class), null),
+            .add("light_type", SerializableDataType.enumValue(LightLayer.class), null),
             (data, block) -> {
                 int value;
                 if(data.isPresent("light_type")) {
@@ -150,7 +141,7 @@ public class BlockConditions {
             }));
     }
 
-    private static void register(ConditionFactory<CachedBlockPosition> conditionFactory) {
+    private static void register(ConditionFactory<BlockInWorld> conditionFactory) {
         Registry.register(ApoliRegistries.BLOCK_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 }

@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
-import net.minecraft.util.math.BlockPos;
 
 public record OffsetConfiguration<T>(T value, int x, int y, int z) implements IDynamicFeatureConfiguration {
 	public static <T> Codec<OffsetConfiguration<T>> codec(String name, Codec<T> codec) {

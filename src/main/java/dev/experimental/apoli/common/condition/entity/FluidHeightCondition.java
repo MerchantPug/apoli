@@ -2,7 +2,7 @@ package dev.experimental.apoli.common.condition.entity;
 
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import dev.experimental.apoli.common.condition.configuration.FluidTagComparisonConfiguration;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class FluidHeightCondition extends EntityCondition<FluidTagComparisonConfiguration> {
 

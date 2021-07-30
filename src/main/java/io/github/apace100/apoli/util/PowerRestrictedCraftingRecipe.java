@@ -6,51 +6,50 @@ import io.github.apace100.apoli.mixin.CraftingInventoryAccessor;
 import io.github.apace100.apoli.mixin.CraftingScreenHandlerAccessor;
 import io.github.apace100.apoli.mixin.PlayerScreenHandlerAccessor;
 import io.github.apace100.apoli.power.RecipePower;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.SpecialRecipeSerializer;
-import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.level.Level;
 
-public class PowerRestrictedCraftingRecipe extends SpecialCraftingRecipe {
+public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 
-    public static final RecipeSerializer<?> SERIALIZER = new SpecialRecipeSerializer<>(PowerRestrictedCraftingRecipe::new);
+    public static final RecipeSerializer<?> SERIALIZER = new SimpleRecipeSerializer<>(PowerRestrictedCraftingRecipe::new);
 
-    public PowerRestrictedCraftingRecipe(Identifier id) {
+    public PowerRestrictedCraftingRecipe(ResourceLocation id) {
         super(id);
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World world) {
+    public boolean matches(CraftingContainer inv, Level world) {
         return getRecipes(inv).stream().anyMatch(r -> r.matches(inv, world));
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inv) {
-        PlayerEntity player = getPlayerFromInventory(inv);
+    public ItemStack craft(CraftingContainer inv) {
+        Player player = getPlayerFromInventory(inv);
         if(player != null) {
-            Optional<Recipe<CraftingInventory>> optional = getRecipes(inv).stream().filter(r -> r.matches(inv, player.world)).findFirst();
+            Optional<Recipe<CraftingContainer>> optional = getRecipes(inv).stream().filter(r -> r.matches(inv, player.level)).findFirst();
             if(optional.isPresent()) {
-                Recipe<CraftingInventory> recipe = optional.get();
-                return recipe.craft(inv);
+                Recipe<CraftingContainer> recipe = optional.get();
+                return recipe.assemble(inv);
             }
         }
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean fits(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
@@ -59,25 +58,25 @@ public class PowerRestrictedCraftingRecipe extends SpecialCraftingRecipe {
         return SERIALIZER;
     }
 
-    private PlayerEntity getPlayerFromInventory(CraftingInventory inv) {
-        ScreenHandler handler = ((CraftingInventoryAccessor)inv).getHandler();
+    private Player getPlayerFromInventory(CraftingContainer inv) {
+        AbstractContainerMenu handler = ((CraftingInventoryAccessor)inv).getHandler();
         return getPlayerFromHandler(handler);
     }
 
-    private List<Recipe<CraftingInventory>> getRecipes(CraftingInventory inv) {
-        ScreenHandler handler = ((CraftingInventoryAccessor)inv).getHandler();
-        PlayerEntity player = getPlayerFromHandler(handler);
+    private List<Recipe<CraftingContainer>> getRecipes(CraftingContainer inv) {
+        AbstractContainerMenu handler = ((CraftingInventoryAccessor)inv).getHandler();
+        Player player = getPlayerFromHandler(handler);
         if(player != null) {
             return PowerHolderComponent.getPowers(player, RecipePower.class).stream().map(RecipePower::getRecipe).collect(Collectors.toList());
         }
         return Lists.newArrayList();
     }
 
-    private PlayerEntity getPlayerFromHandler(ScreenHandler screenHandler) {
-        if(screenHandler instanceof CraftingScreenHandler) {
+    private Player getPlayerFromHandler(AbstractContainerMenu screenHandler) {
+        if(screenHandler instanceof CraftingMenu) {
             return ((CraftingScreenHandlerAccessor)screenHandler).getPlayer();
         }
-        if(screenHandler instanceof PlayerScreenHandler) {
+        if(screenHandler instanceof InventoryMenu) {
             return ((PlayerScreenHandlerAccessor)screenHandler).getOwner();
         }
         return null;

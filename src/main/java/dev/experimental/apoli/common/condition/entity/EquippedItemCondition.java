@@ -2,7 +2,7 @@ package dev.experimental.apoli.common.condition.entity;
 
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import dev.experimental.apoli.common.condition.configuration.EquippedItemConfiguration;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class EquippedItemCondition extends EntityCondition<EquippedItemConfiguration> {
 	public EquippedItemCondition() {
@@ -11,6 +11,6 @@ public class EquippedItemCondition extends EntityCondition<EquippedItemConfigura
 
 	@Override
 	public boolean check(EquippedItemConfiguration configuration, LivingEntity entity) {
-		return configuration.condition().check(entity.getEquippedStack(configuration.slot()));
+		return configuration.condition().check(entity.getItemBySlot(configuration.slot()));
 	}
 }

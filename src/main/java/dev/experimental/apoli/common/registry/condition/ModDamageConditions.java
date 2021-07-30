@@ -7,11 +7,11 @@ import dev.experimental.apoli.api.power.factory.DamageCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import dev.experimental.apoli.common.condition.damage.*;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.entity.damage.DamageSource;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
+import net.minecraft.world.damagesource.DamageSource;
 
 public class ModDamageConditions {
 	public static final BiPredicate<ConfiguredDamageCondition<?, ?>, Pair<DamageSource, Float>> PREDICATE = (config, pair) -> config.check(pair.getLeft(), pair.getRight());

@@ -5,26 +5,26 @@ import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * @deprecated Unused in origins.
  */
 @Deprecated
-public class SimpleStatusEffectPower extends PowerFactory<ListConfiguration<StatusEffectInstance>> {
-	public SimpleStatusEffectPower(Codec<ListConfiguration<StatusEffectInstance>> codec) {
+public class SimpleStatusEffectPower extends PowerFactory<ListConfiguration<MobEffectInstance>> {
+	public SimpleStatusEffectPower(Codec<ListConfiguration<MobEffectInstance>> codec) {
 		super(ListConfiguration.codec(SerializableDataTypes.STATUS_EFFECT_INSTANCE, "effect", "effects"));
 		this.ticking();
 	}
 
 	@Override
-	public int tickInterval(ConfiguredPower<ListConfiguration<StatusEffectInstance>, ?> configuration, LivingEntity player) {
+	public int tickInterval(ConfiguredPower<ListConfiguration<MobEffectInstance>, ?> configuration, LivingEntity player) {
 		return 10;
 	}
 
 	@Override
-	protected void tick(ListConfiguration<StatusEffectInstance> configuration, LivingEntity player) {
-		configuration.getContent().forEach(sei -> player.addStatusEffect(new StatusEffectInstance(sei)));
+	protected void tick(ListConfiguration<MobEffectInstance> configuration, LivingEntity player) {
+		configuration.getContent().forEach(sei -> player.addEffect(new MobEffectInstance(sei)));
 	}
 }

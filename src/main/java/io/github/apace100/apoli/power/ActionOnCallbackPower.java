@@ -1,9 +1,8 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-
 import java.util.function.Consumer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ActionOnCallbackPower extends Power {
 

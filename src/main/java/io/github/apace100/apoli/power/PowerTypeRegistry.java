@@ -1,15 +1,14 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.util.Identifier;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
+import net.minecraft.resources.ResourceLocation;
 
 public class PowerTypeRegistry {
-    private static HashMap<Identifier, PowerType> idToPower = new HashMap<>();
+    private static HashMap<ResourceLocation, PowerType> idToPower = new HashMap<>();
 
-    public static PowerType register(Identifier id, PowerType powerType) {
+    public static PowerType register(ResourceLocation id, PowerType powerType) {
         if(idToPower.containsKey(id)) {
             throw new IllegalArgumentException("Duplicate power type id tried to register: '" + id.toString() + "'");
         }
@@ -17,7 +16,7 @@ public class PowerTypeRegistry {
         return powerType;
     }
 
-    protected static PowerType update(Identifier id, PowerType powerType) {
+    protected static PowerType update(ResourceLocation id, PowerType powerType) {
         if(idToPower.containsKey(id)) {
             PowerType old = idToPower.get(id);
             idToPower.remove(id);
@@ -29,11 +28,11 @@ public class PowerTypeRegistry {
         return idToPower.size();
     }
 
-    public static Stream<Identifier> identifiers() {
+    public static Stream<ResourceLocation> identifiers() {
         return idToPower.keySet().stream();
     }
 
-    public static Iterable<Map.Entry<Identifier, PowerType>> entries() {
+    public static Iterable<Map.Entry<ResourceLocation, PowerType>> entries() {
         return idToPower.entrySet();
     }
 
@@ -41,7 +40,7 @@ public class PowerTypeRegistry {
         return idToPower.values();
     }
 
-    public static PowerType get(Identifier id) {
+    public static PowerType get(ResourceLocation id) {
         if(!idToPower.containsKey(id)) {
             throw new IllegalArgumentException("Could not get power type from id '" + id.toString() + "', as it was not registered!");
         }
@@ -49,11 +48,11 @@ public class PowerTypeRegistry {
         return powerType;
     }
 
-    public static Identifier getId(PowerType<?> powerType) {
+    public static ResourceLocation getId(PowerType<?> powerType) {
         return powerType.getIdentifier();
     }
 
-    public static boolean contains(Identifier id) {
+    public static boolean contains(ResourceLocation id) {
         return idToPower.containsKey(id);
     }
 

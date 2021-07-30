@@ -6,9 +6,8 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.CooldownPowerFactory;
 import dev.experimental.apoli.common.power.configuration.ActionWhenHitConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class SelfActionWhenHitPower extends CooldownPowerFactory.Simple<ActionWhenHitConfiguration> {
 	public static void execute(LivingEntity player, DamageSource damageSource, float amount) {

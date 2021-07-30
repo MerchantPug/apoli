@@ -3,10 +3,9 @@ package dev.experimental.apoli.common.condition.biome;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.factory.BiomeCondition;
-import net.minecraft.world.biome.Biome;
-
 import java.util.Objects;
 import java.util.function.Function;
+import net.minecraft.world.level.biome.Biome;
 
 public class StringBiomeCondition extends BiomeCondition<FieldConfiguration<String>> {
 

@@ -6,7 +6,7 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import dev.experimental.apoli.common.power.configuration.ModifyJumpConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ModifyJumpPower extends ValueModifyingPowerFactory<ModifyJumpConfiguration> {
 	public static double apply(LivingEntity player, double baseValue) {

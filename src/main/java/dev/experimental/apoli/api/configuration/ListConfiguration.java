@@ -7,15 +7,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.calio.api.network.CalioCodecHelper;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public final class ListConfiguration<T> implements IDynamicFeatureConfiguration, IStreamConfiguration<T> {
-	public static final MapCodec<ListConfiguration<EntityAttributeModifier>> MODIFIER_CODEC = modifierCodec("modifier");
+	public static final MapCodec<ListConfiguration<AttributeModifier>> MODIFIER_CODEC = modifierCodec("modifier");
 
-	public static MapCodec<ListConfiguration<EntityAttributeModifier>> modifierCodec(String singular) {
+	public static MapCodec<ListConfiguration<AttributeModifier>> modifierCodec(String singular) {
 		return ListConfiguration.mapCodec(SerializableDataTypes.ATTRIBUTE_MODIFIER, singular, singular + "s");
 	}
 

@@ -7,21 +7,21 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.ModifyDamageTakenPower;
 import io.github.apace100.apoli.power.ModifyPlayerSpawnPower;
 import io.github.apace100.apoli.power.PreventSleepPower;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
-import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Pair;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.Unit;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,11 +33,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
-@Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity implements ScreenHandlerListener, EndRespawningEntity {
+@Mixin(ServerPlayer.class)
+public abstract class ServerPlayerEntityMixin extends Player implements ContainerListener, EndRespawningEntity {
 
     @Shadow
-    private RegistryKey<World> spawnPointDimension;
+    private ResourceKey<Level> spawnPointDimension;
 
     @Shadow
     private BlockPos spawnPointPosition;
@@ -50,40 +50,40 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sc
     public MinecraftServer server;
 
     @Shadow
-    public ServerPlayNetworkHandler networkHandler;
+    public ServerGamePacketListenerImpl networkHandler;
 
     @Shadow
-    public abstract void sendMessage(Text message, boolean actionBar);
+    public abstract void displayClientMessage(Component message, boolean actionBar);
 
     @Shadow
     public boolean notInAnyWorld;
 
-    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+    public ServerPlayerEntityMixin(Level world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
     }
 
     @ModifyArg(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private float modifyDamageAmount(DamageSource source, float originalAmount) {
-        return PowerHolderComponent.modify(this, ModifyDamageTakenPower.class, originalAmount, p -> p.doesApply(source, originalAmount), p -> p.executeActions(source.getAttacker()));
+        return PowerHolderComponent.modify(this, ModifyDamageTakenPower.class, originalAmount, p -> p.doesApply(source, originalAmount), p -> p.executeActions(source.getEntity()));
     }
 
     // FRESH_AIR
     @Inject(method = "trySleep", at = @At(value = "INVOKE",target = "Lnet/minecraft/server/network/ServerPlayerEntity;setSpawnPoint(Lnet/minecraft/util/registry/RegistryKey;Lnet/minecraft/util/math/BlockPos;FZZ)V"), cancellable = true)
-    public void preventAvianSleep(BlockPos pos, CallbackInfoReturnable<Either<SleepFailureReason, Unit>> info) {
+    public void preventAvianSleep(BlockPos pos, CallbackInfoReturnable<Either<BedSleepingProblem, Unit>> info) {
         PowerHolderComponent.getPowers(this, PreventSleepPower.class).forEach(p -> {
-                if(p.doesPrevent(world, pos)) {
+                if(p.doesPrevent(level, pos)) {
                     if(p.doesAllowSpawnPoint()) {
-                        ((ServerPlayerEntity)(Object)this).setSpawnPoint(this.world.getRegistryKey(), pos, this.getYaw(), false, true);
+                        ((ServerPlayer)(Object)this).setRespawnPosition(this.level.dimension(), pos, this.getYRot(), false, true);
                     }
                     info.setReturnValue(Either.left(null));
-                    this.sendMessage(new TranslatableText(p.getMessage()), true);
+                    this.displayClientMessage(new TranslatableComponent(p.getMessage()), true);
                 }
             }
         );
     }
 
     @Inject(at = @At("HEAD"), method = "getSpawnPointDimension", cancellable = true)
-    private void modifySpawnPointDimension(CallbackInfoReturnable<RegistryKey<World>> info) {
+    private void modifySpawnPointDimension(CallbackInfoReturnable<ResourceKey<Level>> info) {
         if (!this.origins_isEndRespawning && (spawnPointPosition == null || hasObstructedSpawn()) && PowerHolderComponent.getPowers(this, ModifyPlayerSpawnPower.class).size() > 0) {
             ModifyPlayerSpawnPower power = PowerHolderComponent.getPowers(this, ModifyPlayerSpawnPower.class).get(0);
             info.setReturnValue(power.dimension);
@@ -96,7 +96,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sc
             if(spawnPointPosition == null) {
                 info.setReturnValue(findPlayerSpawn());
             } else if(hasObstructedSpawn()) {
-                networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0F));
+                networkHandler.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.NO_RESPAWN_BLOCK_AVAILABLE, 0.0F));
                 info.setReturnValue(findPlayerSpawn());
             }
         }
@@ -111,9 +111,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sc
     }
 
     private boolean hasObstructedSpawn() {
-        ServerWorld world = server.getWorld(spawnPointDimension);
+        ServerLevel world = server.getLevel(spawnPointDimension);
         if(spawnPointPosition != null && world != null) {
-            Optional optional = PlayerEntity.findRespawnPosition(world, spawnPointPosition, 0F, spawnPointSet, true);
+            Optional optional = Player.findRespawnPositionAndUseSpawnBlock(world, spawnPointPosition, 0F, spawnPointSet, true);
             return !optional.isPresent();
         }
         return false;
@@ -121,9 +121,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Sc
 
     private BlockPos findPlayerSpawn() {
         ModifyPlayerSpawnPower power = PowerHolderComponent.getPowers(this, ModifyPlayerSpawnPower.class).get(0);
-        Pair<ServerWorld, BlockPos> spawn = power.getSpawn(true);
+        Tuple<ServerLevel, BlockPos> spawn = power.getSpawn(true);
         if(spawn != null) {
-            return spawn.getRight();
+            return spawn.getB();
         }
         return null;
     }

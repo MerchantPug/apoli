@@ -1,10 +1,9 @@
 package io.github.apace100.apoli.util;
 
-import net.minecraft.util.math.BlockPos;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.core.BlockPos;
 
 public enum Shape {
     CUBE, STAR;
@@ -15,7 +14,7 @@ public enum Shape {
             for(int j = -radius; j <= radius; j++) {
                 for(int k = -radius; k <= radius; k++) {
                     if(shape == Shape.CUBE || (Math.abs(i) + Math.abs(j) + Math.abs(k)) <= radius) {
-                        positions.add(new BlockPos(center.add(i, j, k)));
+                        positions.add(new BlockPos(center.offset(i, j, k)));
                     }
                 }
             }

@@ -3,8 +3,7 @@ package dev.experimental.apoli.common.power;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ActionOnCallbackConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ActionOnCallbackPower extends PowerFactory<ActionOnCallbackConfiguration> {
 	public ActionOnCallbackPower() {

@@ -1,34 +1,32 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.HashSet;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 
 public class EffectImmunityPower extends Power {
 
-    protected final HashSet<StatusEffect> effects = new HashSet<>();
+    protected final HashSet<MobEffect> effects = new HashSet<>();
 
     public EffectImmunityPower(PowerType<?> type, LivingEntity entity) {
         super(type, entity);
     }
-    public EffectImmunityPower(PowerType<?> type, LivingEntity entity, StatusEffect effect) {
+    public EffectImmunityPower(PowerType<?> type, LivingEntity entity, MobEffect effect) {
         super(type, entity);
         addEffect(effect);
     }
 
-    public EffectImmunityPower addEffect(StatusEffect effect) {
+    public EffectImmunityPower addEffect(MobEffect effect) {
         effects.add(effect);
         return this;
     }
 
-    public boolean doesApply(StatusEffectInstance instance) {
-        return doesApply(instance.getEffectType());
+    public boolean doesApply(MobEffectInstance instance) {
+        return doesApply(instance.getEffect());
     }
 
-    public boolean doesApply(StatusEffect effect) {
+    public boolean doesApply(MobEffect effect) {
         return effects.contains(effect);
     }
 }

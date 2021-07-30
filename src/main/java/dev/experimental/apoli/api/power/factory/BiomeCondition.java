@@ -8,7 +8,7 @@ import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.IConditionFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.level.biome.Biome;
 
 public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> extends RegistryEntry<BiomeCondition<?>> implements IConditionFactory<T, ConfiguredBiomeCondition<T, ?>, BiomeCondition<T>> {
 	public static final Codec<BiomeCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BIOME_CONDITION);

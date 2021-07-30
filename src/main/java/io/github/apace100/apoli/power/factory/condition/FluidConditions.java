@@ -6,12 +6,9 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.registry.Registry;
-
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.material.FluidState;
 
 public class FluidConditions {
 

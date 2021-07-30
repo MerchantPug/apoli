@@ -8,7 +8,7 @@ import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.IConditionFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
-import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> extends RegistryEntry<BlockCondition<?>> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
 	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_CONDITION);
@@ -29,11 +29,11 @@ public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> ext
 		return new ConfiguredBlockCondition<>(this, input, data);
 	}
 
-	protected boolean check(T configuration, CachedBlockPosition block) {
+	protected boolean check(T configuration, BlockInWorld block) {
 		return false;
 	}
 
-	public boolean check(ConfiguredBlockCondition<T, ?> configuration, CachedBlockPosition block) {
+	public boolean check(ConfiguredBlockCondition<T, ?> configuration, BlockInWorld block) {
 		return configuration.getData().inverted() ^ this.check(configuration.getConfiguration(), block);
 	}
 }

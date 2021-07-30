@@ -1,14 +1,13 @@
 package io.github.apace100.apoli.power;
 
 import io.github.apace100.calio.mixin.DamageSourceAccessor;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.Difficulty;
-
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import java.util.Map;
 
 public class DamageOverTimePower extends VariableIntPower {
@@ -61,7 +60,7 @@ public class DamageOverTimePower extends VariableIntPower {
         outOfDamageTicks = 0;
         if(getValue() <= 0) {
             setValue(damageTickInterval);
-            entity.damage(damageSource, entity.world.getDifficulty() == Difficulty.EASY ? damageAmountEasy : damageAmount);
+            entity.hurt(damageSource, entity.level.getDifficulty() == Difficulty.EASY ? damageAmountEasy : damageAmount);
         } else {
             decrement();
         }
@@ -79,11 +78,11 @@ public class DamageOverTimePower extends VariableIntPower {
         if(protectingEnchantment == null) {
             return 0;
         } else {
-            Map<EquipmentSlot, ItemStack> enchantedItems = protectingEnchantment.getEquipment(entity);
+            Map<EquipmentSlot, ItemStack> enchantedItems = protectingEnchantment.getSlotItems(entity);
             Iterable<ItemStack> iterable = enchantedItems.values();
             int i = 0;
             for (ItemStack itemStack : iterable) {
-                i += EnchantmentHelper.getLevel(protectingEnchantment, itemStack);
+                i += EnchantmentHelper.getItemEnchantmentLevel(protectingEnchantment, itemStack);
             }
             return i + enchantedItems.size();
         }

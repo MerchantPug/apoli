@@ -5,10 +5,10 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.ConfiguredCondition;
 import dev.experimental.apoli.api.power.factory.FluidCondition;
-import net.minecraft.fluid.FluidState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
+import net.minecraft.world.level.material.FluidState;
 
 public final class ConfiguredFluidCondition<C extends IDynamicFeatureConfiguration, F extends FluidCondition<C>> extends ConfiguredCondition<C, F> {
 	public static final Codec<ConfiguredFluidCondition<?, ?>> CODEC = FluidCondition.CODEC.dispatch(ConfiguredFluidCondition::getFactory, Function.identity());

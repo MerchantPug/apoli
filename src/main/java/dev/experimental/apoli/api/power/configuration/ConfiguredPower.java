@@ -1,5 +1,6 @@
 package dev.experimental.apoli.api.power.configuration;
 
+import PowerData;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.ApoliAPI;
@@ -7,16 +8,14 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.*;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import io.github.apace100.apoli.util.HudRender;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtElement;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * This is a replacement for the power system used by fabric.
@@ -83,11 +82,11 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return builder.build();
 	}
 
-	public NbtElement serialize(LivingEntity player) {
+	public Tag serialize(LivingEntity player) {
 		return this.getFactory().serialize(this, player);
 	}
 
-	public void deserialize(LivingEntity player, NbtElement tag) {
+	public void deserialize(LivingEntity player, Tag tag) {
 		this.getFactory().deserialize(this, player, tag);
 	}
 
@@ -104,7 +103,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		if (this.getFactory().canTick(this, player)) {
 			if (!force) {
 				int i = this.getFactory().tickInterval(this, player);
-				if (i <= 0 || (player.age % i) != 0)
+				if (i <= 0 || (player.tickCount % i) != 0)
 					return;
 			}
 			this.getFactory().tick(this, player);

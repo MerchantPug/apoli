@@ -5,13 +5,13 @@ import dev.experimental.apoli.api.power.ConfiguredFactory;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ActionOnBlockBreakConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConfiguration> {
-	public static void execute(LivingEntity player, CachedBlockPosition pos, boolean successful) {
+	public static void execute(LivingEntity player, BlockInWorld pos, boolean successful) {
 		IPowerContainer.getPowers(player, ModPowers.ACTION_ON_BLOCK_BREAK.get()).stream()
 				.filter(p -> p.getFactory().doesApply(p, player, pos))
 				.forEach(aobbp -> aobbp.getFactory().executeActions(aobbp, player, successful, pos.getBlockPos(), null));
@@ -22,10 +22,10 @@ public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConf
 	}
 
 	public boolean doesApply(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, LivingEntity player, BlockPos pos) {
-		return this.doesApply(config, player, new CachedBlockPosition(player.world, pos, true));
+		return this.doesApply(config, player, new BlockInWorld(player.level, pos, true));
 	}
 
-	public boolean doesApply(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, LivingEntity player, CachedBlockPosition cbp) {
+	public boolean doesApply(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, LivingEntity player, BlockInWorld cbp) {
 		return config.getConfiguration().blockCondition() == null || config.getConfiguration().blockCondition().check(cbp);
 	}
 
@@ -33,7 +33,7 @@ public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConf
 		ActionOnBlockBreakConfiguration configuration = config.getConfiguration();
 		if (successfulHarvest || !configuration.onlyWhenHarvested()) {
 			if (configuration.blockAction() != null) {
-				configuration.blockAction().execute(player.world, pos, dir);
+				configuration.blockAction().execute(player.level, pos, dir);
 			}
 			if (configuration.entityAction() != null) {
 				configuration.entityAction().execute(player);

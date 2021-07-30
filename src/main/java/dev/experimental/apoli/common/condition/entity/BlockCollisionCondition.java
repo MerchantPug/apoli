@@ -3,20 +3,20 @@ package dev.experimental.apoli.common.condition.entity;
 import dev.experimental.apoli.api.configuration.ApoliCodecs;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
-public class BlockCollisionCondition extends EntityCondition<FieldConfiguration<Vec3d>> {
+public class BlockCollisionCondition extends EntityCondition<FieldConfiguration<Vec3>> {
 
 	public BlockCollisionCondition() {
 		super(FieldConfiguration.codec(ApoliCodecs.vec3d("offset_")));
 	}
 
 	@Override
-	public boolean check(FieldConfiguration<Vec3d> configuration, LivingEntity entity) {
-		Box boundingBox = entity.getBoundingBox();
-		boundingBox = boundingBox.offset(configuration.value().multiply(boundingBox.getXLength(), boundingBox.getYLength(), boundingBox.getZLength()));
-		return entity.world.getBlockCollisions(entity, boundingBox).findAny().isPresent();
+	public boolean check(FieldConfiguration<Vec3> configuration, LivingEntity entity) {
+		AABB boundingBox = entity.getBoundingBox();
+		boundingBox = boundingBox.move(configuration.value().multiply(boundingBox.getXsize(), boundingBox.getYsize(), boundingBox.getZsize()));
+		return entity.level.getBlockCollisions(entity, boundingBox).findAny().isPresent();
 	}
 }

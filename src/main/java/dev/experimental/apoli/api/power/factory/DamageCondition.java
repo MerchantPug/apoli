@@ -8,7 +8,7 @@ import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.IConditionFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredDamageCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
 
 public abstract class DamageCondition<T extends IDynamicFeatureConfiguration> extends RegistryEntry<DamageCondition<?>> implements IConditionFactory<T, ConfiguredDamageCondition<T, ?>, DamageCondition<T>> {
 	public static final Codec<DamageCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.DAMAGE_CONDITION);

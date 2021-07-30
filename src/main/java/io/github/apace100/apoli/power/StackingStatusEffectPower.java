@@ -1,9 +1,9 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 
 public class StackingStatusEffectPower extends StatusEffectPower {
 
@@ -22,7 +22,7 @@ public class StackingStatusEffectPower extends StatusEffectPower {
     }
 
     public void tick() {
-        if(entity.age % 10 == 0) {
+        if(entity.tickCount % 10 == 0) {
             if(isActive()) {
                 currentStack += 1;
                 if(currentStack > maxStack) {
@@ -45,19 +45,19 @@ public class StackingStatusEffectPower extends StatusEffectPower {
         effects.forEach(sei -> {
             int duration = durationPerStack * currentStack;
             if(duration > 0) {
-                StatusEffectInstance applySei = new StatusEffectInstance(sei.getEffectType(), duration, sei.getAmplifier(), sei.isAmbient(), sei.shouldShowParticles(), sei.shouldShowIcon());
-                entity.addStatusEffect(applySei);
+                MobEffectInstance applySei = new MobEffectInstance(sei.getEffect(), duration, sei.getAmplifier(), sei.isAmbient(), sei.isVisible(), sei.showIcon());
+                entity.addEffect(applySei);
             }
         });
     }
 
     @Override
-    public NbtElement toTag() {
-        return NbtInt.of(currentStack);
+    public Tag toTag() {
+        return IntTag.valueOf(currentStack);
     }
 
     @Override
-    public void fromTag(NbtElement tag) {
-        currentStack = ((NbtInt)tag).intValue();
+    public void fromTag(Tag tag) {
+        currentStack = ((IntTag)tag).getAsInt();
     }
 }

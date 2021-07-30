@@ -5,8 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Pair;
 
 public record StartingInventoryConfiguration(ListConfiguration<Pair<Integer, ItemStack>> stacks,
 											 boolean recurrent) implements IDynamicFeatureConfiguration {

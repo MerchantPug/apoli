@@ -1,10 +1,9 @@
 package io.github.apace100.apoli.power;
 
 import io.github.apace100.apoli.util.HudRender;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-
 import java.util.function.Consumer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ActiveCooldownPower extends CooldownPower implements Active {
 

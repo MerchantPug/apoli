@@ -5,8 +5,7 @@ import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.INightVisionPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class NightVisionPower extends PowerFactory<FieldConfiguration<Float>> implements INightVisionPower<FieldConfiguration<Float>> {
 	public NightVisionPower() {

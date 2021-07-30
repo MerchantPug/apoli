@@ -3,12 +3,6 @@ package io.github.apace100.apoli.mixin;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.ModifyFoodPower;
 import io.github.apace100.apoli.util.AttributeUtil;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.HungerManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,30 +12,36 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
-@Mixin(HungerManager.class)
+@Mixin(FoodData.class)
 public class HungerManagerMixin {
 
     @Unique
-    private PlayerEntity player;
+    private Player player;
 
     @Redirect(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/FoodComponent;getHunger()I"))
-    private int modifyHunger(FoodComponent foodComponent, Item item, ItemStack stack) {
+    private int modifyHunger(FoodProperties foodComponent, Item item, ItemStack stack) {
         if(player != null) {
-            double baseValue = foodComponent.getHunger();
-        List<EntityAttributeModifier> modifiers = PowerHolderComponent.KEY.get(player).getPowers(ModifyFoodPower.class).stream()
+            double baseValue = foodComponent.getNutrition();
+        List<AttributeModifier> modifiers = PowerHolderComponent.KEY.get(player).getPowers(ModifyFoodPower.class).stream()
             .filter(p -> p.doesApply(stack))
             .flatMap(p -> p.getFoodModifiers().stream()).collect(Collectors.toList());
             return (int) AttributeUtil.sortAndApplyModifiers(modifiers, baseValue);
         }
-        return foodComponent.getHunger();
+        return foodComponent.getNutrition();
     }
 
     @Redirect(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/FoodComponent;getSaturationModifier()F"))
-    private float modifySaturation(FoodComponent foodComponent, Item item, ItemStack stack) {
+    private float modifySaturation(FoodProperties foodComponent, Item item, ItemStack stack) {
         if(player != null) {
             double baseValue = foodComponent.getSaturationModifier();
-            List<EntityAttributeModifier> modifiers = PowerHolderComponent.KEY.get(player).getPowers(ModifyFoodPower.class).stream()
+            List<AttributeModifier> modifiers = PowerHolderComponent.KEY.get(player).getPowers(ModifyFoodPower.class).stream()
                 .filter(p -> p.doesApply(stack))
                 .flatMap(p -> p.getSaturationModifiers().stream()).collect(Collectors.toList());
             return (float) AttributeUtil.sortAndApplyModifiers(modifiers, baseValue);
@@ -57,7 +57,7 @@ public class HungerManagerMixin {
     }
 
     @Inject(method = "update", at = @At("HEAD"))
-    private void cachePlayer(PlayerEntity player, CallbackInfo ci) {
+    private void cachePlayer(Player player, CallbackInfo ci) {
         this.player = player;
     }
 }

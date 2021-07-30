@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.access;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.Tag;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.material.Fluid;
 
 public interface SubmergableEntity {
 

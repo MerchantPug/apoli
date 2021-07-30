@@ -5,10 +5,8 @@ import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import dev.experimental.apoli.common.condition.configuration.ResourceComparisonConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.OptionalInt;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ResourceCondition extends EntityCondition<ResourceComparisonConfiguration> {
 

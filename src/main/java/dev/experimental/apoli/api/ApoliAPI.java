@@ -4,12 +4,11 @@ import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.registry.ApoliDynamicRegistries;
 import dev.experimental.calio.api.CalioAPI;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class ApoliAPI {
@@ -28,8 +27,8 @@ public class ApoliAPI {
 		throw new AssertionError();
 	}
 
-	public static Identifier identifier(String path) {
-		return new Identifier(MODID, path);
+	public static ResourceLocation identifier(String path) {
+		return new ResourceLocation(MODID, path);
 	}
 
 	/**

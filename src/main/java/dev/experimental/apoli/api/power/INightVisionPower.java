@@ -4,9 +4,8 @@ import dev.experimental.apoli.api.ApoliAPI;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
-import net.minecraft.entity.LivingEntity;
-
 import java.util.Optional;
+import net.minecraft.world.entity.LivingEntity;
 
 public interface INightVisionPower<T extends IDynamicFeatureConfiguration> {
 	@SuppressWarnings({"rawtypes", "unchecked"})

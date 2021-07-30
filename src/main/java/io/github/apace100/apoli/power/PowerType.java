@@ -2,27 +2,26 @@ package io.github.apace100.apoli.power;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.factory.PowerFactory;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class PowerType<T extends Power> {
 
-    private Identifier identifier;
+    private ResourceLocation identifier;
     private PowerFactory<T>.Instance factory;
     private boolean isHidden = false;
 
     private String nameTranslationKey;
     private String descriptionTranslationKey;
 
-    public PowerType(Identifier id, PowerFactory<T>.Instance factory) {
+    public PowerType(ResourceLocation id, PowerFactory<T>.Instance factory) {
         this.identifier = id;
         this.factory = factory;
     }
 
-    public Identifier getIdentifier() {
+    public ResourceLocation getIdentifier() {
         return identifier;
     }
 
@@ -74,8 +73,8 @@ public class PowerType<T extends Power> {
         return nameTranslationKey;
     }
 
-    public TranslatableText getName() {
-        return new TranslatableText(getOrCreateNameTranslationKey());
+    public TranslatableComponent getName() {
+        return new TranslatableComponent(getOrCreateNameTranslationKey());
     }
 
     public String getOrCreateDescriptionTranslationKey() {
@@ -86,8 +85,8 @@ public class PowerType<T extends Power> {
         return descriptionTranslationKey;
     }
 
-    public TranslatableText getDescription() {
-        return new TranslatableText(getOrCreateDescriptionTranslationKey());
+    public TranslatableComponent getDescription() {
+        return new TranslatableComponent(getOrCreateDescriptionTranslationKey());
     }
 
     @Override
@@ -103,7 +102,7 @@ public class PowerType<T extends Power> {
         if(!(obj instanceof PowerType)) {
             return false;
         }
-        Identifier id = ((PowerType)obj).getIdentifier();
+        ResourceLocation id = ((PowerType)obj).getIdentifier();
         return identifier.equals(id);
     }
 }

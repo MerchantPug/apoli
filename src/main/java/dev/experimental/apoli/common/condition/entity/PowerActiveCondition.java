@@ -4,8 +4,7 @@ import dev.experimental.apoli.api.ApoliAPI;
 import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.configuration.PowerReference;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class PowerActiveCondition extends EntityCondition<PowerReference> {
 

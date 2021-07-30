@@ -1,9 +1,8 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-
 import java.util.function.Predicate;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class EntityGlowPower extends Power {
 

@@ -5,8 +5,7 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ConditionedAttributeConfiguration;
 import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ConditionedAttributePower extends PowerFactory<ConditionedAttributeConfiguration> {
 	public ConditionedAttributePower() {

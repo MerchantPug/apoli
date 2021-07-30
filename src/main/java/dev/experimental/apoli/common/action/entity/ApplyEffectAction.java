@@ -3,21 +3,21 @@ package dev.experimental.apoli.common.action.entity;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.factory.EntityAction;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
-public class ApplyEffectAction extends EntityAction<ListConfiguration<StatusEffectInstance>> {
+public class ApplyEffectAction extends EntityAction<ListConfiguration<MobEffectInstance>> {
 
 	public ApplyEffectAction() {
 		super(ListConfiguration.codec(SerializableDataTypes.STATUS_EFFECT_INSTANCE, "effect", "effects"));
 	}
 
 	@Override
-	public void execute(ListConfiguration<StatusEffectInstance> configuration, Entity entity) {
-		if (!(entity instanceof LivingEntity) || !entity.getEntityWorld().isClient())
+	public void execute(ListConfiguration<MobEffectInstance> configuration, Entity entity) {
+		if (!(entity instanceof LivingEntity) || !entity.getCommandSenderWorld().isClientSide())
 			return;
-		for (StatusEffectInstance effect : configuration.getContent())
-			((LivingEntity) entity).addStatusEffect(new StatusEffectInstance(effect));
+		for (MobEffectInstance effect : configuration.getContent())
+			((LivingEntity) entity).addEffect(new MobEffectInstance(effect));
 	}
 }

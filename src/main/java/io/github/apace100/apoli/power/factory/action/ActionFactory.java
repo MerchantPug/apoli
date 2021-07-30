@@ -4,19 +4,18 @@ import com.google.gson.JsonObject;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 public class ActionFactory<T> {
 
-    private final Identifier identifier;
+    private final ResourceLocation identifier;
     protected SerializableData data;
     private final BiConsumer<SerializableData.Instance, T> effect;
 
-    public ActionFactory(Identifier identifier, SerializableData data, BiConsumer<SerializableData.Instance, T> effect) {
+    public ActionFactory(ResourceLocation identifier, SerializableData data, BiConsumer<SerializableData.Instance, T> effect) {
         this.identifier = identifier;
         this.effect = effect;
         this.data = data;
@@ -31,8 +30,8 @@ public class ActionFactory<T> {
             this.dataInstance = data;
         }
 
-        public void write(PacketByteBuf buf) {
-            buf.writeIdentifier(identifier);
+        public void write(FriendlyByteBuf buf) {
+            buf.writeResourceLocation(identifier);
             data.write(buf, dataInstance);
         }
 
@@ -42,7 +41,7 @@ public class ActionFactory<T> {
         }
     }
 
-    public Identifier getSerializerId() {
+    public ResourceLocation getSerializerId() {
         return identifier;
     }
 
@@ -50,7 +49,7 @@ public class ActionFactory<T> {
         return new Instance(data.read(json));
     }
 
-    public Instance read(PacketByteBuf buffer) {
+    public Instance read(FriendlyByteBuf buffer) {
         return new Instance(data.read(buffer));
     }
 }

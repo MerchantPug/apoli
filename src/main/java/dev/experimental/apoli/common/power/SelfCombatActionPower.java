@@ -4,9 +4,8 @@ import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.CooldownPowerFactory;
 import dev.experimental.apoli.common.power.configuration.ConditionedCombatActionConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 import static dev.experimental.apoli.common.registry.ModPowers.SELF_ACTION_ON_HIT;
 import static dev.experimental.apoli.common.registry.ModPowers.SELF_ACTION_ON_KILL;

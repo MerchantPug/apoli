@@ -7,10 +7,9 @@ import dev.experimental.apoli.api.registry.ApoliDynamicRegistries;
 import dev.experimental.calio.api.CalioAPI;
 import dev.experimental.calio.api.registry.ICalioDynamicRegistryManager;
 import io.github.apace100.apoli.Apoli;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -119,11 +118,11 @@ public interface IDynamicFeatureConfiguration {
 	 * @return A containing all the missing powers.
 	 */
 	@NotNull
-	default List<Identifier> checkPower(@NotNull ICalioDynamicRegistryManager dynamicRegistryManager, @NotNull Identifier... identifiers) {
+	default List<ResourceLocation> checkPower(@NotNull ICalioDynamicRegistryManager dynamicRegistryManager, @NotNull ResourceLocation... identifiers) {
 		Registry<ConfiguredPower<?, ?>> powers = dynamicRegistryManager.get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
-		ImmutableList.Builder<Identifier> builder = ImmutableList.builder();
-		for (Identifier identifier : identifiers) {
-			if (!powers.containsId(identifier))
+		ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
+		for (ResourceLocation identifier : identifiers) {
+			if (!powers.containsKey(identifier))
 				builder.add(identifier);
 		}
 		return builder.build();

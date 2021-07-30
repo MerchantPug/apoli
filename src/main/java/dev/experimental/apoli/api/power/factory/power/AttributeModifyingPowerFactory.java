@@ -4,16 +4,16 @@ import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.Lazy;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.util.LazyLoadedValue;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPowerConfiguration> extends ValueModifyingPowerFactory<T> {
 	public static <C extends IValueModifyingPowerConfiguration, F extends AttributeModifyingPowerFactory<C>> double apply(Entity entity, F type, double baseValue) {
@@ -21,7 +21,7 @@ public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPo
 		return IPowerContainer.modify(entity, type, baseValue);
 	}
 
-	private final Lazy<EntityAttribute> lazyAttribute;
+	private final LazyLoadedValue<Attribute> lazyAttribute;
 
 	protected AttributeModifyingPowerFactory(Codec<T> codec) {
 		this(codec, true);
@@ -29,22 +29,22 @@ public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPo
 
 	protected AttributeModifyingPowerFactory(Codec<T> codec, boolean allowConditions) {
 		super(codec, allowConditions);
-		this.lazyAttribute = new Lazy<>(this::getAttribute);
+		this.lazyAttribute = new LazyLoadedValue<>(this::getAttribute);
 	}
 
 	public boolean hasAttributeBacking() {
 		return this.lazyAttribute.get() != null;
 	}
 
-	private Optional<EntityAttributeInstance> getAttribute(LivingEntity player) {
-		return player.getAttributes().hasAttribute(this.lazyAttribute.get()) ? Optional.ofNullable(player.getAttributeInstance(this.lazyAttribute.get())) : Optional.empty();
+	private Optional<AttributeInstance> getAttribute(LivingEntity player) {
+		return player.getAttributes().hasAttribute(this.lazyAttribute.get()) ? Optional.ofNullable(player.getAttribute(this.lazyAttribute.get())) : Optional.empty();
 	}
 
-	private void add(List<EntityAttributeModifier> configuration, LivingEntity player) {
-		this.getAttribute(player).ifPresent(x -> configuration.stream().filter(mod -> !x.hasModifier(mod)).forEach(x::addTemporaryModifier));
+	private void add(List<AttributeModifier> configuration, LivingEntity player) {
+		this.getAttribute(player).ifPresent(x -> configuration.stream().filter(mod -> !x.hasModifier(mod)).forEach(x::addTransientModifier));
 	}
 
-	private void remove(List<EntityAttributeModifier> configuration, LivingEntity player) {
+	private void remove(List<AttributeModifier> configuration, LivingEntity player) {
 		this.getAttribute(player).ifPresent(x -> configuration.stream().filter(x::hasModifier).forEach(x::removeModifier));
 	}
 
@@ -80,5 +80,5 @@ public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPo
 	}
 
 	@Nullable
-	public abstract EntityAttribute getAttribute();
+	public abstract Attribute getAttribute();
 }

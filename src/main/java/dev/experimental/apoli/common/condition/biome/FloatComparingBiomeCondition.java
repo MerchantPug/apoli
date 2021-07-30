@@ -2,9 +2,8 @@ package dev.experimental.apoli.common.condition.biome;
 
 import dev.experimental.apoli.api.configuration.FloatComparisonConfiguration;
 import dev.experimental.apoli.api.power.factory.BiomeCondition;
-import net.minecraft.world.biome.Biome;
-
 import java.util.function.Function;
+import net.minecraft.world.level.biome.Biome;
 
 public class FloatComparingBiomeCondition extends BiomeCondition<FloatComparisonConfiguration> {
 	private final Function<Biome, Float> function;

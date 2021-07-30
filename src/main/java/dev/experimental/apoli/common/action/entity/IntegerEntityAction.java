@@ -2,11 +2,10 @@ package dev.experimental.apoli.common.action.entity;
 
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.factory.EntityAction;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.function.BiConsumer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class IntegerEntityAction extends EntityAction<FieldConfiguration<Integer>> {
 
@@ -14,7 +13,7 @@ public class IntegerEntityAction extends EntityAction<FieldConfiguration<Integer
 		return new IntegerEntityAction((e, i) -> {if (e instanceof LivingEntity le) action.accept(le, i);}, field);
 	}
 
-	public static IntegerEntityAction ofPlayer(BiConsumer<PlayerEntity, Integer> action, String field) {
+	public static IntegerEntityAction ofPlayer(BiConsumer<Player, Integer> action, String field) {
 		return new IntegerEntityAction((e, i) -> {if (e instanceof PlayerEntity le) action.accept(le, i);}, field);
 	}
 

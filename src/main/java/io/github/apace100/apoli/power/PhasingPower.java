@@ -1,24 +1,23 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-
 import java.util.function.Predicate;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class PhasingPower extends Power {
 
-    private final Predicate<CachedBlockPosition> blocks;
+    private final Predicate<BlockInWorld> blocks;
     private final boolean isBlacklist;
 
-    private final Predicate<PlayerEntity> phaseDownCondition;
+    private final Predicate<Player> phaseDownCondition;
 
     private final RenderType renderType;
     private final float viewDistance;
 
-    public PhasingPower(PowerType<?> type, LivingEntity entity, Predicate<CachedBlockPosition> blocks, boolean isBlacklist,
-                        RenderType renderType, float viewDistance, Predicate<PlayerEntity> phaseDownCondition) {
+    public PhasingPower(PowerType<?> type, LivingEntity entity, Predicate<BlockInWorld> blocks, boolean isBlacklist,
+                        RenderType renderType, float viewDistance, Predicate<Player> phaseDownCondition) {
         super(type, entity);
         this.blocks = blocks;
         this.isBlacklist = isBlacklist;
@@ -28,11 +27,11 @@ public class PhasingPower extends Power {
     }
 
     public boolean doesApply(BlockPos pos) {
-        return isBlacklist != blocks.test(new CachedBlockPosition(entity.world, pos, true));
+        return isBlacklist != blocks.test(new BlockInWorld(entity.level, pos, true));
     }
 
-    public boolean shouldPhaseDown(PlayerEntity playerEntity) {
-        return phaseDownCondition == null ? playerEntity.isSneaking() : phaseDownCondition.test(playerEntity);
+    public boolean shouldPhaseDown(Player playerEntity) {
+        return phaseDownCondition == null ? playerEntity.isShiftKeyDown() : phaseDownCondition.test(playerEntity);
     }
 
     public RenderType getRenderType() {

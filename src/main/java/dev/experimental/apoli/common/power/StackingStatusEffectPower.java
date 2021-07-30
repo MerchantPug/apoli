@@ -3,12 +3,10 @@ package dev.experimental.apoli.common.power;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.StackingStatusEffectConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
-
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 
 public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffectConfiguration> {
 	public StackingStatusEffectPower() {
@@ -43,12 +41,12 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	@Override
-	public NbtElement serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
-		return NbtInt.of(this.getCurrentStacks(configuration, player).get());
+	public Tag serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
+		return IntTag.valueOf(this.getCurrentStacks(configuration, player).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, NbtElement tag) {
+	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, Tag tag) {
 		if (tag instanceof NbtInt intTag)
 			this.getCurrentStacks(configuration, player).set(intTag.intValue());
 	}

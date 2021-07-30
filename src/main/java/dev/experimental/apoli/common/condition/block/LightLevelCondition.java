@@ -2,7 +2,7 @@ package dev.experimental.apoli.common.condition.block;
 
 import dev.experimental.apoli.api.power.factory.BlockCondition;
 import dev.experimental.apoli.common.condition.configuration.LightLevelConfiguration;
-import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class LightLevelCondition extends BlockCondition<LightLevelConfiguration> {
 
@@ -11,7 +11,7 @@ public class LightLevelCondition extends BlockCondition<LightLevelConfiguration>
 	}
 
 	@Override
-	protected boolean check(LightLevelConfiguration configuration, CachedBlockPosition block) {
-		return configuration.comparison().check(configuration.getLightLevel(block.getWorld(), block.getBlockPos()));
+	protected boolean check(LightLevelConfiguration configuration, BlockInWorld block) {
+		return configuration.comparison().check(configuration.getLightLevel(block.getLevel(), block.getPos()));
 	}
 }

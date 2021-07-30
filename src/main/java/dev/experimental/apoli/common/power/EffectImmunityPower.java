@@ -6,12 +6,12 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.registry.ModPowers;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
 
-public class EffectImmunityPower extends PowerFactory<ListConfiguration<StatusEffect>> {
-	public static boolean isImmune(PlayerEntity player, StatusEffectInstance effect) {
+public class EffectImmunityPower extends PowerFactory<ListConfiguration<MobEffect>> {
+	public static boolean isImmune(Player player, MobEffectInstance effect) {
 		return IPowerContainer.getPowers(player, ModPowers.EFFECT_IMMUNITY.get()).stream().anyMatch(x -> x.getFactory().isImmune(x, player, effect));
 	}
 
@@ -19,11 +19,11 @@ public class EffectImmunityPower extends PowerFactory<ListConfiguration<StatusEf
 		super(ListConfiguration.codec(SerializableDataTypes.STATUS_EFFECT, "effect", "effects"));
 	}
 
-	public boolean isImmune(ConfiguredPower<ListConfiguration<StatusEffect>, ?> configuration, PlayerEntity player, StatusEffect effect) {
+	public boolean isImmune(ConfiguredPower<ListConfiguration<MobEffect>, ?> configuration, Player player, MobEffect effect) {
 		return configuration.getConfiguration().getContent().contains(effect);
 	}
 
-	public boolean isImmune(ConfiguredPower<ListConfiguration<StatusEffect>, ?> configuration, PlayerEntity player, StatusEffectInstance effect) {
-		return this.isImmune(configuration, player, effect.getEffectType());
+	public boolean isImmune(ConfiguredPower<ListConfiguration<MobEffect>, ?> configuration, Player player, MobEffectInstance effect) {
+		return this.isImmune(configuration, player, effect.getEffect());
 	}
 }

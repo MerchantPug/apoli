@@ -6,15 +6,9 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.util.registry.Registry;
-
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemConditions {
 

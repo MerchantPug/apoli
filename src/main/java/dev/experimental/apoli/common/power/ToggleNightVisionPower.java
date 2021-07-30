@@ -4,8 +4,7 @@ import dev.experimental.apoli.api.power.INightVisionPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.TogglePowerFactory;
 import dev.experimental.apoli.common.power.configuration.ToggleNightVisionConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ToggleNightVisionPower extends TogglePowerFactory.Simple<ToggleNightVisionConfiguration> implements INightVisionPower<ToggleNightVisionConfiguration> {
 

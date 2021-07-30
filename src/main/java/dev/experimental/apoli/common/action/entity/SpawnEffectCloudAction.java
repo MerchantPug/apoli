@@ -1,11 +1,11 @@
 package dev.experimental.apoli.common.action.entity;
 
 import dev.experimental.apoli.common.action.configuration.SpawnEffectCloudConfiguration;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import dev.experimental.apoli.api.power.factory.EntityAction;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 
 public class SpawnEffectCloudAction extends EntityAction<SpawnEffectCloudConfiguration> {
 
@@ -15,14 +15,14 @@ public class SpawnEffectCloudAction extends EntityAction<SpawnEffectCloudConfigu
 
 	@Override
 	public void execute(SpawnEffectCloudConfiguration configuration, Entity entity) {
-		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
+		AreaEffectCloud areaEffectCloudEntity = new AreaEffectCloud(entity.level, entity.getX(), entity.getY(), entity.getZ());
 		if (entity instanceof LivingEntity)
 			areaEffectCloudEntity.setOwner((LivingEntity) entity);
 		areaEffectCloudEntity.setRadius(configuration.radius());
 		areaEffectCloudEntity.setRadiusOnUse(configuration.radiusOnUse());
 		areaEffectCloudEntity.setWaitTime(configuration.waitTime());
-		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float) areaEffectCloudEntity.getDuration());
-		configuration.effects().getContent().stream().map(StatusEffectInstance::new).forEach(areaEffectCloudEntity::addEffect);
-		entity.world.spawnEntity(areaEffectCloudEntity);
+		areaEffectCloudEntity.setRadiusPerTick(-areaEffectCloudEntity.getRadius() / (float) areaEffectCloudEntity.getDuration());
+		configuration.effects().getContent().stream().map(MobEffectInstance::new).forEach(areaEffectCloudEntity::addEffect);
+		entity.level.addFreshEntity(areaEffectCloudEntity);
 	}
 }

@@ -9,16 +9,15 @@ import dev.experimental.apoli.common.condition.fluid.DelegatedFluidCondition;
 import dev.experimental.apoli.common.condition.fluid.InTagFluidCondition;
 import dev.experimental.apoli.common.condition.fluid.SimpleFluidCondition;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.fluid.FluidState;
-
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
+import net.minecraft.world.level.material.FluidState;
 
 public class ModFluidConditions {
 	public static final BiPredicate<ConfiguredFluidCondition<?, ?>, FluidState> PREDICATE = (config, biome) -> config.check(biome);
 
 	public static final RegistrySupplier<SimpleFluidCondition> EMPTY = register("empty", () -> new SimpleFluidCondition(FluidState::isEmpty));
-	public static final RegistrySupplier<SimpleFluidCondition> STILL = register("still", () -> new SimpleFluidCondition(FluidState::isStill));
+	public static final RegistrySupplier<SimpleFluidCondition> STILL = register("still", () -> new SimpleFluidCondition(FluidState::isSource));
 	public static final RegistrySupplier<InTagFluidCondition> IN_TAG = register("in_tag", InTagFluidCondition::new);
 
 	public static void register() {

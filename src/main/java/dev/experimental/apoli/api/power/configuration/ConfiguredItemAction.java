@@ -4,10 +4,10 @@ import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.ConfiguredFactory;
 import dev.experimental.apoli.api.power.factory.ItemAction;
-import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
+import net.minecraft.world.item.ItemStack;
 
 public final class ConfiguredItemAction<C extends IDynamicFeatureConfiguration, F extends ItemAction<C>> extends ConfiguredFactory<C, F> {
 	public static final Codec<ConfiguredItemAction<?, ?>> CODEC = ItemAction.CODEC.dispatch(ConfiguredItemAction::getFactory, Function.identity());

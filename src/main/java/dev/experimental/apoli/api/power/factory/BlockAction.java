@@ -6,9 +6,9 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.IFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockAction;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 public abstract class BlockAction<T extends IDynamicFeatureConfiguration> extends RegistryEntry<BlockAction<?>> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
 	public static final Codec<BlockAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_ACTION);
@@ -29,5 +29,5 @@ public abstract class BlockAction<T extends IDynamicFeatureConfiguration> extend
 		return new ConfiguredBlockAction<>(this, input);
 	}
 
-	public abstract void execute(T configuration, World world, BlockPos pos, Direction direction);
+	public abstract void execute(T configuration, Level world, BlockPos pos, Direction direction);
 }

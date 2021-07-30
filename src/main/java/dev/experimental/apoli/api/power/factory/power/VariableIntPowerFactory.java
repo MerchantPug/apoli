@@ -5,12 +5,11 @@ import dev.experimental.apoli.api.power.IVariableIntPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.configuration.power.IVariableIntPowerConfiguration;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.util.math.MathHelper;
-
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 
 public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfiguration> extends PowerFactory<T> implements IVariableIntPower<T> {
 	protected VariableIntPowerFactory(Codec<T> codec) {
@@ -27,7 +26,7 @@ public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfigu
 
 	@Override
 	public int assign(ConfiguredPower<T, ?> configuration, LivingEntity player, int value) {
-		value = MathHelper.clamp(value, this.getMinimum(configuration, player), this.getMaximum(configuration, player));
+		value = Mth.clamp(value, this.getMinimum(configuration, player), this.getMaximum(configuration, player));
 		this.set(configuration, player, value);
 		return value;
 	}
@@ -71,12 +70,12 @@ public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfigu
 		}
 
 		@Override
-		public NbtElement serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return NbtInt.of(this.get(configuration, player));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+			return IntTag.valueOf(this.get(configuration, player));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, NbtElement tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
 			if (tag instanceof NbtInt intTag)
 				this.set(configuration, player, intTag.intValue());
 		}

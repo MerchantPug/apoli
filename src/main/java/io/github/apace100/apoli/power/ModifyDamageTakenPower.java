@@ -1,28 +1,26 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Pair;
-
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ModifyDamageTakenPower extends ValueModifyingPower {
 
-    private final Predicate<Pair<DamageSource, Float>> condition;
+    private final Predicate<Tuple<DamageSource, Float>> condition;
 
     private Consumer<LivingEntity> attackerAction;
     private Consumer<LivingEntity> selfAction;
 
-    public ModifyDamageTakenPower(PowerType<?> type, LivingEntity entity, Predicate<Pair<DamageSource, Float>> condition) {
+    public ModifyDamageTakenPower(PowerType<?> type, LivingEntity entity, Predicate<Tuple<DamageSource, Float>> condition) {
         super(type, entity);
         this.condition = condition;
     }
 
     public boolean doesApply(DamageSource source, float damageAmount) {
-        return condition.test(new Pair(source, damageAmount));
+        return condition.test(new Tuple(source, damageAmount));
     }
 
     public void setAttackerAction(Consumer<LivingEntity> attackerAction) {

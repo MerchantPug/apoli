@@ -1,8 +1,8 @@
 package dev.experimental.apoli.common.action.entity;
 
 import dev.experimental.apoli.common.action.configuration.CommandConfiguration;
+import net.minecraft.world.entity.Entity;
 import dev.experimental.apoli.api.power.factory.EntityAction;
-import net.minecraft.entity.Entity;
 
 public class ExecuteCommandEntityAction extends EntityAction<CommandConfiguration> {
 

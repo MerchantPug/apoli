@@ -7,9 +7,9 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import dev.experimental.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ModifyDamageTakenPower extends ValueModifyingPowerFactory<ModifyDamageTakenConfiguration> {
 	public static float modify(Entity entity, DamageSource source, float amount) {
@@ -28,7 +28,7 @@ public class ModifyDamageTakenPower extends ValueModifyingPowerFactory<ModifyDam
 	public void execute(ConfiguredPower<ModifyDamageTakenConfiguration, ?> config, Entity entity, DamageSource source) {
 		ModifyDamageTakenConfiguration configuration = config.getConfiguration();
 		ConfiguredEntityAction.execute(configuration.selfAction(), entity);
-		if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity)
-			ConfiguredEntityAction.execute(configuration.targetAction(), source.getAttacker());
+		if (source.getEntity() != null && source.getEntity() instanceof LivingEntity)
+			ConfiguredEntityAction.execute(configuration.targetAction(), source.getEntity());
 	}
 }

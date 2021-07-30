@@ -10,34 +10,33 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.ValueModifyingPower;
 import io.github.apace100.apoli.util.AttributeUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
 
 public interface PowerHolderComponent extends AutoSyncedComponent, ServerTickingComponent {
 
     ComponentKey<PowerHolderComponent> KEY = ComponentRegistry.getOrCreate(Apoli.identifier("powers"), PowerHolderComponent.class);
 
-    void removePower(PowerType<?> powerType, Identifier source);
+    void removePower(PowerType<?> powerType, ResourceLocation source);
 
-    int removeAllPowersFromSource(Identifier source);
+    int removeAllPowersFromSource(ResourceLocation source);
 
-    List<PowerType<?>> getPowersFromSource(Identifier source);
+    List<PowerType<?>> getPowersFromSource(ResourceLocation source);
 
-    boolean addPower(PowerType<?> powerType, Identifier source);
+    boolean addPower(PowerType<?> powerType, ResourceLocation source);
 
     boolean hasPower(PowerType<?> powerType);
 
-    boolean hasPower(PowerType<?> powerType, Identifier source);
+    boolean hasPower(PowerType<?> powerType, ResourceLocation source);
 
     <T extends Power> T getPower(PowerType<T> powerType);
 
@@ -49,7 +48,7 @@ public interface PowerHolderComponent extends AutoSyncedComponent, ServerTicking
 
     <T extends Power> List<T> getPowers(Class<T> powerClass, boolean includeInactive);
 
-    List<Identifier> getSources(PowerType<?> powerType);
+    List<ResourceLocation> getSources(PowerType<?> powerType);
 
     void sync();
 
@@ -95,9 +94,9 @@ public interface PowerHolderComponent extends AutoSyncedComponent, ServerTicking
     }
 
     static <T extends ValueModifyingPower> double modify(Entity entity, Class<T> powerClass, double baseValue, Predicate<T> powerFilter, Consumer<T> powerAction) {
-        if(entity instanceof PlayerEntity) {
+        if(entity instanceof Player) {
             List<T> powers = PowerHolderComponent.KEY.get(entity).getPowers(powerClass);
-            List<EntityAttributeModifier> mps = powers.stream()
+            List<AttributeModifier> mps = powers.stream()
                 .filter(p -> powerFilter == null || powerFilter.test(p))
                 .flatMap(p -> p.getModifiers().stream()).collect(Collectors.toList());
             if(powerAction != null) {

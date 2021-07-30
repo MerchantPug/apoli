@@ -5,9 +5,8 @@ import dev.experimental.apoli.api.power.ConfiguredFactory;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.LavaVisionConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.Entity;
-
 import java.util.Optional;
+import net.minecraft.world.entity.Entity;
 
 public class LavaVisionPower extends PowerFactory<LavaVisionConfiguration> {
 	public static Optional<Float> getS(Entity entity) {

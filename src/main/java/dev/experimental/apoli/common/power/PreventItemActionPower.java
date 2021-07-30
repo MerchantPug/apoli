@@ -7,10 +7,9 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredItemCondition;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-
 import java.util.Optional;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>> {
 
@@ -24,6 +23,6 @@ public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Opti
 
 	public boolean doesPrevent(ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, ?> configuration, ItemStack stack) {
 		//FIXME Disable Food Restrictions.
-		return (!stack.isFood() || !ApoliAPI.hasFoodRestrictions()) && configuration.getConfiguration().value().map(x -> x.check(stack)).orElse(true);
+		return (!stack.isEdible() || !ApoliAPI.hasFoodRestrictions()) && configuration.getConfiguration().value().map(x -> x.check(stack)).orElse(true);
 	}
 }

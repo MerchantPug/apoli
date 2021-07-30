@@ -6,15 +6,10 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
-import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
-
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.damagesource.DamageSource;
 
 public class DamageConditions {
 
@@ -66,7 +61,7 @@ public class DamageConditions {
             }));
     }
 
-    private static void register(ConditionFactory<Pair<DamageSource, Float>> conditionFactory) {
+    private static void register(ConditionFactory<Tuple<DamageSource, Float>> conditionFactory) {
         Registry.register(ApoliRegistries.DAMAGE_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 }

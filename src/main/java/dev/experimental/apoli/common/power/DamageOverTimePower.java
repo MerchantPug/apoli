@@ -3,13 +3,11 @@ package dev.experimental.apoli.common.power;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.VariableIntPowerFactory;
 import dev.experimental.apoli.common.power.configuration.DamageOverTimeConfiguration;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.Difficulty;
-
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import java.util.Map;
 
 public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOverTimeConfiguration> {
@@ -45,7 +43,7 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 		dataContainer.outOfDamageTicks = 0;
 		if (this.getValue(configuration, player) <= 0) {
 			this.assign(configuration, player, configuration.getConfiguration().interval());
-			player.damage(configuration.getConfiguration().damageSource(), player.world.getDifficulty() == Difficulty.EASY ? configuration.getConfiguration().damageEasy() : configuration.getConfiguration().damage());
+			player.hurt(configuration.getConfiguration().damageSource(), player.level.getDifficulty() == Difficulty.EASY ? configuration.getConfiguration().damageEasy() : configuration.getConfiguration().damage());
 		} else {
 			this.decrement(configuration, player);
 		}
@@ -75,7 +73,7 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 			Iterable<ItemStack> iterable = enchantedItems.values();
 			int i = 0;
 			for (ItemStack itemStack : iterable)
-				i += EnchantmentHelper.getLevel(configuration.protectionEnchantment(), itemStack);
+				i += EnchantmentHelper.getItemEnchantmentLevel(configuration.protectionEnchantment(), itemStack);
 			return i * enchantedItems.size();
 		}
 	}

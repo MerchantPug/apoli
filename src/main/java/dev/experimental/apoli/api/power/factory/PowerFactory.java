@@ -12,11 +12,10 @@ import dev.experimental.apoli.api.power.IFactory;
 import dev.experimental.apoli.api.power.PowerData;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-
 import java.util.Map;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 
 public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> extends RegistryEntry<PowerFactory<?>> implements Codec<ConfiguredPower<T, ?>> {
 	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.POWER_FACTORY);
@@ -161,11 +160,11 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 		return !this.shouldCheckConditions() || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
 	}
 
-	public NbtElement serialize(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
-		return new NbtCompound();
+	public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+		return new CompoundTag();
 	}
 
-	public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, NbtElement tag) {
+	public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, Tag tag) {
 
 	}
 }

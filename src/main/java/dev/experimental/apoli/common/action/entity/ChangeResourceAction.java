@@ -4,8 +4,7 @@ import dev.experimental.apoli.api.ApoliAPI;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.EntityAction;
 import dev.experimental.apoli.common.action.configuration.ChangeResourceConfiguration;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ChangeResourceAction extends EntityAction<ChangeResourceConfiguration> {
 	public ChangeResourceAction() {

@@ -5,8 +5,8 @@ import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredDamageCondition;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 
 public class InvulnerablePower extends PowerFactory<FieldConfiguration<ConfiguredDamageCondition<?, ?>>> {
 

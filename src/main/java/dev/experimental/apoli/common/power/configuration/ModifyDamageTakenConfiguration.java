@@ -6,7 +6,6 @@ import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredDamageCondition;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
 import dev.experimental.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

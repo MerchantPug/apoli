@@ -3,9 +3,9 @@ package dev.experimental.apoli.common.condition.block;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.factory.BlockCondition;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.tag.Tag;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class InTagBlockCondition extends BlockCondition<FieldConfiguration<Tag<Block>>> {
 
@@ -14,7 +14,7 @@ public class InTagBlockCondition extends BlockCondition<FieldConfiguration<Tag<B
 	}
 
 	@Override
-	protected boolean check(FieldConfiguration<Tag<Block>> configuration, CachedBlockPosition block) {
-		return block.getBlockState().isIn(configuration.value());
+	protected boolean check(FieldConfiguration<Tag<Block>> configuration, BlockInWorld block) {
+		return block.getState().is(configuration.value());
 	}
 }

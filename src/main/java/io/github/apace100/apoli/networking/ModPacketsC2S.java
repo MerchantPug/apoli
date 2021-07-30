@@ -4,15 +4,14 @@ import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.*;
 import net.fabricmc.fabric.api.networking.v1.*;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import java.util.List;
 import java.util.Random;
 
@@ -27,19 +26,19 @@ public class ModPacketsC2S {
         ServerPlayNetworking.registerGlobalReceiver(ModPackets.PLAYER_LANDED, ModPacketsC2S::playerLanded);
     }
 
-    private static void playerLanded(MinecraftServer minecraftServer, ServerPlayerEntity playerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void playerLanded(MinecraftServer minecraftServer, ServerPlayer playerEntity, ServerGamePacketListenerImpl serverPlayNetworkHandler, FriendlyByteBuf packetByteBuf, PacketSender packetSender) {
         minecraftServer.execute(() -> PowerHolderComponent.getPowers(playerEntity, ActionOnLandPower.class).forEach(ActionOnLandPower::executeAction));
     }
 
-    private static void useActivePowers(MinecraftServer minecraftServer, ServerPlayerEntity playerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void useActivePowers(MinecraftServer minecraftServer, ServerPlayer playerEntity, ServerGamePacketListenerImpl serverPlayNetworkHandler, FriendlyByteBuf packetByteBuf, PacketSender packetSender) {
         int count = packetByteBuf.readInt();
-        Identifier[] powerIds = new Identifier[count];
+        ResourceLocation[] powerIds = new ResourceLocation[count];
         for(int i = 0; i < count; i++) {
-            powerIds[i] = packetByteBuf.readIdentifier();
+            powerIds[i] = packetByteBuf.readResourceLocation();
         }
         minecraftServer.execute(() -> {
             PowerHolderComponent component = PowerHolderComponent.KEY.get(playerEntity);
-            for(Identifier id : powerIds) {
+            for(ResourceLocation id : powerIds) {
                 PowerType<?> type = PowerTypeRegistry.get(id);
                 Power power = component.getPower(type);
                 if(power instanceof Active) {
@@ -49,7 +48,7 @@ public class ModPacketsC2S {
         });
     }
 
-    private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
+    private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginPacketListenerImpl serverLoginNetworkHandler, boolean understood, FriendlyByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
         if (understood) {
             int clientSemVerLength = packetByteBuf.readInt();
             int[] clientSemVer = new int[clientSemVerLength];
@@ -68,14 +67,14 @@ public class ModPacketsC2S {
                         clientVersionString.append(".");
                     }
                 }
-                serverLoginNetworkHandler.disconnect(new TranslatableText("apoli.gui.version_mismatch", Apoli.VERSION, clientVersionString));
+                serverLoginNetworkHandler.disconnect(new TranslatableComponent("apoli.gui.version_mismatch", Apoli.VERSION, clientVersionString));
             }
         } else {
-            serverLoginNetworkHandler.disconnect(new LiteralText("This server requires you to install the Apoli mod (v" + Apoli.VERSION + ") to play."));
+            serverLoginNetworkHandler.disconnect(new TextComponent("This server requires you to install the Apoli mod (v" + Apoli.VERSION + ") to play."));
         }
     }
 
-    private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
+    private static void handshake(ServerLoginPacketListenerImpl serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
         packetSender.sendPacket(ModPackets.HANDSHAKE, PacketByteBufs.empty());
     }
 }

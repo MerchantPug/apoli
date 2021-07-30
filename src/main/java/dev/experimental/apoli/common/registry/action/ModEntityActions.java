@@ -8,12 +8,11 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
 import dev.experimental.apoli.api.power.factory.EntityAction;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import dev.experimental.apoli.common.action.entity.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ModEntityActions {
 	public static final BiConsumer<ConfiguredEntityAction<?, ?>, Entity> EXECUTOR = (action, entity) -> action.execute(entity);
@@ -25,12 +24,12 @@ public class ModEntityActions {
 	public static final RegistrySupplier<BlockActionAtAction> BLOCK_ACTION_AT = register("block_action_at", BlockActionAtAction::new);
 	public static final RegistrySupplier<ChangeResourceAction> CHANGE_RESOURCE = register("change_resource", ChangeResourceAction::new);
 	public static final RegistrySupplier<ClearEffectAction> CLEAR_EFFECT = register("clear_effect", ClearEffectAction::new);
-	public static final RegistrySupplier<SimpleEntityAction> EXTINGUISH = register("extinguish", () -> new SimpleEntityAction(Entity::extinguish));
+	public static final RegistrySupplier<SimpleEntityAction> EXTINGUISH = register("extinguish", () -> new SimpleEntityAction(Entity::clearFire));
 	public static final RegistrySupplier<ExecuteCommandEntityAction> EXECUTE_COMMAND = register("execute_command", ExecuteCommandEntityAction::new);
-	public static final RegistrySupplier<IntegerEntityAction> SET_ON_FIRE = register("set_on_fire", () -> new IntegerEntityAction(Entity::setOnFireFor, "duration"));
-	public static final RegistrySupplier<FloatEntityAction> EXHAUST = register("exhaust", () -> FloatEntityAction.ofPlayer((x, f) -> x.getHungerManager().addExhaustion(f), "amount"));
+	public static final RegistrySupplier<IntegerEntityAction> SET_ON_FIRE = register("set_on_fire", () -> new IntegerEntityAction(Entity::setSecondsOnFire, "duration"));
+	public static final RegistrySupplier<FloatEntityAction> EXHAUST = register("exhaust", () -> FloatEntityAction.ofPlayer((x, f) -> x.getFoodData().addExhaustion(f), "amount"));
 	public static final RegistrySupplier<FloatEntityAction> HEAL = register("heal", () -> FloatEntityAction.ofLiving(LivingEntity::heal, "amount"));
-	public static final RegistrySupplier<IntegerEntityAction> GAIN_AIR = register("gain_air", () -> IntegerEntityAction.ofLiving((x, f) -> x.setAir(x.getAir() + f), "value"));
+	public static final RegistrySupplier<IntegerEntityAction> GAIN_AIR = register("gain_air", () -> IntegerEntityAction.ofLiving((x, f) -> x.setAirSupply(x.getAirSupply() + f), "value"));
 	public static final RegistrySupplier<FloatEntityAction> SET_FALL_DISTANCE = register("set_fall_distance", () -> new FloatEntityAction((entity, f) -> entity.fallDistance = f, "fall_distance"));
 	public static final RegistrySupplier<DamageAction> DAMAGE = register("damage", DamageAction::new);
 	public static final RegistrySupplier<EquippedItemAction> EQUIPPED_ITEM_ACTION = register("equipped_item_action", EquippedItemAction::new);

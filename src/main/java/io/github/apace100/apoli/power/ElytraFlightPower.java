@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.power;
 
 import net.adriantodt.fallflyinglib.FallFlyingLib;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ElytraFlightPower extends PlayerAbilityPower {
 

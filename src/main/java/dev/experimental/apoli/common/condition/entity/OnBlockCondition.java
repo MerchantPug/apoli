@@ -3,10 +3,8 @@ package dev.experimental.apoli.common.condition.entity;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.entity.LivingEntity;
-
 import java.util.Optional;
+import net.minecraft.world.entity.LivingEntity;
 
 public class OnBlockCondition extends EntityCondition<FieldConfiguration<Optional<ConfiguredBlockCondition<?, ?>>>> {
 

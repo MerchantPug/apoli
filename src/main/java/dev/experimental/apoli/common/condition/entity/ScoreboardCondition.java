@@ -2,10 +2,10 @@ package dev.experimental.apoli.common.condition.entity;
 
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import dev.experimental.apoli.common.condition.configuration.ScoreboardComparisonConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 
 public class ScoreboardCondition extends EntityCondition<ScoreboardComparisonConfiguration> {
 
@@ -15,14 +15,14 @@ public class ScoreboardCondition extends EntityCondition<ScoreboardComparisonCon
 
 	@Override
 	public boolean check(ScoreboardComparisonConfiguration configuration, LivingEntity entity) {
-		if (entity instanceof PlayerEntity) {
-			PlayerEntity player = (PlayerEntity) entity;
+		if (entity instanceof Player) {
+			Player player = (Player) entity;
 			Scoreboard scoreboard = player.getScoreboard();
-			ScoreboardObjective objective = scoreboard.getObjective(configuration.objective());
-			String playerName = player.getName().asString();
+			Objective objective = scoreboard.getOrCreateObjective(configuration.objective());
+			String playerName = player.getName().getContents();
 
-			if (scoreboard.playerHasObjective(playerName, objective)) {
-				int value = scoreboard.getPlayerScore(playerName, objective).getScore();
+			if (scoreboard.hasPlayerScore(playerName, objective)) {
+				int value = scoreboard.getOrCreatePlayerScore(playerName, objective).getScore();
 				return configuration.comparison().check(value);
 			}
 		}

@@ -9,21 +9,21 @@ import dev.architectury.registry.registries.Registries;
 import dev.experimental.apoli.api.ApoliAPI;
 import dev.experimental.apoli.api.power.factory.*;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 public class ApoliRegistries {
 
-	public static final RegistryKey<net.minecraft.util.registry.Registry<PowerFactory<?>>> POWER_FACTORY_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("power_factory"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<EntityCondition<?>>> ENTITY_CONDITION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("entity_condition"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<ItemCondition<?>>> ITEM_CONDITION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("item_condition"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<BlockCondition<?>>> BLOCK_CONDITION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("block_condition"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<DamageCondition<?>>> DAMAGE_CONDITION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("damage_condition"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<FluidCondition<?>>> FLUID_CONDITION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("fluid_condition"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<BiomeCondition<?>>> BIOME_CONDITION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("biome_condition"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<EntityAction<?>>> ENTITY_ACTION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("entity_action"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<ItemAction<?>>> ITEM_ACTION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("item_action"));
-	public static final RegistryKey<net.minecraft.util.registry.Registry<BlockAction<?>>> BLOCK_ACTION_KEY = RegistryKey.ofRegistry(ApoliAPI.identifier("block_action"));
+	public static final ResourceKey<net.minecraft.core.Registry<PowerFactory<?>>> POWER_FACTORY_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("power_factory"));
+	public static final ResourceKey<net.minecraft.core.Registry<EntityCondition<?>>> ENTITY_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("entity_condition"));
+	public static final ResourceKey<net.minecraft.core.Registry<ItemCondition<?>>> ITEM_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("item_condition"));
+	public static final ResourceKey<net.minecraft.core.Registry<BlockCondition<?>>> BLOCK_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("block_condition"));
+	public static final ResourceKey<net.minecraft.core.Registry<DamageCondition<?>>> DAMAGE_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("damage_condition"));
+	public static final ResourceKey<net.minecraft.core.Registry<FluidCondition<?>>> FLUID_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("fluid_condition"));
+	public static final ResourceKey<net.minecraft.core.Registry<BiomeCondition<?>>> BIOME_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("biome_condition"));
+	public static final ResourceKey<net.minecraft.core.Registry<EntityAction<?>>> ENTITY_ACTION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("entity_action"));
+	public static final ResourceKey<net.minecraft.core.Registry<ItemAction<?>>> ITEM_ACTION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("item_action"));
+	public static final ResourceKey<net.minecraft.core.Registry<BlockAction<?>>> BLOCK_ACTION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("block_action"));
 
 	public static final Registrar<PowerFactory<?>> POWER_FACTORY;
 	public static final Registrar<EntityCondition<?>> ENTITY_CONDITION;
@@ -39,20 +39,20 @@ public class ApoliRegistries {
 	static {
 		Registries registries = Registries.get(Apoli.MODID);
 		//TODO All network calls after login should use integer instead of powers.
-		POWER_FACTORY = registries.<PowerFactory<?>>builder(POWER_FACTORY_KEY.getValue()).syncToClients().build();
-		ENTITY_CONDITION = registries.<EntityCondition<?>>builder(ENTITY_CONDITION_KEY.getValue()).syncToClients().build();
-		ITEM_CONDITION = registries.<ItemCondition<?>>builder(ITEM_CONDITION_KEY.getValue()).syncToClients().build();
-		BLOCK_CONDITION = registries.<BlockCondition<?>>builder(BLOCK_CONDITION_KEY.getValue()).syncToClients().build();
-		DAMAGE_CONDITION = registries.<DamageCondition<?>>builder(DAMAGE_CONDITION_KEY.getValue()).syncToClients().build();
-		FLUID_CONDITION = registries.<FluidCondition<?>>builder(FLUID_CONDITION_KEY.getValue()).syncToClients().build();
-		BIOME_CONDITION = registries.<BiomeCondition<?>>builder(BIOME_CONDITION_KEY.getValue()).syncToClients().build();
-		ENTITY_ACTION = registries.<EntityAction<?>>builder(ENTITY_ACTION_KEY.getValue()).syncToClients().build();
-		ITEM_ACTION = registries.<ItemAction<?>>builder(ITEM_ACTION_KEY.getValue()).syncToClients().build();
-		BLOCK_ACTION = registries.<BlockAction<?>>builder(BLOCK_ACTION_KEY.getValue()).syncToClients().build();
+		POWER_FACTORY = registries.<PowerFactory<?>>builder(POWER_FACTORY_KEY.location()).syncToClients().build();
+		ENTITY_CONDITION = registries.<EntityCondition<?>>builder(ENTITY_CONDITION_KEY.location()).syncToClients().build();
+		ITEM_CONDITION = registries.<ItemCondition<?>>builder(ITEM_CONDITION_KEY.location()).syncToClients().build();
+		BLOCK_CONDITION = registries.<BlockCondition<?>>builder(BLOCK_CONDITION_KEY.location()).syncToClients().build();
+		DAMAGE_CONDITION = registries.<DamageCondition<?>>builder(DAMAGE_CONDITION_KEY.location()).syncToClients().build();
+		FLUID_CONDITION = registries.<FluidCondition<?>>builder(FLUID_CONDITION_KEY.location()).syncToClients().build();
+		BIOME_CONDITION = registries.<BiomeCondition<?>>builder(BIOME_CONDITION_KEY.location()).syncToClients().build();
+		ENTITY_ACTION = registries.<EntityAction<?>>builder(ENTITY_ACTION_KEY.location()).syncToClients().build();
+		ITEM_ACTION = registries.<ItemAction<?>>builder(ITEM_ACTION_KEY.location()).syncToClients().build();
+		BLOCK_ACTION = registries.<BlockAction<?>>builder(BLOCK_ACTION_KEY.location()).syncToClients().build();
 	}
 
 	/**
-	 * This is basically {@link net.minecraft.util.registry.Registry}, just altered in such a way that it works with
+	 * This is basically {@link net.minecraft.core.Registry}, just altered in such a way that it works with
 	 * architectury's registries.
 	 *
 	 * @param registry The registry to create the codec for.
@@ -66,7 +66,7 @@ public class ApoliRegistries {
 				return dynamicOps.compressMaps() ? dynamicOps.getNumberValue(input).flatMap((number) -> {
 					T object = registry.byRawId(number.intValue());
 					return object == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(object);
-				}).map((objectx) -> Pair.of(objectx, dynamicOps.empty())) : Identifier.CODEC.decode(dynamicOps, input).flatMap((pair) -> {
+				}).map((objectx) -> Pair.of(objectx, dynamicOps.empty())) : ResourceLocation.CODEC.decode(dynamicOps, input).flatMap((pair) -> {
 					T object = registry.get(pair.getFirst());
 					return object == null ? DataResult.error("Unknown registry key: " + pair.getFirst()) : DataResult.success(Pair.of(object, pair.getSecond()));
 				});
@@ -74,7 +74,7 @@ public class ApoliRegistries {
 
 			@Override
 			public <T1> DataResult<T1> encode(T input, DynamicOps<T1> ops, T1 prefix) {
-				Identifier identifier = registry.getId(input);
+				ResourceLocation identifier = registry.getId(input);
 				if (identifier == null) {
 					return DataResult.error("Unknown registry element " + input);
 				} else {

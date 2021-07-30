@@ -7,10 +7,9 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.PreventDeathConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-
 import java.util.Optional;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class PreventDeathPower extends PowerFactory<PreventDeathConfiguration> {
 

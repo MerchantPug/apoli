@@ -2,26 +2,28 @@ package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.*;
-import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.command.CommandOutput;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Nameable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,41 +31,41 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity implements Nameable, CommandOutput {
+@Mixin(Player.class)
+public abstract class PlayerEntityMixin extends LivingEntity implements Nameable, CommandSource {
 
     @Shadow
-    public abstract boolean damage(DamageSource source, float amount);
+    public abstract boolean hurt(DamageSource source, float amount);
 
     @Shadow
-    public abstract EntityDimensions getDimensions(EntityPose pose);
+    public abstract EntityDimensions getDimensions(Pose pose);
 
     @Shadow
-    public abstract ItemStack getEquippedStack(EquipmentSlot slot);
+    public abstract ItemStack getItemBySlot(EquipmentSlot slot);
 
     @Shadow
     protected boolean isSubmergedInWater;
 
     @Shadow
     @Final
-    public PlayerInventory inventory;
+    public Inventory inventory;
 
     @Shadow
     public abstract ItemEntity dropItem(ItemStack stack, boolean retainOwnership);
 
-    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, Level world) {
         super(entityType, world);
     }
 
     @Inject(method = "updateSwimming", at = @At("TAIL"))
     private void updateSwimmingPower(CallbackInfo ci) {
         if(PowerHolderComponent.hasPower(this, SwimmingPower.class)) {
-            this.setSwimming(this.isSprinting() && !this.hasVehicle());
-            this.touchingWater = this.isSwimming();
+            this.setSwimming(this.isSprinting() && !this.isPassenger());
+            this.wasTouchingWater = this.isSwimming();
             if (this.isSwimming()) {
                 this.fallDistance = 0.0F;
-                Vec3d look = this.getRotationVector();
-                move(MovementType.SELF, new Vec3d(look.x/4, look.y/4, look.z/4));
+                Vec3 look = this.getLookAngle();
+                move(MoverType.SELF, new Vec3(look.x/4, look.y/4, look.z/4));
             }
         } else if(PowerHolderComponent.hasPower(this, IgnoreWaterPower.class)) {
             this.setSwimming(false);
@@ -72,8 +74,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
     @Inject(method = "wakeUp(ZZ)V", at = @At("HEAD"))
     private void invokeWakeUpAction(boolean bl, boolean updateSleepingPlayers, CallbackInfo ci) {
-        if(!bl && !updateSleepingPlayers && getSleepingPosition().isPresent()) {
-            BlockPos sleepingPos = getSleepingPosition().get();
+        if(!bl && !updateSleepingPlayers && getSleepingPos().isPresent()) {
+            BlockPos sleepingPos = getSleepingPos().get();
             PowerHolderComponent.getPowers(this, ActionOnWakeUp.class).stream().filter(p -> p.doesApply(sleepingPos)).forEach(p -> p.executeActions(sleepingPos, Direction.DOWN));
         }
     }
@@ -96,7 +98,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
     // ModifyDamageDealt
     @ModifyVariable(method = "attack", at = @At(value = "STORE", ordinal = 0), name = "f", ordinal = 0)
     public float modifyDamage(float f, Entity target) {
-        DamageSource source = DamageSource.player((PlayerEntity)(Object)this);
+        DamageSource source = DamageSource.playerAttack((Player)(Object)this);
         return PowerHolderComponent.modify(this, ModifyDamageDealtPower.class, f, p -> p.doesApply(source, f, target instanceof LivingEntity ? (LivingEntity)target : null), p -> p.executeActions(target));
     }
 
@@ -130,14 +132,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
     private void dropAdditionalInventory(CallbackInfo ci) {
         PowerHolderComponent.getPowers(this, InventoryPower.class).forEach(inventory -> {
             if(inventory.shouldDropOnDeath()) {
-                for(int i = 0; i < inventory.size(); ++i) {
-                    ItemStack itemStack = inventory.getStack(i);
+                for(int i = 0; i < inventory.getContainerSize(); ++i) {
+                    ItemStack itemStack = inventory.getItem(i);
                     if(inventory.shouldDropOnDeath(itemStack)) {
                         if (!itemStack.isEmpty() && EnchantmentHelper.hasVanishingCurse(itemStack)) {
-                            inventory.removeStack(i);
+                            inventory.removeItemNoUpdate(i);
                         } else {
-                            ((PlayerEntity)(Object)this).dropItem(itemStack, true, false);
-                            inventory.setStack(i, ItemStack.EMPTY);
+                            ((Player)(Object)this).drop(itemStack, true, false);
+                            inventory.setItem(i, ItemStack.EMPTY);
                         }
                     }
                 }
@@ -147,7 +149,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
     @Inject(method = "canEquip", at = @At("HEAD"), cancellable = true)
     private void preventArmorDispensing(ItemStack stack, CallbackInfoReturnable<Boolean> info) {
-        EquipmentSlot slot = MobEntity.getPreferredEquipmentSlot(stack);
+        EquipmentSlot slot = Mob.getEquipmentSlotForItem(stack);
         PowerHolderComponent component = PowerHolderComponent.KEY.get(this);
         if(component.getPowers(RestrictArmorPower.class).stream().anyMatch(rap -> !rap.canEquip(stack, slot))) {
             info.setReturnValue(false);

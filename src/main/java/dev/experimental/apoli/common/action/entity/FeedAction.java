@@ -1,9 +1,8 @@
 package dev.experimental.apoli.common.action.entity;
 
 import dev.experimental.apoli.common.action.configuration.FoodConfiguration;
+import net.minecraft.world.entity.Entity;
 import dev.experimental.apoli.api.power.factory.EntityAction;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 
 public class FeedAction extends EntityAction<FoodConfiguration> {
 

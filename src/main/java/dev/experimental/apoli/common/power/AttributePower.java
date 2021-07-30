@@ -2,8 +2,7 @@ package dev.experimental.apoli.common.power;
 
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.AttributeConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.world.entity.LivingEntity;
 
 public class AttributePower extends PowerFactory<AttributeConfiguration> {
 	public AttributePower() {
@@ -12,7 +11,7 @@ public class AttributePower extends PowerFactory<AttributeConfiguration> {
 
 	@Override
 	protected void onAdded(AttributeConfiguration configuration, LivingEntity entity) {
-		if (!entity.world.isClient()) {
+		if (!entity.level.isClientSide()) {
 			float previousMaxHealth = entity.getMaxHealth();
 			float previousHealthPercent = entity.getHealth() / previousMaxHealth;
 			configuration.modifiers().getContent().forEach(mod -> {
@@ -32,7 +31,7 @@ public class AttributePower extends PowerFactory<AttributeConfiguration> {
 
 	@Override
 	protected void onRemoved(AttributeConfiguration configuration, LivingEntity entity) {
-		if (!entity.world.isClient) {
+		if (!entity.level.isClientSide) {
 			float previousMaxHealth = entity.getMaxHealth();
 			float previousHealthPercent = entity.getHealth() / previousMaxHealth;
 			configuration.modifiers().getContent().forEach(mod -> {

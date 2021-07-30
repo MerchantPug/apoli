@@ -2,28 +2,27 @@ package dev.experimental.apoli.common.condition.block;
 
 import dev.experimental.apoli.api.configuration.NoConfiguration;
 import dev.experimental.apoli.api.power.factory.BlockCondition;
-import net.minecraft.block.FluidFillable;
-import net.minecraft.block.pattern.CachedBlockPosition;
-
 import java.util.function.Predicate;
+import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class SimpleBlockCondition extends BlockCondition<NoConfiguration> {
 
-	public static final Predicate<CachedBlockPosition> REPLACEABLE = t -> t.getBlockState().getMaterial().isReplaceable();
-	public static final Predicate<CachedBlockPosition> MOVEMENT_BLOCKING = t -> t.getBlockState().getMaterial().blocksMovement() && !t.getBlockState().getCollisionShape(t.getWorld(), t.getBlockPos()).isEmpty();
-	public static final Predicate<CachedBlockPosition> LIGHT_BLOCKING = t -> t.getBlockState().getMaterial().blocksLight();
-	public static final Predicate<CachedBlockPosition> WATER_LOGGABLE = t -> t.getBlockState().getBlock() instanceof FluidFillable;
-	public static final Predicate<CachedBlockPosition> EXPOSED_TO_SKY = t -> t.getWorld().isSkyVisible(t.getBlockPos());
+	public static final Predicate<BlockInWorld> REPLACEABLE = t -> t.getState().getMaterial().isReplaceable();
+	public static final Predicate<BlockInWorld> MOVEMENT_BLOCKING = t -> t.getState().getMaterial().blocksMotion() && !t.getState().getCollisionShape(t.getLevel(), t.getPos()).isEmpty();
+	public static final Predicate<BlockInWorld> LIGHT_BLOCKING = t -> t.getState().getMaterial().isSolidBlocking();
+	public static final Predicate<BlockInWorld> WATER_LOGGABLE = t -> t.getState().getBlock() instanceof LiquidBlockContainer;
+	public static final Predicate<BlockInWorld> EXPOSED_TO_SKY = t -> t.getLevel().canSeeSky(t.getPos());
 
-	private final Predicate<CachedBlockPosition> predicate;
+	private final Predicate<BlockInWorld> predicate;
 
-	public SimpleBlockCondition(Predicate<CachedBlockPosition> predicate) {
+	public SimpleBlockCondition(Predicate<BlockInWorld> predicate) {
 		super(NoConfiguration.CODEC);
 		this.predicate = predicate;
 	}
 
 	@Override
-	public boolean check(NoConfiguration configuration, CachedBlockPosition block) {
+	public boolean check(NoConfiguration configuration, BlockInWorld block) {
 		return this.predicate.test(block);
 	}
 }

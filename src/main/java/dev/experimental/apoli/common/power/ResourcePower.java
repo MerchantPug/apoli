@@ -4,9 +4,8 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.HudRenderedVariableIntPowerFactory;
 import dev.experimental.apoli.common.power.configuration.ResourceConfiguration;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ResourcePower extends HudRenderedVariableIntPowerFactory.Simple<ResourceConfiguration> {
 
@@ -19,7 +18,7 @@ public class ResourcePower extends HudRenderedVariableIntPowerFactory.Simple<Res
 		int previous = this.get(configuration, player);
 		int minimum = this.getMinimum(configuration, player);
 		int maximum = this.getMaximum(configuration, player);
-		value = MathHelper.clamp(value, minimum, maximum);
+		value = Mth.clamp(value, minimum, maximum);
 		this.set(configuration, player, value);
 		ResourceConfiguration config = configuration.getConfiguration();
 

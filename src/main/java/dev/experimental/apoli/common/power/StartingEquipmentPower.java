@@ -3,12 +3,11 @@ package dev.experimental.apoli.common.power;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.StartingInventoryConfiguration;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Pair;
-
 import java.util.Comparator;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class StartingEquipmentPower extends PowerFactory<StartingInventoryConfiguration> {
 	public StartingEquipmentPower() {
@@ -27,8 +26,8 @@ public class StartingEquipmentPower extends PowerFactory<StartingInventoryConfig
 			this.giveStacks(configuration, ple);
 	}
 
-	private void giveStacks(StartingInventoryConfiguration configuration, PlayerEntity player) {
-		configuration.stacks().getContent().stream().sorted(Comparator.comparingInt(Pair<Integer, ItemStack>::getLeft).reversed()).forEach(x -> {
+	private void giveStacks(StartingInventoryConfiguration configuration, Player player) {
+		configuration.stacks().getContent().stream().sorted(Comparator.comparingInt(Tuple<Integer, ItemStack>::getA).reversed()).forEach(x -> {
 			Apoli.LOGGER.info("Giving player {} stack: {}", player.getName().asString(), x.getRight().toString());
 			int pos = x.getLeft();
 			if (pos > 0 && player.getInventory().getStack(pos).isEmpty())

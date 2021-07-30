@@ -1,14 +1,13 @@
 package io.github.apace100.apoli.power;
 
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class StartingEquipmentPower extends Power {
 
@@ -46,25 +45,25 @@ public class StartingEquipmentPower extends Power {
 
     private void giveStacks() {
         slottedStacks.forEach((slot, stack) -> {
-            if(entity instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity)entity;
-                PlayerInventory inventory = player.getInventory();
-                if(inventory.getStack(slot).isEmpty()) {
-                    inventory.setStack(slot, stack);
+            if(entity instanceof Player) {
+                Player player = (Player)entity;
+                Inventory inventory = player.getInventory();
+                if(inventory.getItem(slot).isEmpty()) {
+                    inventory.setItem(slot, stack);
                 } else {
-                    player.giveItemStack(stack);
+                    player.addItem(stack);
                 }
             } else {
-                entity.dropStack(stack);
+                entity.spawnAtLocation(stack);
             }
         });
         itemStacks.forEach(is -> {
             ItemStack copy = is.copy();
-            if(entity instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity)entity;
-                player.giveItemStack(copy);
+            if(entity instanceof Player) {
+                Player player = (Player)entity;
+                player.addItem(copy);
             } else {
-                entity.dropStack(copy);
+                entity.spawnAtLocation(copy);
             }
         });
     }

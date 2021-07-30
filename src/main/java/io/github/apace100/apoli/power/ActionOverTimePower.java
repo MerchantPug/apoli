@@ -1,11 +1,10 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtByte;
-import net.minecraft.nbt.NbtElement;
-
 import java.util.function.Consumer;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ActionOverTimePower extends Power {
 
@@ -26,7 +25,7 @@ public class ActionOverTimePower extends Power {
     }
 
     public void tick() {
-        if(entity.age % interval == 0) {
+        if(entity.tickCount % interval == 0) {
             if (isActive()) {
                 if (entityAction != null) {
                     entityAction.accept(entity);
@@ -45,12 +44,12 @@ public class ActionOverTimePower extends Power {
     }
 
     @Override
-    public NbtElement toTag() {
-        return NbtByte.of(wasActive);
+    public Tag toTag() {
+        return ByteTag.valueOf(wasActive);
     }
 
     @Override
-    public void fromTag(NbtElement tag) {
-        wasActive = tag.equals(NbtByte.ONE);
+    public void fromTag(Tag tag) {
+        wasActive = tag.equals(ByteTag.ONE);
     }
 }

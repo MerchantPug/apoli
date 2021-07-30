@@ -6,35 +6,34 @@ import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.mixin.ClientAdvancementManagerAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementProgress;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientAdvancementManager;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementProgress;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientAdvancements;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import java.util.Map;
 
-public class AdvancementCondition extends EntityCondition<FieldConfiguration<Identifier>> {
+public class AdvancementCondition extends EntityCondition<FieldConfiguration<ResourceLocation>> {
 
 	public AdvancementCondition() {
-		super(FieldConfiguration.codec(Identifier.CODEC, "builder"));
+		super(FieldConfiguration.codec(ResourceLocation.CODEC, "builder"));
 	}
 
-	protected boolean testClient(FieldConfiguration<Identifier> configuration, LivingEntity entity) {
+	protected boolean testClient(FieldConfiguration<ResourceLocation> configuration, LivingEntity entity) {
 		return false;
 	}
 
 	@Override
-	public boolean check(FieldConfiguration<Identifier> configuration, LivingEntity entity) {
-		if (entity instanceof ServerPlayerEntity) {
-			Advancement advancement = entity.getServer().getAdvancementLoader().get(configuration.value());
+	public boolean check(FieldConfiguration<ResourceLocation> configuration, LivingEntity entity) {
+		if (entity instanceof ServerPlayer) {
+			Advancement advancement = entity.getServer().getAdvancements().getAdvancement(configuration.value());
 			if (advancement == null)
 				Apoli.LOGGER.warn("Advancement \"{}\" did not exist, but was referenced in an \"origins:advancement\" condition.", configuration.value().toString());
 			else
-				return ((ServerPlayerEntity) entity).getAdvancementTracker().getProgress(advancement).isDone();
+				return ((ServerPlayer) entity).getAdvancements().getOrStartProgress(advancement).isDone();
 		}
 		return testClient(configuration, entity);
 	}
@@ -46,10 +45,10 @@ public class AdvancementCondition extends EntityCondition<FieldConfiguration<Ide
 		}
 
 		@Override
-		protected boolean testClient(FieldConfiguration<Identifier> configuration, LivingEntity entity) {
-			if (entity instanceof ClientPlayerEntity) {
-				ClientAdvancementManager advancementManager = MinecraftClient.getInstance().getNetworkHandler().getAdvancementHandler();
-				Advancement advancement = advancementManager.getManager().get(configuration.value());
+		protected boolean testClient(FieldConfiguration<ResourceLocation> configuration, LivingEntity entity) {
+			if (entity instanceof LocalPlayer) {
+				ClientAdvancements advancementManager = Minecraft.getInstance().getConnection().getAdvancements();
+				Advancement advancement = advancementManager.getAdvancements().get(configuration.value());
 				if (advancement != null) {
 					Map<Advancement, AdvancementProgress> progressMap = ((ClientAdvancementManagerAccessor) advancementManager).getAdvancementProgresses();
 					if (progressMap.containsKey(advancement))

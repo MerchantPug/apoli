@@ -2,7 +2,7 @@ package io.github.apace100.apoli.power;
 
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class BurnPower extends Power {
 
@@ -17,8 +17,8 @@ public class BurnPower extends Power {
     }
 
     public void tick() {
-        if(entity.age % refreshInterval == 0) {
-            entity.setOnFireFor(burnDuration);
+        if(entity.tickCount % refreshInterval == 0) {
+            entity.setSecondsOnFire(burnDuration);
         }
     }
 }

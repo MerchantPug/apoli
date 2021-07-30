@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.Space;
-import net.minecraft.util.math.Vec3f;
 
 //FIXME Use a Map codec instead of x, y, z.
 public record AddVelocityConfiguration(float x, float y, float z, Space space,

@@ -1,36 +1,35 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.screen.Generic3x3ContainerScreenHandler;
-import net.minecraft.screen.ScreenHandlerFactory;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.collection.DefaultedList;
-
 import java.util.function.Predicate;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.DispenserMenu;
+import net.minecraft.world.inventory.MenuConstructor;
+import net.minecraft.world.item.ItemStack;
 
-public class InventoryPower extends Power implements Active, Inventory {
+public class InventoryPower extends Power implements Active, Container {
 
     private final int size;
-    private final DefaultedList<ItemStack> inventory;
-    private final TranslatableText containerName;
-    private final ScreenHandlerFactory factory;
+    private final NonNullList<ItemStack> inventory;
+    private final TranslatableComponent containerName;
+    private final MenuConstructor factory;
     private final boolean shouldDropOnDeath;
     private final Predicate<ItemStack> dropOnDeathFilter;
 
     public InventoryPower(PowerType<?> type, LivingEntity entity, String containerName, int size, boolean shouldDropOnDeath, Predicate<ItemStack> dropOnDeathFilter) {
         super(type, entity);
         this.size = size;
-        this.inventory = DefaultedList.ofSize(size, ItemStack.EMPTY);
-        this.containerName = new TranslatableText(containerName);
+        this.inventory = NonNullList.withSize(size, ItemStack.EMPTY);
+        this.containerName = new TranslatableComponent(containerName);
         this.factory = (i, playerInventory, playerEntity) -> {
-            return new Generic3x3ContainerScreenHandler(i, playerInventory, this);
+            return new DispenserMenu(i, playerInventory, this);
         };
         this.shouldDropOnDeath = shouldDropOnDeath;
         this.dropOnDeathFilter = dropOnDeathFilter;
@@ -38,26 +37,26 @@ public class InventoryPower extends Power implements Active, Inventory {
 
     @Override
     public void onUse() {
-        if(!entity.world.isClient && entity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity)entity;
-            player.openHandledScreen(new SimpleNamedScreenHandlerFactory(factory, containerName));
+        if(!entity.level.isClientSide && entity instanceof Player) {
+            Player player = (Player)entity;
+            player.openMenu(new SimpleMenuProvider(factory, containerName));
         }
     }
 
     @Override
-    public NbtCompound toTag() {
-        NbtCompound tag = new NbtCompound();
-        Inventories.writeNbt(tag, inventory);
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
+        ContainerHelper.saveAllItems(tag, inventory);
         return tag;
     }
 
     @Override
-    public void fromTag(NbtElement tag) {
-        Inventories.readNbt((NbtCompound)tag, inventory);
+    public void fromTag(Tag tag) {
+        ContainerHelper.loadAllItems((CompoundTag)tag, inventory);
     }
 
     @Override
-    public int size() {
+    public int getContainerSize() {
         return size;
     }
 
@@ -67,41 +66,41 @@ public class InventoryPower extends Power implements Active, Inventory {
     }
 
     @Override
-    public ItemStack getStack(int slot) {
+    public ItemStack getItem(int slot) {
         return inventory.get(slot);
     }
 
     @Override
-    public ItemStack removeStack(int slot, int amount) {
+    public ItemStack removeItem(int slot, int amount) {
         return inventory.get(slot).split(amount);
     }
 
     @Override
-    public ItemStack removeStack(int slot) {
+    public ItemStack removeItemNoUpdate(int slot) {
         ItemStack stack = inventory.get(slot);
-        setStack(slot, ItemStack.EMPTY);
+        setItem(slot, ItemStack.EMPTY);
         return stack;
     }
 
     @Override
-    public void setStack(int slot, ItemStack stack) {
+    public void setItem(int slot, ItemStack stack) {
         inventory.set(slot, stack);
     }
 
     @Override
-    public void markDirty() {
+    public void setChanged() {
 
     }
 
     @Override
-    public boolean canPlayerUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return player == this.entity;
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         for(int i = 0; i < size; i++) {
-            setStack(i, ItemStack.EMPTY);
+            setItem(i, ItemStack.EMPTY);
         }
     }
 

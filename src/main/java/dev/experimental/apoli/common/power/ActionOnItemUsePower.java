@@ -6,8 +6,8 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ActionOnItemUseConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 public class ActionOnItemUsePower extends PowerFactory<ActionOnItemUseConfiguration> {
 	public static void execute(LivingEntity player, ItemStack stack, ItemStack target) {

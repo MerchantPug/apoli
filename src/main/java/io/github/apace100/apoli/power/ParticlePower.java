@@ -1,21 +1,20 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleEffect;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ParticlePower extends Power {
 
-    private final ParticleEffect particleEffect;
+    private final ParticleOptions particleEffect;
     private final int frequency;
 
-    public ParticlePower(PowerType<?> type, LivingEntity entity, ParticleEffect particle, int frequency) {
+    public ParticlePower(PowerType<?> type, LivingEntity entity, ParticleOptions particle, int frequency) {
         super(type, entity);
         this.particleEffect = particle;
         this.frequency = frequency;
     }
 
-    public ParticleEffect getParticle() {
+    public ParticleOptions getParticle() {
         return particleEffect;
     }
 

@@ -1,12 +1,11 @@
 package io.github.apace100.apoli.power;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 
 public class Power {
 
@@ -74,11 +73,11 @@ public class Power {
         return conditions.stream().allMatch(condition -> condition.test(entity));
     }
 
-    public NbtElement toTag() {
-        return new NbtCompound();
+    public Tag toTag() {
+        return new CompoundTag();
     }
 
-    public void fromTag(NbtElement tag) {
+    public void fromTag(Tag tag) {
 
     }
 

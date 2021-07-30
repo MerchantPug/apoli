@@ -1,9 +1,9 @@
 package dev.experimental.apoli.common.condition.block;
 
 import dev.experimental.apoli.common.action.configuration.OffsetConfiguration;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.power.factory.BlockCondition;
-import net.minecraft.block.pattern.CachedBlockPosition;
 
 public class OffsetCondition extends BlockCondition<OffsetConfiguration<ConfiguredBlockCondition<?, ?>>> {
 
@@ -12,7 +12,7 @@ public class OffsetCondition extends BlockCondition<OffsetConfiguration<Configur
 	}
 
 	@Override
-	protected boolean check(OffsetConfiguration<ConfiguredBlockCondition<?, ?>> configuration, CachedBlockPosition block) {
-		return configuration.value().check(new CachedBlockPosition(block.getWorld(), block.getBlockPos().add(configuration.asBlockPos()), true));
+	protected boolean check(OffsetConfiguration<ConfiguredBlockCondition<?, ?>> configuration, BlockInWorld block) {
+		return configuration.value().check(new BlockInWorld(block.getLevel(), block.getPos().offset(configuration.asBlockPos()), true));
 	}
 }

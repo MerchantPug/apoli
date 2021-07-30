@@ -9,23 +9,22 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.apace100.apoli.power.CooldownPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.VariableIntPower;
-import net.minecraft.command.CommandSource;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.text.TranslatableText;
-
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.scores.Score;
 
 // Very similar to OperationArgumentType, but modified to make it work with resources.
 public class PowerOperation implements ArgumentType<PowerOperation.Operation> {
-    public static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.invalid"));
-    public static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.div0"));
+    public static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableComponent("arguments.operation.invalid"));
+    public static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("arguments.operation.div0"));
 
     public static PowerOperation operation() {
         return new PowerOperation();
     }
 
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(new String[]{"=", "+=", "-=", "*=", "/=", "%=", "<", ">", "><"}, builder);
+        return SharedSuggestionProvider.suggest(new String[]{"=", "+=", "-=", "*=", "/=", "%=", "<", ">", "><"}, builder);
     }
 
     public PowerOperation.Operation parse(StringReader stringReader) throws CommandSyntaxException {
@@ -152,6 +151,6 @@ public class PowerOperation implements ArgumentType<PowerOperation.Operation> {
     }
 
     public interface Operation {
-        void apply(Power power, ScoreboardPlayerScore score) throws CommandSyntaxException;
+        void apply(Power power, Score score) throws CommandSyntaxException;
     }
 }

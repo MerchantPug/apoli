@@ -7,14 +7,6 @@ import dev.experimental.apoli.api.power.IValueModifyingPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import io.github.apace100.apoli.util.AttributeUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +17,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * Represents a power container.<br>
@@ -95,7 +93,7 @@ public interface IPowerContainer {
 	 * @param source The source of this power.
 	 */
 	@Contract(mutates = "this")
-	void removePower(Identifier power, Identifier source);
+	void removePower(ResourceLocation power, ResourceLocation source);
 
 	/**
 	 * Removes all powers associated with the given source.
@@ -105,7 +103,7 @@ public interface IPowerContainer {
 	 * @return The amount of powers that were removed.
 	 */
 	@Contract(mutates = "this")
-	int removeAllPowersFromSource(Identifier source);
+	int removeAllPowersFromSource(ResourceLocation source);
 
 	/**
 	 * Returns a list the names of all powers for the given source.
@@ -115,7 +113,7 @@ public interface IPowerContainer {
 	 * @return A {@link List} of powers.
 	 */
 	@NotNull
-	List<Identifier> getPowersFromSource(Identifier source);
+	List<ResourceLocation> getPowersFromSource(ResourceLocation source);
 
 	/**
 	 * Adds the given power with the given source.
@@ -126,7 +124,7 @@ public interface IPowerContainer {
 	 * @return {@code true} if the power was added, {@code false} if it was already present.
 	 */
 	@Contract(mutates = "this")
-	boolean addPower(Identifier power, Identifier source);
+	boolean addPower(ResourceLocation power, ResourceLocation source);
 
 	/**
 	 * Checks if the entity has the given power.
@@ -136,7 +134,7 @@ public interface IPowerContainer {
 	 * @return {@code true} if the player has the power, {@code false} otherwise
 	 */
 	@Contract(pure = true)
-	boolean hasPower(Identifier power);
+	boolean hasPower(ResourceLocation power);
 
 	/**
 	 * Checks if the given source gives the requested power.
@@ -147,12 +145,12 @@ public interface IPowerContainer {
 	 * @return {@code true} if the player has the power with the given source, {@code false} otherwise
 	 */
 	@Contract(pure = true)
-	boolean hasPower(Identifier power, Identifier source);
+	boolean hasPower(ResourceLocation power, ResourceLocation source);
 
 	/**
 	 * Returns the power with the given name if the player has this power, false otherwise.
 	 *
-	 * @param power The {@link Identifier} of the power to get.
+	 * @param power The {@link ResourceLocation} of the power to get.
 	 * @param <C>   The type of the {@link IDynamicFeatureConfiguration} of this power.
 	 * @param <F>   The type of the {@link PowerFactory} of this power.
 	 *
@@ -160,7 +158,7 @@ public interface IPowerContainer {
 	 */
 	@Nullable
 	@Contract(value = "null -> null", pure = true)
-	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, F> getPower(Identifier power);
+	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, F> getPower(ResourceLocation power);
 
 	/**
 	 * Returns a list of all powers currently on this entity.
@@ -183,7 +181,7 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Set<Identifier> getPowerTypes(boolean includeSubPowers);
+	Set<ResourceLocation> getPowerTypes(boolean includeSubPowers);
 
 	/**
 	 * Returns a list of all active powers on this component of the given type.
@@ -227,7 +225,7 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	List<Identifier> getSources(Identifier power);
+	List<ResourceLocation> getSources(ResourceLocation power);
 
 	/**
 	 * Synchronizes this component with the client.
@@ -247,7 +245,7 @@ public interface IPowerContainer {
 	 * @param tag The input tag.
 	 */
 	@Contract(mutates = "this")
-	default void readFromNbt(NbtCompound tag) {
+	default void readFromNbt(CompoundTag tag) {
 		this.readNbt(tag, true);
 	}
 
@@ -259,7 +257,7 @@ public interface IPowerContainer {
 	 *                    {@link ConfiguredPower#onAdded(LivingEntity)} and {@link ConfiguredPower#onGained(LivingEntity)}
 	 */
 	@Contract(mutates = "this")
-	void readNbt(NbtCompound tag, boolean applyEvents);
+	void readNbt(CompoundTag tag, boolean applyEvents);
 
 	/**
 	 * Writes this component to the given tag.
@@ -267,17 +265,17 @@ public interface IPowerContainer {
 	 * @param tag The tag to write the data on.
 	 */
 	@Contract(mutates = "param")
-	void writeToNbt(NbtCompound tag);
+	void writeToNbt(CompoundTag tag);
 
 	@Contract(mutates = "param1")
-	default void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-		NbtCompound tag = new NbtCompound();
+	default void writeSyncPacket(FriendlyByteBuf buf, ServerPlayer recipient) {
+		CompoundTag tag = new CompoundTag();
 		this.writeToNbt(tag);
 		buf.writeNbt(tag);
 	}
 
-	default void applySyncPacket(PacketByteBuf buf) {
-		NbtCompound tag = buf.readNbt();
+	default void applySyncPacket(FriendlyByteBuf buf) {
+		CompoundTag tag = buf.readNbt();
 		if (tag != null)
 			this.readNbt(tag, false);
 	}

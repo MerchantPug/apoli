@@ -2,8 +2,7 @@ package io.github.apace100.apoli.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.MatrixStack;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,5 +11,5 @@ public interface GameHudRender {
 
     List<GameHudRender> HUD_RENDERS = new ArrayList<>();
 
-    void render(MatrixStack matrixStack, float tickDelta);
+    void render(PoseStack matrixStack, float tickDelta);
 }

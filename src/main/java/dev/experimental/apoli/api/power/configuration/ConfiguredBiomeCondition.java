@@ -5,10 +5,10 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.ConfiguredCondition;
 import dev.experimental.apoli.api.power.factory.BiomeCondition;
-import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
+import net.minecraft.world.level.biome.Biome;
 
 public final class ConfiguredBiomeCondition<C extends IDynamicFeatureConfiguration, F extends BiomeCondition<C>> extends ConfiguredCondition<C, F> {
 	public static final Codec<ConfiguredBiomeCondition<?, ?>> CODEC = BiomeCondition.CODEC.dispatch(ConfiguredBiomeCondition::getFactory, Function.identity());

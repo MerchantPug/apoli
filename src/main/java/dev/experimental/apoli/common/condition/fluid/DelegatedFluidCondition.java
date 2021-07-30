@@ -3,7 +3,7 @@ package dev.experimental.apoli.common.condition.fluid;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.power.factory.FluidCondition;
 import dev.experimental.apoli.common.condition.meta.IDelegatedConditionConfiguration;
-import net.minecraft.fluid.FluidState;
+import net.minecraft.world.level.material.FluidState;
 
 public class DelegatedFluidCondition<T extends IDelegatedConditionConfiguration<FluidState>> extends FluidCondition<T> {
 	public DelegatedFluidCondition(Codec<T> codec) {

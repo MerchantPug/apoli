@@ -15,12 +15,11 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,8 +39,8 @@ public class ModPacketsS2C {
 
 
     @Environment(EnvType.CLIENT)
-    private static CompletableFuture<PacketByteBuf> handleHandshake(MinecraftClient minecraftClient, ClientLoginNetworkHandler clientLoginNetworkHandler, PacketByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
-        PacketByteBuf buf = PacketByteBufs.create();
+    private static CompletableFuture<FriendlyByteBuf> handleHandshake(Minecraft minecraftClient, ClientHandshakePacketListenerImpl clientLoginNetworkHandler, FriendlyByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
+        FriendlyByteBuf buf = PacketByteBufs.create();
         buf.writeInt(Apoli.SEMVER.length);
         for(int i = 0; i < Apoli.SEMVER.length; i++) {
             buf.writeInt(Apoli.SEMVER[i]);
@@ -50,12 +49,12 @@ public class ModPacketsS2C {
     }
 
     @Environment(EnvType.CLIENT)
-    private static void receivePowerList(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void receivePowerList(Minecraft minecraftClient, ClientPacketListener clientPlayNetworkHandler, FriendlyByteBuf packetByteBuf, PacketSender packetSender) {
         int powerCount = packetByteBuf.readInt();
-        HashMap<Identifier, PowerType> factories = new HashMap<>();
+        HashMap<ResourceLocation, PowerType> factories = new HashMap<>();
         for(int i = 0; i < powerCount; i++) {
-            Identifier powerId = packetByteBuf.readIdentifier();
-            Identifier factoryId = packetByteBuf.readIdentifier();
+            ResourceLocation powerId = packetByteBuf.readResourceLocation();
+            ResourceLocation factoryId = packetByteBuf.readResourceLocation();
             try {
                 PowerFactory factory = ApoliRegistries.POWER_FACTORY.get(factoryId);
                 PowerFactory.Instance factoryInstance = factory.read(packetByteBuf);
@@ -63,15 +62,15 @@ public class ModPacketsS2C {
                 if(packetByteBuf.readBoolean()) {
                     type = new MultiplePowerType(powerId, factoryInstance);
                     int subPowerCount = packetByteBuf.readVarInt();
-                    List<Identifier> subPowers = new ArrayList<>(subPowerCount);
+                    List<ResourceLocation> subPowers = new ArrayList<>(subPowerCount);
                     for(int j = 0; j < subPowerCount; j++) {
-                        subPowers.add(packetByteBuf.readIdentifier());
+                        subPowers.add(packetByteBuf.readResourceLocation());
                     }
                     ((MultiplePowerType)type).setSubPowers(subPowers);
                 } else {
                     type = new PowerType(powerId, factoryInstance);
                 }
-                type.setTranslationKeys(packetByteBuf.readString(), packetByteBuf.readString());
+                type.setTranslationKeys(packetByteBuf.readUtf(), packetByteBuf.readUtf());
                 if (packetByteBuf.readBoolean()) {
                     type.setHidden();
                 }

@@ -5,18 +5,17 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -43,13 +42,13 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow
     public abstract void setHealth(float health);
 
-    public LivingEntityMixin(EntityType<?> type, World world) {
+    public LivingEntityMixin(EntityType<?> type, Level world) {
         super(type, world);
     }
 
     @Inject(method = "canWalkOnFluid", at = @At("HEAD"), cancellable = true)
     private void modifyWalkableFluids(Fluid fluid, CallbackInfoReturnable<Boolean> info) {
-        if(PowerHolderComponent.getPowers(this, WalkOnFluidPower.class).stream().anyMatch(p -> fluid.isIn(p.getFluidTag()))) {
+        if(PowerHolderComponent.getPowers(this, WalkOnFluidPower.class).stream().anyMatch(p -> fluid.is(p.getFluidTag()))) {
             info.setReturnValue(true);
         }
     }
@@ -59,14 +58,14 @@ public abstract class LivingEntityMixin extends Entity {
         if(cir.getReturnValue()) {
             PowerHolderComponent.getPowers(this, SelfActionWhenHitPower.class).forEach(p -> p.whenHit(source, amount));
             PowerHolderComponent.getPowers(this, AttackerActionWhenHitPower.class).forEach(p -> p.whenHit(source, amount));
-            PowerHolderComponent.getPowers(source.getAttacker(), SelfActionOnHitPower.class).forEach(p -> p.onHit((LivingEntity)(Object)this, source, amount));
-            PowerHolderComponent.getPowers(source.getAttacker(), TargetActionOnHitPower.class).forEach(p -> p.onHit((LivingEntity)(Object)this, source, amount));
+            PowerHolderComponent.getPowers(source.getEntity(), SelfActionOnHitPower.class).forEach(p -> p.onHit((LivingEntity)(Object)this, source, amount));
+            PowerHolderComponent.getPowers(source.getEntity(), TargetActionOnHitPower.class).forEach(p -> p.onHit((LivingEntity)(Object)this, source, amount));
         }
     }
 
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;onDeath(Lnet/minecraft/entity/damage/DamageSource;)V"))
     private void invokeKillAction(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        PowerHolderComponent.getPowers(source.getAttacker(), SelfActionOnKillPower.class).forEach(p -> p.onKill((LivingEntity)(Object)this, source, amount));
+        PowerHolderComponent.getPowers(source.getEntity(), SelfActionOnKillPower.class).forEach(p -> p.onKill((LivingEntity)(Object)this, source, amount));
     }
 
     // ModifyLavaSpeedPower
@@ -84,12 +83,12 @@ public abstract class LivingEntityMixin extends Entity {
         if(PowerHolderComponent.hasPower(livingEntity, SwimmingPower.class) && livingEntity.isSwimming() && !(getFluidHeight(FluidTags.WATER) > 0)) {
             return false;
         }
-        return livingEntity.isWet();
+        return livingEntity.isInWaterRainOrBubble();
     }
 
     // SetEntityGroupPower
     @Inject(at = @At("HEAD"), method = "getGroup", cancellable = true)
-    public void getGroup(CallbackInfoReturnable<EntityGroup> info) {
+    public void getGroup(CallbackInfoReturnable<MobType> info) {
         if((Object)this instanceof LivingEntity) {
             PowerHolderComponent component = PowerHolderComponent.KEY.get(this);
             List<SetEntityGroupPower> groups = component.getPowers(SetEntityGroupPower.class);
@@ -105,7 +104,7 @@ public abstract class LivingEntityMixin extends Entity {
     // SPRINT_JUMP
     @Inject(at = @At("HEAD"), method = "getJumpVelocity", cancellable = true)
     private void modifyJumpVelocity(CallbackInfoReturnable<Float> info) {
-        float base = 0.42F * this.getJumpVelocityMultiplier();
+        float base = 0.42F * this.getBlockJumpFactor();
         float modified = PowerHolderComponent.modify(this, ModifyJumpPower.class, base, p -> {
             p.executeAction();
             return true;
@@ -115,7 +114,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     // HOTBLOODED
     @Inject(at = @At("HEAD"), method= "canHaveStatusEffect", cancellable = true)
-    private void preventStatusEffects(StatusEffectInstance effect, CallbackInfoReturnable<Boolean> info) {
+    private void preventStatusEffects(MobEffectInstance effect, CallbackInfoReturnable<Boolean> info) {
         for (EffectImmunityPower power : PowerHolderComponent.getPowers(this, EffectImmunityPower.class)) {
             if(power.doesApply(effect)) {
                 info.setReturnValue(false);
@@ -133,7 +132,7 @@ public abstract class LivingEntityMixin extends Entity {
                 // TODO: Rethink how "holding" is implemented
                 if(climbingPowers.size() > 0) {
                     if(climbingPowers.stream().anyMatch(ClimbingPower::isActive)) {
-                        BlockPos pos = getBlockPos();
+                        BlockPos pos = blockPosition();
                         this.climbingPos = Optional.of(pos);
                         //origins_lastClimbingPos = getPos();
                         info.setReturnValue(true);
@@ -151,8 +150,8 @@ public abstract class LivingEntityMixin extends Entity {
 
     // SWIM_SPEED
     @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;updateVelocity(FLnet/minecraft/util/math/Vec3d;)V", ordinal = 0))
-    public void modifyUnderwaterMovementSpeed(LivingEntity livingEntity, float speedMultiplier, Vec3d movementInput) {
-        livingEntity.updateVelocity(PowerHolderComponent.modify(livingEntity, ModifySwimSpeedPower.class, speedMultiplier), movementInput);
+    public void modifyUnderwaterMovementSpeed(LivingEntity livingEntity, float speedMultiplier, Vec3 movementInput) {
+        livingEntity.moveRelative(PowerHolderComponent.modify(livingEntity, ModifySwimSpeedPower.class, speedMultiplier), movementInput);
     }
 
     @ModifyConstant(method = "swimUpward", constant = @Constant(doubleValue = 0.03999999910593033D))
@@ -175,7 +174,7 @@ public abstract class LivingEntityMixin extends Entity {
             if(!power.takeFallDamage) {
                 this.fallDistance = 0;
             }
-            if(this.getVelocity().y <= 0.0D) {
+            if(this.getDeltaMovement().y <= 0.0D) {
                 return power.velocity;
             }
         }

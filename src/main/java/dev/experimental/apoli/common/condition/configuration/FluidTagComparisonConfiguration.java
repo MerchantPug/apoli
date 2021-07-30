@@ -5,8 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.DoubleComparisonConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.Tag;
 
 public record FluidTagComparisonConfiguration(DoubleComparisonConfiguration comparison,
 											  Tag<Fluid> tag) implements IDynamicFeatureConfiguration {

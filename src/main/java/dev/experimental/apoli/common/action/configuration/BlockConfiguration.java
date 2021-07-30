@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.block.Block;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 

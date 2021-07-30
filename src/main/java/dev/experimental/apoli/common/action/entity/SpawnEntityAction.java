@@ -4,9 +4,9 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
 import dev.experimental.apoli.api.power.factory.EntityAction;
 import dev.experimental.apoli.common.action.configuration.SpawnEntityConfiguration;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 
 public class SpawnEntityAction extends EntityAction<SpawnEntityConfiguration> {
 
@@ -18,17 +18,17 @@ public class SpawnEntityAction extends EntityAction<SpawnEntityConfiguration> {
 	public void execute(SpawnEntityConfiguration configuration, Entity entity) {
 		if (configuration.type() == null)
 			return;
-		Entity newEntity = configuration.type().create(entity.getEntityWorld());
+		Entity newEntity = configuration.type().create(entity.getCommandSenderWorld());
 		if (newEntity == null) {
-			Apoli.LOGGER.error("Failed to create entity for type: {}", Registry.ENTITY_TYPE.getId(configuration.type()));
+			Apoli.LOGGER.error("Failed to create entity for type: {}", Registry.ENTITY_TYPE.getKey(configuration.type()));
 			return;
 		}
 		if (configuration.tag() != null) {
-			NbtCompound tag = newEntity.writeNbt(new NbtCompound());
-			tag.copyFrom(configuration.tag());
-			newEntity.readNbt(tag);
+			CompoundTag tag = newEntity.saveWithoutId(new CompoundTag());
+			tag.merge(configuration.tag());
+			newEntity.load(tag);
 		}
-		entity.getEntityWorld().spawnEntity(newEntity);
+		entity.getCommandSenderWorld().addFreshEntity(newEntity);
 		ConfiguredEntityAction.execute(configuration.action(), newEntity);
 	}
 }

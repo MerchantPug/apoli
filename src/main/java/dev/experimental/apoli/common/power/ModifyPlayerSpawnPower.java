@@ -4,15 +4,7 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
 import io.github.apace100.apoli.Apoli;
-import net.minecraft.entity.Dismounting;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfiguration> {
 

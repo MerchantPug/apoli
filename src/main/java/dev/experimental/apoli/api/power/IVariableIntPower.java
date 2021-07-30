@@ -2,9 +2,8 @@ package dev.experimental.apoli.api.power;
 
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 
 public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	/**
@@ -52,7 +51,7 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 		int value = this.getValue(configuration, player);
 		int min = this.getMinimum(configuration, player);
 		int max = this.getMaximum(configuration, player);
-		return MathHelper.clamp((value - min) / (float) (max - min), 0.0F, 1.0F);
+		return Mth.clamp((value - min) / (float) (max - min), 0.0F, 1.0F);
 	}
 
 	/**

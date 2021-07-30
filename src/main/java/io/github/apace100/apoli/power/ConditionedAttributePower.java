@@ -1,12 +1,9 @@
 package io.github.apace100.apoli.power;
 
 import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.util.LinkedList;
 import java.util.List;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ConditionedAttributePower extends Power {
 
@@ -21,7 +18,7 @@ public class ConditionedAttributePower extends Power {
 
     @Override
     public void tick() {
-        if(entity.age % tickRate == 0) {
+        if(entity.tickCount % tickRate == 0) {
             if(this.isActive()) {
                 addMods();
             } else {

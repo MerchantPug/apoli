@@ -5,11 +5,10 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.MultipleConfiguration;
-import net.minecraft.util.Pair;
-
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import net.minecraft.util.Tuple;
 
 public class MultiplePower extends PowerFactory<MultipleConfiguration<ConfiguredPower<?, ?>>> {
 	private static final ImmutableSet<String> EXCLUDED = ImmutableSet.of("type", "loading_priority", "name", "description", "hidden", "condition");
@@ -23,7 +22,7 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	public Map<String, ConfiguredPower<?, ?>> getContainedPowers(ConfiguredPower<MultipleConfiguration<ConfiguredPower<?, ?>>, ?> configuration) {
 		return configuration.getConfiguration().children().entrySet().stream()
 				.map(x -> new Pair<>("_" + x.getKey(), reconfigure(x.getValue())))
-				.collect(Collectors.toUnmodifiableMap(Pair::getLeft, Pair::getRight));
+				.collect(Collectors.toUnmodifiableMap(Tuple::getLeft, Tuple::getRight));
 	}
 
 	/**

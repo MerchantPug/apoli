@@ -3,19 +3,19 @@ package dev.experimental.apoli.api.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 public class ApoliCodecs {
-	public static MapCodec<Vec3d> vec3d(String xName, String yName, String zName) {
+	public static MapCodec<Vec3> vec3d(String xName, String yName, String zName) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-				Codec.DOUBLE.optionalFieldOf(xName, 0.0).forGetter(Vec3d::getX),
-				Codec.DOUBLE.optionalFieldOf(yName, 0.0).forGetter(Vec3d::getY),
-				Codec.DOUBLE.optionalFieldOf(zName, 0.0).forGetter(Vec3d::getZ)
-		).apply(instance, Vec3d::new));
+				Codec.DOUBLE.optionalFieldOf(xName, 0.0).forGetter(Vec3::x),
+				Codec.DOUBLE.optionalFieldOf(yName, 0.0).forGetter(Vec3::y),
+				Codec.DOUBLE.optionalFieldOf(zName, 0.0).forGetter(Vec3::z)
+		).apply(instance, Vec3::new));
 	}
 
-	public static MapCodec<Vec3d> vec3d(String prefix) {
+	public static MapCodec<Vec3> vec3d(String prefix) {
 		return vec3d(prefix + "x", prefix + "y", prefix + "z");
 	}
 
@@ -31,6 +31,6 @@ public class ApoliCodecs {
 		return blockPos(prefix + "x", prefix + "y", prefix + "z");
 	}
 
-	public static MapCodec<Vec3d> VEC3D = vec3d("x", "y", "z");
+	public static MapCodec<Vec3> VEC3D = vec3d("x", "y", "z");
 	public static MapCodec<BlockPos> BLOCK_POS = blockPos("x", "y", "z");
 }
