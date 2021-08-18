@@ -6,6 +6,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import java.util.Optional;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ClearEffectAction extends EntityAction<FieldConfiguration<Optional<MobEffect>>> {
 
@@ -16,6 +17,6 @@ public class ClearEffectAction extends EntityAction<FieldConfiguration<Optional<
 	@Override
 	public void execute(FieldConfiguration<Optional<MobEffect>> configuration, Entity entity) {
 		if (entity instanceof LivingEntity living)
-			configuration.value().ifPresentOrElse(living::removeStatusEffect, living::clearStatusEffects);
+			configuration.value().ifPresentOrElse(living::removeEffect, living::removeAllEffects);
 	}
 }

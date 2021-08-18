@@ -3,19 +3,39 @@ package dev.experimental.apoli.api;
 import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.registry.ApoliDynamicRegistries;
-import dev.experimental.calio.api.CalioAPI;
+import dev.experimental.apoli.common.ApoliCommon;
+import dev.experimental.apoli.common.network.S2CSynchronizePowerContainer;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 public class ApoliAPI {
 	public static final String MODID = "apoli";
 
+	@Nullable
 	public static IPowerContainer getPowerContainer(Entity entity) {
-		throw new AssertionError();
+		if (entity instanceof LivingEntity living) {
+			LazyOptional<IPowerContainer> optional = IPowerContainer.get(living);
+			if (optional.isPresent())
+				return optional.orElseThrow(RuntimeException::new);
+		}
+		return null;
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public static void performPowers(Set<ResourceLocation> powers) {
+
 	}
 
 	public static boolean hasFoodRestrictions() {
@@ -24,7 +44,15 @@ public class ApoliAPI {
 	}
 
 	public static void synchronizePowerContainer(LivingEntity living) {
-		throw new AssertionError();
+		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
+		if (packet != null)
+			ApoliCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> living), packet);
+	}
+
+	public static void synchronizePowerContainer(LivingEntity living, ServerPlayer with) {
+		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
+		if (packet != null)
+			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> with), packet);
 	}
 
 	public static ResourceLocation identifier(String path) {

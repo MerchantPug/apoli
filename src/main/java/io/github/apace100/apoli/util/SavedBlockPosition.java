@@ -19,12 +19,12 @@ public class SavedBlockPosition extends BlockInWorld {
 
     @Override
     public BlockState getState() {
-        return blockState;
+        return this.blockState;
     }
 
     @Override
     public BlockEntity getEntity() {
-        return blockEntity;
+        return this.blockEntity;
     }
 
     @Override

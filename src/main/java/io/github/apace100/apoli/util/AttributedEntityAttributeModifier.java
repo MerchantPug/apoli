@@ -1,12 +1,15 @@
 package io.github.apace100.apoli.util;
 
-public record AttributedEntityAttributeModifier(EntityAttribute attribute, EntityAttributeModifier modifier) {
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-    public EntityAttributeModifier getModifier() {
-        return this.modifier;
-    }
+public record AttributedEntityAttributeModifier(Attribute attribute, AttributeModifier modifier) {
 
-    public EntityAttribute getAttribute() {
-        return this.attribute;
-    }
+	public AttributeModifier getModifier() {
+		return this.modifier;
+	}
+
+	public Attribute getAttribute() {
+		return this.attribute;
+	}
 }

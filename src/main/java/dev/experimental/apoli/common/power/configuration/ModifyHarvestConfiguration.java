@@ -5,11 +5,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ModifyHarvestConfiguration(ListConfiguration<EntityAttributeModifier> modifiers,
+public record ModifyHarvestConfiguration(ListConfiguration<AttributeModifier> modifiers,
 										 @Nullable ConfiguredBlockCondition<?, ?> condition,
 										 boolean allow) implements IValueModifyingPowerConfiguration {
 	public static final Codec<ModifyHarvestConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(

@@ -1,14 +1,6 @@
 package io.github.apace100.apoli.data;
 
-import io.github.apace100.apoli.power.Active;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.PowerTypeReference;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.action.ActionType;
-import io.github.apace100.apoli.power.factory.action.ActionTypes;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionType;
-import io.github.apace100.apoli.power.factory.condition.ConditionTypes;
+import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.util.HudRender;
@@ -18,25 +10,20 @@ import io.github.apace100.calio.SerializationHelper;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import org.apache.commons.lang3.tuple.Triple;
-
-import java.util.List;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraft.world.level.material.FluidState;
 
+import java.util.List;
+
+//FIXME Reintroduce
 public class ApoliDataTypes {
 
-    public static final SerializableDataType<PowerTypeReference> POWER_TYPE = SerializableDataType.wrap(
+    /*public static final SerializableDataType<PowerTypeReference> POWER_TYPE = SerializableDataType.wrap(
         PowerTypeReference.class, SerializableDataTypes.IDENTIFIER,
         PowerType::getIdentifier, PowerTypeReference::new);
 
@@ -92,57 +79,57 @@ public class ApoliDataTypes {
         action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.ITEM);
 
     public static final SerializableDataType<List<ActionFactory<ItemStack>.Instance>> ITEM_ACTIONS =
-        SerializableDataType.list(ITEM_ACTION);
+        SerializableDataType.list(ITEM_ACTION);*/
 
-    public static final SerializableDataType<Space> SPACE = SerializableDataType.enumValue(Space.class);
+	public static final SerializableDataType<Space> SPACE = SerializableDataType.enumValue(Space.class);
 
-    public static final SerializableDataType<AttributedEntityAttributeModifier> ATTRIBUTED_ATTRIBUTE_MODIFIER = SerializableDataType.compound(
-        AttributedEntityAttributeModifier.class,
-        new SerializableData()
-            .add("attribute", SerializableDataTypes.ATTRIBUTE)
-            .add("operation", SerializableDataTypes.MODIFIER_OPERATION)
-            .add("value", SerializableDataTypes.DOUBLE)
-            .add("name", SerializableDataTypes.STRING, "Unnamed EntityAttributeModifier"),
-        dataInst -> new AttributedEntityAttributeModifier((EntityAttribute)dataInst.get("attribute"),
-            new EntityAttributeModifier(
-                dataInst.getString("name"),
-                dataInst.getDouble("value"),
-                (EntityAttributeModifier.Operation)dataInst.get("operation"))),
-        (data, inst) -> {
-            SerializableData.Instance dataInst = data.new Instance();
-            dataInst.set("attribute", inst.getAttribute());
-            dataInst.set("operation", inst.getModifier().getOperation());
-            dataInst.set("value", inst.getModifier().getValue());
-            dataInst.set("name", inst.getModifier().getName());
-            return dataInst;
-        });
+	public static final SerializableDataType<AttributedEntityAttributeModifier> ATTRIBUTED_ATTRIBUTE_MODIFIER = SerializableDataType.compound(
+			AttributedEntityAttributeModifier.class,
+			new SerializableData()
+					.add("attribute", SerializableDataTypes.ATTRIBUTE)
+					.add("operation", SerializableDataTypes.MODIFIER_OPERATION)
+					.add("value", SerializableDataTypes.DOUBLE)
+					.add("name", SerializableDataTypes.STRING, "Unnamed EntityAttributeModifier"),
+			dataInst -> new AttributedEntityAttributeModifier((Attribute) dataInst.get("attribute"),
+					new AttributeModifier(
+							dataInst.getString("name"),
+							dataInst.getDouble("value"),
+							(AttributeModifier.Operation) dataInst.get("operation"))),
+			(data, inst) -> {
+				SerializableData.Instance dataInst = data.new Instance();
+				dataInst.set("attribute", inst.getAttribute());
+				dataInst.set("operation", inst.getModifier().getOperation());
+				dataInst.set("value", inst.getModifier().getAmount());
+				dataInst.set("name", inst.getModifier().getName());
+				return dataInst;
+			});
 
-    public static final SerializableDataType<List<AttributedEntityAttributeModifier>> ATTRIBUTED_ATTRIBUTE_MODIFIERS =
-        SerializableDataType.list(ATTRIBUTED_ATTRIBUTE_MODIFIER);
+	public static final SerializableDataType<List<AttributedEntityAttributeModifier>> ATTRIBUTED_ATTRIBUTE_MODIFIERS =
+			SerializableDataType.list(ATTRIBUTED_ATTRIBUTE_MODIFIER);
 
-    public static final SerializableDataType<Tuple<Integer, ItemStack>> POSITIONED_ITEM_STACK = SerializableDataType.compound(ClassUtil.castClass(Tuple.class),
-        new SerializableData()
-            .add("item", SerializableDataTypes.ITEM)
-            .add("amount", SerializableDataTypes.INT, 1)
-            .add("tag", SerializableDataTypes.NBT, null)
-            .add("slot", SerializableDataTypes.INT, Integer.MIN_VALUE),
-        (data) ->  {
-            ItemStack stack = new ItemStack((Item)data.get("item"), data.getInt("amount"));
-            if(data.isPresent("tag")) {
-                stack.setTag((NbtCompound) data.get("tag"));
-            }
-            return new Pair<>(data.getInt("slot"), stack);
-        },
-        ((serializableData, positionedStack) -> {
-            SerializableData.Instance data = serializableData.new Instance();
-            data.set("item", positionedStack.getRight().getItem());
-            data.set("amount", positionedStack.getRight().getCount());
-            data.set("tag", positionedStack.getRight().hasTag() ? positionedStack.getRight().getTag() : null);
-            data.set("slot", positionedStack.getLeft());
-            return data;
-        }));
+	public static final SerializableDataType<Tuple<Integer, ItemStack>> POSITIONED_ITEM_STACK = SerializableDataType.compound(ClassUtil.castClass(Tuple.class),
+			new SerializableData()
+					.add("item", SerializableDataTypes.ITEM)
+					.add("amount", SerializableDataTypes.INT, 1)
+					.add("tag", SerializableDataTypes.NBT, null)
+					.add("slot", SerializableDataTypes.INT, Integer.MIN_VALUE),
+			(data) -> {
+				ItemStack stack = new ItemStack((Item) data.get("item"), data.getInt("amount"));
+				if (data.isPresent("tag")) {
+					stack.setTag((CompoundTag) data.get("tag"));
+				}
+				return new Tuple<>(data.getInt("slot"), stack);
+			},
+			((serializableData, positionedStack) -> {
+				SerializableData.Instance data = serializableData.new Instance();
+				data.set("item", positionedStack.getB().getItem());
+				data.set("amount", positionedStack.getB().getCount());
+				data.set("tag", positionedStack.getB().hasTag() ? positionedStack.getB().getTag() : null);
+				data.set("slot", positionedStack.getA());
+				return data;
+			}));
 
-    public static final SerializableDataType<List<Tuple<Integer, ItemStack>>> POSITIONED_ITEM_STACKS = SerializableDataType.list(POSITIONED_ITEM_STACK);
+    /*public static final SerializableDataType<List<Tuple<Integer, ItemStack>>> POSITIONED_ITEM_STACKS = SerializableDataType.list(POSITIONED_ITEM_STACK);
 
     public static final SerializableDataType<Active.Key> KEY = SerializableDataType.compound(Active.Key.class,
         new SerializableData()
@@ -171,37 +158,36 @@ public class ApoliDataTypes {
             return key;
         }
         return KEY.read(jsonElement);
-    });
+    });*/
 
-    public static final SerializableDataType<HudRender> HUD_RENDER = SerializableDataType.compound(HudRender.class, new
-            SerializableData()
-            .add("should_render", SerializableDataTypes.BOOLEAN, true)
-            .add("bar_index", SerializableDataTypes.INT, 0)
-            .add("sprite_location", SerializableDataTypes.IDENTIFIER, new ResourceLocation("origins", "textures/gui/resource_bar.png"))
-            .add("condition", ENTITY_CONDITION, null),
-        (dataInst) -> new HudRender(
-            dataInst.getBoolean("should_render"),
-            dataInst.getInt("bar_index"),
-            dataInst.getId("sprite_location"),
-            (ConditionFactory<LivingEntity>.Instance)dataInst.get("condition")),
-        (data, inst) -> {
-            SerializableData.Instance dataInst = data.new Instance();
-            dataInst.set("should_render", inst.shouldRender());
-            dataInst.set("bar_index", inst.getBarIndex());
-            dataInst.set("sprite_location", inst.getSpriteLocation());
-            dataInst.set("condition", inst.getCondition());
-            return dataInst;
-        });
+	public static final SerializableDataType<HudRender> HUD_RENDER = SerializableDataType.compound(HudRender.class, new
+					SerializableData()
+					.add("should_render", SerializableDataTypes.BOOLEAN, true)
+					.add("bar_index", SerializableDataTypes.INT, 0)
+					.add("sprite_location", SerializableDataTypes.IDENTIFIER, new ResourceLocation("origins", "textures/gui/resource_bar.png"))
+					.add("condition", new SerializableDataType<>(ClassUtil.castClass(ConfiguredEntityCondition.class), ConfiguredEntityCondition.CODEC), null),
+			(dataInst) -> new HudRender(
+					dataInst.getBoolean("should_render"),
+					dataInst.getInt("bar_index"),
+					dataInst.getId("sprite_location"),
+					(ConfiguredEntityCondition<?, ?>) dataInst.get("condition")),
+			(data, inst) -> {
+				SerializableData.Instance dataInst = data.new Instance();
+				dataInst.set("should_render", inst.shouldRender());
+				dataInst.set("bar_index", inst.getBarIndex());
+				dataInst.set("sprite_location", inst.getSpriteLocation());
+				dataInst.set("condition", inst.getCondition());
+				return dataInst;
+			});
 
-    public static final SerializableDataType<Comparison> COMPARISON = SerializableDataType.enumValue(Comparison.class,
-        SerializationHelper.buildEnumMap(Comparison.class, Comparison::getComparisonString));
+	public static final SerializableDataType<Comparison> COMPARISON = SerializableDataType.enumValue(Comparison.class,
+			SerializationHelper.buildEnumMap(Comparison.class, Comparison::getComparisonString));
 
-    public static <T> SerializableDataType<ConditionFactory<T>.Instance> condition(Class<ConditionFactory<T>.Instance> dataClass, ConditionType<T> conditionType) {
+    /*public static <T> SerializableDataType<ConditionFactory<T>.Instance> condition(Class<ConditionFactory<T>.Instance> dataClass, ConditionType<T> conditionType) {
         return new SerializableDataType<>(dataClass, conditionType::write, conditionType::read, conditionType::read);
     }
 
     public static <T> SerializableDataType<ActionFactory<T>.Instance> action(Class<ActionFactory<T>.Instance> dataClass, ActionType<T> actionType) {
         return new SerializableDataType<>(dataClass, actionType::write, actionType::read, actionType::read);
-    }
-
+    }*/
 }

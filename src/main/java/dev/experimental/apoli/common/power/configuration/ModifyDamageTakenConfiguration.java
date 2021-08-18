@@ -6,11 +6,12 @@ import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredDamageCondition;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
 import dev.experimental.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ModifyDamageTakenConfiguration(ListConfiguration<EntityAttributeModifier> modifiers,
+public record ModifyDamageTakenConfiguration(ListConfiguration<AttributeModifier> modifiers,
 											 @Nullable ConfiguredDamageCondition<?, ?> damageCondition,
 											 @Nullable ConfiguredEntityAction<?, ?> selfAction,
 											 @Nullable ConfiguredEntityAction<?, ?> targetAction) implements IValueModifyingPowerConfiguration {

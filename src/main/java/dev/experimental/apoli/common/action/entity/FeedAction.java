@@ -3,6 +3,7 @@ package dev.experimental.apoli.common.action.entity;
 import dev.experimental.apoli.common.action.configuration.FoodConfiguration;
 import net.minecraft.world.entity.Entity;
 import dev.experimental.apoli.api.power.factory.EntityAction;
+import net.minecraft.world.entity.player.Player;
 
 public class FeedAction extends EntityAction<FoodConfiguration> {
 
@@ -12,7 +13,7 @@ public class FeedAction extends EntityAction<FoodConfiguration> {
 
 	@Override
 	public void execute(FoodConfiguration configuration, Entity entity) {
-		if (entity instanceof PlayerEntity player)
-			player.getHungerManager().add(configuration.food(), configuration.saturation());
+		if (entity instanceof Player player)
+			player.getFoodData().eat(configuration.food(), configuration.saturation());
 	}
 }

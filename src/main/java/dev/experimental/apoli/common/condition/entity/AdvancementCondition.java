@@ -3,18 +3,15 @@ package dev.experimental.apoli.common.condition.entity;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.mixin.ClientAdvancementManagerAccessor;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import java.util.Map;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class AdvancementCondition extends EntityCondition<FieldConfiguration<ResourceLocation>> {
 
@@ -38,7 +35,7 @@ public class AdvancementCondition extends EntityCondition<FieldConfiguration<Res
 		return testClient(configuration, entity);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public static class Client extends AdvancementCondition {
 		public Client() {
 			super();
@@ -50,9 +47,8 @@ public class AdvancementCondition extends EntityCondition<FieldConfiguration<Res
 				ClientAdvancements advancementManager = Minecraft.getInstance().getConnection().getAdvancements();
 				Advancement advancement = advancementManager.getAdvancements().get(configuration.value());
 				if (advancement != null) {
-					Map<Advancement, AdvancementProgress> progressMap = ((ClientAdvancementManagerAccessor) advancementManager).getAdvancementProgresses();
-					if (progressMap.containsKey(advancement))
-						return progressMap.get(advancement).isDone();
+					if (advancementManager.progress.containsKey(advancement))
+						return advancementManager.progress.get(advancement).isDone();
 				}
 				// We don't want to print an error here if the advancement does not exist,
 				// because on the client-side the advancement could just not have been received from the server.

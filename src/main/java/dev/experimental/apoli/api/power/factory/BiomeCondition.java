@@ -2,15 +2,15 @@ package dev.experimental.apoli.api.power.factory;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import dev.architectury.core.RegistryEntry;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.IConditionFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> extends RegistryEntry<BiomeCondition<?>> implements IConditionFactory<T, ConfiguredBiomeCondition<T, ?>, BiomeCondition<T>> {
+public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BiomeCondition<?>> implements IConditionFactory<T, ConfiguredBiomeCondition<T, ?>, BiomeCondition<T>> {
 	public static final Codec<BiomeCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BIOME_CONDITION);
 
 	private final Codec<Pair<T, ConditionData>> codec;

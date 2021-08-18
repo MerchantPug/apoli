@@ -6,6 +6,8 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.ConfiguredFactory;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
+import net.minecraft.world.entity.Entity;
+
 import java.util.Optional;
 
 public record ColorConfiguration(float red, float green, float blue,

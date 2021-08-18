@@ -3,14 +3,15 @@ package dev.experimental.apoli.common.condition.entity;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import io.github.apace100.calio.data.SerializableDataType;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 import java.util.Objects;
 
 public class GameModeCondition extends EntityCondition<FieldConfiguration<GameType>> {
@@ -32,7 +33,7 @@ public class GameModeCondition extends EntityCondition<FieldConfiguration<GameTy
 		return testClient(configuration.value(), entity);
 	}
 
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(Dist.CLIENT)
 	public static class Client extends GameModeCondition {
 		public Client() {
 			super();

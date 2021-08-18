@@ -3,8 +3,7 @@ package dev.experimental.apoli.common.condition.meta;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.configuration.IStreamConfiguration;
-import dev.experimental.calio.api.network.CalioCodecHelper;
-import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 import java.util.List;
 import java.util.function.BiPredicate;

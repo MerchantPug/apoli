@@ -8,6 +8,7 @@ import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.registry.ModPowers;
 import java.util.Optional;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class PreventEntityRenderPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredEntityCondition<?, ?>>>> {
 

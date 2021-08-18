@@ -5,8 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.DoubleComparisonConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 
-public record AttributeComparisonConfiguration(EntityAttribute attribute,
+public record AttributeComparisonConfiguration(Attribute attribute,
 											   DoubleComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 	public static Codec<AttributeComparisonConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.ATTRIBUTE.fieldOf("attribute").forGetter(AttributeComparisonConfiguration::attribute),

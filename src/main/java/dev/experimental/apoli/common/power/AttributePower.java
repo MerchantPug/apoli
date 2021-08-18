@@ -3,6 +3,7 @@ package dev.experimental.apoli.common.power;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.AttributeConfiguration;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 
 public class AttributePower extends PowerFactory<AttributeConfiguration> {
 	public AttributePower() {
@@ -16,10 +17,10 @@ public class AttributePower extends PowerFactory<AttributeConfiguration> {
 			float previousHealthPercent = entity.getHealth() / previousMaxHealth;
 			configuration.modifiers().getContent().forEach(mod -> {
 				if (entity.getAttributes().hasAttribute(mod.attribute())) {
-					EntityAttributeInstance instance = entity.getAttributeInstance(mod.attribute());
+					AttributeInstance instance = entity.getAttribute(mod.attribute());
 					assert instance != null;
 					if (!instance.hasModifier(mod.modifier()))
-						instance.addTemporaryModifier(mod.modifier());
+						instance.addTransientModifier(mod.modifier());
 				}
 			});
 			float afterMaxHealth = entity.getMaxHealth();
@@ -36,7 +37,7 @@ public class AttributePower extends PowerFactory<AttributeConfiguration> {
 			float previousHealthPercent = entity.getHealth() / previousMaxHealth;
 			configuration.modifiers().getContent().forEach(mod -> {
 				if (entity.getAttributes().hasAttribute(mod.attribute())) {
-					EntityAttributeInstance instance = entity.getAttributeInstance(mod.attribute());
+					AttributeInstance instance = entity.getAttribute(mod.attribute());
 					assert instance != null;
 					if (instance.hasModifier(mod.modifier()))
 						instance.removeModifier(mod.modifier());

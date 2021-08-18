@@ -5,6 +5,7 @@ import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.configuration.PowerReference;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class PowerActiveCondition extends EntityCondition<PowerReference> {
 
@@ -15,6 +16,6 @@ public class PowerActiveCondition extends EntityCondition<PowerReference> {
 	@Override
 	public boolean check(PowerReference configuration, LivingEntity entity) {
 		IPowerContainer component = ApoliAPI.getPowerContainer(entity);
-		return entity instanceof PlayerEntity player && component.hasPower(configuration.power()) && component.getPower(configuration.power()).isActive(player);
+		return entity instanceof Player player && component.hasPower(configuration.power()) && component.getPower(configuration.power()).isActive(player);
 	}
 }

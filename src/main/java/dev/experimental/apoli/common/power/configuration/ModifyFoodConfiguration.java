@@ -6,12 +6,13 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
 import dev.experimental.apoli.api.power.configuration.ConfiguredItemCondition;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ModifyFoodConfiguration(ListConfiguration<EntityAttributeModifier> foodModifiers,
-									  ListConfiguration<EntityAttributeModifier> saturationModifiers,
+public record ModifyFoodConfiguration(ListConfiguration<AttributeModifier> foodModifiers,
+									  ListConfiguration<AttributeModifier> saturationModifiers,
 									  @Nullable ConfiguredItemCondition<?, ?> itemCondition,
 									  @Nullable ConfiguredEntityAction<?, ?> entityAction) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyFoodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(

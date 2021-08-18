@@ -9,6 +9,9 @@ import dev.experimental.apoli.api.configuration.IntegerComparisonConfiguration;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -40,7 +43,7 @@ public record EnchantmentConfiguration(IntegerComparisonConfiguration comparison
 	public boolean applyCheck(Iterable<ItemStack> input) {
 		if (this.enchantment() == null)
 			return false;
-		return this.comparison().check(this.calculation().apply(Streams.stream(input).mapToInt(stack -> EnchantmentHelper.getLevel(this.enchantment(), stack))).orElse(0));
+		return this.comparison().check(this.calculation().apply(Streams.stream(input).mapToInt(stack -> EnchantmentHelper.getItemEnchantmentLevel(this.enchantment(), stack))).orElse(0));
 	}
 
 	public boolean applyCheck(ItemStack... stacks) {

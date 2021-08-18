@@ -69,7 +69,7 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 		if (configuration.protectionEnchantment() == null) {
 			return 0;
 		} else {
-			Map<EquipmentSlot, ItemStack> enchantedItems = configuration.protectionEnchantment().getEquipment(player);
+			Map<EquipmentSlot, ItemStack> enchantedItems = configuration.protectionEnchantment().getSlotItems(player);
 			Iterable<ItemStack> iterable = enchantedItems.values();
 			int i = 0;
 			for (ItemStack itemStack : iterable)

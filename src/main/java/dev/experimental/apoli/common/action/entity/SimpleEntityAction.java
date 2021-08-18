@@ -14,7 +14,7 @@ public class SimpleEntityAction extends EntityAction<NoConfiguration> {
 	}
 
 	public static SimpleEntityAction ofPlayer(Consumer<Player> action) {
-		return new SimpleEntityAction((Entity e) -> {if (e instanceof PlayerEntity le) action.accept(le);});
+		return new SimpleEntityAction((Entity e) -> {if (e instanceof Player le) action.accept(le);});
 	}
 
 	private final Consumer<Entity> action;

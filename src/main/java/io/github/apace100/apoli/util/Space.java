@@ -1,15 +1,11 @@
 package io.github.apace100.apoli.util;
 
 import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Function;
-
-import static net.minecraft.util.Mth.cos;
-import static net.minecraft.util.Mth.sin;
 
 public enum Space {
 	WORLD(x -> Quaternion.ONE),
@@ -22,7 +18,7 @@ public enum Space {
 
 	private static final Vec3 GLOBAL_FORWARD = new Vec3(0, 0, 1);
 
-	private static Vec3 globalForward() { return GLOBAL_FORWARD; }
+	private static Vec3 globalForward() {return GLOBAL_FORWARD;}
 
 	private static Quaternion rotation(Vec3 absolute, Vec3 rotated) {
 		Vec3 vec3d = absolute.cross(rotated);

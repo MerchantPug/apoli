@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 
 //FIXME Requires Architectury
 public class ElytraFlightPower extends PowerFactory<FieldConfiguration<Boolean>> {
-	public static boolean shouldRenderElytra(Player player) {
+	public static boolean shouldRenderElytra(LivingEntity player) {
 		return IPowerContainer.getPowers(player, ModPowers.ELYTRA_FLIGHT.get()).stream().anyMatch(x -> x.getConfiguration().value());
 	}
 

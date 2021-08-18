@@ -4,12 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.registry.ApoliDynamicRegistries;
-import dev.experimental.calio.api.CalioAPI;
-import dev.experimental.calio.api.registry.ICalioDynamicRegistryManager;
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.StringRepresentable;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ public interface IDynamicFeatureConfiguration {
 		map.forEach((o, o2) -> {
 			String key = "?";
 			if (o instanceof String str) key = str;
-			else if (o instanceof StringIdentifiable identifiable) key = identifiable.asString();
+			else if (o instanceof StringRepresentable identifiable) key = identifiable.getSerializedName();
 			if (o2 instanceof IDynamicFeatureConfiguration config)
 				builder.put(prefix + key, config);
 			else if (o2 instanceof Map<?, ?> map2)

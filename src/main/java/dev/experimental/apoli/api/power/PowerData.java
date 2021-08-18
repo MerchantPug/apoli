@@ -1,18 +1,17 @@
 package dev.experimental.apoli.api.power;
 
-import PowerData;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
-import dev.experimental.calio.api.network.CalioCodecHelper;
-import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.resources.ResourceLocation;
 
 public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolean hidden, int loadingPriority,
 						String name, String description) {
@@ -30,12 +29,12 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 		return new Builder();
 	}
 
-	public TranslatableText getName() {
-		return new TranslatableText(this.name());
+	public TranslatableComponent getName() {
+		return new TranslatableComponent(this.name());
 	}
 
-	public TranslatableText getDescription() {
-		return new TranslatableText(this.description());
+	public TranslatableComponent getDescription() {
+		return new TranslatableComponent(this.description());
 	}
 
 	/**
@@ -46,7 +45,7 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 	 *
 	 * @return A new, completed power data.
 	 */
-	public PowerData complete(Identifier identifier) {
+	public PowerData complete(ResourceLocation identifier) {
 		return new PowerData(conditions, hidden, loadingPriority,
 				StringUtils.isEmpty(this.name) ? "power." + identifier.getNamespace() + "." + identifier.getPath() + ".name" : this.name,
 				StringUtils.isEmpty(this.description) ? "power." + identifier.getNamespace() + "." + identifier.getPath() + ".description" : this.description);

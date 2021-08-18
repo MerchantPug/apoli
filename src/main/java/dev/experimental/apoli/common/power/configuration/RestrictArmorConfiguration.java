@@ -6,6 +6,11 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredItemCondition;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,14 +42,14 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, ConfiguredItemCondit
 	public void dropIllegalItems(LivingEntity entity) {
 		this.conditions().forEach((slot, predicate) -> {
 			if (predicate == null) return;
-			ItemStack equippedItem = entity.getEquippedStack(slot);
+			ItemStack equippedItem = entity.getItemBySlot(slot);
 			if (!equippedItem.isEmpty() && !predicate.check(equippedItem)) {
-				if (entity instanceof PlayerEntity ple) {
-					if (!ple.getInventory().insertStack(equippedItem))
-						ple.dropItem(equippedItem, true);
+				if (entity instanceof Player ple) {
+					if (!ple.getInventory().add(equippedItem))
+						ple.drop(equippedItem, true);
 				} else
-					entity.dropStack(equippedItem);
-				entity.equipStack(slot, ItemStack.EMPTY);
+					entity.spawnAtLocation(equippedItem);
+				entity.setItemSlot(slot, ItemStack.EMPTY);
 			}
 		});
 	}

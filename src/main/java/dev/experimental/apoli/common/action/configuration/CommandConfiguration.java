@@ -4,7 +4,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
+
 import java.util.OptionalInt;
 
 public record CommandConfiguration(String command,
@@ -17,38 +27,38 @@ public record CommandConfiguration(String command,
 	public static final Codec<CommandConfiguration> CODEC = MAP_CODEC.codec();
 
 	public OptionalInt execute(Entity entity) {
-		MinecraftServer server = entity.world.getServer();
+		MinecraftServer server = entity.level.getServer();
 		if (server != null) {
-			ServerCommandSource source = new ServerCommandSource(
-					CommandOutput.DUMMY,
-					entity.getPos(),
-					entity.getRotationClient(),
-					entity.world instanceof ServerWorld ? (ServerWorld) entity.world : null,
+			CommandSourceStack source = new CommandSourceStack(
+					CommandSource.NULL,
+					entity.position(),
+					entity.getRotationVector(),
+					entity.level instanceof ServerLevel sl ? sl : null,
 					this.permissionLevel(),
 					entity.getName().getString(),
 					entity.getDisplayName(),
-					entity.world.getServer(),
+					entity.level.getServer(),
 					entity);
-			return OptionalInt.of(server.getCommandManager().execute(source, this.command()));
+			return OptionalInt.of(server.getCommands().performCommand(source, this.command()));
 		}
 		return OptionalInt.empty();
 	}
 
-	public OptionalInt execute(World world, BlockPos pos) {
+	public OptionalInt execute(Level world, BlockPos pos) {
 		MinecraftServer server = world.getServer();
 		if (server != null) {
-			String blockName = world.getBlockState(pos).getBlock().getTranslationKey();
-			ServerCommandSource source = new ServerCommandSource(
-					CommandOutput.DUMMY,
-					new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
-					new Vec2f(0, 0),
-					(ServerWorld) world,
+			String blockName = world.getBlockState(pos).getBlock().getDescriptionId();
+			CommandSourceStack source = new CommandSourceStack(
+					CommandSource.NULL,
+					new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
+					new Vec2(0, 0),
+					(ServerLevel) world,
 					this.permissionLevel(),
 					blockName,
-					new TranslatableText(blockName),
+					new TranslatableComponent(blockName),
 					server,
 					null);
-			return OptionalInt.of(server.getCommandManager().execute(source, this.command()));
+			return OptionalInt.of(server.getCommands().performCommand(source, this.command()));
 		}
 		return OptionalInt.empty();
 	}

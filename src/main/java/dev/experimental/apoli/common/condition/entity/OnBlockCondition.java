@@ -3,8 +3,10 @@ package dev.experimental.apoli.common.condition.entity;
 import dev.experimental.apoli.api.configuration.FieldConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
-import java.util.Optional;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+
+import java.util.Optional;
 
 public class OnBlockCondition extends EntityCondition<FieldConfiguration<Optional<ConfiguredBlockCondition<?, ?>>>> {
 
@@ -14,6 +16,6 @@ public class OnBlockCondition extends EntityCondition<FieldConfiguration<Optiona
 
 	@Override
 	public boolean check(FieldConfiguration<Optional<ConfiguredBlockCondition<?, ?>>> configuration, LivingEntity entity) {
-		return entity.isOnGround() && configuration.value().map(x -> x.check(new CachedBlockPosition(entity.world, entity.getBlockPos(), true))).orElse(true);
+		return entity.isOnGround() && configuration.value().map(x -> x.check(new BlockInWorld(entity.level, entity.blockPosition(), true))).orElse(true);
 	}
 }

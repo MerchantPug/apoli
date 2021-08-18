@@ -6,6 +6,8 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.apace100.calio.data.SerializableDataType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -22,10 +24,10 @@ public record PhasingConfiguration(@Nullable ConfiguredBlockCondition<?, ?> phas
 	).apply(instance, (t1, t2, t3, t4, t5) -> new PhasingConfiguration(t1.orElse(null), t2, t3, t4, t5.orElse(null))));
 
 	public boolean canPhaseDown(LivingEntity entity) {
-		return this.phaseDownCondition() == null ? entity.isSneaking() : this.phaseDownCondition().check(entity);
+		return this.phaseDownCondition() == null ? entity.isCrouching() : this.phaseDownCondition().check(entity);
 	}
 
-	public boolean canPhaseThrough(CachedBlockPosition cbp) {
+	public boolean canPhaseThrough(BlockInWorld cbp) {
 		return this.blacklist() != ConfiguredBlockCondition.check(this.phaseCondition(), cbp);
 	}
 

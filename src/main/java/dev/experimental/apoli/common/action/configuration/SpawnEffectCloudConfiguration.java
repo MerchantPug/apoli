@@ -5,9 +5,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.world.effect.MobEffectInstance;
 
 public record SpawnEffectCloudConfiguration(float radius, float radiusOnUse, int waitTime,
-											ListConfiguration<StatusEffectInstance> effects) implements IDynamicFeatureConfiguration {
+											ListConfiguration<MobEffectInstance> effects) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<SpawnEffectCloudConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.FLOAT.optionalFieldOf("radius", 3.0F).forGetter(x -> x.radius),

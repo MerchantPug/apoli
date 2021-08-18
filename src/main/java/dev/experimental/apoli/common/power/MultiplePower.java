@@ -21,8 +21,8 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	@Override
 	public Map<String, ConfiguredPower<?, ?>> getContainedPowers(ConfiguredPower<MultipleConfiguration<ConfiguredPower<?, ?>>, ?> configuration) {
 		return configuration.getConfiguration().children().entrySet().stream()
-				.map(x -> new Pair<>("_" + x.getKey(), reconfigure(x.getValue())))
-				.collect(Collectors.toUnmodifiableMap(Tuple::getLeft, Tuple::getRight));
+				.map(x -> new Tuple<>("_" + x.getKey(), reconfigure(x.getValue())))
+				.collect(Collectors.toUnmodifiableMap(Tuple::getA, Tuple::getB));
 	}
 
 	/**

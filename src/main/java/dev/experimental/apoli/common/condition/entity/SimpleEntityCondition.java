@@ -11,7 +11,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 
 public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	public static SimpleEntityCondition of(Predicate<Player> predicate) {
-		return new SimpleEntityCondition(living -> living instanceof PlayerEntity pe && predicate.test(pe));
+		return new SimpleEntityCondition(living -> living instanceof Player pe && predicate.test(pe));
 	}
 
 	public static boolean isExposedToSky(LivingEntity entity) {

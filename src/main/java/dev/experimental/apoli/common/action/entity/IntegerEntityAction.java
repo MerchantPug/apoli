@@ -14,7 +14,7 @@ public class IntegerEntityAction extends EntityAction<FieldConfiguration<Integer
 	}
 
 	public static IntegerEntityAction ofPlayer(BiConsumer<Player, Integer> action, String field) {
-		return new IntegerEntityAction((e, i) -> {if (e instanceof PlayerEntity le) action.accept(le, i);}, field);
+		return new IntegerEntityAction((e, i) -> {if (e instanceof Player le) action.accept(le, i);}, field);
 	}
 
 	private final BiConsumer<Entity, Integer> action;

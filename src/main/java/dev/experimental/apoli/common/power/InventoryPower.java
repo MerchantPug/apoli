@@ -1,22 +1,25 @@
 package dev.experimental.apoli.common.power;
 
-import Key;
 import dev.experimental.apoli.api.power.IActivePower;
 import dev.experimental.apoli.api.power.IInventoryPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredItemCondition;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.InventoryConfiguration;
-import java.util.function.Function;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.function.Function;
 
 public class InventoryPower extends PowerFactory<InventoryConfiguration> implements IInventoryPower<InventoryConfiguration>, IActivePower<InventoryConfiguration> {
 
@@ -31,8 +34,8 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 
 	@Override
 	public void activate(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
-		if (!player.world.isClient && player instanceof PlayerEntity ple)
-			ple.openHandledScreen(new SimpleNamedScreenHandlerFactory(this.getMenuCreator(configuration, player), new TranslatableText(configuration.getConfiguration().inventoryName())));
+		if (!player.level.isClientSide() && player instanceof Player ple)
+			ple.openMenu(new SimpleMenuProvider(this.getMenuCreator(configuration, player), new TranslatableComponent(configuration.getConfiguration().inventoryName())));
 	}
 
 	@Override
@@ -61,7 +64,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
-		return configuration.getPowerData(player, () -> new SimpleInventory(this.size));
+		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
 	}
 
 	@Override
@@ -75,12 +78,12 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 
 	@Override
 	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player, Tag tag) {
-		if (tag instanceof NbtCompound compoundTag) {
-			SimpleInventory data = this.getData(configuration, player);
-			DefaultedList<ItemStack> stacks = DefaultedList.ofSize(data.size(), ItemStack.EMPTY);
-			Inventories.readNbt(compoundTag, stacks);
-			for (int i = 0; i < data.size(); i++)
-				data.setStack(i, stacks.get(i));
+		if (tag instanceof CompoundTag compoundTag) {
+			SimpleContainer data = this.getData(configuration, player);
+			NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
+			ContainerHelper.loadAllItems(compoundTag, stacks);
+			for (int i = 0; i < data.getContainerSize(); i++)
+				data.setItem(i, stacks.get(i));
 		}
 	}
 }

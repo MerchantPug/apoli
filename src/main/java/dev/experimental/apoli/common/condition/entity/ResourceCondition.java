@@ -5,8 +5,10 @@ import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.EntityCondition;
 import dev.experimental.apoli.common.condition.configuration.ResourceComparisonConfiguration;
-import java.util.OptionalInt;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.OptionalInt;
 
 public class ResourceCondition extends EntityCondition<ResourceComparisonConfiguration> {
 
@@ -18,7 +20,7 @@ public class ResourceCondition extends EntityCondition<ResourceComparisonConfigu
 	public boolean check(ResourceComparisonConfiguration configuration, LivingEntity entity) {
 		IPowerContainer component = ApoliAPI.getPowerContainer(entity);
 		ConfiguredPower<?, ?> power = component.getPower(configuration.resource().power());
-		if (entity instanceof PlayerEntity player) {
+		if (entity instanceof Player player) {
 			OptionalInt value = power.getValue(player);
 			return value.isPresent() && configuration.comparison().check(value.getAsInt());
 		}

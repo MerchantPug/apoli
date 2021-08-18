@@ -1,0 +1,35 @@
+modLoader="javafml"
+loaderVersion="[37,)"
+issueTrackerURL="https://github.com/EdwinMindcraft/apoli/issues"
+license="MIT"
+
+[[mods]]
+modId="apoli"
+version="${version}"
+displayName="Apoli"
+logoFile= "icon.png"
+authors="apace100"
+description='''
+A library mod which allows entities to be imbued with data-driven powers.
+'''
+
+[[dependencies.apoli]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.17.1]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.apoli]]
+modId="forge"
+mandatory=true
+versionRange="[37.0.34,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.apoli]]
+modId="calio"
+mandatory=true
+versionRange="[1.0.2,1.1)"
+ordering="NONE"
+side="BOTH"

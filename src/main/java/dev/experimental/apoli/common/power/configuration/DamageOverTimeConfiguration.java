@@ -5,6 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.power.configuration.power.IVariableIntPowerConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.mixin.DamageSourceAccessor;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

@@ -16,24 +16,24 @@ public class StartingEquipmentPower extends PowerFactory<StartingInventoryConfig
 
 	@Override
 	protected void onGained(StartingInventoryConfiguration configuration, LivingEntity player) {
-		if (player instanceof PlayerEntity ple)
+		if (player instanceof Player ple)
 			this.giveStacks(configuration, ple);
 	}
 
 	@Override
 	protected void onRespawn(StartingInventoryConfiguration configuration, LivingEntity player) {
-		if (configuration.recurrent() && player instanceof PlayerEntity ple)
+		if (configuration.recurrent() && player instanceof Player ple)
 			this.giveStacks(configuration, ple);
 	}
 
 	private void giveStacks(StartingInventoryConfiguration configuration, Player player) {
 		configuration.stacks().getContent().stream().sorted(Comparator.comparingInt(Tuple<Integer, ItemStack>::getA).reversed()).forEach(x -> {
-			Apoli.LOGGER.info("Giving player {} stack: {}", player.getName().asString(), x.getRight().toString());
-			int pos = x.getLeft();
-			if (pos > 0 && player.getInventory().getStack(pos).isEmpty())
-				player.getInventory().setStack(pos, x.getRight().copy());
+			Apoli.LOGGER.info("Giving player {} stack: {}", player.getName().getString(), x.getB().toString());
+			int pos = x.getA();
+			if (pos > 0 && player.getInventory().getItem(pos).isEmpty())
+				player.getInventory().setItem(pos, x.getB().copy());
 			else
-				player.giveItemStack(x.getRight().copy());
+				player.addItem(x.getB().copy());
 		});
 	}
 }

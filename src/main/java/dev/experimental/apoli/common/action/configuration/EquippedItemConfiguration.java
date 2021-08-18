@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.world.entity.EquipmentSlot;
 
 public record EquippedItemConfiguration(EquipmentSlot slot,
 										ConfiguredItemAction<?, ?> action) implements IDynamicFeatureConfiguration {

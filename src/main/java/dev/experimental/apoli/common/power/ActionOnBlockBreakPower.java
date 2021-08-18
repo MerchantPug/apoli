@@ -14,7 +14,7 @@ public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConf
 	public static void execute(LivingEntity player, BlockInWorld pos, boolean successful) {
 		IPowerContainer.getPowers(player, ModPowers.ACTION_ON_BLOCK_BREAK.get()).stream()
 				.filter(p -> p.getFactory().doesApply(p, player, pos))
-				.forEach(aobbp -> aobbp.getFactory().executeActions(aobbp, player, successful, pos.getBlockPos(), null));
+				.forEach(aobbp -> aobbp.getFactory().executeActions(aobbp, player, successful, pos.getPos(), null));
 	}
 
 	public ActionOnBlockBreakPower() {

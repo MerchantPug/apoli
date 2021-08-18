@@ -1,15 +1,16 @@
 package io.github.apace100.apoli.screen;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 import java.util.ArrayList;
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public interface GameHudRender {
 
-    List<GameHudRender> HUD_RENDERS = new ArrayList<>();
+	List<GameHudRender> HUD_RENDERS = new ArrayList<>();
 
-    void render(PoseStack matrixStack, float tickDelta);
+	void render(PoseStack matrixStack, float tickDelta);
 }

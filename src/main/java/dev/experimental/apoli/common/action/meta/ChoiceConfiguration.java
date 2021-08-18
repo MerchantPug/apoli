@@ -2,8 +2,8 @@ package dev.experimental.apoli.common.action.meta;
 
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.configuration.IStreamConfiguration;
-import dev.experimental.calio.api.network.CalioCodecHelper;
 import io.github.apace100.calio.FilterableWeightedList;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 import java.util.List;
 import java.util.Random;

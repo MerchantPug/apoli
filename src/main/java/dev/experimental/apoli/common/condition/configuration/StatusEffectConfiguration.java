@@ -6,11 +6,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.effect.MobEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record StatusEffectConfiguration(StatusEffect effect,
+public record StatusEffectConfiguration(MobEffect effect,
 										int minAmplifier, int maxAmplifier, int minDuration,
 										int maxDuration) implements IDynamicFeatureConfiguration {
 

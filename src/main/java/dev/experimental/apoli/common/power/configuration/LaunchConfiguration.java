@@ -8,6 +8,7 @@ import dev.experimental.apoli.api.power.configuration.power.ICooldownPowerConfig
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

@@ -6,18 +6,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.architectury.core.RegistryEntry;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.IFactory;
 import dev.experimental.apoli.api.power.PowerData;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
-import java.util.Map;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> extends RegistryEntry<PowerFactory<?>> implements Codec<ConfiguredPower<T, ?>> {
+import java.util.Map;
+
+public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<PowerFactory<?>> implements Codec<ConfiguredPower<T, ?>> {
 	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.POWER_FACTORY);
 
 	private static <T extends IDynamicFeatureConfiguration, F> Codec<Pair<T, PowerData>> powerCodec(Codec<T> codec) {

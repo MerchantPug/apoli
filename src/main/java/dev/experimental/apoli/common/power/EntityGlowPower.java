@@ -8,6 +8,7 @@ import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.registry.ModPowers;
 import java.util.Optional;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public class EntityGlowPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredEntityCondition<?, ?>>>> {

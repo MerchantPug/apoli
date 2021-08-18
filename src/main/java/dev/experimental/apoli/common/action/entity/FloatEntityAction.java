@@ -14,7 +14,7 @@ public class FloatEntityAction extends EntityAction<FieldConfiguration<Float>> {
 	}
 
 	public static FloatEntityAction ofPlayer(BiConsumer<Player, Float> action, String field) {
-		return new FloatEntityAction((e, i) -> {if (e instanceof PlayerEntity le) action.accept(le, i);}, field);
+		return new FloatEntityAction((e, i) -> {if (e instanceof Player le) action.accept(le, i);}, field);
 	}
 
 	private final BiConsumer<Entity, Float> action;

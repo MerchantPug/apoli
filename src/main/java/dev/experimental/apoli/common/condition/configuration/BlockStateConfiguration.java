@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.IntegerComparisonConfiguration;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +29,8 @@ public record BlockStateConfiguration(String property,
 		if (this.stringValue() != null) {
 			if (value instanceof Enum<?> enumValue)
 				flag = enumValue.name().equalsIgnoreCase(this.stringValue());
-			if (value instanceof StringIdentifiable stringIdentifiable)
-				flag |= stringIdentifiable.asString().equalsIgnoreCase(this.stringValue());
+			if (value instanceof StringRepresentable stringIdentifiable)
+				flag |= stringIdentifiable.getSerializedName().equalsIgnoreCase(this.stringValue());
 		}
 		if (this.booleanValue() != null && value instanceof Boolean bool)
 			return bool.booleanValue() == this.booleanValue();

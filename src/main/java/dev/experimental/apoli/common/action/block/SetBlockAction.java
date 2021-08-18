@@ -14,6 +14,6 @@ public class SetBlockAction extends BlockAction<BlockConfiguration> {
 
 	@Override
 	public void execute(BlockConfiguration configuration, Level world, BlockPos pos, Direction direction) {
-		world.setBlockAndUpdate(pos, configuration.block().getDefaultState());
+		world.setBlockAndUpdate(pos, configuration.block().defaultBlockState());
 	}
 }

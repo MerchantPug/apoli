@@ -1,14 +1,14 @@
 package dev.experimental.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
-import dev.architectury.core.RegistryEntry;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.IFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class EntityAction<T extends IDynamicFeatureConfiguration> extends RegistryEntry<EntityAction<?>> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
+public abstract class EntityAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<EntityAction<?>> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
 	public static final Codec<EntityAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ENTITY_ACTION);
 
 	private final Codec<T> codec;

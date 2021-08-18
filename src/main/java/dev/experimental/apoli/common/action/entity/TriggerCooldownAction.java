@@ -6,6 +6,7 @@ import dev.experimental.apoli.api.power.ICooldownPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.EntityAction;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 public class TriggerCooldownAction extends EntityAction<PowerReference> {
 	public TriggerCooldownAction() {
@@ -15,7 +16,7 @@ public class TriggerCooldownAction extends EntityAction<PowerReference> {
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void execute(PowerReference configuration, Entity entity) {
-		if (entity instanceof PlayerEntity player) {
+		if (entity instanceof Player player) {
 			ConfiguredPower<?, ?> power = ApoliAPI.getPowerContainer(entity).getPower(configuration.power());
 			if (power.getFactory() instanceof ICooldownPower cp) {
 				cp.use(power, player);

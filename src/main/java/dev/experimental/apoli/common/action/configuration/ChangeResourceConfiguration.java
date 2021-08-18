@@ -4,14 +4,16 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
-import dev.experimental.calio.api.CalioAPI;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record ChangeResourceConfiguration(Identifier resource, int amount) implements IDynamicFeatureConfiguration {
+public record ChangeResourceConfiguration(ResourceLocation resource,
+										  int amount) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ChangeResourceConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.IDENTIFIER.fieldOf("resource").forGetter(ChangeResourceConfiguration::resource),

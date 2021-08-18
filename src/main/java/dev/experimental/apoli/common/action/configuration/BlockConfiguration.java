@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

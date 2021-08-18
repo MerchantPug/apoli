@@ -4,7 +4,17 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
 import io.github.apace100.apoli.Apoli;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.DismountHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeHooks;
 
 public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfiguration> {
 
@@ -12,15 +22,15 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 		super(ModifyPlayerSpawnConfiguration.CODEC);
 	}
 
-	public void teleportToModifiedSpawn(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, LivingEntity entity) {
-		if (entity instanceof ServerPlayerEntity serverPlayer) {
-			Pair<ServerWorld, BlockPos> spawn = configuration.getConfiguration().getSpawn(entity, false);
+	public void teleportToModifiedSpawn(ModifyPlayerSpawnConfiguration configuration, LivingEntity entity) {
+		if (entity instanceof ServerPlayer serverPlayer) {
+			Tuple<ServerLevel, BlockPos> spawn = configuration.getSpawn(entity, false);
 			if (spawn != null) {
-				Vec3d tpPos = Dismounting.findRespawnPos(EntityType.PLAYER, spawn.getLeft(), spawn.getRight(), true);
+				Vec3 tpPos = DismountHelper.findSafeDismountLocation(EntityType.PLAYER, spawn.getA(), spawn.getB(), true);
 				if (tpPos != null) {
-					serverPlayer.teleport(spawn.getLeft(), tpPos.x, tpPos.y, tpPos.z, entity.getPitch(), entity.getYaw());
+					serverPlayer.teleportTo(spawn.getA(), tpPos.x, tpPos.y, tpPos.z, entity.getXRot(), entity.getYRot());
 				} else {
-					serverPlayer.teleport(spawn.getLeft(), spawn.getRight().getX(), spawn.getRight().getY(), spawn.getRight().getZ(), entity.getPitch(), entity.getYaw());
+					serverPlayer.teleportTo(spawn.getA(), spawn.getB().getX(), spawn.getB().getY(), spawn.getB().getZ(), entity.getXRot(), entity.getYRot());
 					Apoli.LOGGER.warn("Could not spawn player with `ModifySpawnPower` at the desired location.");
 				}
 			}
@@ -29,10 +39,16 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 
 	@Override
 	public void onRemoved(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, LivingEntity player) {
-		if (player instanceof ServerPlayerEntity serverPlayer) {
-			if (serverPlayer.getSpawnPointPosition() != null && serverPlayer.isSpawnPointSet())
-				serverPlayer.setSpawnPoint(World.OVERWORLD, null, 0F, false, false);
+		if (player instanceof ServerPlayer serverPlayer) {
+			if (serverPlayer.getRespawnPosition() != null && serverPlayer.isRespawnForced())
+				serverPlayer.setRespawnPosition(Level.OVERWORLD, null, 0F, false, false);
 		}
+	}
+
+	@Override
+	protected void onRespawn(ModifyPlayerSpawnConfiguration configuration, LivingEntity entity) {
+		if (entity instanceof ServerPlayer player && !player.isRespawnForced())
+			this.teleportToModifiedSpawn(configuration, entity);
 	}
 }
 

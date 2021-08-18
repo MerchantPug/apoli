@@ -2,15 +2,15 @@ package dev.experimental.apoli.api.power.factory;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import dev.architectury.core.RegistryEntry;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.IConditionFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredDamageCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class DamageCondition<T extends IDynamicFeatureConfiguration> extends RegistryEntry<DamageCondition<?>> implements IConditionFactory<T, ConfiguredDamageCondition<T, ?>, DamageCondition<T>> {
+public abstract class DamageCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<DamageCondition<?>> implements IConditionFactory<T, ConfiguredDamageCondition<T, ?>, DamageCondition<T>> {
 	public static final Codec<DamageCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.DAMAGE_CONDITION);
 
 	private final Codec<Pair<T, ConditionData>> codec;

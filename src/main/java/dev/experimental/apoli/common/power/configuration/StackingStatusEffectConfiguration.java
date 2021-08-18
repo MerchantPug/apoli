@@ -5,8 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.world.effect.MobEffectInstance;
 
-public record StackingStatusEffectConfiguration(ListConfiguration<StatusEffectInstance> effects,
+public record StackingStatusEffectConfiguration(ListConfiguration<MobEffectInstance> effects,
 												int min, int max,
 												int duration) implements IDynamicFeatureConfiguration {
 	public static final Codec<StackingStatusEffectConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(

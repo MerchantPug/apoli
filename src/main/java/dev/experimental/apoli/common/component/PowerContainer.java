@@ -2,19 +2,17 @@ package dev.experimental.apoli.common.component;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import dev.experimental.apoli.api.ApoliAPI;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
+import dev.experimental.apoli.api.registry.ApoliDynamicRegistries;
+import dev.experimental.apoli.common.registry.ApoliCapabilities;
 import io.github.apace100.apoli.Apoli;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -22,12 +20,23 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class PowerContainer implements IPowerContainer {
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+public class PowerContainer implements IPowerContainer, ICapabilitySerializable<Tag> {
 	private final LivingEntity owner;
 	private final Map<ResourceLocation, ConfiguredPower<?, ?>> powers;
 	private final Map<ResourceLocation, Set<ResourceLocation>> powerSources;
 	private final Map<ResourceLocation, Object> powerData;
+	private transient final LazyOptional<IPowerContainer> thisOptional = LazyOptional.of(() -> this);
 
 	public PowerContainer(LivingEntity owner) {
 		this.owner = owner;
@@ -134,6 +143,11 @@ public class PowerContainer implements IPowerContainer {
 	}
 
 	@Override
+	public @NotNull Set<ResourceLocation> getPowerNames() {
+		return ImmutableSet.copyOf(this.powers.keySet());
+	}
+
+	@Override
 	public @NotNull Set<ResourceLocation> getPowerTypes(boolean includeSubPowers) {
 		if (includeSubPowers)
 			return ImmutableSet.copyOf(this.powers.keySet());
@@ -218,7 +232,28 @@ public class PowerContainer implements IPowerContainer {
 	}
 
 	@Override
-	public void writeToNbt(CompoundTag tag) {
+	public void handle(Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, Tag> data) {
+		this.powerSources.clear();
+		this.powers.clear();
+		this.powerData.clear();
+		Registry<ConfiguredPower<?, ?>> powerRegistry = CalioAPI.getDynamicRegistries(this.owner.getServer()).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+		for (Map.Entry<ResourceLocation, Collection<ResourceLocation>> powerEntry : powerSources.asMap().entrySet()) {
+			ResourceLocation power = powerEntry.getKey();
+			ConfiguredPower<?, ?> configuredPower = powerRegistry.get(power);
+			if (configuredPower == null) {
+				Apoli.LOGGER.warn("Received missing power {} from server for entity {}", power, this.owner.getScoreboardName());
+				continue;
+			}
+			this.powers.put(power, configuredPower);
+			this.powerSources.put(power, new HashSet<>(powerEntry.getValue()));
+			Tag tag = data.get(power);
+			if (tag != null)
+				configuredPower.deserialize(this.owner, tag);
+		}
+	}
+
+	@Override
+	public CompoundTag writeToNbt(CompoundTag tag) {
 		ListTag powerList = new ListTag();
 		for (Map.Entry<ResourceLocation, ConfiguredPower<?, ?>> powerEntry : this.powers.entrySet()) {
 			CompoundTag powerTag = new CompoundTag();
@@ -230,11 +265,28 @@ public class PowerContainer implements IPowerContainer {
 			powerList.add(powerTag);
 		}
 		tag.put("Powers", powerList);
+		return tag;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> @Nullable T getPowerData(ConfiguredPower<?, ?> power, Supplier<? extends T> supplier) {
 		return (T) this.powerData.computeIfAbsent(ApoliAPI.getPowers(this.owner.getServer()).getKey(power), x -> supplier.get());
+	}
+
+	@NotNull
+	@Override
+	public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+		return ApoliCapabilities.POWER_CONTAINER.orEmpty(cap, this.thisOptional);
+	}
+
+	@Override
+	public Tag serializeNBT() {
+		return this.writeToNbt(new CompoundTag());
+	}
+
+	@Override
+	public void deserializeNBT(Tag nbt) {
+		this.readFromNbt((CompoundTag) nbt);
 	}
 }

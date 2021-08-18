@@ -8,11 +8,12 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import io.github.apace100.apoli.util.HudRender;
-import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration> extends PowerFactory<T> implements ICooldownPower<T>, IHudRenderedPower<T> {
 	protected CooldownPowerFactory(Codec<T> codec) {
@@ -116,8 +117,8 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 
 		@Override
 		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
-			if (tag instanceof NbtLong longTag)
-				this.setLastUseTime(configuration, player, longTag.longValue());
+			if (tag instanceof LongTag longTag)
+				this.setLastUseTime(configuration, player, longTag.getAsLong());
 		}
 	}
 }

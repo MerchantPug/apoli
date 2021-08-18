@@ -2,15 +2,15 @@ package dev.experimental.apoli.api.power.factory;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import dev.architectury.core.RegistryEntry;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.ConditionData;
 import dev.experimental.apoli.api.power.IConditionFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> extends RegistryEntry<BlockCondition<?>> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
+public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BlockCondition<?>> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
 	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_CONDITION);
 
 	private final Codec<Pair<T, ConditionData>> codec;

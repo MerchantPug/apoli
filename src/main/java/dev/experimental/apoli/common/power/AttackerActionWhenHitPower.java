@@ -7,10 +7,11 @@ import dev.experimental.apoli.api.power.factory.power.CooldownPowerFactory;
 import dev.experimental.apoli.common.power.configuration.ActionWhenHitConfiguration;
 import dev.experimental.apoli.common.registry.ModPowers;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 public class AttackerActionWhenHitPower extends CooldownPowerFactory.Simple<ActionWhenHitConfiguration> {
-	public static void execute(Player player, DamageSource damageSource, float amount) {
+	public static void execute(LivingEntity player, DamageSource damageSource, float amount) {
 		IPowerContainer.getPowers(player, ModPowers.ATTACKER_ACTION_WHEN_HIT.get()).forEach(x -> x.getFactory().whenHit(x, player, damageSource, amount));
 	}
 
@@ -18,7 +19,7 @@ public class AttackerActionWhenHitPower extends CooldownPowerFactory.Simple<Acti
 		super(ActionWhenHitConfiguration.CODEC);
 	}
 
-	public void whenHit(ConfiguredPower<ActionWhenHitConfiguration, ?> configuration, Player player, DamageSource damageSource, float damageAmount) {
+	public void whenHit(ConfiguredPower<ActionWhenHitConfiguration, ?> configuration, LivingEntity player, DamageSource damageSource, float damageAmount) {
 		if (damageSource.getEntity() != null && damageSource.getEntity() != player) {
 			if (ConfiguredDamageCondition.check(configuration.getConfiguration().damageCondition(), damageSource, damageAmount)) {
 				if (this.canUse(configuration, player)) {

@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

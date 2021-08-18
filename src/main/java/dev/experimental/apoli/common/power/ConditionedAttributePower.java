@@ -6,6 +6,7 @@ import dev.experimental.apoli.api.power.factory.PowerFactory;
 import dev.experimental.apoli.common.power.configuration.ConditionedAttributeConfiguration;
 import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 
 public class ConditionedAttributePower extends PowerFactory<ConditionedAttributeConfiguration> {
 	public ConditionedAttributePower() {
@@ -15,15 +16,15 @@ public class ConditionedAttributePower extends PowerFactory<ConditionedAttribute
 
 	private void add(ListConfiguration<AttributedEntityAttributeModifier> configuration, LivingEntity player) {
 		configuration.getContent().stream().filter(x -> player.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
-			EntityAttributeInstance attributeInstance = player.getAttributeInstance(mod.attribute());
-			if (!attributeInstance.hasModifier(mod.modifier())) attributeInstance.addTemporaryModifier(mod.modifier());
+			AttributeInstance attributeInstance = player.getAttribute(mod.attribute());
+			if (!attributeInstance.hasModifier(mod.modifier())) attributeInstance.addTransientModifier(mod.modifier());
 		});
 	}
 
 
 	private void remove(ListConfiguration<AttributedEntityAttributeModifier> configuration, LivingEntity player) {
 		configuration.getContent().stream().filter(x -> player.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
-			EntityAttributeInstance attributeInstance = player.getAttributeInstance(mod.attribute());
+			AttributeInstance attributeInstance = player.getAttribute(mod.attribute());
 			if (attributeInstance.hasModifier(mod.modifier())) attributeInstance.removeModifier(mod.modifier());
 		});
 	}

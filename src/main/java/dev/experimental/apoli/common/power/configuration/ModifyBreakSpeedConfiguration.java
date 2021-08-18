@@ -5,11 +5,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.configuration.ListConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockCondition;
 import dev.experimental.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ModifyBreakSpeedConfiguration(ListConfiguration<EntityAttributeModifier> modifiers,
+public record ModifyBreakSpeedConfiguration(ListConfiguration<AttributeModifier> modifiers,
 											@Nullable ConfiguredBlockCondition<?, ?> condition) implements IValueModifyingPowerConfiguration {
 	public static final Codec<ModifyBreakSpeedConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyBreakSpeedConfiguration::modifiers),

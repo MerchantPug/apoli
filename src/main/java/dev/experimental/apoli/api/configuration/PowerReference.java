@@ -3,14 +3,15 @@ package dev.experimental.apoli.api.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
-import dev.experimental.calio.api.CalioAPI;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record PowerReference(Identifier power) implements IDynamicFeatureConfiguration {
+public record PowerReference(ResourceLocation power) implements IDynamicFeatureConfiguration {
 	public static Codec<PowerReference> codec(String fieldName) {
 		return mapCodec(fieldName).codec();
 	}

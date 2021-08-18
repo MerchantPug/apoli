@@ -1,6 +1,5 @@
 package dev.experimental.apoli.api.power;
 
-import ConditionData;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 
 public abstract class ConfiguredCondition<T extends IDynamicFeatureConfiguration, F> extends ConfiguredFactory<T, F> {

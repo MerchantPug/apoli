@@ -6,6 +6,7 @@ import dev.experimental.apoli.common.power.configuration.StackingStatusEffectCon
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 
 public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffectConfiguration> {
@@ -47,16 +48,16 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 
 	@Override
 	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, Tag tag) {
-		if (tag instanceof NbtInt intTag)
-			this.getCurrentStacks(configuration, player).set(intTag.intValue());
+		if (tag instanceof IntTag intTag)
+			this.getCurrentStacks(configuration, player).set(intTag.getAsInt());
 	}
 
 	public void applyEffects(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
 		configuration.getConfiguration().effects().getContent().forEach(sei -> {
 			int duration = configuration.getConfiguration().duration() * this.getCurrentStacks(configuration, player).get();
 			if (duration > 0) {
-				StatusEffectInstance applySei = new StatusEffectInstance(sei.getEffectType(), duration, sei.getAmplifier(), sei.isAmbient(), sei.shouldShowParticles(), sei.shouldShowIcon());
-				player.addStatusEffect(applySei);
+				MobEffectInstance applySei = new MobEffectInstance(sei.getEffect(), duration, sei.getAmplifier(), sei.isAmbient(), sei.isVisible(), sei.showIcon());
+				player.addEffect(applySei);
 			}
 		});
 	}

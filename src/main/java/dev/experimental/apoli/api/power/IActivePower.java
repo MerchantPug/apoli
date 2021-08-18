@@ -1,14 +1,13 @@
 package dev.experimental.apoli.api.power;
 
-import Key;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
-import java.util.function.Function;
 import net.minecraft.world.entity.LivingEntity;
-import record;
+
+import java.util.function.Function;
 
 public interface IActivePower<T extends IDynamicFeatureConfiguration> {
 

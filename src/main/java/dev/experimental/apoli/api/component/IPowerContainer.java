@@ -1,28 +1,35 @@
 package dev.experimental.apoli.api.component;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
 import dev.experimental.apoli.api.ApoliAPI;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.IValueModifyingPower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
+import dev.experimental.apoli.common.registry.ApoliCapabilities;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.AttributeUtil;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 
 /**
  * Represents a power container.<br>
@@ -34,27 +41,35 @@ import net.minecraft.world.entity.LivingEntity;
  */
 public interface IPowerContainer {
 	//region Static Methods
+	ResourceLocation KEY = Apoli.identifier("powers");
+
+	@NotNull
+	static LazyOptional<IPowerContainer> get(@Nullable LivingEntity entity) {
+		return entity == null ? LazyOptional.empty() : entity.getCapability(ApoliCapabilities.POWER_CONTAINER);
+	}
 
 	static void sync(LivingEntity living) {
 		ApoliAPI.synchronizePowerContainer(living);
 	}
 
+	static void sync(LivingEntity living, ServerPlayer with) {
+		ApoliAPI.synchronizePowerContainer(living, with);
+	}
+
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> void withPower(Entity entity, F factory, Predicate<ConfiguredPower<T, F>> power, Consumer<ConfiguredPower<T, F>> with) {
-		if (entity instanceof LivingEntity)
-			ApoliAPI.getPowerContainer(entity).getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with);
+		if (entity instanceof LivingEntity living)
+			get(living).ifPresent(x -> x.getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<ConfiguredPower<T, F>> getPowers(Entity entity, F factory) {
-		if (entity instanceof LivingEntity) {
-			return ApoliAPI.getPowerContainer(entity).getPowers(factory);
-		}
+		if (entity instanceof LivingEntity living)
+			return get(living).map(x -> x.getPowers(factory)).orElseGet(ImmutableList::of);
 		return ImmutableList.of();
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> boolean hasPower(Entity entity, F factory) {
-		if (entity instanceof LivingEntity player) {
-			return ApoliAPI.getPowerContainer(entity).getPowers().stream().anyMatch(p -> Objects.equals(factory, p.getFactory()) && p.isActive(player));
-		}
+		if (entity instanceof LivingEntity living)
+			return get(living).map(x -> x.getPowers().stream().anyMatch(p -> Objects.equals(factory, p.getFactory()) && p.isActive(living))).orElse(false);
 		return false;
 	}
 
@@ -75,9 +90,9 @@ public interface IPowerContainer {
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, double baseValue, Predicate<ConfiguredPower<T, F>> powerFilter, Consumer<ConfiguredPower<T, F>> powerAction) {
-		if (entity instanceof PlayerEntity player) {
+		if (entity instanceof Player player) {
 			List<ConfiguredPower<T, F>> powers = IPowerContainer.getPowers(player, factory).stream().filter(x -> powerFilter == null || powerFilter.test(x)).toList();
-			List<EntityAttributeModifier> modifiers = powers.stream().flatMap(x -> x.getFactory().getModifiers(x, player).stream()).toList();
+			List<AttributeModifier> modifiers = powers.stream().flatMap(x -> x.getFactory().getModifiers(x, player).stream()).toList();
 			if (powerAction != null) powers.forEach(powerAction);
 			return AttributeUtil.applyModifiers(modifiers, baseValue);
 		}
@@ -171,6 +186,16 @@ public interface IPowerContainer {
 	List<ConfiguredPower<?, ?>> getPowers();
 
 	/**
+	 * Returns a list of all powers currently on this entity.
+	 * This includes both active and inactive powers.
+	 *
+	 * @return A {@link List} of the instances of {@link ConfiguredPower} currently on this component
+	 */
+	@NotNull
+	@Contract(pure = true)
+	Set<ResourceLocation> getPowerNames();
+
+	/**
 	 * Returns a set of Identifiers containing all power currently contained in this component,
 	 * with a possibility to exclude sub-powers.
 	 *
@@ -253,11 +278,20 @@ public interface IPowerContainer {
 	 * Reads the data from this component to from the given tag.
 	 *
 	 * @param tag         The input tag.
-	 * @param applyEvents Whether or not to apply {@link ConfiguredPower#onRemoved(LivingEntity)}, {@link ConfiguredPower#onLost(LivingEntity)},
-	 *                    {@link ConfiguredPower#onAdded(LivingEntity)} and {@link ConfiguredPower#onGained(LivingEntity)}
+	 * @param applyEvents Whether to apply {@link ConfiguredPower#onRemoved(LivingEntity)}, {@link ConfiguredPower#onLost(LivingEntity)},
+	 *                    {@link ConfiguredPower#onAdded(LivingEntity)} and {@link ConfiguredPower#onGained(LivingEntity)} or not.
 	 */
 	@Contract(mutates = "this")
 	void readNbt(CompoundTag tag, boolean applyEvents);
+
+	/**
+	 * Replaces the currently held data by the data provided
+	 *
+	 * @param powerSources A multimap containing all powers and their sources.
+	 * @param data         A map that may contain the power data if applicable.
+	 */
+	@Contract(mutates = "this")
+	void handle(Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, Tag> data);
 
 	/**
 	 * Writes this component to the given tag.
@@ -265,20 +299,7 @@ public interface IPowerContainer {
 	 * @param tag The tag to write the data on.
 	 */
 	@Contract(mutates = "param")
-	void writeToNbt(CompoundTag tag);
-
-	@Contract(mutates = "param1")
-	default void writeSyncPacket(FriendlyByteBuf buf, ServerPlayer recipient) {
-		CompoundTag tag = new CompoundTag();
-		this.writeToNbt(tag);
-		buf.writeNbt(tag);
-	}
-
-	default void applySyncPacket(FriendlyByteBuf buf) {
-		CompoundTag tag = buf.readNbt();
-		if (tag != null)
-			this.readNbt(tag, false);
-	}
+	CompoundTag writeToNbt(CompoundTag tag);
 
 	/**
 	 * This is a replacement for the system used by fabric in which data is stored with the powers.<br/>

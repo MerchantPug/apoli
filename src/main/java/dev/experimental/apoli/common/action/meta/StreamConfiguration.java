@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.configuration.IStreamConfiguration;
-import dev.experimental.calio.api.network.CalioCodecHelper;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -45,6 +45,6 @@ public record StreamConfiguration<T, V>(List<T> entries, String name,
 
 	@Override
 	public void execute(V parameters) {
-		this.entries.forEach(t -> consumer.accept(t, parameters));
+		this.entries.forEach(t -> this.consumer.accept(t, parameters));
 	}
 }

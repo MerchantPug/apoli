@@ -1,7 +1,6 @@
 package dev.experimental.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
-import dev.architectury.core.RegistryEntry;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.IFactory;
 import dev.experimental.apoli.api.power.configuration.ConfiguredBlockAction;
@@ -9,8 +8,9 @@ import dev.experimental.apoli.api.registry.ApoliRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class BlockAction<T extends IDynamicFeatureConfiguration> extends RegistryEntry<BlockAction<?>> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
+public abstract class BlockAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BlockAction<?>> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
 	public static final Codec<BlockAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_ACTION);
 
 	private final Codec<T> codec;

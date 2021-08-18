@@ -76,8 +76,8 @@ public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfigu
 
 		@Override
 		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
-			if (tag instanceof NbtInt intTag)
-				this.set(configuration, player, intTag.intValue());
+			if (tag instanceof IntTag intTag)
+				this.set(configuration, player, intTag.getAsInt());
 		}
 	}
 }

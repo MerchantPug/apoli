@@ -1,6 +1,5 @@
 package dev.experimental.apoli.api.power.configuration;
 
-import PowerData;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.ApoliAPI;
@@ -8,20 +7,22 @@ import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import dev.experimental.apoli.api.power.*;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
 import io.github.apace100.apoli.util.HudRender;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.LivingEntity;
 
 /**
  * This is a replacement for the power system used by fabric.
  * It should be better when it comes to memory usage since every power is only instantiated once.
  * The main drawback is when it comes to mutable variables, in which case this system feels wrong
  * to use, although consider using provided types, as they (mostly) hide all this in simple cases.
+ *
  * @param <C> The type of the configuration.
  * @param <F> The type of the factory.
  */

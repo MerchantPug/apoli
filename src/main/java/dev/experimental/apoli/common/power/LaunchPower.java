@@ -3,7 +3,11 @@ package dev.experimental.apoli.common.power;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.factory.power.ActiveCooldownPowerFactory;
 import dev.experimental.apoli.common.power.configuration.LaunchConfiguration;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 public class LaunchPower extends ActiveCooldownPowerFactory.Simple<LaunchConfiguration> {
 	public LaunchPower() {
@@ -12,16 +16,16 @@ public class LaunchPower extends ActiveCooldownPowerFactory.Simple<LaunchConfigu
 
 	@Override
 	protected void execute(ConfiguredPower<LaunchConfiguration, ?> configuration, LivingEntity player) {
-		World world = player.getEntityWorld();
-		if (!world.isClient) {
+		Level world = player.getCommandSenderWorld();
+		if (!world.isClientSide()) {
 			LaunchConfiguration config = configuration.getConfiguration();
-			player.addVelocity(0, config.speed(), 0);
-			player.velocityModified = true;
+			player.push(0, config.speed(), 0);
+			player.hurtMarked = true;
 			if (config.sound() != null)
-				world.playSound(null, player.getX(), player.getY(), player.getZ(), config.sound(), SoundCategory.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
-			if (player.world instanceof ServerWorld serverWorld) {
+				world.playSound(null, player.getX(), player.getY(), player.getZ(), config.sound(), SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
+			if (player.level instanceof ServerLevel serverWorld) {
 				for (int i = 0; i < 4; ++i)
-					serverWorld.spawnParticles(ParticleTypes.CLOUD, player.getX(), player.getRandomBodyY(), player.getZ(), 8, player.getRandom().nextGaussian(), 0.0D, player.getRandom().nextGaussian(), 0.5);
+					serverWorld.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getRandomY(), player.getZ(), 8, player.getRandom().nextGaussian(), 0.0D, player.getRandom().nextGaussian(), 0.5);
 			}
 		}
 	}

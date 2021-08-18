@@ -17,6 +17,7 @@ repositories {
 	mavenLocal()
 	maven { url "https://maven.minecraftforge.net/" }
 	maven { url 'https://maven.architectury.dev' }
+	maven { url 'https://repo.spongepowered.org/maven'}
 }
 
 //mixin {
@@ -107,8 +108,7 @@ dependencies {
 	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
 	implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
 	implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${calio_version}")
-
-	//implementation group: 'org.spongepowered', name: 'mixin', version: '0.8.3'
+	implementation group: 'org.spongepowered', name: 'mixin', version: '0.8.4-SNAPSHOT'
 }
 
 jar {

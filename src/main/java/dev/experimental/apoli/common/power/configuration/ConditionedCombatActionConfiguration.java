@@ -8,6 +8,8 @@ import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
 import dev.experimental.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.HudRender;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;

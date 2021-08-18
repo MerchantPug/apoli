@@ -5,6 +5,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +32,6 @@ public record ParticleConfiguration(ParticleType<?> particle,
 
 	@Override
 	public boolean isConfigurationValid() {
-		return this.particle() instanceof ParticleEffect;
+		return this.particle() instanceof ParticleOptions;
 	}
 }

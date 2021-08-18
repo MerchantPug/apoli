@@ -1,16 +1,16 @@
 package dev.experimental.apoli.api.power.factory.power;
 
-import Key;
 import com.mojang.serialization.Codec;
 import dev.experimental.apoli.api.component.IPowerContainer;
 import dev.experimental.apoli.api.power.IActivePower;
 import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
 import dev.experimental.apoli.api.power.configuration.power.ITogglePowerConfiguration;
 import dev.experimental.apoli.api.power.factory.PowerFactory;
-import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> extends PowerFactory<T> implements IActivePower<T> {
 	protected TogglePowerFactory(Codec<T> codec) {
@@ -67,8 +67,8 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 
 		@Override
 		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
-			if (tag instanceof NbtByte byteTag)
-				this.setStatus(configuration, player, byteTag.byteValue() != 0);
+			if (tag instanceof ByteTag byteTag)
+				this.setStatus(configuration, player, byteTag.getAsByte() != 0);
 		}
 	}
 }
