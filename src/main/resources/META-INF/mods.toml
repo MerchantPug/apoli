@@ -23,7 +23,7 @@ side="BOTH"
 [[dependencies.apoli]]
 modId="forge"
 mandatory=true
-versionRange="[37.0.34,)"
+versionRange="[37.0.42,)"
 ordering="NONE"
 side="BOTH"
 

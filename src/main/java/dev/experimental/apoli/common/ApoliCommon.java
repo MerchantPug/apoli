@@ -13,6 +13,8 @@ import dev.experimental.apoli.common.registry.action.ModItemActions;
 import dev.experimental.apoli.common.registry.condition.*;
 import io.github.apace100.apoli.Apoli;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmllegacy.network.NetworkDirection;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
@@ -63,9 +65,5 @@ public class ApoliCommon {
 		ModEntityConditions.register();
 		ModFluidConditions.register();
 		ModItemConditions.register();
-
-		//Capabilities
-		CapabilityManager.INSTANCE.register(IPowerContainer.class);
-		CapabilityManager.INSTANCE.register(IPowerDataCache.class);
 	}
 }

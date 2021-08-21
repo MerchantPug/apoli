@@ -38,19 +38,19 @@ public class PowerHudRenderer extends GuiComponent implements GameHudRender {
 			int barWidth = 71;
 			int barHeight = 8;
 			int iconSize = 8;
-			List<ConfiguredPower<?, ?>> configuredPowers = component.getPowers().stream().filter(power -> power.asHudRendered().isPresent()).sorted(Comparator.comparing(power -> power.getRenderSettings(player).orElse(HudRender.DONT_RENDER).getSpriteLocation())).toList();
+			List<ConfiguredPower<?, ?>> configuredPowers = component.getPowers().stream().filter(power -> power.asHudRendered().isPresent()).sorted(Comparator.comparing(power -> power.getRenderSettings(player).orElse(HudRender.DONT_RENDER).spriteLocation())).toList();
 			ResourceLocation lastLocation = null;
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 			for (ConfiguredPower<?, ?> hudPower : configuredPowers) {
 				HudRender render = hudPower.getRenderSettings(player).orElse(HudRender.DONT_RENDER);
 				if (render.shouldRender(player) && hudPower.shouldRender(player).orElse(false)) {
-					ResourceLocation currentLocation = render.getSpriteLocation();
+					ResourceLocation currentLocation = render.spriteLocation();
 					if (currentLocation != lastLocation) {
 						RenderSystem.setShaderTexture(0, currentLocation);
 						lastLocation = currentLocation;
 					}
 					this.blit(matrices, x, y, 0, 0, barWidth, 5);
-					int v = 8 + render.getBarIndex() * 10;
+					int v = 8 + render.barIndex() * 10;
 					int w = (int) (hudPower.getFill(player).orElse(0F) * barWidth);
 					this.blit(matrices, x, y - 2, 0, v, w, barHeight);
 					this.setBlitOffset(this.getBlitOffset() + 1);

@@ -1,43 +1,39 @@
 package io.github.apace100.apoli.util;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.apace100.apoli.Apoli;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
-public class HudRender {
+import java.util.Optional;
+
+public record HudRender(boolean shouldRender, int barIndex, ResourceLocation spriteLocation,
+						ConfiguredEntityCondition<?, ?> condition) {
+
+	public static final Codec<HudRender> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			Codec.BOOL.optionalFieldOf("should_render", true).forGetter(HudRender::shouldRender),
+			Codec.INT.optionalFieldOf("bar_index", 0).forGetter(HudRender::barIndex),
+			ResourceLocation.CODEC.optionalFieldOf("sprite_location", Apoli.identifier("textures/gui/resource_bar.png")).forGetter(HudRender::spriteLocation),
+			ConfiguredEntityCondition.CODEC.optionalFieldOf("condition").forGetter(x -> Optional.ofNullable(x.condition()))
+	).apply(instance, (t1, t2, t3, t4) -> new HudRender(t1, t2, t3, t4.orElse(null))));
 
 	public static final HudRender DONT_RENDER = new HudRender(false, 0, Apoli.identifier("textures/gui/resource_bar.png"), null);
 
-	private final boolean shouldRender;
-	private final int barIndex;
-	private final ResourceLocation spriteLocation;
-	private final ConfiguredEntityCondition<?, ?> playerCondition;
-
-	public HudRender(boolean shouldRender, int barIndex, ResourceLocation spriteLocation, ConfiguredEntityCondition<?, ?> condition) {
-		this.shouldRender = shouldRender;
-		this.barIndex = barIndex;
-		this.spriteLocation = spriteLocation;
-		this.playerCondition = condition;
-	}
-
 	public ResourceLocation getSpriteLocation() {
-		return this.spriteLocation;
+		return this.spriteLocation();
 	}
 
 	public int getBarIndex() {
-		return this.barIndex;
-	}
-
-	public boolean shouldRender() {
-		return this.shouldRender;
+		return this.barIndex();
 	}
 
 	public boolean shouldRender(Player player) {
-		return this.shouldRender && (this.playerCondition == null || this.playerCondition.check(player));
+		return this.shouldRender() && (this.condition() == null || this.condition().check(player));
 	}
 
 	public ConfiguredEntityCondition<?, ?> getCondition() {
-		return this.playerCondition;
+		return this.condition();
 	}
 }

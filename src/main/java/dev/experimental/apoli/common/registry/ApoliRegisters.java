@@ -1,11 +1,14 @@
 package dev.experimental.apoli.common.registry;
 
+import dev.experimental.apoli.api.component.IPowerContainer;
+import dev.experimental.apoli.api.component.IPowerDataCache;
 import dev.experimental.apoli.api.power.factory.*;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.PowerRestrictedCraftingRecipe;
 import io.github.apace100.calio.ClassUtil;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -51,5 +54,11 @@ public class ApoliRegisters {
 		RECIPE_SERIALIZERS.register(bus);
 
 		RECIPE_SERIALIZERS.register("power_restricted", () -> PowerRestrictedCraftingRecipe.SERIALIZER);
+		bus.addListener(ApoliRegisters::registerCapabilities);
+	}
+
+	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.register(IPowerContainer.class);
+		event.register(IPowerDataCache.class);
 	}
 }
