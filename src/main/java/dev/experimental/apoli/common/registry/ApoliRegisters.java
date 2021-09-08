@@ -6,7 +6,6 @@ import dev.experimental.apoli.api.power.factory.*;
 import dev.experimental.apoli.api.registry.ApoliRegistries;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.PowerRestrictedCraftingRecipe;
-import io.github.apace100.calio.ClassUtil;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -16,16 +15,17 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryBuilder;
 
 public class ApoliRegisters {
-	public static final DeferredRegister<PowerFactory<?>> POWER_FACTORIES = DeferredRegister.create(ClassUtil.<PowerFactory<?>>castClass(PowerFactory.class), Apoli.MODID);
-	public static final DeferredRegister<EntityCondition<?>> ENTITY_CONDITIONS = DeferredRegister.create(ClassUtil.<EntityCondition<?>>castClass(EntityCondition.class), Apoli.MODID);
-	public static final DeferredRegister<ItemCondition<?>> ITEM_CONDITIONS = DeferredRegister.create(ClassUtil.<ItemCondition<?>>castClass(ItemCondition.class), Apoli.MODID);
-	public static final DeferredRegister<BlockCondition<?>> BLOCK_CONDITIONS = DeferredRegister.create(ClassUtil.<BlockCondition<?>>castClass(BlockCondition.class), Apoli.MODID);
-	public static final DeferredRegister<DamageCondition<?>> DAMAGE_CONDITIONS = DeferredRegister.create(ClassUtil.<DamageCondition<?>>castClass(DamageCondition.class), Apoli.MODID);
-	public static final DeferredRegister<FluidCondition<?>> FLUID_CONDITIONS = DeferredRegister.create(ClassUtil.<FluidCondition<?>>castClass(FluidCondition.class), Apoli.MODID);
-	public static final DeferredRegister<BiomeCondition<?>> BIOME_CONDITIONS = DeferredRegister.create(ClassUtil.<BiomeCondition<?>>castClass(BiomeCondition.class), Apoli.MODID);
-	public static final DeferredRegister<EntityAction<?>> ENTITY_ACTIONS = DeferredRegister.create(ClassUtil.<EntityAction<?>>castClass(EntityAction.class), Apoli.MODID);
-	public static final DeferredRegister<ItemAction<?>> ITEM_ACTIONS = DeferredRegister.create(ClassUtil.<ItemAction<?>>castClass(ItemAction.class), Apoli.MODID);
-	public static final DeferredRegister<BlockAction<?>> BLOCK_ACTIONS = DeferredRegister.create(ClassUtil.<BlockAction<?>>castClass(BlockAction.class), Apoli.MODID);
+	public static final DeferredRegister<PowerFactory<?>> POWER_FACTORIES = DeferredRegister.create(ApoliRegistries.POWER_FACTORY_CLASS, Apoli.MODID);
+	public static final DeferredRegister<EntityCondition<?>> ENTITY_CONDITIONS = DeferredRegister.create(ApoliRegistries.ENTITY_CONDITION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<ItemCondition<?>> ITEM_CONDITIONS = DeferredRegister.create(ApoliRegistries.ITEM_CONDITION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<BlockCondition<?>> BLOCK_CONDITIONS = DeferredRegister.create(ApoliRegistries.BLOCK_CONDITION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<DamageCondition<?>> DAMAGE_CONDITIONS = DeferredRegister.create(ApoliRegistries.DAMAGE_CONDITION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<FluidCondition<?>> FLUID_CONDITIONS = DeferredRegister.create(ApoliRegistries.FLUID_CONDITION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<BiomeCondition<?>> BIOME_CONDITIONS = DeferredRegister.create(ApoliRegistries.BIOME_CONDITION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<EntityAction<?>> ENTITY_ACTIONS = DeferredRegister.create(ApoliRegistries.ENTITY_ACTION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<ItemAction<?>> ITEM_ACTIONS = DeferredRegister.create(ApoliRegistries.ITEM_ACTION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<BlockAction<?>> BLOCK_ACTIONS = DeferredRegister.create(ApoliRegistries.BLOCK_ACTION_CLASS, Apoli.MODID);
+
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Apoli.MODID);
 
 	public static void register() {

@@ -9,15 +9,25 @@ import dev.experimental.apoli.api.power.factory.*;
 import io.github.apace100.calio.ClassUtil;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.RegistryBuilder;
 
 import java.util.function.Supplier;
 
 public class ApoliRegistries {
+	//Because these class technically don't exist, this is a no warning way to obtain those classes.
+	//This is done the same way as Architectury's events. Credit to them for that.
+	public static final Class<PowerFactory<?>> POWER_FACTORY_CLASS = ClassUtil.get();
+	public static final Class<EntityCondition<?>> ENTITY_CONDITION_CLASS = ClassUtil.get();
+	public static final Class<ItemCondition<?>> ITEM_CONDITION_CLASS = ClassUtil.get();
+	public static final Class<BlockCondition<?>> BLOCK_CONDITION_CLASS = ClassUtil.get();
+	public static final Class<DamageCondition<?>> DAMAGE_CONDITION_CLASS = ClassUtil.get();
+	public static final Class<FluidCondition<?>> FLUID_CONDITION_CLASS = ClassUtil.get();
+	public static final Class<BiomeCondition<?>> BIOME_CONDITION_CLASS = ClassUtil.get();
+	public static final Class<EntityAction<?>> ENTITY_ACTION_CLASS = ClassUtil.get();
+	public static final Class<ItemAction<?>> ITEM_ACTION_CLASS = ClassUtil.get();
+	public static final Class<BlockAction<?>> BLOCK_ACTION_CLASS = ClassUtil.get();
 
 	public static final ResourceKey<net.minecraft.core.Registry<PowerFactory<?>>> POWER_FACTORY_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("power_factory"));
 	public static final ResourceKey<net.minecraft.core.Registry<EntityCondition<?>>> ENTITY_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("entity_condition"));

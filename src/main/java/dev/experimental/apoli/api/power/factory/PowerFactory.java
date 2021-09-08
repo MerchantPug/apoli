@@ -143,19 +143,19 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 		return this.tickInterval(configuration.getConfiguration(), entity);
 	}
 
-	protected void tick(T configuration, LivingEntity entity) { }
+	protected void tick(T configuration, LivingEntity entity) {}
 
-	protected void onGained(T configuration, LivingEntity entity) { }
+	protected void onGained(T configuration, LivingEntity entity) {}
 
-	protected void onLost(T configuration, LivingEntity entity) { }
+	protected void onLost(T configuration, LivingEntity entity) {}
 
-	protected void onAdded(T configuration, LivingEntity entity) { }
+	protected void onAdded(T configuration, LivingEntity entity) {}
 
 	protected void onRemoved(T configuration, LivingEntity entity) {}
 
-	protected void onRespawn(T configuration, LivingEntity entity) { }
+	protected void onRespawn(T configuration, LivingEntity entity) {}
 
-	protected int tickInterval(T configuration, LivingEntity entity) { return 1; }
+	protected int tickInterval(T configuration, LivingEntity entity) {return 1;}
 
 	public boolean isActive(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
 		return !this.shouldCheckConditions() || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));

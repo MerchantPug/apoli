@@ -1,6 +1,6 @@
 plugins {
 	id 'net.minecraftforge.gradle'
-	//id 'org.spongepowered.mixin'
+	id 'org.spongepowered.mixin'
 	id 'idea'
 	id 'maven-publish'
 }
@@ -89,6 +89,10 @@ processResources {
 	})
 }
 
+mixin {
+	add sourceSets.main, "apoli.refmap.json"
+}
+
 jar {
 	manifest {
 		attributes(
@@ -98,7 +102,8 @@ jar {
 				"Implementation-Title": project.name,
 				"Implementation-Version": project.version,
 				"Implementation-Vendor": "EdwinMindcraft",
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				"Automatic-Module-Name": "apoli.forge"
 		)
 	}
 }
@@ -106,9 +111,9 @@ jar {
 dependencies {
 	minecraft group: 'net.minecraftforge', name: 'forge', version: "${minecraft_version}-${forge_version}"
 	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
-	implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
-	implementation fg.deobf("io.github.edwinmindcraft:calio-forge:${calio_version}")
-	implementation group: 'org.spongepowered', name: 'mixin', version: '0.8.4-SNAPSHOT'
+	implementation group: 'org.jetbrains', name: 'annotations', version: '22.0.0'
+	implementation fg.deobf(group: 'io.github.edwinmindcraft', name: 'calio-forge', version: "${calio_version}")
+	implementation group: 'org.spongepowered', name: 'mixin', version: '0.8.4'
 }
 
 jar {
