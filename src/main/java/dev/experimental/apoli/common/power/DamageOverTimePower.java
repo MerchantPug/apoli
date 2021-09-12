@@ -58,11 +58,9 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 	}
 
 	protected int getDamageBegin(DamageOverTimeConfiguration configuration, LivingEntity player) {
-		int prot = getProtection(configuration, player);
-		if (prot >= 64)
-			return 24000;
-		prot = (int) (prot * 2 * 20 * configuration.protectionEffectiveness());
-		return configuration.delay() + prot;
+        int prot = this.getProtection(configuration, player);
+        int delay = (int)(Math.pow(prot * 2, 1.3) * configuration.protectionEffectiveness());
+        return configuration.delay() + delay;
 	}
 
 	private int getProtection(DamageOverTimeConfiguration configuration, LivingEntity player) {

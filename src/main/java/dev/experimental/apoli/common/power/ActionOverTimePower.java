@@ -20,10 +20,10 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 		AtomicBoolean data = configuration.getPowerData(player, () -> new AtomicBoolean(false));
 		ActionOverItemConfiguration config = configuration.getConfiguration();
 		if (configuration.isActive(player)) {
-			if (config.entityAction() != null)
-				config.entityAction().execute(player);
 			if (!data.get() && config.risingAction() != null)
 				config.risingAction().execute(player);
+			if (config.entityAction() != null)
+				config.entityAction().execute(player);
 			data.set(true);
 		} else {
 			if (data.get() && config.fallingAction() != null)
