@@ -1,27 +1,29 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.api.power.INightVisionPower;
-import dev.experimental.apoli.common.power.PhasingPower;
-import dev.experimental.apoli.common.power.configuration.PhasingConfiguration;
-import dev.experimental.apoli.common.registry.ModPowers;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.PostChain;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.NightVisionPower;
+import io.github.apace100.apoli.power.PhasingPower;
+import io.github.apace100.apoli.power.ShaderPower;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,54 +43,35 @@ import java.util.Set;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-	// NightVisionPower
-	@Inject(at = @At("RETURN"), method = "getNightVisionScale", cancellable = true)
-	private static void getNightVisionStrength(LivingEntity livingEntity, float f, CallbackInfoReturnable<Float> info) {
-		float returnValueF = info.getReturnValueF();
-		INightVisionPower.getNightVisionStrength(livingEntity).filter(x -> x > returnValueF).ifPresent(info::setReturnValue);
-	}
+    private final HashMap<BlockPos, BlockState> savedStates = new HashMap<>();
+    @Shadow
+    @Final
+    private Camera mainCamera;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+    @Shadow
+    private PostChain postEffect;
+    @Shadow
+    private boolean effectActive;
+    @Unique
+    private ResourceLocation currentlyLoadedShader;
+    @Shadow
+    @Final
+    private ResourceManager resourceManager;
+    @Shadow
+    public abstract void loadEffect(ResourceLocation identifier);
 
-	private final HashMap<BlockPos, BlockState> savedStates = new HashMap<>();
-	@Shadow
-	@Final
-	private Camera mainCamera;
-	@Shadow
-	@Final
-	private Minecraft minecraft;
-	@Shadow
-	private PostChain postEffect;
-	@Shadow
-	private boolean effectActive;
-	@Unique
-	private ResourceLocation currentlyLoadedShader;
-
-	@Shadow
-	public abstract void loadEffect(ResourceLocation identifier);
-
-	@Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
-	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
-		IPowerContainer.withPower(this.minecraft.getCameraEntity(), ModPowers.SHADER.get(), null, shaderPower -> {
-			ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
-			this.loadEffect(shaderLoc);
-			this.currentlyLoadedShader = shaderLoc;
-		});
-	}
-/*
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setCameraEntity(Lnet/minecraft/entity/Entity;)V"))
-    private void updateShaderPowers(CallbackInfo ci) {
-        if(IPowerContainer.hasPower(client.getCameraEntity(), ShaderPower.class)) {
-            IPowerContainer.withPower(client.getCameraEntity(), ShaderPower.class, null, shaderPower -> {
-                Identifier shaderLoc = shaderPower.getShaderLocation();
-                loadShader(shaderLoc);
-                currentlyLoadedShader = shaderLoc;
-            });
-        } else {
-            this.shader.close();
-            this.shader = null;
-            this.shadersEnabled = false;
-            currentlyLoadedShader = null;
-        }
-    }*/
+    @Inject(at = @At("TAIL"), method = "onCameraEntitySet")
+    private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
+        IPowerContainer.withPower(this.minecraft.getCameraEntity(), ModPowers.SHADER.get(), null, shaderPower -> {
+            ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
+            if(this.resourceManager.containsResource(shaderLoc)) {
+                this.loadEffect(shaderLoc);
+                this.currentlyLoadedShader = shaderLoc;
+            }
+        });
+    }
 
 	@Inject(at = @At("HEAD"), method = "render")
 	private void loadShaderFromPower(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
@@ -100,8 +83,10 @@ public abstract class GameRendererMixin {
 			}
 		});
 		if (!IPowerContainer.hasPower(this.minecraft.getCameraEntity(), ModPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
-			this.postEffect.close();
-			this.postEffect = null;
+            if(this.postEffect != null) {
+                this.postEffect.close();
+                this.postEffect = null;
+            }
 			this.effectActive = false;
 			this.currentlyLoadedShader = null;
 		}
