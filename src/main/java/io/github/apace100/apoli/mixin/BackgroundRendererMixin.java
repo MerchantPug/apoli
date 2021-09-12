@@ -132,22 +132,22 @@ public abstract class BackgroundRendererMixin {
 		}
 
 	 */
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZ)V", constant = @Constant(floatValue = 0.25F, ordinal = 1))
+	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 0.25F, ordinal = 1))
 	private static float modifyLavaVisibilitySNoPotion(float original, Camera camera) {
 		return LavaVisionPower.getS(camera.getEntity()).orElse(original);
 	}
 
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZ)V", constant = @Constant(floatValue = 1.0F, ordinal = 0))
+	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 1.0F, ordinal = 0))
 	private static float modifyLavaVisibilityVNoPotion(float original, Camera camera) {
 		return LavaVisionPower.getV(camera.getEntity()).orElse(original);
 	}
 
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZ)V", constant = @Constant(floatValue = 0.0F, ordinal = 0))
+	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 0.0F, ordinal = 0))
 	private static float modifyLavaVisibilitySWithPotion(float original, Camera camera) {
 		return LavaVisionPower.getS(camera.getEntity()).orElse(original);
 	}
 
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZ)V", constant = @Constant(floatValue = 3.0F, ordinal = 0))
+	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 3.0F, ordinal = 0))
 	private static float modifyLavaVisibilityVWithPotion(float original, Camera camera) {
 		return LavaVisionPower.getV(camera.getEntity()).orElse(original);
 	}
