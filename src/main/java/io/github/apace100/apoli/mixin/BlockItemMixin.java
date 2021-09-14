@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.common.power.PreventItemActionPower;
+import io.github.edwinmindcraft.apoli.common.power.PreventItemActionPower;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;

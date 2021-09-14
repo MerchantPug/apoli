@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.common.power.PhasingPower;
-import dev.experimental.apoli.common.power.PreventBlockActionPower;
+import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
+import io.github.edwinmindcraft.apoli.common.power.PreventBlockActionPower;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;

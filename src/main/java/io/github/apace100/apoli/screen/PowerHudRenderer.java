@@ -2,8 +2,8 @@ package io.github.apace100.apoli.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.apace100.apoli.util.HudRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;

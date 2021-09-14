@@ -1,12 +1,13 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.common.power.PhasingPower;
-import dev.experimental.apoli.common.power.configuration.PhasingConfiguration;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.core.BlockPos;
@@ -101,8 +102,11 @@ public abstract class GameRendererMixin {
 	@Inject(at = @At(value = "HEAD"), method = "render")
 	private void beforeRender(float tickDelta, long startTime, boolean tick, CallbackInfo info) {
 		Optional<Float> renderMethod = PhasingPower.getRenderMethod(this.mainCamera.getEntity(), PhasingConfiguration.RenderType.REMOVE_BLOCKS);
+		ClientLevel level = this.minecraft.level;
+		if (level == null)
+			return;
 		if (renderMethod.isPresent()) {
-			float view = renderMethod.get();
+			//float view = renderMethod.get();
 			Set<BlockPos> eyePositions = this.getEyePos(0.25F, 0.05F, 0.25F);
 			Set<BlockPos> noLongerEyePositions = new HashSet<>();
 			for (BlockPos p : this.savedStates.keySet()) {
@@ -112,21 +116,21 @@ public abstract class GameRendererMixin {
 			}
 			for (BlockPos eyePosition : noLongerEyePositions) {
 				BlockState state = this.savedStates.get(eyePosition);
-				this.minecraft.level.setBlockAndUpdate(eyePosition, state);
+				level.setBlockAndUpdate(eyePosition, state);
 				this.savedStates.remove(eyePosition);
 			}
 			for (BlockPos p : eyePositions) {
-				BlockState stateAtP = this.minecraft.level.getBlockState(p);
-				if (!this.savedStates.containsKey(p) && !this.minecraft.level.isEmptyBlock(p) && !(stateAtP.getBlock() instanceof LiquidBlock)) {
+				BlockState stateAtP = level.getBlockState(p);
+				if (!this.savedStates.containsKey(p) && !level.isEmptyBlock(p) && !(stateAtP.getBlock() instanceof LiquidBlock)) {
 					this.savedStates.put(p, stateAtP);
-					this.minecraft.level.setKnownState(p, Blocks.AIR.defaultBlockState());
+					level.setKnownState(p, Blocks.AIR.defaultBlockState());
 				}
 			}
 		} else if (this.savedStates.size() > 0) {
 			Set<BlockPos> noLongerEyePositions = new HashSet<>(this.savedStates.keySet());
 			for (BlockPos eyePosition : noLongerEyePositions) {
 				BlockState state = this.savedStates.get(eyePosition);
-				this.minecraft.level.setBlockAndUpdate(eyePosition, state);
+				level.setBlockAndUpdate(eyePosition, state);
 				this.savedStates.remove(eyePosition);
 			}
 		}

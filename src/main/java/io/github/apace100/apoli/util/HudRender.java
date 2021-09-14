@@ -2,7 +2,7 @@ package io.github.apace100.apoli.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.experimental.apoli.api.power.configuration.ConfiguredEntityCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.apace100.apoli.Apoli;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;

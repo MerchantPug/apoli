@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.api.power.INightVisionPower;
+import io.github.edwinmindcraft.apoli.api.power.INightVisionPower;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.world.effect.MobEffect;

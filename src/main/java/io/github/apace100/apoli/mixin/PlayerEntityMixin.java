@@ -1,8 +1,8 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.common.registry.ModPowers;
-import dev.experimental.apoli.common.util.CoreUtils;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.Nameable;
@@ -14,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,13 +33,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	}
 
 	@Shadow
-	public abstract boolean hurt(DamageSource source, float amount);
+	public abstract boolean hurt(@NotNull DamageSource source, float amount);
 
 	@Shadow
-	public abstract ItemStack getItemBySlot(EquipmentSlot slot);
+	public abstract @NotNull ItemStack getItemBySlot(@NotNull EquipmentSlot slot);
 
 	@Shadow
-	public abstract EntityDimensions getDimensions(Pose pose);
+	public abstract @NotNull EntityDimensions getDimensions(@NotNull Pose pose);
 
 	@Shadow
 	@Nullable

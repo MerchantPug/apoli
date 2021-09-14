@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.common.power.ElytraFlightPower;
+import io.github.edwinmindcraft.apoli.common.power.ElytraFlightPower;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;

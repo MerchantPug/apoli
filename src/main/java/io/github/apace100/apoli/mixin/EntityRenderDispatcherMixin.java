@@ -1,5 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
+import io.github.edwinmindcraft.apoli.common.power.PreventEntityRenderPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -20,7 +21,7 @@ public class EntityRenderDispatcherMixin {
 	private void preventRenderingEntities(Entity entity, Frustum frustum, double x, double y, double z, CallbackInfoReturnable<Boolean> cir) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player != null) {
-			if (dev.experimental.apoli.common.power.PreventEntityRenderPower.isRenderPrevented(player, entity))
+			if (PreventEntityRenderPower.isRenderPrevented(player, entity))
 				cir.setReturnValue(false);
 		}
 	}

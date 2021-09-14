@@ -1,8 +1,8 @@
 package io.github.apace100.apoli.util;
 
 import com.google.common.collect.Lists;
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -15,10 +15,10 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 
@@ -29,12 +29,12 @@ public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 	}
 
 	@Override
-	public boolean matches(CraftingContainer inv, Level world) {
+	public boolean matches(@NotNull CraftingContainer inv, @NotNull Level world) {
 		return this.getRecipes(inv).stream().anyMatch(r -> r.matches(inv, world));
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer inv) {
+	public @NotNull ItemStack assemble(@NotNull CraftingContainer inv) {
 		Player player = this.getPlayerFromInventory(inv);
 		if (player != null) {
 			Optional<Recipe<CraftingContainer>> optional = this.getRecipes(inv).stream().filter(r -> r.matches(inv, player.level)).findFirst();
@@ -52,7 +52,7 @@ public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public @NotNull RecipeSerializer<?> getSerializer() {
 		return SERIALIZER;
 	}
 

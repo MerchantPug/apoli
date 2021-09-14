@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin.forge;
 
-import dev.experimental.apoli.common.power.ClimbingPower;
+import io.github.edwinmindcraft.apoli.common.power.ClimbingPower;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

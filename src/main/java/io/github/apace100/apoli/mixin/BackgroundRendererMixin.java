@@ -1,10 +1,10 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.experimental.apoli.api.power.INightVisionPower;
-import dev.experimental.apoli.common.power.LavaVisionPower;
-import dev.experimental.apoli.common.power.PhasingPower;
-import dev.experimental.apoli.common.power.configuration.PhasingConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.INightVisionPower;
+import io.github.edwinmindcraft.apoli.common.power.LavaVisionPower;
+import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
@@ -101,7 +101,7 @@ public abstract class BackgroundRendererMixin {
 		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
 		for (int i = 0; i < 8; ++i) {
-			double d = playerEntity.getX() + (double) (((float) ((i >> 0) % 2) - 0.5F) * playerEntity.getBbWidth() * 0.8F);
+			double d = playerEntity.getX() + (double) (((float) (i % 2) - 0.5F) * playerEntity.getBbWidth() * 0.8F);
 			double e = playerEntity.getEyeY() + (double) (((float) ((i >> 1) % 2) - 0.5F) * 0.1F);
 			double f = playerEntity.getZ() + (double) (((float) ((i >> 2) % 2) - 0.5F) * playerEntity.getBbWidth() * 0.8F);
 			mutable.set(d, e, f);

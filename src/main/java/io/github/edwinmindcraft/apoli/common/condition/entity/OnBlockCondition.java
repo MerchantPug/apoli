@@ -1,0 +1,21 @@
+package io.github.edwinmindcraft.apoli.common.condition.entity;
+
+import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
+import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+
+import java.util.Optional;
+
+public class OnBlockCondition extends EntityCondition<FieldConfiguration<Optional<ConfiguredBlockCondition<?, ?>>>> {
+
+	public OnBlockCondition() {
+		super(FieldConfiguration.optionalCodec(ConfiguredBlockCondition.CODEC, "block_condition"));
+	}
+
+	@Override
+	public boolean check(FieldConfiguration<Optional<ConfiguredBlockCondition<?, ?>>> configuration, LivingEntity entity) {
+		return entity.isOnGround() && configuration.value().map(x -> x.check(new BlockInWorld(entity.level, entity.blockPosition(), true))).orElse(true);
+	}
+}

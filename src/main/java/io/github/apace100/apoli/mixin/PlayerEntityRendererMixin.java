@@ -2,8 +2,8 @@ package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.experimental.apoli.common.power.configuration.ColorConfiguration;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;

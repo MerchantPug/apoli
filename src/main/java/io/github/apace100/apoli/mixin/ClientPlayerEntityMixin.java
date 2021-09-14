@@ -1,8 +1,8 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.authlib.GameProfile;
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import io.github.apace100.apoli.access.WaterMovingEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;

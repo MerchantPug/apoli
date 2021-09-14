@@ -2,9 +2,9 @@ package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.common.power.configuration.ColorConfiguration;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;

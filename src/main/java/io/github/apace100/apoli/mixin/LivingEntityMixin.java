@@ -1,13 +1,13 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.api.configuration.FieldConfiguration;
-import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
-import dev.experimental.apoli.common.power.EffectImmunityPower;
-import dev.experimental.apoli.common.power.EntityGroupPower;
-import dev.experimental.apoli.common.power.ModifyFallingPower;
-import dev.experimental.apoli.common.power.configuration.ModifyFallingConfiguration;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.power.EffectImmunityPower;
+import io.github.edwinmindcraft.apoli.common.power.EntityGroupPower;
+import io.github.edwinmindcraft.apoli.common.power.ModifyFallingPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFallingConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import io.github.apace100.apoli.Apoli;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;

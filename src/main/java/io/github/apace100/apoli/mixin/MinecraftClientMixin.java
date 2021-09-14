@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.common.power.EntityGlowPower;
+import io.github.edwinmindcraft.apoli.common.power.EntityGlowPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;

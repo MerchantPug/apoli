@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin.forge;
 
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;

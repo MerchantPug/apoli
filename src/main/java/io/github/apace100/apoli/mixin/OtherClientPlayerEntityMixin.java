@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.authlib.GameProfile;
-import dev.experimental.apoli.common.power.ParticlePower;
+import io.github.edwinmindcraft.apoli.common.power.ParticlePower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;

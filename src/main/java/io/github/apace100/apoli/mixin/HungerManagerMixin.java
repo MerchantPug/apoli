@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.common.power.ModifyFoodPower;
-import dev.experimental.apoli.common.power.configuration.ModifyFoodConfiguration;
+import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.food.FoodProperties;

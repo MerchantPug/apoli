@@ -1,7 +1,7 @@
 package io.github.apace100.apoli;
 
-import dev.experimental.apoli.client.ApoliClient;
-import dev.experimental.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.client.ApoliClient;
+import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.apace100.apoli.command.PowerOperation;
 import io.github.apace100.apoli.command.PowerTypeArgumentType;
 import io.github.apace100.apoli.util.Scheduler;

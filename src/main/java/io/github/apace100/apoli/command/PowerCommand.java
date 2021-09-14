@@ -2,7 +2,7 @@ package io.github.apace100.apoli.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import dev.experimental.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.apace100.apoli.Apoli;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;

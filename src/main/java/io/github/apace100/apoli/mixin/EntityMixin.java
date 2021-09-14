@@ -1,15 +1,15 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.api.component.IPowerContainer;
-import dev.experimental.apoli.api.configuration.FieldConfiguration;
-import dev.experimental.apoli.api.power.configuration.ConfiguredEntityAction;
-import dev.experimental.apoli.api.power.configuration.ConfiguredPower;
-import dev.experimental.apoli.common.ApoliCommon;
-import dev.experimental.apoli.common.network.C2SPlayerLandedPacket;
-import dev.experimental.apoli.common.power.ActionOnLandPower;
-import dev.experimental.apoli.common.power.InvulnerablePower;
-import dev.experimental.apoli.common.power.PhasingPower;
-import dev.experimental.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.common.network.C2SPlayerLandedPacket;
+import io.github.edwinmindcraft.apoli.common.power.ActionOnLandPower;
+import io.github.edwinmindcraft.apoli.common.power.InvulnerablePower;
+import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
+import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;

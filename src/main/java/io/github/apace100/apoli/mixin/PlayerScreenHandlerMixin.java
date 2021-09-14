@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
-import dev.experimental.apoli.common.util.CoreUtils;
+import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
