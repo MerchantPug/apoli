@@ -4,7 +4,7 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.InvisibilityPower;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.apace100.apoli.Apoli;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -34,7 +34,7 @@ public class ApoliClientEventHandler {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onBlockOverlay(RenderBlockOverlayEvent event) {
 		if (event.getPlayer() != null) {
-			if (IPowerContainer.hasPower(event.getPlayer(), ModPowers.PHASING.get()))
+			if (IPowerContainer.hasPower(event.getPlayer(), ApoliPowers.PHASING.get()))
 				event.setCanceled(true);
 		}
 	}

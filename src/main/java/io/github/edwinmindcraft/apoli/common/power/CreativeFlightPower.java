@@ -3,11 +3,15 @@ package io.github.edwinmindcraft.apoli.common.power;
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.calio.api.CalioAPI;
+import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
 import net.minecraft.world.entity.LivingEntity;
 
 public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 	public CreativeFlightPower() {
 		super(NoConfiguration.CODEC);
+		this.ticking(true);
 	}
 
 	@Override
@@ -35,16 +39,14 @@ public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 	}
 
 	public boolean hasAbility(LivingEntity entity) {
-		//return Apoli.POWER_SOURCE.grants((Player) entity, ability);
-		// FIXME
-		return false;
+		return CalioAPI.getAbilityHolder(entity).map(x -> x.has(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE)).orElse(false);
 	}
 
 	public void grantAbility(LivingEntity entity) {
-		//FIXME
+		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.grant(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE));
 	}
 
 	public void revokeAbility(LivingEntity entity) {
-		//FIXME
+		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.revoke(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE));
 	}
 }

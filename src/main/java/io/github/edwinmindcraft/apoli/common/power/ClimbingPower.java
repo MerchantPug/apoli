@@ -1,13 +1,12 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import com.google.common.collect.ImmutableList;
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ClimbingConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -16,7 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class ClimbingPower extends PowerFactory<ClimbingConfiguration> {
 	public static boolean check(LivingEntity player, Consumer<BlockPos> climbingPosSetter) {
-		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = IPowerContainer.get(player).map(x -> x.getPowers(ModPowers.CLIMBING.get())).orElseGet(ImmutableList::of);
+		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = IPowerContainer.get(player).map(x -> x.getPowers(ApoliPowers.CLIMBING.get())).orElseGet(ImmutableList::of);
 		if (climbingPowers.size() > 0) {
 			if (climbingPowers.stream().anyMatch(x -> x.isActive(player))) {
 				climbingPosSetter.accept(player.blockPosition());

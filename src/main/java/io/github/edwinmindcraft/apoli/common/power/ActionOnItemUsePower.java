@@ -5,7 +5,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnItemUseConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
@@ -13,7 +13,7 @@ public class ActionOnItemUsePower extends PowerFactory<ActionOnItemUseConfigurat
 	public static void execute(LivingEntity player, ItemStack stack, ItemStack target) {
 		IPowerContainer component = ApoliAPI.getPowerContainer(player);
 		if (component != null)
-			component.getPowers(ModPowers.ACTION_ON_ITEM_USE.get()).stream()
+			component.getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream()
 					.filter(x -> x.getFactory().doesApply(x, stack))
 					.forEach(x -> x.getFactory().executeActions(x, player, target));
 	}

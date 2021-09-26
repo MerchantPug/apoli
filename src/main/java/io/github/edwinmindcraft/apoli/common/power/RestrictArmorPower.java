@@ -4,7 +4,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.RestrictArmorConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import java.util.stream.Stream;
 
 import net.minecraft.world.entity.EquipmentSlot;
@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class RestrictArmorPower extends PowerFactory<RestrictArmorConfiguration> {
 	public static boolean isForbidden(LivingEntity player, EquipmentSlot slot, ItemStack stack) {
-		return Stream.concat(IPowerContainer.getPowers(player, ModPowers.CONDITIONED_RESTRICT_ARMOR.get()).stream(), IPowerContainer.getPowers(player, ModPowers.RESTRICT_ARMOR.get()).stream())
+		return Stream.concat(IPowerContainer.getPowers(player, ApoliPowers.CONDITIONED_RESTRICT_ARMOR.get()).stream(), IPowerContainer.getPowers(player, ApoliPowers.RESTRICT_ARMOR.get()).stream())
 				.anyMatch(x -> !x.getConfiguration().check(slot, stack));
 	}
 

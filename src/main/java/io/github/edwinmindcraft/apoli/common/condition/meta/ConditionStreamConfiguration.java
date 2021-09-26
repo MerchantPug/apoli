@@ -19,6 +19,14 @@ public record ConditionStreamConfiguration<T, V>(List<T> entries, String name, B
 		).apply(instance, c -> new ConditionStreamConfiguration<>(c, name, predicate, check)));
 	}
 
+	public static <T, V> ConditionStreamConfiguration<T, V> and(List<T> entries, BiPredicate<T, V> predicate) {
+		return new ConditionStreamConfiguration<>(entries, "And", predicate, x -> x.allMatch(y -> y));
+	}
+
+	public static <T, V> ConditionStreamConfiguration<T, V> or(List<T> entries, BiPredicate<T, V> predicate) {
+		return new ConditionStreamConfiguration<>(entries, "And", predicate, x -> x.anyMatch(y -> y));
+	}
+
 	public static <T, V> Codec<ConditionStreamConfiguration<T, V>> andCodec(Codec<T> codec, BiPredicate<T, V> predicate) {
 		return codec(codec, "And", predicate, x -> x.allMatch(y -> y));
 	}

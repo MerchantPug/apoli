@@ -4,7 +4,7 @@ import io.github.edwinmindcraft.apoli.common.power.*;
 import net.minecraft.world.inventory.DispenserMenu;
 import net.minecraftforge.fmllegacy.RegistryObject;
 
-public class ModPowers {
+public class ApoliPowers {
 	public static final RegistryObject<ActionOnBlockBreakPower> ACTION_ON_BLOCK_BREAK = ApoliRegisters.POWER_FACTORIES.register("action_on_block_break", ActionOnBlockBreakPower::new);
 	public static final RegistryObject<ActionOnCallbackPower> ACTION_ON_CALLBACK = ApoliRegisters.POWER_FACTORIES.register("action_on_callback", ActionOnCallbackPower::new);
 	public static final RegistryObject<ActionOnItemUsePower> ACTION_ON_ITEM_USE = ApoliRegisters.POWER_FACTORIES.register("action_on_item_use", ActionOnItemUsePower::new);
@@ -75,18 +75,6 @@ public class ModPowers {
 	public static final RegistryObject<TogglePower> TOGGLE = ApoliRegisters.POWER_FACTORIES.register("toggle", TogglePower::new);
 	public static final RegistryObject<ToggleNightVisionPower> TOGGLE_NIGHT_VISION = ApoliRegisters.POWER_FACTORIES.register("toggle_night_vision", ToggleNightVisionPower::new);
 	public static final RegistryObject<WalkOnFluidPower> WALK_ON_FLUID = ApoliRegisters.POWER_FACTORIES.register("walk_on_fluid", WalkOnFluidPower::new);
-
-	//Those powers are, as far as I know, remains of the previous system.
-	//As such, I've transformed then into actual powers.
-	public static final RegistryObject<CooldownPower> WEBBING = ApoliRegisters.POWER_FACTORIES.register("webbing", CooldownPower::new);
-	public static final RegistryObject<DummyPower> WATER_BREATHING = ApoliRegisters.POWER_FACTORIES.register("water_breathing", DummyPower::new);
-	public static final RegistryObject<DummyPower> NO_COBWEB_SLOWDOWN = ApoliRegisters.POWER_FACTORIES.register("no_cobweb_slowdown", DummyPower::new); //NO_COBWEB_SLOWDOWN & MASTER_OF_WEBS_NO_SLOWDOWN
-	public static final RegistryObject<DummyPower> LIKE_WATER = ApoliRegisters.POWER_FACTORIES.register("like_water", DummyPower::new);
-	public static final RegistryObject<DummyPower> WATER_VISION = ApoliRegisters.POWER_FACTORIES.register("water_vision", DummyPower::new); //TODO Might be worth transforming into a float field.
-	public static final RegistryObject<DummyPower> CONDUIT_POWER_ON_LAND = ApoliRegisters.POWER_FACTORIES.register("conduit_power_on_land", DummyPower::new);
-	public static final RegistryObject<DummyPower> SCARE_CREEPERS = ApoliRegisters.POWER_FACTORIES.register("scare_creepers", DummyPower::new);
-	//public static final RegistryObject<DummyPower> AQUA_AFFINITY = POWER_FACTORIES.register("aqua_affinity", DummyPower::new);
-	public static final RegistryObject<DummyPower> SLOW_FALLING = ApoliRegisters.POWER_FACTORIES.register("slow_falling", DummyPower::new);
 
 	public static void register() {}
 }

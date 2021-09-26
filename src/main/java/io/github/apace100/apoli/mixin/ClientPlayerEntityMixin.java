@@ -2,7 +2,7 @@ package io.github.apace100.apoli.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.apace100.apoli.access.WaterMovingEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -24,9 +24,9 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer imple
 
 	@Inject(at = @At("HEAD"), method = "isUnderWater", cancellable = true)
 	private void allowSwimming(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower(this, ModPowers.SWIMMING.get())) {
+		if (IPowerContainer.hasPower(this, ApoliPowers.SWIMMING.get())) {
 			cir.setReturnValue(true);
-		} else if (IPowerContainer.hasPower(this, ModPowers.IGNORE_WATER.get())) {
+		} else if (IPowerContainer.hasPower(this, ApoliPowers.IGNORE_WATER.get())) {
 			cir.setReturnValue(false);
 		}
 	}

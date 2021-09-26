@@ -1,15 +1,19 @@
 package io.github.edwinmindcraft.apoli.common.registry.condition;
 
 import com.mojang.serialization.MapCodec;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.mixin.EntityAccessor;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.*;
+import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import io.github.edwinmindcraft.apoli.common.condition.block.DelegatedBlockCondition;
 import io.github.edwinmindcraft.apoli.common.condition.entity.*;
+import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
+import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +26,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fmllegacy.RegistryObject;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiPredicate;
@@ -29,8 +34,16 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ModEntityConditions {
+public class ApoliEntityConditions {
 	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, LivingEntity> PREDICATE = (config, entity) -> config.check(entity);
+
+	private static <U extends EntityCondition<?>> RegistryObject<U> of(String name) {
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_CONDITION_CLASS, Apoli.MODID);
+	}
+
+	public static final RegistryObject<DelegatedEntityCondition<ConstantConfiguration<LivingEntity>>> CONSTANT = of("constant");
+	public static final RegistryObject<DelegatedEntityCondition<ConditionStreamConfiguration<ConfiguredEntityCondition<?, ?>, LivingEntity>>> AND = of("and");
+	public static final RegistryObject<DelegatedEntityCondition<ConditionStreamConfiguration<ConfiguredEntityCondition<?, ?>, LivingEntity>>> OR = of("or");
 
 	public static final RegistryObject<SimpleEntityCondition> DAYTIME = register("daytime", entity -> entity.level.getDayTime() % 24000L < 13000L);
 	public static final RegistryObject<SimpleEntityCondition> FALL_FLYING = register("fall_flying", LivingEntity::isFallFlying);
@@ -82,6 +95,12 @@ public class ModEntityConditions {
 	public static final RegistryObject<UsingEffectiveToolCondition> USING_EFFECTIVE_TOOL = registerSided("using_effective_tool", () -> UsingEffectiveToolCondition::new, () -> UsingEffectiveToolCondition.Client::new);
 	public static final RegistryObject<AdvancementCondition> ADVANCEMENT = registerSided("advancement", () -> AdvancementCondition::new, () -> AdvancementCondition.Client::new);
 	public static final RegistryObject<GameModeCondition> GAMEMODE = registerSided("gamemode", () -> GameModeCondition::new, () -> GameModeCondition.Client::new);
+
+	public static ConfiguredEntityCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
+
+	public static ConfiguredEntityCondition<?, ?> and(ConfiguredEntityCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
+
+	public static ConfiguredEntityCondition<?, ?> or(ConfiguredEntityCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
 	public static void register() {
 		MetaFactories.defineMetaConditions(ApoliRegisters.ENTITY_CONDITIONS, DelegatedEntityCondition::new, ConfiguredEntityCondition.CODEC, PREDICATE);

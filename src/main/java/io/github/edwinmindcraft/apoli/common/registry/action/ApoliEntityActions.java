@@ -1,21 +1,42 @@
 package io.github.edwinmindcraft.apoli.common.registry.action;
 
+import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
+import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
+import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import io.github.edwinmindcraft.apoli.common.action.block.DelegatedBlockAction;
 import io.github.edwinmindcraft.apoli.common.action.entity.*;
+import io.github.edwinmindcraft.apoli.common.action.meta.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fmllegacy.RegistryObject;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ENTITY_ACTIONS;
 
-public class ModEntityActions {
+public class ApoliEntityActions {
 	public static final BiConsumer<ConfiguredEntityAction<?, ?>, Entity> EXECUTOR = (action, entity) -> action.execute(entity);
 	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = (condition, entity) -> entity instanceof LivingEntity le && condition.check(le);
+
+	private static <U extends EntityAction<?>> RegistryObject<U> of(String name) {
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_ACTION_CLASS, Apoli.MODID);
+	}
+
+	public static final RegistryObject<DelegatedEntityAction<StreamConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> AND = of("and");
+	public static final RegistryObject<DelegatedEntityAction<ChanceConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> CHANCE = of("chance");
+	public static final RegistryObject<DelegatedEntityAction<IfElseConfiguration<ConfiguredEntityCondition<?, ?>, ConfiguredEntityAction<?, ?>, Entity>>> IF_ELSE = of("if_else");
+	public static final RegistryObject<DelegatedEntityAction<StreamConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> IF_ELSE_LIST = of("if_else_list");
+	public static final RegistryObject<DelegatedEntityAction<ChoiceConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> CHOICE = of("choice");
+	public static final RegistryObject<DelegatedEntityAction<DelayAction<ConfiguredEntityAction<?, ?>, Entity>>> DELAY = of("delay");
 
 	public static final RegistryObject<AddVelocityAction> ADD_VELOCITY = ENTITY_ACTIONS.register("add_velocity", AddVelocityAction::new);
 	public static final RegistryObject<AddExperienceAction> ADD_EXPERIENCE = ENTITY_ACTIONS.register("add_xp", AddExperienceAction::new);

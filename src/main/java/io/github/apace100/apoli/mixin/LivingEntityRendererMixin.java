@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -30,14 +30,14 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 
 	@Inject(method = "isShaking", at = @At("HEAD"), cancellable = true)
 	private void letPlayersShakeTheirBodies(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower(entity, ModPowers.SHAKING.get()))
+		if (IPowerContainer.hasPower(entity, ApoliPowers.SHAKING.get()))
 			cir.setReturnValue(true);
 	}
 
 	@ModifyVariable(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;", shift = At.Shift.BEFORE))
 	private RenderType changeRenderLayerWhenTranslucent(RenderType original, LivingEntity entity) {
 		if (entity instanceof Player) {
-			return ColorConfiguration.forPower(entity, ModPowers.MODEL_COLOR.get()).filter(x -> x.alpha() < 1F)
+			return ColorConfiguration.forPower(entity, ApoliPowers.MODEL_COLOR.get()).filter(x -> x.alpha() < 1F)
 					.map(x -> RenderType.itemEntityTranslucentCull(this.getTextureLocation(entity))).orElse(original);
 		}
 		return original;
@@ -45,7 +45,7 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 
 	@Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
 	private void renderColorChangedModel(EntityModel<LivingEntity> model, PoseStack postStack, VertexConsumer vertexConsumer, int p1, int overlay, float red, float green, float blue, float alpha, LivingEntity living) {
-		Optional<ColorConfiguration> opt = ColorConfiguration.forPower(living, ModPowers.MODEL_COLOR.get());
+		Optional<ColorConfiguration> opt = ColorConfiguration.forPower(living, ApoliPowers.MODEL_COLOR.get());
 		if (opt.isPresent()) {
 			ColorConfiguration color = opt.get();
 			red *= color.red();

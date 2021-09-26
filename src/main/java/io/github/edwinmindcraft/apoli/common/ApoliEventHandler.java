@@ -3,15 +3,16 @@ package io.github.edwinmindcraft.apoli.common;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
+import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
-import io.github.apace100.apoli.data.PowerLoader;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,10 +36,6 @@ import net.minecraftforge.fmllegacy.network.PacketDistributor;
 @Mod.EventBusSubscriber(modid = Apoli.MODID)
 public class ApoliEventHandler {
 
-	public static void attachData(AddReloadListenerEvent event) {
-		event.addListener(new PowerLoader());
-	}
-
 	@SubscribeEvent
 	public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
 		if (event.getObject() instanceof LivingEntity living) {
@@ -58,8 +55,10 @@ public class ApoliEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void calioRegistries(CalioDynamicRegistryEvent event) {
-		event.getRegistryManager().add(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, null, ConfiguredPower.CODEC);
+	public static void calioRegistries(CalioDynamicRegistryEvent.Initialize event) {
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ApoliBuiltinRegistries.CONFIGURED_POWERS, ConfiguredPower.CODEC);
+		event.getRegistryManager().addReload(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, "powers", PowerLoader.INSTANCE);
+		event.getRegistryManager().addValidation(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, PowerLoader.INSTANCE, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
 	}
 
 	@SubscribeEvent

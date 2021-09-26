@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCo
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,11 +15,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class ModifyDamageDealtPower extends ValueModifyingPowerFactory<ModifyDamageDealtConfiguration> {
 	public static float modifyMelee(Entity entity, LivingEntity target, DamageSource source, float amount) {
-		return IPowerContainer.modify(entity, ModPowers.MODIFY_DAMAGE_DEALT.get(), amount, x -> x.getFactory().check(x, target, source, amount), x -> x.getFactory().execute(x, entity, target));
+		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_DAMAGE_DEALT.get(), amount, x -> x.getFactory().check(x, target, source, amount), x -> x.getFactory().execute(x, entity, target));
 	}
 
 	public static float modifyProjectile(Entity entity, LivingEntity target, DamageSource source, float amount) {
-		return IPowerContainer.modify(entity, ModPowers.MODIFY_PROJECTILE_DAMAGE.get(), amount, x -> x.getFactory().check(x, target, source, amount), x -> x.getFactory().execute(x, entity, target));
+		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get(), amount, x -> x.getFactory().check(x, target, source, amount), x -> x.getFactory().execute(x, entity, target));
 	}
 
 	public ModifyDamageDealtPower() {

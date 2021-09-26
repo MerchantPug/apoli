@@ -5,7 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyHarvestConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import java.util.Optional;
 
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +16,7 @@ public class ModifyHarvestPower extends ValueModifyingPowerFactory<ModifyHarvest
 	 * This implementation assumes that if a single power says you can harvest, you can harvest.
 	 */
 	public static Optional<Boolean> isHarvestAllowed(Player player, BlockInWorld position) {
-		return IPowerContainer.getPowers(player, ModPowers.MODIFY_HARVEST.get()).stream()
+		return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_HARVEST.get()).stream()
 				.filter(x -> x.getFactory().doesApply(x, position))
 				.map(x -> x.getFactory().isHarvestAllowed(x))
 				.reduce((x, y) -> x || y);

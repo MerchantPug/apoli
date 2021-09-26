@@ -1,15 +1,15 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.edwinmindcraft.apoli.common.network.C2SPlayerLandedPacket;
 import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
-import io.github.edwinmindcraft.apoli.common.registry.action.ModBlockActions;
-import io.github.edwinmindcraft.apoli.common.registry.action.ModEntityActions;
-import io.github.edwinmindcraft.apoli.common.registry.action.ModItemActions;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliBlockActions;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliItemActions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fmllegacy.network.NetworkDirection;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
@@ -23,11 +23,13 @@ public class ApoliCommon {
 			.serverAcceptedVersions(NETWORK_VERSION::equals)
 			.simpleChannel();
 
+	public static final ResourceLocation POWER_SOURCE = Apoli.identifier("power_source");
+
 	private static void initializeNetwork() {
 		int messageId = 0;
-		CHANNEL.messageBuilder(C2SPlayerLandedPacket.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
+		/*CHANNEL.messageBuilder(C2SPlayerLandedPacket.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(C2SPlayerLandedPacket::encode).decoder(C2SPlayerLandedPacket::decode)
-				.consumer(C2SPlayerLandedPacket::handle).add();
+				.consumer(C2SPlayerLandedPacket::handle).add();*/
 
 		CHANNEL.messageBuilder(C2SUseActivePowers.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(C2SUseActivePowers::encode).decoder(C2SUseActivePowers::decode)
@@ -46,19 +48,19 @@ public class ApoliCommon {
 		ApoliRegisters.register();
 
 		//Powers
-		ModPowers.register();
+		ApoliPowers.register();
 
 		//Actions
-		ModBlockActions.register();
-		ModEntityActions.register();
-		ModItemActions.register();
+		ApoliBlockActions.register();
+		ApoliEntityActions.register();
+		ApoliItemActions.register();
 
 		//Conditions
-		ModBiomeConditions.register();
-		ModBlockConditions.register();
-		ModDamageConditions.register();
-		ModEntityConditions.register();
-		ModFluidConditions.register();
-		ModItemConditions.register();
+		ApoliBiomeConditions.register();
+		ApoliBlockConditions.register();
+		ApoliDamageConditions.register();
+		ApoliEntityConditions.register();
+		ApoliFluidConditions.register();
+		ApoliItemConditions.register();
 	}
 }

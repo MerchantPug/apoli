@@ -3,9 +3,14 @@ package io.github.edwinmindcraft.apoli.common;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
+import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.network.C2SPlayerLandedPacket;
 import io.github.edwinmindcraft.apoli.common.power.*;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -27,6 +32,9 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Apoli.MODID)
 public class ApoliPowerEventHandler {
@@ -41,7 +49,7 @@ public class ApoliPowerEventHandler {
 		int toolFactor = ForgeHooks.isCorrectToolForDrops(event.getState(), event.getPlayer()) ? 30 : 100;
 		float factor = hardness * toolFactor;
 		BlockInWorld cbp = new BlockInWorld(world, event.getPos(), true);
-		speed = IPowerContainer.modify(player, ModPowers.MODIFY_BREAK_SPEED.get(), speed * factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), cbp)) / factor;
+		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed * factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), cbp)) / factor;
 		event.setNewSpeed(speed);
 	}
 
@@ -70,9 +78,25 @@ public class ApoliPowerEventHandler {
 	}
 
 	@SubscribeEvent
+	public static void onFall(LivingFallEvent event) {
+		LivingEntity entityLiving = event.getEntityLiving();
+		//TODO Check if this works. It should since MC1.17 seems to fire this on both sides.
+		ActionOnLandPower.execute(entityLiving);
+		if (IPowerContainer.getPowers(entityLiving, ApoliPowers.MODIFY_FALLING.get()).stream().anyMatch(x -> !x.getConfiguration().takeFallDamage()))
+			event.setDistance(0.0F);
+	}
+
+	@SubscribeEvent
 	public static void modifyDamageTaken(LivingDamageEvent event) {
 		LivingEntity entityLiving = event.getEntityLiving();
 		event.setAmount(ModifyDamageTakenPower.modify(entityLiving, event.getSource(), event.getAmount()));
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public static void makeInvulnerable(LivingAttackEvent event) {
+		LivingEntity entityLiving = event.getEntityLiving();
+		if (InvulnerablePower.isInvulnerableTo(entityLiving, event.getSource()))
+			event.setCanceled(true);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)

@@ -2,7 +2,7 @@ package io.github.apace100.apoli.util;
 
 import com.google.common.collect.Lists;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -64,7 +64,7 @@ public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 	private List<Recipe<CraftingContainer>> getRecipes(CraftingContainer inv) {
 		Player player = this.getPlayerFromHandler(inv.menu);
 		if (player != null) {
-			return IPowerContainer.getPowers(player, ModPowers.RECIPE.get()).stream().map(x -> (Recipe<CraftingContainer>) x.getConfiguration().value()).toList();
+			return IPowerContainer.getPowers(player, ApoliPowers.RECIPE.get()).stream().map(x -> (Recipe<CraftingContainer>) x.getConfiguration().value()).toList();
 		}
 		return Lists.newArrayList();
 	}

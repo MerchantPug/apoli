@@ -14,6 +14,8 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+
 //FIXME Reintroduce
 public class ApoliDataTypes {
 
@@ -79,8 +81,7 @@ public class ApoliDataTypes {
 
 	public static final SerializableDataType<AttributedEntityAttributeModifier> ATTRIBUTED_ATTRIBUTE_MODIFIER = new SerializableDataType<>(AttributedEntityAttributeModifier.class, AttributedEntityAttributeModifier.CODEC);
 
-	/*public static final SerializableDataType<List<AttributedEntityAttributeModifier>> ATTRIBUTED_ATTRIBUTE_MODIFIERS =
-			SerializableDataType.list(ATTRIBUTED_ATTRIBUTE_MODIFIER);*/
+	public static final SerializableDataType<List<AttributedEntityAttributeModifier>> ATTRIBUTED_ATTRIBUTE_MODIFIERS = SerializableDataType.list(ATTRIBUTED_ATTRIBUTE_MODIFIER);
 
 	public static final SerializableDataType<Tuple<Integer, ItemStack>> POSITIONED_ITEM_STACK = SerializableDataType.compound(ClassUtil.castClass(Tuple.class),
 			new SerializableData()
@@ -104,9 +105,9 @@ public class ApoliDataTypes {
 				return data;
 			}));
 
-    /*public static final SerializableDataType<List<Tuple<Integer, ItemStack>>> POSITIONED_ITEM_STACKS = SerializableDataType.list(POSITIONED_ITEM_STACK);
+    public static final SerializableDataType<List<Tuple<Integer, ItemStack>>> POSITIONED_ITEM_STACKS = SerializableDataType.list(POSITIONED_ITEM_STACK);
 
-    public static final SerializableDataType<Active.Key> KEY = SerializableDataType.compound(Active.Key.class,
+   /* public static final SerializableDataType<Active.Key> KEY = SerializableDataType.compound(Active.Key.class,
         new SerializableData()
             .add("key", SerializableDataTypes.STRING)
             .add("continuous", SerializableDataTypes.BOOLEAN, false),

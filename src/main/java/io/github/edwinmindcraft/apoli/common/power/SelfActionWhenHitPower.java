@@ -5,13 +5,13 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCo
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.CooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionWhenHitConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 public class SelfActionWhenHitPower extends CooldownPowerFactory.Simple<ActionWhenHitConfiguration> {
 	public static void execute(LivingEntity player, DamageSource damageSource, float amount) {
-		IPowerContainer.getPowers(player, ModPowers.SELF_ACTION_WHEN_HIT.get()).forEach(x -> x.getFactory().whenHit(x, player, damageSource, amount));
+		IPowerContainer.getPowers(player, ApoliPowers.SELF_ACTION_WHEN_HIT.get()).forEach(x -> x.getFactory().whenHit(x, player, damageSource, amount));
 	}
 
 	public SelfActionWhenHitPower() {

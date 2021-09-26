@@ -4,7 +4,10 @@ import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.PowerRestrictedCraftingRecipe;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.*;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -26,6 +29,8 @@ public class ApoliRegisters {
 	public static final DeferredRegister<ItemAction<?>> ITEM_ACTIONS = DeferredRegister.create(ApoliRegistries.ITEM_ACTION_CLASS, Apoli.MODID);
 	public static final DeferredRegister<BlockAction<?>> BLOCK_ACTIONS = DeferredRegister.create(ApoliRegistries.BLOCK_ACTION_CLASS, Apoli.MODID);
 
+	public static final DeferredRegister<ConfiguredPower<?, ?>> CONFIGURED_POWERS = DeferredRegister.create(ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS, Apoli.MODID);
+
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Apoli.MODID);
 
 	public static void register() {
@@ -40,6 +45,8 @@ public class ApoliRegisters {
 		ApoliRegistries.ITEM_ACTION = ITEM_ACTIONS.makeRegistry("item_action", () -> new RegistryBuilder<ItemAction<?>>().disableSaving());
 		ApoliRegistries.BLOCK_ACTION = BLOCK_ACTIONS.makeRegistry("block_action", () -> new RegistryBuilder<BlockAction<?>>().disableSaving());
 
+		ApoliBuiltinRegistries.CONFIGURED_POWERS = CONFIGURED_POWERS.makeRegistry("configured_powers", () -> new RegistryBuilder<ConfiguredPower<?, ?>>().disableSaving());
+
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		POWER_FACTORIES.register(bus);
 		ENTITY_CONDITIONS.register(bus);
@@ -51,6 +58,9 @@ public class ApoliRegisters {
 		ENTITY_ACTIONS.register(bus);
 		ITEM_ACTIONS.register(bus);
 		BLOCK_ACTIONS.register(bus);
+
+		CONFIGURED_POWERS.register(bus);
+
 		RECIPE_SERIALIZERS.register(bus);
 
 		RECIPE_SERIALIZERS.register("power_restricted", () -> PowerRestrictedCraftingRecipe.SERIALIZER);

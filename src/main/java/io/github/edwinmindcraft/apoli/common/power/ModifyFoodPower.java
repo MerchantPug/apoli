@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.apace100.apoli.util.AttributeUtil;
 import java.util.List;
 import java.util.function.Function;
@@ -20,14 +20,14 @@ import net.minecraft.world.item.ItemStack;
 public class ModifyFoodPower extends PowerFactory<ModifyFoodConfiguration> {
 
 	public static double apply(Player source, ItemStack stack, double baseValue, Function<ModifyFoodConfiguration, ListConfiguration<AttributeModifier>> access) {
-		List<AttributeModifier> modifiers = IPowerContainer.getPowers(source, ModPowers.MODIFY_FOOD.get()).stream()
+		List<AttributeModifier> modifiers = IPowerContainer.getPowers(source, ApoliPowers.MODIFY_FOOD.get()).stream()
 				.filter(x -> x.getFactory().check(x, stack))
 				.flatMap(x -> access.apply(x.getConfiguration()).getContent().stream()).collect(Collectors.toList());
 		return AttributeUtil.applyModifiers(modifiers, baseValue);
 	}
 
 	public static void execute(Player source, ItemStack stack) {
-		IPowerContainer.getPowers(source, ModPowers.MODIFY_FOOD.get()).stream()
+		IPowerContainer.getPowers(source, ApoliPowers.MODIFY_FOOD.get()).stream()
 				.filter(x -> x.getFactory().check(x, stack))
 				.forEach(x -> x.getFactory().execute(x, source));
 	}

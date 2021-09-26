@@ -1,48 +1,31 @@
 package io.github.apace100.apoli.mixin;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.common.ApoliCommon;
-import io.github.edwinmindcraft.apoli.common.network.C2SPlayerLandedPacket;
-import io.github.edwinmindcraft.apoli.common.power.ActionOnLandPower;
-import io.github.edwinmindcraft.apoli.common.power.InvulnerablePower;
-import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
 import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
 import io.github.apace100.calio.Calio;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.Tag;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.List;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
@@ -58,14 +41,12 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 	protected Tag<Fluid> fluidOnEyes;
 	@Shadow
 	protected Object2DoubleMap<Tag<Fluid>> fluidHeight;
-	@Unique
-	private boolean wasGrounded = false;
 	private boolean isMoving;
 	private float distanceBefore;
 
 	@Inject(method = "fireImmune", at = @At("HEAD"), cancellable = true)
 	private void makeFullyFireImmune(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower((Entity) (Object) this, ModPowers.FIRE_IMMUNITY.get())) {
+		if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.FIRE_IMMUNITY.get())) {
 			cir.setReturnValue(true);
 		}
 	}
@@ -75,7 +56,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
 	private void makeEntitiesIgnoreWater(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower((Entity) (Object) this, ModPowers.IGNORE_WATER.get())) {
+		if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.IGNORE_WATER.get())) {
 			if (this instanceof WaterMovingEntity) {
 				if (((WaterMovingEntity) this).isInMovementPhase()) {
 					cir.setReturnValue(false);
@@ -84,38 +65,16 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 		}
 	}
 
-	@Inject(method = "move", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiling/ProfilerFiller;push(Ljava/lang/String;)V", args = {"ldc=rest"}))
-	private void checkWasGrounded(MoverType type, Vec3 movement, CallbackInfo ci) {
-		this.wasGrounded = this.onGround;
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	@Inject(method = "checkFallDamage", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;fallDistance:F", opcode = Opcodes.PUTFIELD, ordinal = 0))
-	private void invokeActionOnSoftLand(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition, CallbackInfo ci) {
-		if (!this.wasGrounded && (Object) this instanceof LocalPlayer player) {
-			List<ConfiguredPower<FieldConfiguration<ConfiguredEntityAction<?, ?>>, ActionOnLandPower>> powers = IPowerContainer.getPowers(player, ModPowers.ACTION_ON_LAND.get());
-			powers.forEach(x -> x.getFactory().executeAction(x, player));
-			if (powers.size() > 0)
-				ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SPlayerLandedPacket());
-		}
-	}
-
-	@Inject(at = @At("HEAD"), method = "isInvulnerableTo", cancellable = true)
-	private void makeOriginInvulnerable(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
-		if ((Object) this instanceof LivingEntity living && InvulnerablePower.isInvulnerableTo(living, damageSource))
-			cir.setReturnValue(true);
-	}
-
 	@Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isInWaterRainOrBubble()Z"))
 	private boolean preventExtinguishingFromSwimming(Entity entity) {
-		if (IPowerContainer.hasPower(entity, ModPowers.SWIMMING.get()) && entity.isSwimming() && !(this.getFluidHeight(FluidTags.WATER) > 0))
+		if (IPowerContainer.hasPower(entity, ApoliPowers.SWIMMING.get()) && entity.isSwimming() && !(this.getFluidHeight(FluidTags.WATER) > 0))
 			return false;
 		return entity.isInWaterRainOrBubble();
 	}
 
 	@Inject(at = @At("HEAD"), method = "isInvisible", cancellable = true)
 	private void phantomInvisibility(CallbackInfoReturnable<Boolean> info) {
-		if (IPowerContainer.hasPower((Entity) (Object) this, ModPowers.INVISIBILITY.get()))
+		if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.INVISIBILITY.get()))
 			info.setReturnValue(true);
 	}
 

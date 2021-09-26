@@ -3,18 +3,19 @@ package io.github.edwinmindcraft.apoli.api.power.configuration;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.util.HudRender;
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.*;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.IRegistryDelegate;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,7 +28,7 @@ import java.util.function.Supplier;
  * @param <C> The type of the configuration.
  * @param <F> The type of the factory.
  */
-public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends ConfiguredFactory<C, F> {
+public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends ConfiguredFactory<C, F> implements IForgeRegistryEntry<ConfiguredPower<?, ?>> {
 	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, Function.identity());
 	private final PowerData data;
 
@@ -186,5 +187,84 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 
 	public Optional<IActivePower.Key> getKey(LivingEntity player) {
 		return this.asActive().map(x -> x.getKey(this, player));
+	}
+
+	@Override
+	public Class<ConfiguredPower<?, ?>> getRegistryType() {
+		return ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS;
+	}
+
+	public final IRegistryDelegate<ConfiguredPower<?, ?>> delegate = new Delegate<>(this, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
+	private ResourceLocation registryName = null;
+
+	public ConfiguredPower<?, ?> setRegistryName(String name) {
+		if (this.getRegistryName() != null)
+			throw new IllegalStateException("Attempted to set registry name with existing registry name! New: " + name + " Old: " + this.getRegistryName());
+
+		this.registryName = this.checkRegistryName(name);
+		return this;
+	}
+
+	//Helper functions
+	@Override
+	public ConfiguredPower<?, ?> setRegistryName(ResourceLocation name) {return this.setRegistryName(name.toString());}
+
+	public ConfiguredPower<?, ?> setRegistryName(String modID, String name) {return this.setRegistryName(modID + ":" + name);}
+
+	@Nullable
+	@Override
+	public ResourceLocation getRegistryName() {
+		if (this.delegate.name() != null) return this.delegate.name();
+		return this.registryName != null ? this.registryName : null;
+	}
+
+
+	/**
+	 * This will assert that the registry name is valid and warn about potential registry overrides
+	 * It is important as it detects cases where modders unintentionally register objects with the "minecraft" namespace, leading to dangerous errors later.
+	 *
+	 * @param name The registry name
+	 *
+	 * @return A verified "correct" registry name
+	 */
+	ResourceLocation checkRegistryName(String name) {
+		return new ResourceLocation(name);
+	}
+
+	private static final class Delegate<T> implements IRegistryDelegate<T> {
+		private T referent;
+		private ResourceLocation name;
+		private final Class<T> type;
+
+		public Delegate(T referent, Class<T> type) {
+			this.referent = referent;
+			this.type = type;
+		}
+
+		@Override
+		public T get() {return this.referent;}
+
+		@Override
+		public ResourceLocation name() {return this.name;}
+
+		@Override
+		public Class<T> type() {return this.type;}
+
+		void changeReference(T newTarget) {this.referent = newTarget;}
+
+		public void setName(ResourceLocation name) {this.name = name;}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Delegate<?> other) {
+				return Objects.equals(other.name, this.name);
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(this.name);
+		}
 	}
 }

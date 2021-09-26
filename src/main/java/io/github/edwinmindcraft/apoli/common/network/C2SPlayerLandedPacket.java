@@ -6,6 +6,7 @@ import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+@Deprecated
 public class C2SPlayerLandedPacket {
 	public static C2SPlayerLandedPacket decode(FriendlyByteBuf buffer) {
 		return new C2SPlayerLandedPacket();

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -62,7 +62,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
 	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
-		IPowerContainer.withPower(this.minecraft.getCameraEntity(), ModPowers.SHADER.get(), null, shaderPower -> {
+		IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
 			ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
 			if (this.resourceManager.hasResource(shaderLoc)) {
 				this.loadEffect(shaderLoc);
@@ -73,14 +73,14 @@ public abstract class GameRendererMixin {
 
 	@Inject(at = @At("HEAD"), method = "render")
 	private void loadShaderFromPower(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
-		IPowerContainer.withPower(this.minecraft.getCameraEntity(), ModPowers.SHADER.get(), null, shaderPower -> {
+		IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
 			ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
 			if (this.currentlyLoadedShader != shaderLoc) {
 				this.loadEffect(shaderLoc);
 				this.currentlyLoadedShader = shaderLoc;
 			}
 		});
-		if (!IPowerContainer.hasPower(this.minecraft.getCameraEntity(), ModPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
+		if (!IPowerContainer.hasPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
 			if (this.postEffect != null) {
 				this.postEffect.close();
 				this.postEffect = null;

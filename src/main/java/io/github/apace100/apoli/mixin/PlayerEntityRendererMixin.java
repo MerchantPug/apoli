@@ -3,7 +3,7 @@ package io.github.apace100.apoli.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class PlayerEntityRendererMixin {
 
 	private static void colorizeHand(ModelPart modelPart, PoseStack matrices, VertexConsumer vertices, int light, int overlay, MultiBufferSource vertexConsumers, AbstractClientPlayer player) {
-		Optional<ColorConfiguration> colorConfiguration = ColorConfiguration.forPower(player, ModPowers.MODEL_COLOR.get());
+		Optional<ColorConfiguration> colorConfiguration = ColorConfiguration.forPower(player, ApoliPowers.MODEL_COLOR.get());
 		if (colorConfiguration.isPresent()) {
 			ColorConfiguration color = colorConfiguration.get();
 			modelPart.render(matrices, vertexConsumers.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), light, overlay, color.red(), color.green(), color.blue(), color.alpha());

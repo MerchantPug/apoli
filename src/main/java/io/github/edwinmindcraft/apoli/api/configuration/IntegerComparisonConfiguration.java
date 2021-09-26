@@ -16,6 +16,13 @@ public record IntegerComparisonConfiguration(Comparison comparison,
 			Codec.INT.fieldOf("compare_to").forGetter(IntegerComparisonConfiguration::compareTo)
 	).apply(instance, IntegerComparisonConfiguration::new));
 
+	public static MapCodec<IntegerComparisonConfiguration> withDefaults(Comparison comparison, int value) {
+		return RecordCodecBuilder.mapCodec(instance -> instance.group(
+				ApoliDataTypes.COMPARISON.optionalFieldOf("comparison", comparison).forGetter(IntegerComparisonConfiguration::comparison),
+				Codec.INT.optionalFieldOf("compare_to", value).forGetter(IntegerComparisonConfiguration::compareTo)
+		).apply(instance, IntegerComparisonConfiguration::new));
+	}
+
 	public static final MapCodec<Optional<IntegerComparisonConfiguration>> OPTIONAL_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ApoliDataTypes.COMPARISON.optionalFieldOf("comparison").forGetter(x -> x.map(IntegerComparisonConfiguration::comparison)),
 			Codec.INT.optionalFieldOf("compare_to").forGetter(x -> x.map(IntegerComparisonConfiguration::compareTo))

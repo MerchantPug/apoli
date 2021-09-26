@@ -1,7 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.world.Container;
@@ -47,7 +47,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
 	@Inject(method = "updateSwimming", at = @At("TAIL"))
 	private void updateSwimmingPower(CallbackInfo ci) {
-		if (IPowerContainer.hasPower(this, ModPowers.SWIMMING.get())) {
+		if (IPowerContainer.hasPower(this, ApoliPowers.SWIMMING.get())) {
 			this.setSwimming(this.isSprinting() && !this.isPassenger());
 			this.wasTouchingWater = this.isSwimming();
 			if (this.isSwimming()) {
@@ -55,7 +55,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 				Vec3 look = this.getLookAngle();
 				this.move(MoverType.SELF, new Vec3(look.x / 4, look.y / 4, look.z / 4));
 			}
-		} else if (IPowerContainer.hasPower(this, ModPowers.IGNORE_WATER.get())) {
+		} else if (IPowerContainer.hasPower(this, ApoliPowers.IGNORE_WATER.get())) {
 			this.setSwimming(false);
 		}
 	}
@@ -63,12 +63,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	// ModifyExhaustion
 	@ModifyVariable(at = @At("HEAD"), method = "causeFoodExhaustion", ordinal = 0, name = "exhaustion")
 	private float modifyExhaustion(float exhaustionIn) {
-		return IPowerContainer.modify(this, ModPowers.MODIFY_EXHAUSTION.get(), exhaustionIn);
+		return IPowerContainer.modify(this, ApoliPowers.MODIFY_EXHAUSTION.get(), exhaustionIn);
 	}
 
 	@Inject(method = "dropEquipment", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Inventory;dropAll()V"))
 	private void dropAdditionalInventory(CallbackInfo ci) {
-		IPowerContainer.getPowers(this, ModPowers.INVENTORY.get()).forEach(inventory -> {
+		IPowerContainer.getPowers(this, ApoliPowers.INVENTORY.get()).forEach(inventory -> {
 			if (inventory.getFactory().shouldDropOnDeath(inventory, this)) {
 				Container container = inventory.getFactory().getInventory(inventory, this);
 				for (int i = 0; i < container.getContainerSize(); ++i) {

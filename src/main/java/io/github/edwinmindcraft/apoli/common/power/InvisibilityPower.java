@@ -5,7 +5,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import java.util.List;
 
 import net.minecraft.world.entity.Entity;
@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 public class InvisibilityPower extends PowerFactory<FieldConfiguration<Boolean>> {
 
 	public static boolean isArmorHidden(Entity player) {
-		List<ConfiguredPower<FieldConfiguration<Boolean>, InvisibilityPower>> powers = IPowerContainer.getPowers(player, ModPowers.INVISIBILITY.get());
+		List<ConfiguredPower<FieldConfiguration<Boolean>, InvisibilityPower>> powers = IPowerContainer.getPowers(player, ApoliPowers.INVISIBILITY.get());
 		return !powers.isEmpty() && powers.stream().noneMatch(x -> x.getConfiguration().value());
 	}
 

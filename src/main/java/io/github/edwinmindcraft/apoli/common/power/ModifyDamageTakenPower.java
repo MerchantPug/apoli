@@ -6,14 +6,14 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ModPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public class ModifyDamageTakenPower extends ValueModifyingPowerFactory<ModifyDamageTakenConfiguration> {
 	public static float modify(Entity entity, DamageSource source, float amount) {
-		return IPowerContainer.modify(entity, ModPowers.MODIFY_DAMAGE_TAKEN.get(), amount, x -> x.getFactory().check(x, source, amount), x -> x.getFactory().execute(x, entity, source));
+		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), amount, x -> x.getFactory().check(x, source, amount), x -> x.getFactory().execute(x, entity, source));
 	}
 
 	public ModifyDamageTakenPower() {
