@@ -1,11 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
@@ -18,17 +14,14 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Map;
 
-public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<PowerFactory<?>> implements Codec<ConfiguredPower<T, ?>> {
+public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<PowerFactory<?>> {
 	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.POWER_FACTORY);
 
-	private static <T extends IDynamicFeatureConfiguration, F> Codec<Pair<T, PowerData>> powerCodec(Codec<T> codec) {
-		return RecordCodecBuilder.create(instance -> instance.group(
-				IFactory.asMap(codec).forGetter(Pair::getFirst),
-				PowerData.CODEC.forGetter(Pair::getSecond)
-		).apply(instance, Pair::new));
+	private static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> Codec<ConfiguredPower<T, ?>> powerCodec(Codec<T> codec, F factory) {
+		return IFactory.unionCodec(IFactory.asMap(codec), PowerData.CODEC, factory::configure, ConfiguredPower::getConfiguration, ConfiguredPower::getData);
 	}
 
-	private final Codec<Pair<T, PowerData>> codec;
+	private final Codec<ConfiguredPower<T, ?>> codec;
 	private final boolean allowConditions;
 	private boolean ticking = false;
 	private boolean tickingWhenInactive = false;
@@ -46,7 +39,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	 * @see #PowerFactory(Codec) for a version with allow conditions true by default.
 	 */
 	protected PowerFactory(Codec<T> codec, boolean allowConditions) {
-		this.codec = powerCodec(codec);
+		this.codec = powerCodec(codec, this);
 		this.allowConditions = allowConditions;
 	}
 
@@ -61,6 +54,10 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	protected final void ticking(boolean whenInactive) {
 		this.ticking = true;
 		this.tickingWhenInactive = whenInactive;
+	}
+
+	public Codec<ConfiguredPower<T, ?>> getCodec() {
+		return this.codec;
 	}
 
 	/**
@@ -83,16 +80,6 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	 */
 	public Map<String, ConfiguredPower<?, ?>> getContainedPowers(ConfiguredPower<T, ?> configuration) {
 		return ImmutableMap.of();
-	}
-
-	@Override
-	public <T1> DataResult<Pair<ConfiguredPower<T, ?>, T1>> decode(DynamicOps<T1> ops, T1 input) {
-		return this.codec.decode(ops, input).map(pair -> pair.mapFirst(data -> this.configure(data.getFirst(), data.getSecond())));
-	}
-
-	@Override
-	public <T1> DataResult<T1> encode(ConfiguredPower<T, ?> input, DynamicOps<T1> ops, T1 prefix) {
-		return this.codec.encode(Pair.of(input.getConfiguration(), input.getData()), ops, prefix);
 	}
 
 	public ConfiguredPower<T, ?> configure(T input, PowerData data) {

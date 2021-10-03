@@ -11,7 +11,7 @@ import java.util.function.Function;
 import net.minecraft.world.level.material.FluidState;
 
 public final class ConfiguredFluidCondition<C extends IDynamicFeatureConfiguration, F extends FluidCondition<C>> extends ConfiguredCondition<C, F> {
-	public static final Codec<ConfiguredFluidCondition<?, ?>> CODEC = FluidCondition.CODEC.dispatch(ConfiguredFluidCondition::getFactory, Function.identity());
+	public static final Codec<ConfiguredFluidCondition<?, ?>> CODEC = FluidCondition.CODEC.dispatch(ConfiguredFluidCondition::getFactory, FluidCondition::getConditionCodec);
 
 	public static boolean check(@Nullable ConfiguredFluidCondition<?, ?> condition, FluidState position) {
 		return condition == null || condition.check(position);
@@ -23,5 +23,10 @@ public final class ConfiguredFluidCondition<C extends IDynamicFeatureConfigurati
 
 	public boolean check(FluidState fluid) {
 		return this.getFactory().check(this.getConfiguration(), this.getData(), fluid);
+	}
+
+	@Override
+	public String toString() {
+		return "CFC:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

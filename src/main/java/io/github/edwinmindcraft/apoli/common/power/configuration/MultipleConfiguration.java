@@ -13,6 +13,7 @@ import net.minecraft.util.Tuple;
 //Validation occurs on every subpower, this should be fine
 public record MultipleConfiguration<V>(Map<String, V> children) implements IDynamicFeatureConfiguration {
 
+
 	public static <V> MapCodec<MultipleConfiguration<V>> mapCodec(Codec<V> codec, Predicate<String> filter) {
 		return new MultipleMapCodec<>(codec, filter);
 	}
@@ -37,11 +38,13 @@ public record MultipleConfiguration<V>(Map<String, V> children) implements IDyna
 			return root.flatMap(map -> {
 				ImmutableMap.Builder<String, V> successes = ImmutableMap.builder();
 				ImmutableSet.Builder<String> failures = ImmutableSet.builder();
-				map.entries().forEach(entry -> ops.getStringValue(entry.getFirst())
-						.flatMap(name -> this.codec.decode(ops, entry.getSecond()).map(x -> new Tuple<>(name, x.getFirst())))
-						.resultOrPartial(failures::add)
-						.filter(x -> this.keyFilter.test(x.getA()))
-						.ifPresent(pair -> successes.put(pair.getA(), pair.getB())));
+				map.entries().forEach(entry -> {
+					DataResult<String> stringValue = ops.getStringValue(entry.getFirst());
+					if (stringValue.result().filter(this.keyFilter).isPresent())
+						stringValue.flatMap(name -> this.codec.decode(ops, entry.getSecond()).map(x -> new Tuple<>(name, x.getFirst())))
+								.resultOrPartial(failures::add)
+								.ifPresent(pair -> successes.put(pair.getA(), pair.getB()));
+				});
 				ImmutableSet<String> build = failures.build();
 				MultipleConfiguration<V> configuration = new MultipleConfiguration<>(successes.build());
 				if (!build.isEmpty())

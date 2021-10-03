@@ -4,6 +4,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.core.Registry;
@@ -35,7 +36,7 @@ public class ApoliAPI {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void performPowers(Set<ResourceLocation> powers) {
-
+		ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SUseActivePowers(powers));
 	}
 
 	public static boolean hasFoodRestrictions() {

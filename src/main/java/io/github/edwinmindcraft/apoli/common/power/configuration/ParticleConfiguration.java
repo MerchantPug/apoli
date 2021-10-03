@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.server.MinecraftServer;
@@ -22,7 +23,7 @@ public record ParticleConfiguration(ParticleType<?> particle,
 
 	@Override
 	@NotNull
-	public List<String> getWarnings(@NotNull MinecraftServer server) {
+	public List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		if (this.particle() == null) builder.add("Optional particle was missing.");
 		return ImmutableList.of();

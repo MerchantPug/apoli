@@ -12,6 +12,11 @@ import java.util.Optional;
 
 public record ModifyJumpConfiguration(ListConfiguration<AttributeModifier> modifiers,
 									  @Nullable ConfiguredEntityAction<?, ?> condition) implements IValueModifyingPowerConfiguration {
+
+	public ModifyJumpConfiguration(AttributeModifier... modifiers) {
+		this(ListConfiguration.of(modifiers), null);
+	}
+
 	public static final Codec<ModifyJumpConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyJumpConfiguration::modifiers),
 			ConfiguredEntityAction.CODEC.optionalFieldOf("entity_action").forGetter(x -> Optional.ofNullable(x.condition()))

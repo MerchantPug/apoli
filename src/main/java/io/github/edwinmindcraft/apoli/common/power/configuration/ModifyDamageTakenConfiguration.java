@@ -15,6 +15,11 @@ public record ModifyDamageTakenConfiguration(ListConfiguration<AttributeModifier
 											 @Nullable ConfiguredDamageCondition<?, ?> damageCondition,
 											 @Nullable ConfiguredEntityAction<?, ?> selfAction,
 											 @Nullable ConfiguredEntityAction<?, ?> targetAction) implements IValueModifyingPowerConfiguration {
+
+	public ModifyDamageTakenConfiguration(AttributeModifier... modifiers) {
+		this(ListConfiguration.of(modifiers), null, null, null);
+	}
+
 	public static final Codec<ModifyDamageTakenConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyDamageTakenConfiguration::modifiers),
 			ConfiguredDamageCondition.CODEC.optionalFieldOf("damage_condition").forGetter(x -> Optional.ofNullable(x.damageCondition())),

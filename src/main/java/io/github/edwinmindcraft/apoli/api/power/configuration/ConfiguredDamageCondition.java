@@ -11,7 +11,7 @@ import java.util.function.Function;
 import net.minecraft.world.damagesource.DamageSource;
 
 public final class ConfiguredDamageCondition<C extends IDynamicFeatureConfiguration, F extends DamageCondition<C>> extends ConfiguredCondition<C, F> {
-	public static final Codec<ConfiguredDamageCondition<?, ?>> CODEC = DamageCondition.CODEC.dispatch(ConfiguredDamageCondition::getFactory, Function.identity());
+	public static final Codec<ConfiguredDamageCondition<?, ?>> CODEC = DamageCondition.CODEC.dispatch(ConfiguredDamageCondition::getFactory, DamageCondition::getConditionCodec);
 
 	public static boolean check(@Nullable ConfiguredDamageCondition<?, ?> condition, DamageSource damageSource, float amount) {
 		return condition == null || condition.check(damageSource, amount);
@@ -23,5 +23,10 @@ public final class ConfiguredDamageCondition<C extends IDynamicFeatureConfigurat
 
 	public boolean check(DamageSource source, float amount) {
 		return this.getFactory().check(this.getConfiguration(), this.getData(), source, amount);
+	}
+
+	@Override
+	public String toString() {
+		return "CDC:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

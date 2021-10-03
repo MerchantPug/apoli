@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ public record StatusEffectConfiguration(MobEffect effect,
 	).apply(instance, StatusEffectConfiguration::new));
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		if (this.minAmplifier() <= this.maxAmplifier())
 			builder.add("%s/Amplifier range is invalid: [%d,%d]".formatted(this.name(), this.minAmplifier(), this.maxAmplifier()));
@@ -34,7 +35,7 @@ public record StatusEffectConfiguration(MobEffect effect,
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		if (this.effect() == null)
 			return ImmutableList.of(this.name() + "/Missing Effect");
 		return ImmutableList.of();

@@ -10,14 +10,13 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public abstract class ItemAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<ItemAction<?>> implements IFactory<T, ConfiguredItemAction<T, ?>, ItemAction<T>> {
 	public static final Codec<ItemAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ITEM_ACTION);
-	private final Codec<T> codec;
+	private final Codec<ConfiguredItemAction<T, ?>> codec;
 
 	protected ItemAction(Codec<T> codec) {
-		this.codec = codec;
+		this.codec = IFactory.singleCodec(IFactory.asMap(codec), this::configure, ConfiguredItemAction::getConfiguration);
 	}
 
-	@Override
-	public Codec<T> getCodec() {
+	public Codec<ConfiguredItemAction<T, ?>> getCodec() {
 		return this.codec;
 	}
 

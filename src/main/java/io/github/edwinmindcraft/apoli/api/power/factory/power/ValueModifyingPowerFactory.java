@@ -5,10 +5,10 @@ import io.github.edwinmindcraft.apoli.api.power.IValueModifyingPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import java.util.List;
-
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+
+import java.util.List;
 
 public abstract class ValueModifyingPowerFactory<T extends IValueModifyingPowerConfiguration> extends PowerFactory<T> implements IValueModifyingPower<T> {
 	protected ValueModifyingPowerFactory(Codec<T> codec) {

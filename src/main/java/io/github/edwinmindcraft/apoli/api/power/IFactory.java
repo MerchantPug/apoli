@@ -1,11 +1,12 @@
 package io.github.edwinmindcraft.apoli.api.power;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * A generic type to define an action.
@@ -14,7 +15,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
  * @param <C> The type of the {@link ConfiguredFactory} this factory will instantiate.
  * @param <F> The type of this {@link IFactory}.
  */
-public interface IFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredFactory<T, ? extends F>, F extends IFactory<T, C, F>> extends Codec<C> {
+public interface IFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredFactory<T, ? extends F>, F extends IFactory<T, C, F>> {
 
 	/**
 	 * Gets or create a {@link MapCodec} from the given {@link Codec}
@@ -29,12 +30,16 @@ public interface IFactory<T extends IDynamicFeatureConfiguration, C extends Conf
 		return codec.fieldOf("value");
 	}
 
-	/**
-	 * Accesses the {@link Codec} used to serialize the configuration.
-	 *
-	 * @return The codec used to serialize the configuration.
-	 */
-	Codec<T> getCodec();
+	static <T, V, R> Codec<R> unionCodec(MapCodec<T> first, MapCodec<V> second, BiFunction<T, V, R> function, Function<R, T> firstGetter, Function<R, V> secondGetter) {
+		return RecordCodecBuilder.create(instance -> instance.group(
+				first.forGetter(firstGetter),
+				second.forGetter(secondGetter)
+		).apply(instance, function));
+	}
+
+	static <T, R> Codec<R> singleCodec(MapCodec<T> first, Function<T, R> to, Function<R, T> from) {
+		return first.xmap(to, from).codec();
+	}
 
 	/**
 	 * Configures a new {@link ConfiguredFactory} from the given parameters.
@@ -44,14 +49,4 @@ public interface IFactory<T extends IDynamicFeatureConfiguration, C extends Conf
 	 * @return A a {@link ConfiguredFactory} with this factory and the given configuration.
 	 */
 	C configure(T input);
-
-	@Override
-	default <T1> DataResult<Pair<C, T1>> decode(DynamicOps<T1> ops, T1 input) {
-		return this.getCodec().decode(ops, input).map(x -> x.mapFirst(this::configure));
-	}
-
-	@Override
-	default <T1> DataResult<T1> encode(C input, DynamicOps<T1> ops, T1 prefix) {
-		return this.getCodec().encode(input.getConfiguration(), ops, prefix);
-	}
 }

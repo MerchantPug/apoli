@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfiguration;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -30,12 +31,12 @@ public record EnchantmentConfiguration(IntegerComparisonConfiguration comparison
 	).apply(instance, EnchantmentConfiguration::new));
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
 		return IDynamicFeatureConfiguration.super.getErrors(server);
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		if (this.enchantment() == null)
 			return ImmutableList.of(this.name() + "/Missing Enchantment");
 		return ImmutableList.of();

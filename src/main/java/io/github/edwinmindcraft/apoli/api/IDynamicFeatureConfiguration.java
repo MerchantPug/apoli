@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -27,7 +28,7 @@ import java.util.function.UnaryOperator;
  * utility methods to help with coding and verification.
  */
 public interface IDynamicFeatureConfiguration {
-	static void populate(ImmutableMap.Builder<String, IDynamicFeatureConfiguration> builder, Iterable<?> iterable, String prefix) {
+	static void populate(Map<String, IDynamicFeatureConfiguration> builder, Iterable<?> iterable, String prefix) {
 		int i = 0;
 		for (Object o : iterable) {
 			if (o instanceof IDynamicFeatureConfiguration config)
@@ -40,7 +41,7 @@ public interface IDynamicFeatureConfiguration {
 		}
 	}
 
-	static void populate(ImmutableMap.Builder<String, IDynamicFeatureConfiguration> builder, Map<?, ?> map, String prefix) {
+	static void populate(Map<String, IDynamicFeatureConfiguration> builder, Map<?, ?> map, String prefix) {
 		map.forEach((o, o2) -> {
 			String key = "?";
 			if (o instanceof String str) key = str;
@@ -60,7 +61,7 @@ public interface IDynamicFeatureConfiguration {
 	 * @return The errors that invalidate this configuration, or an empty list in no errors where found.
 	 */
 	@NotNull
-	default List<String> getErrors(@NotNull MinecraftServer server) {
+	default List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
 		return this.getChildrenComponent().entrySet().stream().flatMap(entry -> this.copyErrorsFrom(entry.getValue(), server, this.name(), entry.getKey()).stream()).toList();
 	}
 
@@ -70,7 +71,7 @@ public interface IDynamicFeatureConfiguration {
 	 * should be written here.
 	 */
 	@NotNull
-	default List<String> getWarnings(@NotNull MinecraftServer server) {
+	default List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		return this.getChildrenComponent().entrySet().stream().flatMap(entry -> this.copyWarningsFrom(entry.getValue(), server, this.name(), entry.getKey()).stream()).toList();
 	}
 
@@ -85,7 +86,7 @@ public interface IDynamicFeatureConfiguration {
 	@NotNull
 	default Map<String, IDynamicFeatureConfiguration> getChildrenComponent() {
 		if (this instanceof Record record) {
-			ImmutableMap.Builder<String, IDynamicFeatureConfiguration> builder = ImmutableMap.builder();
+			Map<String, IDynamicFeatureConfiguration> builder = new HashMap<>();
 			for (RecordComponent component : record.getClass().getRecordComponents()) {
 				try {
 					Object invoke = component.getAccessor().invoke(record);
@@ -100,7 +101,7 @@ public interface IDynamicFeatureConfiguration {
 					Apoli.LOGGER.debug(e);
 				}
 			}
-			return builder.build();
+			return ImmutableMap.copyOf(builder);
 		}
 		return ImmutableMap.of();
 	}
@@ -136,12 +137,12 @@ public interface IDynamicFeatureConfiguration {
 		return val::formatted;
 	}
 
-	default List<String> copyErrorsFrom(@Nullable IDynamicFeatureConfiguration config, MinecraftServer server, String name, String... fields) {
+	default List<String> copyErrorsFrom(@Nullable IDynamicFeatureConfiguration config, ICalioDynamicRegistryManager server, String name, String... fields) {
 		if (config == null) return ImmutableList.of();
 		return config.getErrors(server).stream().map(this.fieldName(name, fields)).toList();
 	}
 
-	default List<String> copyWarningsFrom(@Nullable IDynamicFeatureConfiguration config, MinecraftServer server, String name, String... fields) {
+	default List<String> copyWarningsFrom(@Nullable IDynamicFeatureConfiguration config, ICalioDynamicRegistryManager server, String name, String... fields) {
 		if (config == null) return ImmutableList.of();
 		return config.getWarnings(server).stream().map(this.fieldName(name, fields)).toList();
 	}

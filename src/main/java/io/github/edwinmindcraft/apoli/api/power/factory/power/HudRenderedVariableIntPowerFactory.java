@@ -1,15 +1,15 @@
 package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
+import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IHudRenderedVariableIntPowerConfiguration;
-import io.github.apace100.apoli.util.HudRender;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class HudRenderedVariableIntPowerFactory<T extends IHudRenderedVariableIntPowerConfiguration> extends VariableIntPowerFactory<T> implements IHudRenderedPower<T> {
 	protected HudRenderedVariableIntPowerFactory(Codec<T> codec) {

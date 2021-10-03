@@ -11,7 +11,7 @@ import java.util.function.Function;
 import net.minecraft.world.level.biome.Biome;
 
 public final class ConfiguredBiomeCondition<C extends IDynamicFeatureConfiguration, F extends BiomeCondition<C>> extends ConfiguredCondition<C, F> {
-	public static final Codec<ConfiguredBiomeCondition<?, ?>> CODEC = BiomeCondition.CODEC.dispatch(ConfiguredBiomeCondition::getFactory, Function.identity());
+	public static final Codec<ConfiguredBiomeCondition<?, ?>> CODEC = BiomeCondition.CODEC.dispatch(ConfiguredBiomeCondition::getFactory, BiomeCondition::getConditionCodec);
 
 	public static boolean check(@Nullable ConfiguredBiomeCondition<?, ?> condition, Biome biome) {
 		return condition == null || condition.check(biome);
@@ -23,5 +23,10 @@ public final class ConfiguredBiomeCondition<C extends IDynamicFeatureConfigurati
 
 	public boolean check(Biome biome) {
 		return this.getFactory().check(this.getConfiguration(), this.getData(), biome);
+	}
+
+	@Override
+	public String toString() {
+		return "CBiC:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

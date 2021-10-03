@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
@@ -15,6 +15,11 @@ import java.util.Optional;
 public final class ListConfiguration<T> implements IDynamicFeatureConfiguration, IStreamConfiguration<T> {
 
 	public static final MapCodec<ListConfiguration<AttributeModifier>> MODIFIER_CODEC = modifierCodec("modifier");
+
+	@SafeVarargs
+	public static <T> ListConfiguration<T> of(T... elements) {
+		return new ListConfiguration<>(ImmutableList.copyOf(elements));
+	}
 
 	public static MapCodec<ListConfiguration<AttributeModifier>> modifierCodec(String singular) {
 		return ListConfiguration.mapCodec(SerializableDataTypes.ATTRIBUTE_MODIFIER, singular, singular + "s");

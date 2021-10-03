@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
@@ -13,14 +12,14 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 public abstract class DamageCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<DamageCondition<?>> implements IConditionFactory<T, ConfiguredDamageCondition<T, ?>, DamageCondition<T>> {
 	public static final Codec<DamageCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.DAMAGE_CONDITION);
 
-	private final Codec<Pair<T, ConditionData>> codec;
+	private final Codec<ConfiguredDamageCondition<T, ?>> codec;
 
 	protected DamageCondition(Codec<T> codec) {
-		this.codec = IConditionFactory.conditionCodec(codec);
+		this.codec = IConditionFactory.conditionCodec(codec, this);
 	}
 
 	@Override
-	public Codec<Pair<T, ConditionData>> getConditionCodec() {
+	public Codec<ConfiguredDamageCondition<T, ?>> getConditionCodec() {
 		return this.codec;
 	}
 

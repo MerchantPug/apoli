@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import net.minecraft.util.Tuple;
 
 public class MultiplePower extends PowerFactory<MultipleConfiguration<ConfiguredPower<?, ?>>> {
-	private static final ImmutableSet<String> EXCLUDED = ImmutableSet.of("type", "loading_priority", "name", "description", "hidden", "condition");
+	private static final ImmutableSet<String> EXCLUDED = ImmutableSet.of("type", "loading_priority", "name", "description", "hidden", "condition", "conditions");
 	private static final Predicate<String> ALLOWED = str -> !EXCLUDED.contains(str);
 
 	public MultiplePower() {

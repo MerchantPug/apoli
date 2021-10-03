@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,14 +33,14 @@ public record FieldConfiguration<T>(T value) implements IDynamicFeatureConfigura
 	}
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
 		if (this.value() instanceof IDynamicFeatureConfiguration config)
 			return config.copyErrorsFrom(config, server, this.name());
 		return ImmutableList.of();
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		if (this.value() instanceof IDynamicFeatureConfiguration config)
 			return config.copyWarningsFrom(config, server, this.name());
 		return ImmutableList.of();

@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
+import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import java.util.function.BiConsumer;
@@ -20,7 +21,7 @@ public class IntegerEntityAction extends EntityAction<FieldConfiguration<Integer
 	private final BiConsumer<Entity, Integer> action;
 
 	public IntegerEntityAction(BiConsumer<Entity, Integer> action, String field) {
-		super(FieldConfiguration.codec(INT, field));
+		super(FieldConfiguration.codec(Codec.INT, field));
 		this.action = action;
 	}
 

@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
@@ -12,14 +11,14 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public abstract class FluidCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<FluidCondition<?>> implements IConditionFactory<T, ConfiguredFluidCondition<T, ?>, FluidCondition<T>> {
 	public static final Codec<FluidCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.FLUID_CONDITION);
-	private final Codec<Pair<T, ConditionData>> codec;
+	private final Codec<ConfiguredFluidCondition<T, ?>> codec;
 
 	protected FluidCondition(Codec<T> codec) {
-		this.codec = IConditionFactory.conditionCodec(codec);
+		this.codec = IConditionFactory.conditionCodec(codec, this);
 	}
 
 	@Override
-	public Codec<Pair<T, ConditionData>> getConditionCodec() {
+	public Codec<ConfiguredFluidCondition<T, ?>> getConditionCodec() {
 		return this.codec;
 	}
 

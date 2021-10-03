@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public record BlockConfiguration(Block block) implements IDynamicFeatureConfigur
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		if (this.block() == null)
 			return ImmutableList.of("Block/Missing block");
 		return IDynamicFeatureConfiguration.super.getWarnings(server);

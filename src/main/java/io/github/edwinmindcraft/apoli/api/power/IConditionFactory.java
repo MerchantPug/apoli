@@ -1,10 +1,6 @@
 package io.github.edwinmindcraft.apoli.api.power;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 
 /**
@@ -13,32 +9,14 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
  * but it may be useful to optimize the code.
  */
 public interface IConditionFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F>, F extends IConditionFactory<T, C, F>> extends IFactory<T, C, F> {
-	static <T extends IDynamicFeatureConfiguration, F> Codec<Pair<T, ConditionData>> conditionCodec(Codec<T> codec) {
-		return RecordCodecBuilder.create(instance -> instance.group(
-				IFactory.asMap(codec).forGetter(Pair::getFirst),
-				ConditionData.CODEC.forGetter(Pair::getSecond)
-		).apply(instance, Pair::new));
+	static <T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F>, F extends IConditionFactory<T, C, F>> Codec<C> conditionCodec(Codec<T> codec, F factory) {
+		return IFactory.unionCodec(IFactory.asMap(codec), ConditionData.CODEC, factory::configure, ConfiguredCondition::getConfiguration, ConfiguredCondition::getData);
 	}
 
-	Codec<Pair<T, ConditionData>> getConditionCodec();
-
-	@Override
-	default Codec<T> getCodec() {
-		return this.getConditionCodec().xmap(Pair::getFirst, t -> new Pair<>(t, ConditionData.DEFAULT));
-	}
+	Codec<C> getConditionCodec();
 
 	default C configure(T input) {
 		return this.configure(input, ConditionData.DEFAULT);
-	}
-
-	@Override
-	default <T1> DataResult<Pair<C, T1>> decode(DynamicOps<T1> ops, T1 input) {
-		return this.getConditionCodec().decode(ops, input).map(pair -> pair.mapFirst(data -> this.configure(data.getFirst(), data.getSecond())));
-	}
-
-	@Override
-	default <T1> DataResult<T1> encode(C input, DynamicOps<T1> ops, T1 prefix) {
-		return this.getConditionCodec().encode(Pair.of(input.getConfiguration(), input.getData()), ops, prefix);
 	}
 
 	C configure(T input, ConditionData configuration);

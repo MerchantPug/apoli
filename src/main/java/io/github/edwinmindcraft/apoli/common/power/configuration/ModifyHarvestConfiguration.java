@@ -13,6 +13,7 @@ import java.util.Optional;
 public record ModifyHarvestConfiguration(ListConfiguration<AttributeModifier> modifiers,
 										 @Nullable ConfiguredBlockCondition<?, ?> condition,
 										 boolean allow) implements IValueModifyingPowerConfiguration {
+
 	public static final Codec<ModifyHarvestConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyHarvestConfiguration::modifiers),
 			ConfiguredBlockCondition.CODEC.optionalFieldOf("block_condition").forGetter(x -> Optional.ofNullable(x.condition())),

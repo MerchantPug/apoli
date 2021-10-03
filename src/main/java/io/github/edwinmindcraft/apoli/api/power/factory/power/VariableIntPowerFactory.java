@@ -5,12 +5,12 @@ import io.github.edwinmindcraft.apoli.api.power.IVariableIntPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IVariableIntPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfiguration> extends PowerFactory<T> implements IVariableIntPower<T> {
 	protected VariableIntPowerFactory(Codec<T> codec) {

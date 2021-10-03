@@ -13,14 +13,13 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 public abstract class BlockAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BlockAction<?>> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
 	public static final Codec<BlockAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_ACTION);
 
-	private final Codec<T> codec;
+	private final Codec<ConfiguredBlockAction<T, ?>> codec;
 
 	protected BlockAction(Codec<T> codec) {
-		this.codec = codec;
+		this.codec = IFactory.singleCodec(IFactory.asMap(codec), this::configure, ConfiguredBlockAction::getConfiguration);
 	}
 
-	@Override
-	public Codec<T> getCodec() {
+	public Codec<ConfiguredBlockAction<T, ?>> getCodec() {
 		return this.codec;
 	}
 

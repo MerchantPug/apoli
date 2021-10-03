@@ -48,9 +48,8 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 	public DataResult<ConfiguredPower<?, ?>> validate(ResourceLocation location, ConfiguredPower<?, ?> configuredPower, ICalioDynamicRegistryManager manager) {
 		if (configuredPower == null)
 			return DataResult.error("Loading for all instances of this power failed.");
-		configuredPower.getWarnings(ServerLifecycleHooks.getCurrentServer()).forEach(Apoli.LOGGER::warn);
 		if (!configuredPower.isConfigurationValid()) {
-			configuredPower.getErrors(ServerLifecycleHooks.getCurrentServer()).forEach(Apoli.LOGGER::error);
+			configuredPower.getErrors(manager).forEach(x -> Apoli.LOGGER.error("Error in power {}: {}", location, x));
 			return DataResult.error("Invalid Configuration.");
 		}
 		return DataResult.success(configuredPower);

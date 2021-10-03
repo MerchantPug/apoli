@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfiguration;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public record BlockStateConfiguration(String property,
 	}
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
 		if (this.booleanValue() == null && this.stringValue() == null && this.comparison() == null)
 			return ImmutableList.of("BlockState/No check were defined");
 		return IDynamicFeatureConfiguration.super.getErrors(server);

@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * @param <F> The type of the factory.
  */
 public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends ConfiguredFactory<C, F> implements IForgeRegistryEntry<ConfiguredPower<?, ?>> {
-	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, Function.identity());
+	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
 	private final PowerData data;
 
 	public ConfiguredPower(F factory, C configuration, PowerData data) {
@@ -229,6 +229,11 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	 */
 	ResourceLocation checkRegistryName(String name) {
 		return new ResourceLocation(name);
+	}
+
+	@Override
+	public String toString() {
+		return "CP:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 
 	private static final class Delegate<T> implements IRegistryDelegate<T> {

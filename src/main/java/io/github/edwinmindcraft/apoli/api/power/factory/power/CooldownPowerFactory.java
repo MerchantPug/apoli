@@ -1,13 +1,13 @@
 package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
+import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.ICooldownPower;
 import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.apace100.apoli.util.HudRender;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
@@ -59,7 +59,7 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 	}
 
 	protected long getRemainingDuration(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-		return Math.max(this.getLastUseTime(configuration, player) - player.getCommandSenderWorld().getGameTime(), 0);
+		return Math.max(this.getLastUseTime(configuration, player) + configuration.getConfiguration().duration() - player.getCommandSenderWorld().getGameTime(), 0);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 		}
 
 		protected AtomicLong getUseTime(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return configuration.getPowerData(player, () -> new AtomicLong(Integer.MIN_VALUE));
+			return configuration.getPowerData(player, () -> new AtomicLong(0));
 		}
 
 		@Override

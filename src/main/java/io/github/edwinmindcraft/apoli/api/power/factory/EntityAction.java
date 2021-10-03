@@ -11,14 +11,13 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 public abstract class EntityAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<EntityAction<?>> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
 	public static final Codec<EntityAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ENTITY_ACTION);
 
-	private final Codec<T> codec;
+	private final Codec<ConfiguredEntityAction<T, ?>> codec;
 
 	protected EntityAction(Codec<T> codec) {
-		this.codec = codec;
+		this.codec = IFactory.singleCodec(IFactory.asMap(codec), this::configure, ConfiguredEntityAction::getConfiguration);
 	}
 
-	@Override
-	public Codec<T> getCodec() {
+	public Codec<ConfiguredEntityAction<T, ?>> getCodec() {
 		return this.codec;
 	}
 

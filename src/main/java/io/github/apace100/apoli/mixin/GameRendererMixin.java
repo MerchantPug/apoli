@@ -62,31 +62,35 @@ public abstract class GameRendererMixin {
 
 	@Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
 	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
-		IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
-			ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
-			if (this.resourceManager.hasResource(shaderLoc)) {
-				this.loadEffect(shaderLoc);
-				this.currentlyLoadedShader = shaderLoc;
-			}
-		});
+		if (ApoliPowers.SHADER.isPresent()) {
+			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
+				ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
+				if (this.resourceManager.hasResource(shaderLoc)) {
+					this.loadEffect(shaderLoc);
+					this.currentlyLoadedShader = shaderLoc;
+				}
+			});
+		}
 	}
 
 	@Inject(at = @At("HEAD"), method = "render")
 	private void loadShaderFromPower(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
-		IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
-			ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
-			if (this.currentlyLoadedShader != shaderLoc) {
-				this.loadEffect(shaderLoc);
-				this.currentlyLoadedShader = shaderLoc;
+		if (ApoliPowers.SHADER.isPresent()) {
+			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
+				ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
+				if (this.currentlyLoadedShader != shaderLoc) {
+					this.loadEffect(shaderLoc);
+					this.currentlyLoadedShader = shaderLoc;
+				}
+			});
+			if (!IPowerContainer.hasPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
+				if (this.postEffect != null) {
+					this.postEffect.close();
+					this.postEffect = null;
+				}
+				this.effectActive = false;
+				this.currentlyLoadedShader = null;
 			}
-		});
-		if (!IPowerContainer.hasPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
-			if (this.postEffect != null) {
-				this.postEffect.close();
-				this.postEffect = null;
-			}
-			this.effectActive = false;
-			this.currentlyLoadedShader = null;
 		}
 	}
 
@@ -101,6 +105,8 @@ public abstract class GameRendererMixin {
 	// PHASING: remove_blocks
 	@Inject(at = @At(value = "HEAD"), method = "render")
 	private void beforeRender(float tickDelta, long startTime, boolean tick, CallbackInfo info) {
+		if (!ApoliPowers.PHASING.isPresent())
+			return;
 		Optional<Float> renderMethod = PhasingPower.getRenderMethod(this.mainCamera.getEntity(), PhasingConfiguration.RenderType.REMOVE_BLOCKS);
 		ClientLevel level = this.minecraft.level;
 		if (level == null)
@@ -139,7 +145,7 @@ public abstract class GameRendererMixin {
 	// PHASING
 	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V"), method = "renderLevel")
 	private void preventThirdPerson(Camera camera, BlockGetter area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta) {
-		if (PhasingPower.hasRenderMethod(camera.getEntity(), PhasingConfiguration.RenderType.REMOVE_BLOCKS))
+		if (ApoliPowers.PHASING.isPresent() && PhasingPower.hasRenderMethod(camera.getEntity(), PhasingConfiguration.RenderType.REMOVE_BLOCKS))
 			camera.setup(area, focusedEntity, false, false, tickDelta);
 		else
 			camera.setup(area, focusedEntity, thirdPerson, inverseView, tickDelta);

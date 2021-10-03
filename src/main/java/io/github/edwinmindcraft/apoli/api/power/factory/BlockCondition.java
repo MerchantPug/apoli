@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
@@ -13,14 +12,14 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BlockCondition<?>> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
 	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_CONDITION);
 
-	private final Codec<Pair<T, ConditionData>> codec;
+	private final Codec<ConfiguredBlockCondition<T, ?>> codec;
 
 	protected BlockCondition(Codec<T> codec) {
-		this.codec = IConditionFactory.conditionCodec(codec);
+		this.codec = IConditionFactory.conditionCodec(codec, this);
 	}
 
 	@Override
-	public Codec<Pair<T, ConditionData>> getConditionCodec() {
+	public Codec<ConfiguredBlockCondition<T, ?>> getConditionCodec() {
 		return this.codec;
 	}
 

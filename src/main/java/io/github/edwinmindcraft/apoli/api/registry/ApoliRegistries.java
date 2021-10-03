@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import io.github.apace100.apoli.util.NamespaceAlias;
 import io.github.apace100.calio.ClassUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.factory.*;
@@ -69,6 +70,8 @@ public class ApoliRegistries {
 					return object == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(object);
 				}).map((objectx) -> Pair.of(objectx, dynamicOps.empty())) : ResourceLocation.CODEC.decode(dynamicOps, input).flatMap((pair) -> {
 					T object = supplier.get().getValue(pair.getFirst());
+					if (object == null && NamespaceAlias.hasAlias(pair.getFirst()))
+						object = supplier.get().getValue(NamespaceAlias.resolveAlias(pair.getFirst()));
 					return object == null ? DataResult.error("Unknown registry key: " + pair.getFirst()) : DataResult.success(Pair.of(object, pair.getSecond()));
 				});
 			}

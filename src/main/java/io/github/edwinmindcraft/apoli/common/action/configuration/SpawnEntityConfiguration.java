@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EntityType;
@@ -31,7 +32,7 @@ public record SpawnEntityConfiguration(EntityType<?> type, CompoundTag tag,
 	}
 
 	@Override
-	public @NotNull List<String> getErrors(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		if (this.action() != null)
 			builder.addAll(this.action().getErrors(server).stream().map("SpawnEntity/%s"::formatted).toList());
@@ -39,7 +40,7 @@ public record SpawnEntityConfiguration(EntityType<?> type, CompoundTag tag,
 	}
 
 	@Override
-	public @NotNull List<String> getWarnings(@NotNull MinecraftServer server) {
+	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		if (this.action() != null)
 			builder.addAll(this.action().getWarnings(server).stream().map("SpawnEntity/%s"::formatted).toList());

@@ -1,5 +1,8 @@
 package io.github.edwinmindcraft.apoli.common;
 
+import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.command.PowerCommand;
+import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -10,15 +13,11 @@ import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
 import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.command.PowerCommand;
-import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -28,6 +27,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
+
+import java.util.List;
 
 /**
  * This class contains events that relate to non-power stuff, as in
@@ -59,6 +60,18 @@ public class ApoliEventHandler {
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ApoliBuiltinRegistries.CONFIGURED_POWERS, ConfiguredPower.CODEC);
 		event.getRegistryManager().addReload(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, "powers", PowerLoader.INSTANCE);
 		event.getRegistryManager().addValidation(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, PowerLoader.INSTANCE, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
+	}
+
+	@SubscribeEvent
+	public static void calioLoadComplete(CalioDynamicRegistryEvent.LoadComplete event) {
+		for (ConfiguredPower<?, ?> configuredPower : event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY)) {
+			List<String> warnings = configuredPower.getWarnings(event.getRegistryManager());
+			List<String> errors = configuredPower.getErrors(event.getRegistryManager());
+			if (errors.isEmpty() && warnings.isEmpty()) continue;
+			Apoli.LOGGER.info("Status report for power: {}", configuredPower.getRegistryName());
+			warnings.forEach(Apoli.LOGGER::warn);
+			errors.forEach(Apoli.LOGGER::error);
+		}
 	}
 
 	@SubscribeEvent

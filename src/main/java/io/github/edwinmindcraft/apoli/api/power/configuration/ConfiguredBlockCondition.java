@@ -11,7 +11,7 @@ import java.util.function.Function;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfiguration, F extends BlockCondition<T>> extends ConfiguredCondition<T, F> {
-	public static final Codec<ConfiguredBlockCondition<?, ?>> CODEC = BlockCondition.CODEC.dispatch(ConfiguredBlockCondition::getFactory, Function.identity());
+	public static final Codec<ConfiguredBlockCondition<?, ?>> CODEC = BlockCondition.CODEC.dispatch(ConfiguredBlockCondition::getFactory, BlockCondition::getConditionCodec);
 
 	public static boolean check(@Nullable ConfiguredBlockCondition<?, ?> condition, BlockInWorld position) {
 		return condition == null || condition.check(position);
@@ -23,5 +23,10 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 
 	public boolean check(BlockInWorld block) {
 		return this.getFactory().check(this, block);
+	}
+
+	@Override
+	public String toString() {
+		return "CBC:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }
