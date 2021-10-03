@@ -27,6 +27,10 @@ import java.util.Set;
 @Mod.EventBusSubscriber(modid = Apoli.MODID, value = Dist.CLIENT)
 public class ApoliClientEventHandler {
 
+	public static void registerPowerKeybinding(String keyId, KeyMapping keyBinding) {
+		idToKeyBindingMap.put(keyId, keyBinding);
+	}
+
 	private static HashMap<String, KeyMapping> idToKeyBindingMap = new HashMap<>();
 	private static HashMap<String, Boolean> lastKeyBindingStates = new HashMap<>();
 	private static boolean initializedKeyBindingMap = false;

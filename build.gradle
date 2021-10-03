@@ -39,6 +39,7 @@ minecraft {
 	def atFile = file("src/main/resources/META-INF/accesstransformer.cfg");
 	if (atFile.exists()) accessTransformer atFile
 
+
 	runs {
 		client {
 			workingDirectory file('run')
