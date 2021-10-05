@@ -53,6 +53,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			ConfiguredPower<?, ?> instance = this.powers.get(power);
 			if (sources.isEmpty()) {
 				this.powerSources.remove(power);
+				this.powers.remove(power);
 				if (instance != null) {
 					instance.onRemoved(this.owner);
 					instance.onLost(this.owner);

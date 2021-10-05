@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.data;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
@@ -17,9 +18,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, DynamicEntryValidator<ConfiguredPower<?, ?>> {
@@ -41,13 +44,26 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 		}).max(LOADING_ORDER_COMPARATOR);
 		CURRENT_NAMESPACE = null;
 		CURRENT_PATH = null;
+		if (definition.isEmpty())
+			Apoli.LOGGER.error("Loading for all instances of power {} failed.", resourceLocation);
 		return definition.orElse(null);
 	}
 
 	@Override
-	public DataResult<ConfiguredPower<?, ?>> validate(ResourceLocation location, ConfiguredPower<?, ?> configuredPower, ICalioDynamicRegistryManager manager) {
-		if (configuredPower == null)
-			return DataResult.error("Loading for all instances of this power failed.");
+	public @NotNull Map<ResourceLocation, ConfiguredPower<?, ?>> create(ResourceLocation location, @NotNull List<JsonElement> entries) {
+		ConfiguredPower<?, ?> accept = this.accept(location, entries);
+		if (accept != null) {
+			ImmutableMap.Builder<ResourceLocation, ConfiguredPower<?, ?>> builder = ImmutableMap.builder();
+			builder.put(location, accept);
+			accept.getContainedPowers().forEach((s, configuredPower) -> builder.put(new ResourceLocation(location.getNamespace(), location.getPath() + s), configuredPower));
+			return builder.build();
+		}
+		return ImmutableMap.of();
+	}
+
+
+	@Override
+	public @NotNull DataResult<ConfiguredPower<?, ?>> validate(@NotNull ResourceLocation location, @NotNull ConfiguredPower<?, ?> configuredPower, @NotNull ICalioDynamicRegistryManager manager) {
 		if (!configuredPower.isConfigurationValid()) {
 			configuredPower.getErrors(manager).forEach(x -> Apoli.LOGGER.error("Error in power {}: {}", location, x));
 			return DataResult.error("Invalid Configuration.");
