@@ -40,11 +40,11 @@ public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPo
 		return player.getAttributes().hasAttribute(this.lazyAttribute.get()) ? Optional.ofNullable(player.getAttribute(this.lazyAttribute.get())) : Optional.empty();
 	}
 
-	private void add(List<AttributeModifier> configuration, LivingEntity player) {
+	protected void add(List<AttributeModifier> configuration, LivingEntity player) {
 		this.getAttribute(player).ifPresent(x -> configuration.stream().filter(mod -> !x.hasModifier(mod)).forEach(x::addTransientModifier));
 	}
 
-	private void remove(List<AttributeModifier> configuration, LivingEntity player) {
+	protected void remove(List<AttributeModifier> configuration, LivingEntity player) {
 		this.getAttribute(player).ifPresent(x -> configuration.stream().filter(x::hasModifier).forEach(x::removeModifier));
 	}
 

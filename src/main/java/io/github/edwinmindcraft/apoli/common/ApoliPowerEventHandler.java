@@ -83,7 +83,7 @@ public class ApoliPowerEventHandler {
 		//TODO Check if this works. It should since MC1.17 seems to fire this on both sides.
 		ActionOnLandPower.execute(entityLiving);
 		if (IPowerContainer.getPowers(entityLiving, ApoliPowers.MODIFY_FALLING.get()).stream().anyMatch(x -> !x.getConfiguration().takeFallDamage()))
-			event.setDistance(0.0F);
+			event.setDamageMultiplier(0.0F); //Disable fall damage without actually removing distance. This is to avoid breaking compatibility.
 	}
 
 	@SubscribeEvent

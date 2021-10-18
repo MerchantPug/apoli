@@ -62,7 +62,7 @@ public class PowerCommand {
 															return i;
 														}
 												)
-												.then(argument("source", ResourceLocationArgument.id())
+												.then(argument("source", PowerSourceArgumentType.powerSource("targets"))
 														.executes((command) -> {
 															int i = 0;
 															try {
@@ -124,7 +124,7 @@ public class PowerCommand {
 													}
 													return i;
 												})
-												.then(argument("source", ResourceLocationArgument.id())
+												.then(argument("source", PowerSourceArgumentType.powerSource("targets"))
 														.executes((command) -> {
 															int i = 0;
 															Collection<? extends Entity> targets = EntityArgument.getEntities(command, "targets");
@@ -157,7 +157,7 @@ public class PowerCommand {
 														})))))
 						.then(literal("revokeall")
 								.then(argument("targets", EntityArgument.entities())
-										.then(argument("source", ResourceLocationArgument.id())
+										.then(argument("source", PowerSourceArgumentType.powerSource("targets"))
 												.executes((command) -> {
 													int i = 0;
 													Collection<? extends Entity> targets = EntityArgument.getEntities(command, "targets");

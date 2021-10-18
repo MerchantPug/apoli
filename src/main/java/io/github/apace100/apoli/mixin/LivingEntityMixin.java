@@ -17,8 +17,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -71,5 +73,10 @@ public abstract class LivingEntityMixin extends Entity {
 	private void preventStatusEffects(MobEffectInstance effect, CallbackInfoReturnable<Boolean> info) {
 		if (EffectImmunityPower.isImmune((LivingEntity) (Entity) this, effect))
 			info.setReturnValue(false);
+	}
+
+	@Inject(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;getValue()D", ordinal = 0))
+	public void modifyFall(Vec3 motion, CallbackInfo ci) {
+		ModifyFallingPower.apply((LivingEntity) (Entity) this, this.getDeltaMovement().y <= 0.0D);
 	}
 }

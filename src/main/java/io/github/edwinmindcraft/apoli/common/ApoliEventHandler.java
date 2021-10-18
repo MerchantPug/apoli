@@ -18,13 +18,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
@@ -80,20 +81,29 @@ public class ApoliEventHandler {
 	}
 
 	@SubscribeEvent
+	public static void livingTick(LivingEvent.LivingUpdateEvent event) {
+		if (!event.getEntityLiving().level.isClientSide())
+			IPowerContainer.get(event.getEntityLiving()).ifPresent(IPowerContainer::serverTick);
+	}
+
 	public static void playerTick(TickEvent.PlayerTickEvent event) {
-		if (event.phase == TickEvent.Phase.START && event.side == LogicalSide.SERVER) {
-			IPowerContainer.get(event.player).ifPresent(IPowerContainer::serverTick);
-			//if ((event.player.age & 0x7F) == 0 && event.player instanceof ServerPlayerEntity)
-			//	ModComponentsArchitectury.syncWith((ServerPlayerEntity) event.player, event.player);
-		}
+		//if ((event.player.age & 0x7F) == 0 && event.player instanceof ServerPlayerEntity)
+		//	ModComponentsArchitectury.syncWith((ServerPlayerEntity) event.player, event.player);
 	}
 
 	@SubscribeEvent
 	public static void playerClone(PlayerEvent.Clone event) {
-		event.getPlayer().getCapability(ApoliCapabilities.POWER_CONTAINER)
-				.ifPresent(target -> event.getOriginal().getCapability(ApoliCapabilities.POWER_CONTAINER)
-						.ifPresent(source -> target.readFromNbt(source.writeToNbt(new CompoundTag()))));
-		IPowerContainer.get(event.getOriginal()).ifPresent(x -> x.getPowers().forEach(y -> y.onRemoved(event.getOriginal())));
+		event.getOriginal().reviveCaps(); // Reload capabilities.
+
+		LazyOptional<IPowerContainer> original = IPowerContainer.get(event.getOriginal());
+		LazyOptional<IPowerContainer> player = IPowerContainer.get(event.getPlayer());
+		if (original.isPresent() != player.isPresent()) {
+			Apoli.LOGGER.info("Capability mismatch: original:{}, new:{}", original.isPresent(), player.isPresent());
+		}
+		player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
+		original.ifPresent(x -> x.getPowers().forEach(y -> y.onRemoved(event.getOriginal())));
+
+		event.getOriginal().invalidateCaps(); // Unload capabilities.
 	}
 
 	@SubscribeEvent

@@ -195,6 +195,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 				}
 			}
 			this.powers.clear();
+			this.powerSources.clear();
+			this.powerData.clear();
 			ListTag powerList = (ListTag) tag.get("Powers");
 			if (powerList != null) {
 				Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
@@ -272,7 +274,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> @Nullable T getPowerData(ConfiguredPower<?, ?> power, Supplier<? extends T> supplier) {
-		return (T) this.powerData.computeIfAbsent(ApoliAPI.getPowers(this.owner.getServer()).getKey(power), x -> supplier.get());
+		return (T) this.powerData.computeIfAbsent(power.getRegistryName(), x -> supplier.get());
 	}
 
 	@NotNull

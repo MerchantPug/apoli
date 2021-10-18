@@ -1,24 +1,23 @@
 package io.github.edwinmindcraft.apoli.common.power.configuration;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraftforge.common.util.Lazy;
 
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
-public final class ModifyFallingConfiguration implements IValueModifyingPowerConfiguration {
+public final class ModifyFallingConfiguration implements IDynamicFeatureConfiguration {
 	private static final Random RANDOM = new Random();
 
 	public static final Codec<ModifyFallingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.DOUBLE.fieldOf("velocity").forGetter(ModifyFallingConfiguration::velocity),
 			Codec.BOOL.optionalFieldOf("take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage)
 	).apply(instance, ModifyFallingConfiguration::new));
+
 	private final double velocity;
 	private final boolean takeFallDamage;
 
@@ -27,16 +26,15 @@ public final class ModifyFallingConfiguration implements IValueModifyingPowerCon
 		this.takeFallDamage = takeFallDamage;
 	}
 
-	private final Lazy<ListConfiguration<AttributeModifier>> cache = Lazy.of(() -> {
-		String name = "MFF" + this.velocity() + "**" + this.takeFallDamage();
-		RANDOM.setSeed(name.hashCode() & ((name.hashCode() ^ 0x52D529L) << 16L));
-		UUID uuid = new UUID(RANDOM.nextLong(), RANDOM.nextLong());
-		return new ListConfiguration<>(ImmutableList.of(new AttributeModifier(uuid, "Unnamed gravity", this.velocity() - 0.08F, AttributeModifier.Operation.ADDITION)));
-	});
+	private AttributeModifier cache;
 
-	@Override
-	public ListConfiguration<AttributeModifier> modifiers() {
-		return this.cache.get();
+	public AttributeModifier modifier(ResourceLocation registryName) {
+		if (this.cache == null) {
+			RANDOM.setSeed(((long) registryName.getNamespace().hashCode() << 32L) | (long) registryName.getPath().hashCode());
+			UUID uuid = new UUID(RANDOM.nextLong(), RANDOM.nextLong());
+			this.cache = new AttributeModifier(uuid, "Modify Falling", this.velocity() - 0.08F, AttributeModifier.Operation.ADDITION);
+		}
+		return this.cache;
 	}
 
 	public double velocity() {return this.velocity;}
