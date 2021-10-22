@@ -1,7 +1,7 @@
 plugins {
 	id 'net.minecraftforge.gradle'
 	id 'org.spongepowered.mixin'
-	id 'idea'
+	//id 'idea'
 	id 'maven-publish'
 }
 
@@ -22,11 +22,6 @@ repositories {
 	maven { url 'https://dvs1.progwml6.com/files/maven' }
 }
 
-mixin {
-	config "apoli.mixins.json"
-	add sourceSets.main, 'apoli.refmap.json'
-}
-
 sourceSets {
 	main {
 		resources {
@@ -35,11 +30,16 @@ sourceSets {
 	}
 }
 
+mixin {
+	add sourceSets.main, "apoli.refmap.json"
+
+	config "apoli.mixins.json"
+}
+
 minecraft {
 	mappings channel: 'official', version: project.ext.minecraft_version
 	def atFile = file("src/main/resources/META-INF/accesstransformer.cfg");
 	if (atFile.exists()) accessTransformer atFile
-
 
 	runs {
 		client {
@@ -86,13 +86,6 @@ minecraft {
 	}
 }
 
-processResources {
-	/*filesMatching('META-INF/mods.toml', {
-		expand  'version': version,
-				'minecraft_version': project.ext.minecraft_version
-	})*/
-}
-
 jar {
 	manifest {
 		attributes(
@@ -111,6 +104,9 @@ dependencies {
 	minecraft group: 'net.minecraftforge', name: 'forge', version: "${minecraft_version}-${forge_version}"
 	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
 	implementation group: 'org.jetbrains', name: 'annotations', version: '22.0.0'
+
+	annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+
 	//implementation group: 'org.spongepowered', name: 'mixin', version: '0.8.4'
 
 	//APIs
@@ -128,11 +124,6 @@ jar {
 	}
 }
 
-task sourceJar(type: Jar, dependsOn: processResources) {
-	classifier 'sources'
-	from sourceSets.main.allSource
-}
-
 jar.finalizedBy('reobfJar')
 
 publishing {
@@ -142,7 +133,6 @@ publishing {
 			version = project.mod_version
 			groupId = project.maven_group
 			artifact jar
-			artifact sourceJar
 		}
 	}
 	repositories {

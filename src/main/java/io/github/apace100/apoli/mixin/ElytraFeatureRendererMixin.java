@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ElytraLayer.class)
 public class ElytraFeatureRendererMixin {
 
-	@Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true, remap = false)
 	private void modifyEquippedStackToElytra(ItemStack stack, LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
 		if (ElytraFlightPower.shouldRenderElytra(entity) && !entity.isInvisible())
 			cir.setReturnValue(true);

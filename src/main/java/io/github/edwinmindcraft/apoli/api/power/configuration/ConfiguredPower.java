@@ -2,6 +2,8 @@ package io.github.edwinmindcraft.apoli.api.power.configuration;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -11,6 +13,7 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 import org.jetbrains.annotations.Nullable;
@@ -234,6 +237,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	@Override
 	public String toString() {
 		return "CP:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
+	}
+
+	private final Lazy<PowerType<?>> type = Lazy.of(() -> new PowerType<>(this));
+
+	public PowerType<?> getPowerType() {
+		return this.type.get();
 	}
 
 	private static final class Delegate<T> implements IRegistryDelegate<T> {

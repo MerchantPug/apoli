@@ -86,20 +86,20 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 		return new ConfiguredPower<>(this, input, data);
 	}
 
-	protected boolean shouldCheckConditions() {
+	protected boolean shouldCheckConditions(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
 		return this.allowConditions;
 	}
 
-	protected boolean shouldTickWhenActive() {
+	protected boolean shouldTickWhenActive(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
 		return this.ticking;
 	}
 
-	protected boolean shouldTickWhenInactive() {
+	protected boolean shouldTickWhenInactive(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
 		return this.tickingWhenInactive;
 	}
 
 	public boolean canTick(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
-		return this.shouldTickWhenActive() && (this.shouldTickWhenInactive() || this.isActive(configuration, entity));
+		return this.shouldTickWhenActive(configuration, entity) && (this.shouldTickWhenInactive(configuration, entity) || this.isActive(configuration, entity));
 	}
 
 	public void tick(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
@@ -145,7 +145,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	protected int tickInterval(T configuration, LivingEntity entity) {return 1;}
 
 	public boolean isActive(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
-		return !this.shouldCheckConditions() || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
+		return !this.shouldCheckConditions(configuration, entity) || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
 	}
 
 	public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity entity) {

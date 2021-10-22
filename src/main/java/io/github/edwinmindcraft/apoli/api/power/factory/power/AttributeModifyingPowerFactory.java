@@ -49,8 +49,8 @@ public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPo
 	}
 
 	@Override
-	public boolean canTick(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-		return this.hasAttributeBacking() && this.shouldCheckConditions();
+	public boolean canTick(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+		return this.hasAttributeBacking() && this.shouldCheckConditions(configuration, entity);
 	}
 
 	@Override
@@ -64,9 +64,9 @@ public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPo
 	}
 
 	@Override
-	protected void onAdded(T configuration, LivingEntity player) {
-		if (this.hasAttributeBacking() && !this.shouldCheckConditions())
-			this.add(configuration.modifiers().getContent(), player);
+	public void onAdded(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+		if (this.hasAttributeBacking() && !this.shouldCheckConditions(configuration, entity))
+			this.add(configuration.getConfiguration().modifiers().getContent(), entity);
 	}
 
 	@Override
