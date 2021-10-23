@@ -12,7 +12,6 @@
 		"HungerManagerMixin",
 		"LivingEntityMixin",
 		"PlayerEntityMixin",
-		"PlayerScreenHandlerMixin",
 		"forge.FoodDataMixin",
 		"forge.ForgeHooksMixin"
 	],
@@ -28,6 +27,7 @@
 		"OtherClientPlayerEntityMixin",
 		"PlayerEntityRendererMixin"
 	],
+	"refmap": "apoli.refmap.json",
 	"injectors": {
 		"defaultRequire": 1
 	}

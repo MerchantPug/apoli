@@ -1,0 +1,37 @@
+var ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI')
+var Opcodes = Java.type('org.objectweb.asm.Opcodes')
+var InsnList = Java.type('org.objectweb.asm.tree.InsnList')
+var JumpInsnNode = Java.type('org.objectweb.asm.tree.JumpInsnNode')
+var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode')
+var VarInsnNode = Java.type('org.objectweb.asm.tree.VarInsnNode')
+var InsnNode = Java.type('org.objectweb.asm.tree.InsnNode')
+var LabelNode = Java.type('org.objectweb.asm.tree.LabelNode')
+
+function initializeCoreMod() {
+	return {
+		'prevent_armor_equip': {
+			'target': {
+				'type': 'METHOD',
+				'class': 'net.minecraftforge.common.extensions.IForgeItemStack',
+				'methodName': 'canEquip',
+				'methodDesc': '(Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/entity/Entity;)Z'
+			},
+			'transformer': function(node) {
+				//if (CoreUtils.isItemForbidden(this.self(), entity, slot)) return false;
+				var ls = new InsnList();
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 2));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 0));
+				ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeItemStack", "self", "()Lnet/minecraft/world/item/ItemStack;", true));
+				ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/edwinmindcraft/apoli/common/util/CoreUtils", "isItemForbidden", "(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/item/ItemStack;)Z"));
+				var label = new LabelNode();
+				ls.add(new JumpInsnNode(Opcodes.IFEQ, label));
+				ls.add(new InsnNode(Opcodes.ICONST_0)); //false
+				ls.add(new InsnNode(Opcodes.IRETURN));
+				ls.add(label);
+				node.instructions.insert(ls);
+				return node;
+			}
+		}
+	}
+}
