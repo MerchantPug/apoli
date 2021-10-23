@@ -51,13 +51,13 @@ public abstract class ActiveCooldownPowerFactory<T extends IActiveCooldownPowerC
 		}
 
 		@Override
-		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return this.getUseTime(configuration, player).get();
+		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+			return this.getUseTime(configuration, entity).get();
 		}
 
 		@Override
-		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity player, long value) {
-			this.getUseTime(configuration, player).set(value);
+		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity, long value) {
+			this.getUseTime(configuration, entity).set(value);
 		}
 
 		@Override

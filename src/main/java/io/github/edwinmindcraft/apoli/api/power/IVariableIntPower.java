@@ -48,10 +48,10 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	int getMinimum(ConfiguredPower<T, ?> configuration, LivingEntity player);
 
 	default float getProgress(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-		int value = this.getValue(configuration, player);
-		int min = this.getMinimum(configuration, player);
-		int max = this.getMaximum(configuration, player);
-		return Mth.clamp((value - min) / (float) (max - min), 0.0F, 1.0F);
+		float value = this.getValue(configuration, player);
+		float min = this.getMinimum(configuration, player);
+		float max = this.getMaximum(configuration, player);
+		return Mth.clamp((value - min) / (max - min), 0.0F, 1.0F);
 	}
 
 	/**
