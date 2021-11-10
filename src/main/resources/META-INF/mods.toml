@@ -5,9 +5,9 @@ license="MIT"
 
 [[mods]]
 modId="apoli"
-version="${file.jarVersion}"
+version="${version}"
 displayName="Apoli"
-logoFile= "icon.png"
+logoFile= "apoli_icon.png"
 authors="apace100"
 description='''
 A library mod which allows entities to be imbued with data-driven powers.

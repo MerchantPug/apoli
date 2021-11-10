@@ -7,6 +7,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.calio.data.SerializableData;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.event.PowerLoadingEvent;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -30,20 +31,17 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 
 	private static final Comparator<ConfiguredPower<?, ?>> LOADING_ORDER_COMPARATOR = Comparator.comparingInt((ConfiguredPower<?, ?> x) -> x.getData().loadingPriority());
 
-	public static String CURRENT_NAMESPACE;
-	public static String CURRENT_PATH;
-
 	@Override
 	public ConfiguredPower<?, ?> accept(ResourceLocation resourceLocation, List<JsonElement> list) {
-		CURRENT_NAMESPACE = resourceLocation.getNamespace();
-		CURRENT_PATH = resourceLocation.getPath();
+		SerializableData.CURRENT_NAMESPACE = resourceLocation.getNamespace();
+		SerializableData.CURRENT_PATH = resourceLocation.getPath();
 		Optional<ConfiguredPower<?, ?>> definition = list.stream().flatMap(x -> {
 			DataResult<ConfiguredPower<?, ?>> power = ConfiguredPower.CODEC.decode(JsonOps.INSTANCE, x).map(Pair::getFirst);
 			Optional<ConfiguredPower<?, ?>> powerDefinition = power.resultOrPartial(error -> Apoli.LOGGER.error("Error loading power \"{}\": {}", resourceLocation, error));
 			return powerDefinition.stream();
 		}).max(LOADING_ORDER_COMPARATOR);
-		CURRENT_NAMESPACE = null;
-		CURRENT_PATH = null;
+		SerializableData.CURRENT_NAMESPACE = null;
+		SerializableData.CURRENT_PATH = null;
 		if (definition.isEmpty())
 			Apoli.LOGGER.error("Loading for all instances of power {} failed.", resourceLocation);
 		return definition.orElse(null);

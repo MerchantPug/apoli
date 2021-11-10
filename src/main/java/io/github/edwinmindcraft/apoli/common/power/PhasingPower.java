@@ -27,6 +27,7 @@ public class PhasingPower extends PowerFactory<PhasingConfiguration> {
 	public static boolean hasRenderMethod(Entity entity, PhasingConfiguration.RenderType renderType) {
 		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().anyMatch(x -> renderType.equals(x.getConfiguration().renderType()));
 	}
+
 	public static Optional<Float> getRenderMethod(Entity entity, PhasingConfiguration.RenderType renderType) {
 		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().filter(x -> renderType.equals(x.getConfiguration().renderType())).map(x -> x.getConfiguration().viewDistance()).min(Float::compareTo);
 	}

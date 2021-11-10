@@ -25,20 +25,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@SuppressWarnings("deprecation")
+
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class AbstractBlockStateMixin {
-
-
-	@Shadow
-	protected abstract BlockState asState();
-
-	@Shadow
-	public abstract VoxelShape getShape(BlockGetter world, BlockPos pos);
 
 	@Shadow
 	public abstract Block getBlock();
 
+	@Shadow protected abstract BlockState asState();
+
+	@SuppressWarnings("deprecation")
 	@Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true)
 	private void phaseThroughBlocks(BlockGetter world, BlockPos pos, CollisionContext context, CallbackInfoReturnable<VoxelShape> info) {
 		VoxelShape blockShape = this.getBlock().getCollisionShape(this.asState(), world, pos, context);

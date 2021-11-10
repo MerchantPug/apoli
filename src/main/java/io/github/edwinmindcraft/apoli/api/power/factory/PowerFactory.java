@@ -10,6 +10,7 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Map;
@@ -152,7 +153,11 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 		return new CompoundTag();
 	}
 
-	public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, Tag tag) {
+	public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, Tag tag) {}
 
+	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(this.getRegistryName(), this));
+
+	public io.github.apace100.apoli.power.factory.PowerFactory<?> getLegacyFactory() {
+		return this.legacyType.get();
 	}
 }

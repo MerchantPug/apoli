@@ -1,9 +1,13 @@
 package io.github.apace100.apoli.command;
 
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -344,7 +348,14 @@ public class PowerCommand {
 												command.getSource().sendFailure(new TextComponent(e.getMessage()));
 											}
 											return i;
-										}))));
+										})))
+						.then(literal("dump")
+								.then(argument("power", PowerTypeArgumentType.power()).executes((command) -> {
+									ConfiguredPower<?, ?> arg = PowerTypeArgumentType.getConfiguredPower(command, "power");
+									String s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, arg).map(JsonElement::toString).result().orElseThrow(() -> new CommandRuntimeException(new TextComponent("Failed to encode " + arg.getRegistryName())));
+									command.getSource().sendSuccess(new TextComponent(s), false);
+									return 1;
+								}))));
 	}
 
 	private static boolean grantPower(LivingEntity entity, ResourceLocation power) {

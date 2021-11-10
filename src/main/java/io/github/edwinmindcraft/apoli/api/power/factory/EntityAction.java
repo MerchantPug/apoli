@@ -1,11 +1,13 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public abstract class EntityAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<EntityAction<?>> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
@@ -27,4 +29,6 @@ public abstract class EntityAction<T extends IDynamicFeatureConfiguration> exten
 	}
 
 	public abstract void execute(T configuration, Entity entity);
+
+	private final Lazy<ActionFactory<Entity>> legacyType = Lazy.of(() -> new ActionFactory<Entity>(this.getRegistryName(), CODEC, this));
 }

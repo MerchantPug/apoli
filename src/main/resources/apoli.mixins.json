@@ -21,6 +21,7 @@
 		"ClientPlayerEntityMixin",
 		"ElytraFeatureRendererMixin",
 		"EntityRenderDispatcherMixin",
+		"GameRendererMixin",
 		"LightmapTextureManagerMixin",
 		"LivingEntityRendererMixin",
 		"MinecraftClientMixin",

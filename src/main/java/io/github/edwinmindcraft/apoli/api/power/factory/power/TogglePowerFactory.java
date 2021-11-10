@@ -50,14 +50,18 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 			super(codec, allowConditions);
 		}
 
+		private AtomicBoolean getData(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+			return configuration.getPowerData(player, () -> new AtomicBoolean(configuration.getConfiguration().defaultState()));
+		}
+
 		@Override
 		protected void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, boolean status) {
-			configuration.getPowerData(player, () -> new AtomicBoolean(configuration.getConfiguration().defaultState())).set(status);
+			this.getData(configuration, player).set(status);
 		}
 
 		@Override
 		protected boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return configuration.getPowerData(player, () -> new AtomicBoolean(configuration.getConfiguration().defaultState())).get();
+			return this.getData(configuration, player).get();
 		}
 
 		@Override

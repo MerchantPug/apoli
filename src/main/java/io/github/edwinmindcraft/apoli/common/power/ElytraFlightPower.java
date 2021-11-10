@@ -13,10 +13,8 @@ import top.theillusivec4.caelus.api.CaelusApi;
 
 import java.util.UUID;
 
-//FIXME Requires Architectury
 public class ElytraFlightPower extends PowerFactory<FieldConfiguration<Boolean>> {
 	public static final AttributeModifier FLIGHT_MODIFIER = new AttributeModifier(UUID.fromString("29eb14ca-c803-4af6-81e2-86e9bf1d4857"), "Elytra modifier", 1.0F, AttributeModifier.Operation.ADDITION);
-
 
 	public static boolean shouldRenderElytra(LivingEntity player) {
 		return IPowerContainer.getPowers(player, ApoliPowers.ELYTRA_FLIGHT.get()).stream().anyMatch(x -> x.getConfiguration().value());
@@ -49,5 +47,10 @@ public class ElytraFlightPower extends PowerFactory<FieldConfiguration<Boolean>>
 			enableFlight(player);
 		else
 			disableFlight(player);
+	}
+
+	@Override
+	protected void onRemoved(FieldConfiguration<Boolean> configuration, LivingEntity entity) {
+		disableFlight(entity);
 	}
 }
