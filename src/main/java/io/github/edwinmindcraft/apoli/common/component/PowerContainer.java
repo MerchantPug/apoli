@@ -59,10 +59,9 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 					instance.onLost(this.owner);
 				}
 			}
-			Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers(this.owner.getServer());
 			if (instance != null) {
 				for (ConfiguredPower<?, ?> value : instance.getContainedPowers().values()) {
-					ResourceLocation id = powers.getKey(value);
+					ResourceLocation id = value.getRegistryName();
 					if (id != null)
 						this.removePower(id, source);
 				}
@@ -98,7 +97,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			} else {
 				sources.add(source);
 				for (ConfiguredPower<?, ?> value : instance.getContainedPowers().values()) {
-					ResourceLocation id = powers.getKey(value);
+					ResourceLocation id = value.getRegistryName();
+					Apoli.LOGGER.info("Adding subpower {} from power {}", id, power);
 					if (id != null)
 						this.addPower(id, source);
 				}
@@ -106,7 +106,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			}
 		} else {
 			for (ConfiguredPower<?, ?> value : instance.getContainedPowers().values()) {
-				ResourceLocation id = powers.getKey(value);
+				ResourceLocation id = value.getRegistryName();
+				Apoli.LOGGER.info("Adding subpower {} from power {}", id, power);
 				if (id != null)
 					this.addPower(id, source);
 			}

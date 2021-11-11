@@ -197,7 +197,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS;
 	}
 
-	public final IRegistryDelegate<ConfiguredPower<?, ?>> delegate = new Delegate<>(this, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
+	public final Delegate<ConfiguredPower<?, ?>> delegate = new Delegate<>(this, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
 	private ResourceLocation registryName = null;
 
 	public ConfiguredPower<?, ?> setRegistryName(String name) {
@@ -205,6 +205,10 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 			throw new IllegalStateException("Attempted to set registry name with existing registry name! New: " + name + " Old: " + this.getRegistryName());
 
 		this.registryName = this.checkRegistryName(name);
+		this.delegate.setName(this.registryName);
+		this.getContainedPowers().forEach((s, configuredPower) -> {
+			if (configuredPower.getRegistryName() == null) configuredPower.setRegistryName(name + s);
+		});
 		return this;
 	}
 
@@ -243,6 +247,19 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 
 	public PowerType<?> getPowerType() {
 		return this.type.get();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || this.getClass() != o.getClass()) return false;
+		ConfiguredPower<?, ?> that = (ConfiguredPower<?, ?>) o;
+		return this.delegate.equals(that.delegate);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.delegate);
 	}
 
 	private static final class Delegate<T> implements IRegistryDelegate<T> {

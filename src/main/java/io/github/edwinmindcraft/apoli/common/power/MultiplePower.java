@@ -16,20 +16,18 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	private static final Predicate<String> ALLOWED = str -> !EXCLUDED.contains(str);
 
 	public MultiplePower() {
-		super(MultipleConfiguration.mapCodec(ConfiguredPower.CODEC, ALLOWED).codec(), false);
+		super(MultipleConfiguration.mapCodec(ConfiguredPower.CODEC, ALLOWED, s -> "_" + s, MultiplePower::reconfigure).codec(), false);
 	}
 
 	@Override
 	public Map<String, ConfiguredPower<?, ?>> getContainedPowers(ConfiguredPower<MultipleConfiguration<ConfiguredPower<?, ?>>, ?> configuration) {
-		return configuration.getConfiguration().children().entrySet().stream()
-				.map(x -> new Tuple<>("_" + x.getKey(), this.reconfigure(x.getValue())))
-				.collect(Collectors.toUnmodifiableMap(Tuple::getA, Tuple::getB));
+		return configuration.getConfiguration().children();
 	}
 
 	/**
 	 * Has the effect of hiding the power from the origin screen.
 	 */
-	private <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, ?> reconfigure(ConfiguredPower<C, F> source) {
+	private static <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, ?> reconfigure(ConfiguredPower<C, F> source) {
 		return source.getFactory().configure(source.getConfiguration(), source.getData().copyOf().hidden().build());
 	}
 }

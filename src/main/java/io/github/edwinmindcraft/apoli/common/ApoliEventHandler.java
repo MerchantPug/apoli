@@ -14,6 +14,7 @@ import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -65,7 +66,8 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void calioLoadComplete(CalioDynamicRegistryEvent.LoadComplete event) {
-		for (ConfiguredPower<?, ?> configuredPower : event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY)) {
+		WritableRegistry<ConfiguredPower<?, ?>> configuredPowers = event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
+		for (ConfiguredPower<?, ?> configuredPower : configuredPowers) {
 			List<String> warnings = configuredPower.getWarnings(event.getRegistryManager());
 			List<String> errors = configuredPower.getErrors(event.getRegistryManager());
 			if (errors.isEmpty() && warnings.isEmpty()) continue;

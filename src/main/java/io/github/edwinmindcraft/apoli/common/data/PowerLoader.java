@@ -53,7 +53,10 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 		if (accept != null) {
 			ImmutableMap.Builder<ResourceLocation, ConfiguredPower<?, ?>> builder = ImmutableMap.builder();
 			builder.put(location, accept);
-			accept.getContainedPowers().forEach((s, configuredPower) -> builder.put(new ResourceLocation(location.getNamespace(), location.getPath() + s), configuredPower));
+			accept.getContainedPowers().forEach((s, configuredPower) -> {
+				ResourceLocation path = new ResourceLocation(location.getNamespace(), location.getPath() + s);
+				builder.put(path, configuredPower);
+			});
 			return builder.build();
 		}
 		return ImmutableMap.of();
