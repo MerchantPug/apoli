@@ -34,7 +34,7 @@ public abstract class LivingEntityMixin extends Entity {
 
 	@Inject(method = "canStandOnFluid", at = @At("HEAD"), cancellable = true)
 	private void modifyWalkableFluids(Fluid fluid, CallbackInfoReturnable<Boolean> info) {
-		if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.getConfiguration().value()))) {
+		if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> p.getConfiguration().contains(fluid))) {
 			info.setReturnValue(true);
 		}
 	}

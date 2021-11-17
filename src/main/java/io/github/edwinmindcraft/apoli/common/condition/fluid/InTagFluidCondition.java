@@ -1,20 +1,19 @@
 package io.github.edwinmindcraft.apoli.common.condition.fluid;
 
-import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.factory.FluidCondition;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.tags.Tag;
+import io.github.edwinmindcraft.apoli.api.configuration.TagConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.factory.FluidCondition;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
-public class InTagFluidCondition extends FluidCondition<FieldConfiguration<Tag<Fluid>>> {
+public class InTagFluidCondition extends FluidCondition<TagConfiguration<Fluid>> {
 
 	public InTagFluidCondition() {
-		super(FieldConfiguration.codec(SerializableDataTypes.FLUID_TAG, "tag"));
+		super(TagConfiguration.codec(SerializableDataTypes.FLUID_TAG, "tag"));
 	}
 
 	@Override
-	public boolean check(FieldConfiguration<Tag<Fluid>> configuration, FluidState fluid) {
-		return fluid.is(configuration.value());
+	public boolean check(TagConfiguration<Fluid> configuration, FluidState fluid) {
+		return configuration.contains(fluid.getType());
 	}
 }

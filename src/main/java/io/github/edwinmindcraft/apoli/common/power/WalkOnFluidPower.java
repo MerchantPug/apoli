@@ -1,14 +1,13 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.tags.Tag;
+import io.github.edwinmindcraft.apoli.api.configuration.TagConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.world.level.material.Fluid;
 
-public class WalkOnFluidPower extends PowerFactory<FieldConfiguration<Tag<Fluid>>> {
+public class WalkOnFluidPower extends PowerFactory<TagConfiguration<Fluid>> {
 
 	public WalkOnFluidPower() {
-		super(FieldConfiguration.codec(SerializableDataTypes.FLUID_TAG, "fluid"));
+		super(TagConfiguration.codec(SerializableDataTypes.FLUID_TAG, "fluid"));
 	}
 }

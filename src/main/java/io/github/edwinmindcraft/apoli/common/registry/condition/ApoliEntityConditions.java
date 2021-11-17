@@ -73,9 +73,9 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<BlockCollisionCondition> BLOCK_COLLISION = register("block_collision", BlockCollisionCondition::new);
 	public static final RegistryObject<PowerActiveCondition> POWER_ACTIVE = register("power_active", PowerActiveCondition::new);
 	public static final RegistryObject<StatusEffectCondition> STATUS_EFFECT = register("status_effect", StatusEffectCondition::new);
-	public static final RegistryObject<SingleFieldEntityCondition<Tag<Fluid>>> SUBMERGED_IN = register("submerged_in", SerializableDataTypes.FLUID_TAG.fieldOf("fluid"), Entity::isEyeInFluid);
+	public static final RegistryObject<SubmergedInCondition> SUBMERGED_IN = register("submerged_in", SubmergedInCondition::new);
 	public static final RegistryObject<SingleFieldEntityCondition<EntityType<?>>> ENTITY_TYPE = register("entity_type", SerializableDataTypes.ENTITY_TYPE.fieldOf("entity_type"), (entity, o) -> Objects.equals(o, entity.getType()));
-	public static final RegistryObject<SingleFieldEntityCondition<Tag<EntityType<?>>>> IN_TAG = register("in_tag", SerializableDataTypes.ENTITY_TAG.fieldOf("tag"), (entity, o) -> entity.getType().is(o));
+	public static final RegistryObject<InTagCondition> IN_TAG = register("in_tag", InTagCondition::new);
 	public static final RegistryObject<PowerCondition> POWER = register("power", PowerCondition::new);
 	public static final RegistryObject<FluidHeightCondition> FLUID_HEIGHT = register("fluid_height", FluidHeightCondition::new);
 	public static final RegistryObject<SingleFieldEntityCondition<Optional<ConfiguredBlockCondition<?, ?>>>> ON_BLOCK = register("on_block", ConfiguredBlockCondition.CODEC.optionalFieldOf("block_condition"), (entity, configuration) -> entity.isOnGround() && configuration.map(x -> x.check(new BlockInWorld(entity.level, entity.blockPosition(), true))).orElse(true));

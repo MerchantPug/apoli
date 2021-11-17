@@ -30,7 +30,7 @@ A library mod which allows entities to be imbued with data-driven powers.
 [[dependencies.apoli]]
     modId="calio"
     mandatory=true
-    versionRange="[1.0.2,)"
+    versionRange="[1.0.2.2,)"
     ordering="NONE"
     side="BOTH"
 
