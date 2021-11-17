@@ -1,28 +1,34 @@
 package io.github.edwinmindcraft.apoli.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.InvisibilityPower;
+import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import top.theillusivec4.caelus.api.RenderCapeEvent;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = Apoli.MODID, value = Dist.CLIENT)
@@ -32,8 +38,8 @@ public class ApoliClientEventHandler {
 		idToKeyBindingMap.put(keyId, keyBinding);
 	}
 
-	private static HashMap<String, KeyMapping> idToKeyBindingMap = new HashMap<>();
-	private static HashMap<String, Boolean> lastKeyBindingStates = new HashMap<>();
+	private static final HashMap<String, KeyMapping> idToKeyBindingMap = new HashMap<>();
+	private static final HashMap<String, Boolean> lastKeyBindingStates = new HashMap<>();
 	private static boolean initializedKeyBindingMap = false;
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -87,7 +93,8 @@ public class ApoliClientEventHandler {
 							}
 						});
 					}
-					lastKeyBindingStates = currentKeyBindingStates;
+					lastKeyBindingStates.clear();
+					lastKeyBindingStates.putAll(currentKeyBindingStates);
 					if (pressedPowers.size() > 0) {
 						ApoliAPI.performPowers(pressedPowers);
 					}
@@ -96,4 +103,38 @@ public class ApoliClientEventHandler {
 		}
 	}
 
+	//Replaces redirectFogStart & redirectFogEnd in BackgroundRendererMixin
+	@SubscribeEvent
+	public static void renderFog(EntityViewRenderEvent.RenderFogEvent event) {
+		float start = RenderSystem.getShaderFogStart();
+		float end = RenderSystem.getShaderFogEnd();
+		FogRenderer.FogMode mode = event.getType();
+		if (event.getInfo().getEntity() instanceof LivingEntity living) {
+			Optional<Float> renderMethod = PhasingPower.getRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS);
+			if (renderMethod.isPresent() && CoreUtils.getInWallBlockState(living) != null) {
+				float view = renderMethod.get();
+				float s;
+				float v;
+				if (mode == FogRenderer.FogMode.FOG_SKY) {
+					s = Math.min(0F, start);
+					v = Math.min(view * 0.8F, end);
+				} else {
+					s = Math.min(view * 0.25F, start);
+					v = Math.min(view, end);
+				}
+				RenderSystem.setShaderFogStart(s);
+				RenderSystem.setShaderFogEnd(v);
+			}
+		}
+	}
+
+	//Replaces modifyD in BackgroundRendererMixin
+	@SubscribeEvent
+	public static void fogColor(EntityViewRenderEvent.FogColors event) {
+		if (event.getInfo().getEntity() instanceof LivingEntity living && PhasingPower.hasRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS) && CoreUtils.getInWallBlockState(living) != null) {
+			event.setBlue(0.0F);
+			event.setGreen(0.0F);
+			event.setRed(0.0F);
+		}
+	}
 }

@@ -92,9 +92,9 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<BiomeCondition> BIOME = register("biome", BiomeCondition::new);
 	public static final RegistryObject<ScoreboardCondition> SCOREBOARD = register("scoreboard", ScoreboardCondition::new);
 	public static final RegistryObject<InBlockAnywhereCondition> IN_BLOCK_ANYWHERE = register("in_block_anywhere", InBlockAnywhereCondition::new);
-	public static final RegistryObject<UsingEffectiveToolCondition> USING_EFFECTIVE_TOOL = registerSided("using_effective_tool", () -> UsingEffectiveToolCondition::new, () -> UsingEffectiveToolCondition.Client::new);
-	public static final RegistryObject<AdvancementCondition> ADVANCEMENT = registerSided("advancement", () -> AdvancementCondition::new, () -> AdvancementCondition.Client::new);
-	public static final RegistryObject<GameModeCondition> GAMEMODE = registerSided("gamemode", () -> GameModeCondition::new, () -> GameModeCondition.Client::new);
+	public static final RegistryObject<UsingEffectiveToolCondition> USING_EFFECTIVE_TOOL = registerSided("using_effective_tool", () -> UsingEffectiveToolCondition.Client::new, () -> UsingEffectiveToolCondition::new);
+	public static final RegistryObject<AdvancementCondition> ADVANCEMENT = registerSided("advancement", () -> AdvancementCondition.Client::new, () -> AdvancementCondition::new);
+	public static final RegistryObject<GameModeCondition> GAMEMODE = registerSided("gamemode", () -> GameModeCondition.Client::new, () -> GameModeCondition::new);
 
 	public static ConfiguredEntityCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
