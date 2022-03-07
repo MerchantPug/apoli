@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 public class RestrictArmorPower extends PowerFactory<RestrictArmorConfiguration> {
 	public static boolean isForbidden(LivingEntity player, EquipmentSlot slot, ItemStack stack) {
 		return Stream.concat(IPowerContainer.getPowers(player, ApoliPowers.CONDITIONED_RESTRICT_ARMOR.get()).stream(), IPowerContainer.getPowers(player, ApoliPowers.RESTRICT_ARMOR.get()).stream())
-				.anyMatch(x -> !x.getConfiguration().check(slot, stack));
+				.anyMatch(x -> x.getConfiguration().check(slot, stack));
 	}
 
 	public RestrictArmorPower() {

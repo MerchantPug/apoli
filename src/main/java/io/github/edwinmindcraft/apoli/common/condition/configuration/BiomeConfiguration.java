@@ -18,6 +18,6 @@ public record BiomeConfiguration(ListConfiguration<ResourceKey<Biome>> biomes,
 
 	public static final Codec<BiomeConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.mapCodec(CalioCodecHelper.resourceKey(Registry.BIOME_REGISTRY), "biome", "biomes").forGetter(BiomeConfiguration::biomes),
-			ConfiguredBiomeCondition.CODEC.optionalFieldOf("condition").forGetter(x -> Optional.ofNullable(x.condition()))
+			CalioCodecHelper.optionalField(ConfiguredBiomeCondition.CODEC, "condition").forGetter(x -> Optional.ofNullable(x.condition()))
 	).apply(instance, (t1, t2) -> new BiomeConfiguration(t1, t2.orElse(null))));
 }

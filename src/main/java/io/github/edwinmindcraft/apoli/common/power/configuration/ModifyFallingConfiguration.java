@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.power.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
@@ -15,7 +16,7 @@ public final class ModifyFallingConfiguration implements IDynamicFeatureConfigur
 
 	public static final Codec<ModifyFallingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.DOUBLE.fieldOf("velocity").forGetter(ModifyFallingConfiguration::velocity),
-			Codec.BOOL.optionalFieldOf("take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage)
+			CalioCodecHelper.optionalField(Codec.BOOL, "take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage)
 	).apply(instance, ModifyFallingConfiguration::new));
 
 	private final double velocity;

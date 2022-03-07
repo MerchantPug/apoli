@@ -76,6 +76,10 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return IPowerContainer.get(player).resolve().map(x -> x.getPowerData(this, supplier)).orElse(null);
 	}
 
+	public <T> T getPowerData(IPowerContainer container, Supplier<? extends T> supplier) {
+		return container.getPowerData(this, supplier);
+	}
+
 	/**
 	 * Accesses a list of all children, recursively.<br>
 	 * This allows for nested multiple powers, although this isn't a feature
@@ -88,12 +92,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return builder.build();
 	}
 
-	public Tag serialize(LivingEntity player) {
-		return this.getFactory().serialize(this, player);
+	public Tag serialize(LivingEntity player, IPowerContainer container) {
+		return this.getFactory().serialize(this, player, container);
 	}
 
-	public void deserialize(LivingEntity player, Tag tag) {
-		this.getFactory().deserialize(this, player, tag);
+	public void deserialize(LivingEntity player, IPowerContainer container, Tag tag) {
+		this.getFactory().deserialize(this, player, container, tag);
 	}
 
 	/**
@@ -223,6 +227,10 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	public ResourceLocation getRegistryName() {
 		if (this.delegate.name() != null) return this.delegate.name();
 		return this.registryName != null ? this.registryName : null;
+	}
+
+	public ConfiguredPower<C, F> complete(ResourceLocation name) {
+		return new ConfiguredPower<>(this.getFactory(), this.getConfiguration(), this.getData().complete(name));
 	}
 
 

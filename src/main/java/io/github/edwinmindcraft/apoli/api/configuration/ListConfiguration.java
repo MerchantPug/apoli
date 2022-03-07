@@ -27,8 +27,8 @@ public final class ListConfiguration<T> implements IDynamicFeatureConfiguration,
 
 	public static <T> MapCodec<ListConfiguration<T>> mapCodec(Codec<T> codec, String singular, String plural) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-				codec.optionalFieldOf(singular).forGetter(ListConfiguration::getSingular),
-				CalioCodecHelper.listOf(codec).optionalFieldOf(plural, ImmutableList.of()).forGetter(ListConfiguration::getMultiple)
+				CalioCodecHelper.optionalField(codec, singular).forGetter(ListConfiguration::getSingular),
+				CalioCodecHelper.optionalField(CalioCodecHelper.listOf(codec), plural, ImmutableList.of()).forGetter(ListConfiguration::getMultiple)
 		).apply(instance, (first, others) -> {
 			ImmutableList.Builder<T> builder = ImmutableList.builder();
 			first.ifPresent(builder::add);
@@ -39,7 +39,7 @@ public final class ListConfiguration<T> implements IDynamicFeatureConfiguration,
 
 	public static <T> MapCodec<ListConfiguration<T>> optionalMapCodec(Codec<Optional<T>> codec, String singular, String plural) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-				codec.optionalFieldOf(singular, Optional.empty()).forGetter(ListConfiguration::getSingular),
+				CalioCodecHelper.optionalField(codec, singular, Optional.empty()).forGetter(ListConfiguration::getSingular),
 				CalioCodecHelper.optionalListOf(codec).optionalFieldOf(plural, ImmutableList.of()).forGetter(ListConfiguration::getMultiple)
 		).apply(instance, (first, others) -> {
 			ImmutableList.Builder<T> builder = ImmutableList.builder();

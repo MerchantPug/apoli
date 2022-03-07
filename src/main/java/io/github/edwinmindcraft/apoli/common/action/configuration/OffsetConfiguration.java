@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
 
 public record OffsetConfiguration<T>(T value, int x, int y, int z) implements IDynamicFeatureConfiguration {
@@ -14,9 +15,9 @@ public record OffsetConfiguration<T>(T value, int x, int y, int z) implements ID
 	public static <T> Codec<OffsetConfiguration<T>> codec(MapCodec<T> codec) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 				codec.forGetter(OffsetConfiguration::value),
-				Codec.INT.optionalFieldOf("x", 0).forGetter(OffsetConfiguration::x),
-				Codec.INT.optionalFieldOf("y", 0).forGetter(OffsetConfiguration::y),
-				Codec.INT.optionalFieldOf("z", 0).forGetter(OffsetConfiguration::z)
+				CalioCodecHelper.optionalField(Codec.INT, "x", 0).forGetter(OffsetConfiguration::x),
+				CalioCodecHelper.optionalField(Codec.INT, "y", 0).forGetter(OffsetConfiguration::y),
+				CalioCodecHelper.optionalField(Codec.INT, "z", 0).forGetter(OffsetConfiguration::z)
 		).apply(instance, OffsetConfiguration::new));
 	}
 

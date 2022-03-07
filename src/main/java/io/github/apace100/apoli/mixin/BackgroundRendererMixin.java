@@ -1,11 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.edwinmindcraft.apoli.api.power.INightVisionPower;
 import io.github.edwinmindcraft.apoli.common.power.LavaVisionPower;
-import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
-import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
-import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.world.effect.MobEffect;
@@ -15,9 +11,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
-
-import java.util.Optional;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(FogRenderer.class)
 @OnlyIn(Dist.CLIENT)

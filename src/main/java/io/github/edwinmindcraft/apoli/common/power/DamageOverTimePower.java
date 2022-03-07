@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.VariableIntPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.DamageOverTimeConfiguration;
@@ -10,10 +11,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import java.util.Map;
 
-public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOverTimeConfiguration> {
+public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeConfiguration> {
 	public DamageOverTimePower() {
 		super(DamageOverTimeConfiguration.CODEC);
 		this.ticking(true);
+	}
+
+	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer player) {
+		return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration().initialValue(), 0));
 	}
 
 	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
@@ -21,13 +26,13 @@ public class DamageOverTimePower extends VariableIntPowerFactory.Simple<DamageOv
 	}
 
 	@Override
-	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
-		return this.getDataContainer(configuration, player).value;
+	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+		return this.getDataContainer(configuration, container).value;
 	}
 
 	@Override
-	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player, int value) {
-		this.getDataContainer(configuration, player).value = value;
+	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, int value) {
+		this.getDataContainer(configuration, container).value = value;
 	}
 
 	@Override

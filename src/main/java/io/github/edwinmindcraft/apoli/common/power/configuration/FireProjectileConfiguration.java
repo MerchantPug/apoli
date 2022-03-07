@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCoold
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
@@ -31,12 +32,12 @@ public record FireProjectileConfiguration(int duration, HudRender hudRender, Ent
 			Codec.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::duration),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(FireProjectileConfiguration::hudRender),
 			Registry.ENTITY_TYPE.fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
-			Codec.INT.optionalFieldOf("count", 1).forGetter(FireProjectileConfiguration::projectileCount),
-			Codec.FLOAT.optionalFieldOf("speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
-			Codec.FLOAT.optionalFieldOf("divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
-			SerializableDataTypes.SOUND_EVENT.optionalFieldOf("sound").forGetter(x -> Optional.ofNullable(x.soundEvent())),
-			SerializableDataTypes.NBT.optionalFieldOf("tag").forGetter(x -> Optional.ofNullable(x.tag())),
-			IActivePower.Key.BACKWARD_COMPATIBLE_CODEC.optionalFieldOf("key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key)
+			CalioCodecHelper.optionalField(Codec.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
+			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.soundEvent())),
+			CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
+			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key)
 	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> new FireProjectileConfiguration(t1, t2, t3, t4, t5, t6, t7.orElse(null), t8.orElse(null), t9)));
 
 

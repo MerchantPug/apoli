@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.api.power;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 /**
  * Information common to all condition types.<br/>
@@ -13,6 +14,6 @@ public record ConditionData(boolean inverted) {
 	public static final ConditionData DEFAULT = new ConditionData(false);
 
 	public static final MapCodec<ConditionData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			Codec.BOOL.optionalFieldOf("inverted", false).forGetter(ConditionData::inverted)
+			CalioCodecHelper.optionalField(Codec.BOOL, "inverted", false).forGetter(ConditionData::inverted)
 	).apply(instance, ConditionData::new));
 }

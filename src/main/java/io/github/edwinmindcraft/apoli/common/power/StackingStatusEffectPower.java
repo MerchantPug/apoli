@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.StackingStatusEffectConfiguration;
@@ -17,6 +18,10 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	public AtomicInteger getCurrentStacks(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
+		return configuration.getPowerData(player, () -> new AtomicInteger(0));
+	}
+
+	public AtomicInteger getCurrentStacks(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer player) {
 		return configuration.getPowerData(player, () -> new AtomicInteger(0));
 	}
 
@@ -43,14 +48,14 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
-		return IntTag.valueOf(this.getCurrentStacks(configuration, player).get());
+	public Tag serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+		return IntTag.valueOf(this.getCurrentStacks(configuration, container).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, Tag tag) {
+	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
 		if (tag instanceof IntTag intTag)
-			this.getCurrentStacks(configuration, player).set(intTag.getAsInt());
+			this.getCurrentStacks(configuration, container).set(intTag.getAsInt());
 	}
 
 	public void applyEffects(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {

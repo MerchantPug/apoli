@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfiguration;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +21,8 @@ public record BlockStateConfiguration(String property,
 	public static final Codec<BlockStateConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("property").forGetter(BlockStateConfiguration::property),
 			IntegerComparisonConfiguration.OPTIONAL_MAP_CODEC.forGetter(x -> Optional.ofNullable(x.comparison())),
-			Codec.BOOL.optionalFieldOf("value").forGetter(x -> Optional.ofNullable(x.booleanValue())),
-			Codec.STRING.optionalFieldOf("enum").forGetter(x -> Optional.ofNullable(x.stringValue()))
+			CalioCodecHelper.optionalField(Codec.BOOL, "value").forGetter(x -> Optional.ofNullable(x.booleanValue())),
+			CalioCodecHelper.optionalField(Codec.STRING, "enum").forGetter(x -> Optional.ofNullable(x.stringValue()))
 	).apply(instance, (t1, t2, t3, t4) -> new BlockStateConfiguration(t1, t2.orElse(null), t3.orElse(null), t4.orElse(null))));
 
 	public boolean checkProperty(Object value) {

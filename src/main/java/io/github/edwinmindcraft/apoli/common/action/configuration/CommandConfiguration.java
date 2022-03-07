@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -21,7 +22,7 @@ public record CommandConfiguration(String command,
 								   int permissionLevel) implements IDynamicFeatureConfiguration {
 	public static final MapCodec<CommandConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Codec.STRING.fieldOf("command").forGetter(CommandConfiguration::command),
-			Codec.INT.optionalFieldOf("permission_level", 4).forGetter(CommandConfiguration::permissionLevel)
+			CalioCodecHelper.optionalField(Codec.INT, "permission_level", 4).forGetter(CommandConfiguration::permissionLevel)
 	).apply(instance, CommandConfiguration::new));
 
 	public static final Codec<CommandConfiguration> CODEC = MAP_CODEC.codec();

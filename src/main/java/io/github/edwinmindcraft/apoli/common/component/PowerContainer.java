@@ -218,7 +218,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 						}
 						ConfiguredPower<?, ?> instance = optionalPower.get();
 						try {
-							instance.deserialize(this.owner, data);
+							instance.deserialize(this.owner, this, data);
 						} catch (ClassCastException e) {
 							Apoli.LOGGER.warn("Data type of \"" + identifier + "\" changed, skipping data for that power on entity " + (this.owner != null ? this.owner.getName().getContents() : "[NONE]"));
 						}
@@ -252,7 +252,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			this.powerSources.put(power, new HashSet<>(powerEntry.getValue()));
 			Tag tag = data.get(power);
 			if (tag != null)
-				configuredPower.deserialize(this.owner, tag);
+				configuredPower.deserialize(this.owner, this, tag);
 		}
 	}
 
@@ -262,7 +262,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 		for (Map.Entry<ResourceLocation, ConfiguredPower<?, ?>> powerEntry : this.powers.entrySet()) {
 			CompoundTag powerTag = new CompoundTag();
 			powerTag.putString("Type", powerEntry.getKey().toString());
-			powerTag.put("Data", powerEntry.getValue().serialize(this.owner));
+			powerTag.put("Data", powerEntry.getValue().serialize(this.owner, this));
 			ListTag sources = new ListTag();
 			this.powerSources.get(powerEntry.getKey()).forEach(id -> sources.add(StringTag.valueOf(id.toString())));
 			powerTag.put("Sources", sources);

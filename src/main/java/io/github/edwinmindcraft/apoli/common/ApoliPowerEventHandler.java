@@ -12,6 +12,7 @@ import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;

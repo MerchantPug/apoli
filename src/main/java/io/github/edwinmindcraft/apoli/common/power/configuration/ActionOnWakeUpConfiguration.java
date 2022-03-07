@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -15,8 +16,8 @@ public record ActionOnWakeUpConfiguration(@Nullable ConfiguredBlockCondition<?, 
 										  @Nullable ConfiguredBlockAction<?, ?> blockAction) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ActionOnWakeUpConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			ConfiguredBlockCondition.CODEC.optionalFieldOf("block_condition").forGetter(x -> Optional.ofNullable(x.blockCondition())),
-			ConfiguredEntityAction.CODEC.optionalFieldOf("entity_action").forGetter(x -> Optional.ofNullable(x.entityAction())),
-			ConfiguredBlockAction.CODEC.optionalFieldOf("block_action").forGetter(x -> Optional.ofNullable(x.blockAction()))
+			CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition").forGetter(x -> Optional.ofNullable(x.blockCondition())),
+			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(x -> Optional.ofNullable(x.entityAction())),
+			CalioCodecHelper.optionalField(ConfiguredBlockAction.CODEC, "block_action").forGetter(x -> Optional.ofNullable(x.blockAction()))
 	).apply(instance, (bc, ea, ba) -> new ActionOnWakeUpConfiguration(bc.orElse(null), ea.orElse(null), ba.orElse(null))));
 }

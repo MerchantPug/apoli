@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 import java.util.Optional;
 
@@ -18,14 +19,14 @@ public record IntegerComparisonConfiguration(Comparison comparison,
 
 	public static MapCodec<IntegerComparisonConfiguration> withDefaults(Comparison comparison, int value) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-				ApoliDataTypes.COMPARISON.optionalFieldOf("comparison", comparison).forGetter(IntegerComparisonConfiguration::comparison),
-				Codec.INT.optionalFieldOf("compare_to", value).forGetter(IntegerComparisonConfiguration::compareTo)
+				CalioCodecHelper.optionalField(ApoliDataTypes.COMPARISON, "comparison", comparison).forGetter(IntegerComparisonConfiguration::comparison),
+				CalioCodecHelper.optionalField(Codec.INT,"compare_to", value).forGetter(IntegerComparisonConfiguration::compareTo)
 		).apply(instance, IntegerComparisonConfiguration::new));
 	}
 
 	public static final MapCodec<Optional<IntegerComparisonConfiguration>> OPTIONAL_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			ApoliDataTypes.COMPARISON.optionalFieldOf("comparison").forGetter(x -> x.map(IntegerComparisonConfiguration::comparison)),
-			Codec.INT.optionalFieldOf("compare_to").forGetter(x -> x.map(IntegerComparisonConfiguration::compareTo))
+			CalioCodecHelper.optionalField(ApoliDataTypes.COMPARISON, "comparison").forGetter(x -> x.map(IntegerComparisonConfiguration::comparison)),
+			CalioCodecHelper.optionalField(Codec.INT, "compare_to").forGetter(x -> x.map(IntegerComparisonConfiguration::compareTo))
 	).apply(instance, (t1, t2) -> t1.flatMap(x1 -> t2.map(x2 -> new IntegerComparisonConfiguration(x1, x2)))));
 
 	public static final Codec<IntegerComparisonConfiguration> CODEC = MAP_CODEC.codec();

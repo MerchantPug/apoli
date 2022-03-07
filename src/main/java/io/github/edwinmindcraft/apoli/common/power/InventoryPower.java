@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.IInventoryPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
@@ -63,13 +64,17 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		return this.handler.apply(this.getData(configuration, player));
 	}
 
+	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer player) {
+		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
+	}
+
 	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
 		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
-		SimpleContainer data = this.getData(configuration, player);
+	public Tag serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+		SimpleContainer data = this.getData(configuration, container);
 		NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
 		for (int i = 0; i < data.getContainerSize(); i++)
 			stacks.set(i, data.getItem(i));
@@ -77,9 +82,9 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player, Tag tag) {
+	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
 		if (tag instanceof CompoundTag compoundTag) {
-			SimpleContainer data = this.getData(configuration, player);
+			SimpleContainer data = this.getData(configuration, container);
 			NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
 			ContainerHelper.loadAllItems(compoundTag, stacks);
 			for (int i = 0; i < data.getContainerSize(); i++)

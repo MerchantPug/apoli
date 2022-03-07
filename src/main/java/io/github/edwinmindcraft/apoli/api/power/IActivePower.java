@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Function;
@@ -21,7 +22,7 @@ public interface IActivePower<T extends IDynamicFeatureConfiguration> {
 
 		public static final Codec<Key> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				Codec.STRING.fieldOf("key").forGetter(Key::key),
-				Codec.BOOL.optionalFieldOf("continuous", false).forGetter(Key::continuous)
+				CalioCodecHelper.optionalField(Codec.BOOL, "continuous", false).forGetter(Key::continuous)
 		).apply(instance, Key::new));
 
 		public static final Codec<Key> BACKWARD_COMPATIBLE_CODEC = Codec.either(CODEC, Codec.STRING).xmap(x -> x.map(Function.identity(), string -> new Key(string.equals("secondary") ? SECONDARY.key() : PRIMARY.key(), false)), Either::left);

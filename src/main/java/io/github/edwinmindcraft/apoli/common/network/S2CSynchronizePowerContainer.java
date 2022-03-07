@@ -43,7 +43,7 @@ public class S2CSynchronizePowerContainer {
 					Apoli.LOGGER.warn("Invalid power container capability for entity {}", living.getScoreboardName());
 					continue;
 				}
-				Tag tag = configuredPower.serialize(living);
+				Tag tag = configuredPower.serialize(living, container);
 				if (tag instanceof CompoundTag compound && compound.isEmpty())
 					continue;
 				data.put(power, tag);

@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.ICooldownPow
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +19,8 @@ public record LaunchConfiguration(int duration, float speed, @Nullable SoundEven
 	public static final Codec<LaunchConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.INT.fieldOf("cooldown").forGetter(ICooldownPowerConfiguration::duration),
 			Codec.FLOAT.fieldOf("speed").forGetter(LaunchConfiguration::speed),
-			SerializableDataTypes.SOUND_EVENT.optionalFieldOf("sound").forGetter(x -> Optional.ofNullable(x.sound())),
+			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.sound())),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(ICooldownPowerConfiguration::hudRender),
-			IActivePower.Key.CODEC.optionalFieldOf("key", IActivePower.Key.PRIMARY).forGetter(IActiveCooldownPowerConfiguration::key)
+			CalioCodecHelper.optionalField(IActivePower.Key.CODEC, "key", IActivePower.Key.PRIMARY).forGetter(IActiveCooldownPowerConfiguration::key)
 	).apply(instance, (t1, t2, t3, t4, t5) -> new LaunchConfiguration(t1, t2, t3.orElse(null), t4, t5)));
 }

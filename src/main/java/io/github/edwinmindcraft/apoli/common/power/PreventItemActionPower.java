@@ -24,6 +24,8 @@ public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Opti
 
 	public boolean doesPrevent(ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, ?> configuration, ItemStack stack) {
 		//FIXME Disable Food Restrictions.
-		return (!stack.isEdible() || !ApoliAPI.hasFoodRestrictions()) && configuration.getConfiguration().value().map(x -> x.check(stack)).orElse(true);
+		if (stack.isEdible() && !ApoliAPI.enableFoodRestrictions())
+			return false;
+		return configuration.getConfiguration().value().map(x -> x.check(stack)).orElse(true);
 	}
 }

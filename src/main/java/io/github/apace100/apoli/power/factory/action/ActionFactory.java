@@ -4,17 +4,13 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.util.Lazy;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class ActionFactory<T> {
 
@@ -30,6 +26,7 @@ public class ActionFactory<T> {
 		this.data = data;
 		this.data.add("inverted", SerializableDataTypes.BOOLEAN, false);
 	}
+
 	public ActionFactory(ResourceLocation identifier, Codec<?> codec, IFactory<?, ?, ?> factory) {
 		this.identifier = identifier;
 		this.codec = codec;

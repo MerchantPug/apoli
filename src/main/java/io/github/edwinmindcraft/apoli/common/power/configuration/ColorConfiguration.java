@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
@@ -13,10 +14,10 @@ import java.util.Optional;
 public record ColorConfiguration(float red, float green, float blue,
 								 float alpha) implements IDynamicFeatureConfiguration {
 	public static final Codec<ColorConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.FLOAT.optionalFieldOf("red", 1.0F).forGetter(ColorConfiguration::red),
-			Codec.FLOAT.optionalFieldOf("green", 1.0F).forGetter(ColorConfiguration::green),
-			Codec.FLOAT.optionalFieldOf("blue", 1.0F).forGetter(ColorConfiguration::blue),
-			Codec.FLOAT.optionalFieldOf("alpha", 1.0F).forGetter(ColorConfiguration::alpha)
+			CalioCodecHelper.optionalField(Codec.FLOAT, "red", 1.0F).forGetter(ColorConfiguration::red),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "green", 1.0F).forGetter(ColorConfiguration::green),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "blue", 1.0F).forGetter(ColorConfiguration::blue),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "alpha", 1.0F).forGetter(ColorConfiguration::alpha)
 	).apply(instance, ColorConfiguration::new));
 
 	public static Optional<ColorConfiguration> forPower(Entity entity, PowerFactory<ColorConfiguration> factory) {

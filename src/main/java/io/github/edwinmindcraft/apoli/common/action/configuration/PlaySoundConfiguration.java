@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
@@ -17,8 +18,8 @@ public record PlaySoundConfiguration(SoundEvent sound, float volume,
 
 	public static final Codec<PlaySoundConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.SOUND_EVENT.fieldOf("sound").forGetter(PlaySoundConfiguration::sound),
-			Codec.FLOAT.optionalFieldOf("volume", 1F).forGetter(PlaySoundConfiguration::volume),
-			Codec.FLOAT.optionalFieldOf("pitch", 1F).forGetter(PlaySoundConfiguration::pitch)
+			CalioCodecHelper.optionalField(Codec.FLOAT, "volume", 1F).forGetter(PlaySoundConfiguration::volume),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "pitch", 1F).forGetter(PlaySoundConfiguration::pitch)
 	).apply(instance, PlaySoundConfiguration::new));
 
 	@Override

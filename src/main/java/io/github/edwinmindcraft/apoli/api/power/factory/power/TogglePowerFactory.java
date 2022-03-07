@@ -10,6 +10,7 @@ import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> extends PowerFactory<T> implements IActivePower<T> {
@@ -21,9 +22,17 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 		super(codec, allowConditions);
 	}
 
-	protected abstract void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, boolean status);
+	protected void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity entity, boolean status) {
+		this.setStatus(configuration, entity, IPowerContainer.get(entity).resolve().orElse(null), status);
+	}
 
-	protected abstract boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity player);
+	protected boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+		return this.getStatus(configuration, entity, IPowerContainer.get(entity).resolve().orElse(null));
+	}
+
+	protected abstract void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container, boolean status);
+
+	protected abstract boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container);
 
 	@Override
 	public boolean isActive(ConfiguredPower<T, ?> configuration, LivingEntity player) {
@@ -50,29 +59,33 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 			super(codec, allowConditions);
 		}
 
-		private AtomicBoolean getData(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return configuration.getPowerData(player, () -> new AtomicBoolean(configuration.getConfiguration().defaultState()));
+		private AtomicBoolean getData(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+			return configuration.getPowerData(container, () -> new AtomicBoolean(configuration.getConfiguration().defaultState()));
 		}
 
 		@Override
-		protected void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, boolean status) {
-			this.getData(configuration, player).set(status);
+		protected void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container, boolean status) {
+			if (container == null)
+				return;
+			this.getData(configuration, container).set(status);
 		}
 
 		@Override
-		protected boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return this.getData(configuration, player).get();
+		protected boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container) {
+			if (container == null)
+				return false;
+			return this.getData(configuration, container).get();
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return ByteTag.valueOf(this.getStatus(configuration, player));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container) {
+			return ByteTag.valueOf(this.getStatus(configuration, player, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
 			if (tag instanceof ByteTag byteTag)
-				this.setStatus(configuration, player, byteTag.getAsByte() != 0);
+				this.setStatus(configuration, player, container, byteTag.getAsByte() != 0);
 		}
 	}
 }

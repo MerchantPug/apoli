@@ -38,11 +38,11 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 											 @Nullable SoundEvent sound) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyPlayerSpawnConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.DIMENSION.fieldOf("dimension").forGetter(ModifyPlayerSpawnConfiguration::dimension),
-			Codec.FLOAT.optionalFieldOf("dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
 			CalioCodecHelper.resourceKey(Registry.BIOME_REGISTRY).optionalFieldOf("biome").forGetter(x -> Optional.ofNullable(x.biome())),
-			Codec.STRING.optionalFieldOf("spawn_strategy", "default").forGetter(ModifyPlayerSpawnConfiguration::strategy),
-			Registry.STRUCTURE_FEATURE.optionalFieldOf("structure").forGetter(x -> Optional.ofNullable(x.structure())),
-			SerializableDataTypes.SOUND_EVENT.optionalFieldOf("respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
+			CalioCodecHelper.optionalField(Codec.STRING, "spawn_strategy", "default").forGetter(ModifyPlayerSpawnConfiguration::strategy),
+			CalioCodecHelper.optionalField(Registry.STRUCTURE_FEATURE, "structure").forGetter(x -> Optional.ofNullable(x.structure())),
+			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
 	private static BlockPos getStructureLocation(LivingEntity entity, StructureFeature<?> structure, ResourceKey<Level> dimension) {

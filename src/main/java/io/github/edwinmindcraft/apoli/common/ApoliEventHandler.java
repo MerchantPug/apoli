@@ -95,7 +95,7 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void playerClone(PlayerEvent.Clone event) {
-		event.getOriginal().reviveCaps(); // Reload capabilities.
+		event.getOriginal().reviveCaps(); // Revive capabilities.
 
 		LazyOptional<IPowerContainer> original = IPowerContainer.get(event.getOriginal());
 		LazyOptional<IPowerContainer> player = IPowerContainer.get(event.getPlayer());

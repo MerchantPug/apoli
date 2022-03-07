@@ -9,7 +9,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 public class IngredientCondition extends ItemCondition<FieldConfiguration<Ingredient>> {
 
 	public IngredientCondition() {
-		super(FieldConfiguration.codec(SerializableDataTypes.INGREDIENT, "ingredient"));
+		//TODO 1.18.1 Fix the ingredient system.
+		super(FieldConfiguration.codec(SerializableDataTypes.VANILLA_INGREDIENT, "ingredient"));
 	}
 
 	@Override

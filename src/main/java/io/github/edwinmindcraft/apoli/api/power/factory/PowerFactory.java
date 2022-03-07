@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.api.power.factory;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -149,11 +150,11 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 		return !this.shouldCheckConditions(configuration, entity) || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
 	}
 
-	public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, IPowerContainer container) {
 		return new CompoundTag();
 	}
 
-	public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, Tag tag) {}
+	public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, IPowerContainer container, Tag tag) {}
 
 	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(this.getRegistryName(), this));
 

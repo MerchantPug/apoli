@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public record FieldConfiguration<T>(T value) implements IDynamicFeatureConfigura
 	}
 
 	public static <T> Codec<FieldConfiguration<T>> codec(Codec<T> codec, String fieldName, T defaultValue) {
-		return codec.optionalFieldOf(fieldName, defaultValue).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
+		return CalioCodecHelper.optionalField(codec, fieldName, defaultValue).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
 	}
 
 	public static <T> Codec<FieldConfiguration<T>> codec(MapCodec<T> codec) {
@@ -29,7 +30,7 @@ public record FieldConfiguration<T>(T value) implements IDynamicFeatureConfigura
 	}
 
 	public static <T> Codec<FieldConfiguration<Optional<T>>> optionalCodec(Codec<T> codec, String fieldName) {
-		return codec.optionalFieldOf(fieldName).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
+		return CalioCodecHelper.optionalField(codec, fieldName).xmap(FieldConfiguration::new, FieldConfiguration::value).codec();
 	}
 
 	@Override

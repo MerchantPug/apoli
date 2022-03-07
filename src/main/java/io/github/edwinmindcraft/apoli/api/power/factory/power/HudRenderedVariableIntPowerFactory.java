@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.util.HudRender;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IHudRenderedVariableIntPowerConfiguration;
@@ -9,6 +10,7 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class HudRenderedVariableIntPowerFactory<T extends IHudRenderedVariableIntPowerConfiguration> extends VariableIntPowerFactory<T> implements IHudRenderedPower<T> {
@@ -44,29 +46,33 @@ public abstract class HudRenderedVariableIntPowerFactory<T extends IHudRenderedV
 			super(codec, allowConditions);
 		}
 
-		protected AtomicInteger getCurrentValue(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return configuration.getPowerData(player, () -> new AtomicInteger(configuration.getConfiguration().initialValue()));
+		protected AtomicInteger getCurrentValue(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+			return configuration.getPowerData(container, () -> new AtomicInteger(configuration.getConfiguration().initialValue()));
 		}
 
 		@Override
-		protected int get(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return this.getCurrentValue(configuration, player).get();
+		protected int get(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container) {
+			if (container == null)
+				return configuration.getConfiguration().initialValue();
+			return this.getCurrentValue(configuration, container).get();
 		}
 
 		@Override
-		protected void set(ConfiguredPower<T, ?> configuration, LivingEntity player, int value) {
-			this.getCurrentValue(configuration, player).set(value);
+		protected void set(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container, int value) {
+			if (container == null)
+				return;
+			this.getCurrentValue(configuration, container).set(value);
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-			return IntTag.valueOf(this.get(configuration, player));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container) {
+			return IntTag.valueOf(this.get(configuration, player, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, Tag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
 			if (tag instanceof IntTag intTag)
-				this.set(configuration, player, intTag.getAsInt());
+				this.set(configuration, player, container, intTag.getAsInt());
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverItemConfiguration;
@@ -39,13 +40,13 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player) {
-		return ByteTag.valueOf(configuration.getPowerData(player, () -> new AtomicBoolean(false)).get());
+	public Tag serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+		return ByteTag.valueOf(configuration.getPowerData(container, () -> new AtomicBoolean(false)).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player, Tag tag) {
-		AtomicBoolean data = configuration.getPowerData(player, () -> new AtomicBoolean(false));
+	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
+		AtomicBoolean data = configuration.getPowerData(container, () -> new AtomicBoolean(false));
 		data.set(!Objects.equals(tag, ByteTag.ZERO));
 	}
 }

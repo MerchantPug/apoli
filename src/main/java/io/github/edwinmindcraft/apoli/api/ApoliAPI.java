@@ -39,7 +39,7 @@ public class ApoliAPI {
 		ApoliCommon.CHANNEL.send(PacketDistributor.SERVER.noArg(), new C2SUseActivePowers(powers));
 	}
 
-	public static boolean hasFoodRestrictions() {
+	public static boolean enableFoodRestrictions() {
 		//FIXME Support for disabling food restrictions.
 		return true;
 	}

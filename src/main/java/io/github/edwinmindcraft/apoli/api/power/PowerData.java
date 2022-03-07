@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCo
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.util.Lazy;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -15,14 +16,15 @@ import java.util.List;
 
 public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolean hidden, int loadingPriority,
 						String name, String description) {
+
 	public static final PowerData DEFAULT = new PowerData(ImmutableList.of(), false, 0, "", "");
 
 	public static final MapCodec<PowerData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.listOf(ConfiguredEntityCondition.CODEC, "condition", "conditions").forGetter(PowerData::conditions),
-			Codec.BOOL.optionalFieldOf("hidden", false).forGetter(PowerData::hidden),
-			Codec.INT.optionalFieldOf("loading_priority", 0).forGetter(PowerData::loadingPriority),
-			Codec.STRING.optionalFieldOf("name", "").forGetter(PowerData::name),
-			Codec.STRING.optionalFieldOf("description", "").forGetter(PowerData::description)
+			CalioCodecHelper.optionalField(Codec.BOOL, "hidden", false).forGetter(PowerData::hidden),
+			CalioCodecHelper.optionalField(Codec.INT, "loading_priority", 0).forGetter(PowerData::loadingPriority),
+			CalioCodecHelper.optionalField(Codec.STRING, "name", "").forGetter(PowerData::name),
+			CalioCodecHelper.optionalField(Codec.STRING, "description", "").forGetter(PowerData::description)
 	).apply(instance, PowerData::new));
 
 	public static Builder builder() {

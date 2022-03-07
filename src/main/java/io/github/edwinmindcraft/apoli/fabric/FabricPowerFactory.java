@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.fabric;
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.Tag;
@@ -16,6 +17,11 @@ public class FabricPowerFactory<P extends Power> extends PowerFactory<FabricPowe
 	@SuppressWarnings("unchecked")
 	private P getPower(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity) {
 		return configuration.getPowerData(entity, () -> configuration.getConfiguration().power().apply((PowerType<P>) configuration.getPowerType(), entity));
+	}
+
+	@SuppressWarnings("unchecked")
+	private P getPower(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity, IPowerContainer container) {
+		return configuration.getPowerData(container, () -> configuration.getConfiguration().power().apply((PowerType<P>) configuration.getPowerType(), entity));
 	}
 
 	@Override
@@ -64,12 +70,12 @@ public class FabricPowerFactory<P extends Power> extends PowerFactory<FabricPowe
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity) {
-		return this.getPower(configuration, entity).toTag();
+	public Tag serialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity, IPowerContainer container) {
+		return this.getPower(configuration, entity, container).toTag();
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity, Tag tag) {
-		this.getPower(configuration, entity).fromTag(tag);
+	public void deserialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, LivingEntity entity, IPowerContainer container, Tag tag) {
+		this.getPower(configuration, entity, container).fromTag(tag);
 	}
 }

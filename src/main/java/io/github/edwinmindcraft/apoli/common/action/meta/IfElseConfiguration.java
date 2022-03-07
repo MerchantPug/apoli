@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.action.meta;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -14,7 +15,7 @@ public record IfElseConfiguration<C, A, V>(C condition, A ifAction, @Nullable A 
 		return RecordCodecBuilder.create(instance -> instance.group(
 				conditionCodec.fieldOf("condition").forGetter(IfElseConfiguration::condition),
 				actionCodec.fieldOf("if_action").forGetter(IfElseConfiguration::ifAction),
-				actionCodec.optionalFieldOf("else_action").forGetter(x -> Optional.ofNullable(x.elseAction()))
+				CalioCodecHelper.optionalField(actionCodec, "else_action").forGetter(x -> Optional.ofNullable(x.elseAction()))
 		).apply(instance, (c, i, e) -> new IfElseConfiguration<>(c, i, e.orElse(null), predicate, executor)));
 	}
 
