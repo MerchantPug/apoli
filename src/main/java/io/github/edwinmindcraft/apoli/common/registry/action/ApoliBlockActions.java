@@ -12,8 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraftforge.fmllegacy.RegistryObject;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.function.BiConsumer;

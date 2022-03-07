@@ -7,11 +7,11 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ClimbingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import java.util.List;
-import java.util.function.Consumer;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 public class ClimbingPower extends PowerFactory<ClimbingConfiguration> {
 	public static boolean check(LivingEntity player, Consumer<BlockPos> climbingPosSetter) {

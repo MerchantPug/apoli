@@ -10,9 +10,9 @@ import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliItemActions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fmllegacy.network.NetworkDirection;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ApoliCommon {
 	public static final String NETWORK_VERSION = "1.0";

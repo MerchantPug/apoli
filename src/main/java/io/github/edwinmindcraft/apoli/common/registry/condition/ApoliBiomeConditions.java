@@ -5,7 +5,6 @@ import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiomeCondition;
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.biome.DelegatedBiomeCondition;
 import io.github.edwinmindcraft.apoli.common.condition.biome.FloatComparingBiomeCondition;
@@ -14,7 +13,7 @@ import io.github.edwinmindcraft.apoli.common.condition.biome.StringBiomeConditio
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
 import java.util.function.BiPredicate;
@@ -27,6 +26,7 @@ public class ApoliBiomeConditions {
 	private static <U extends BiomeCondition<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BIOME_CONDITION_CLASS, Apoli.MODID);
 	}
+
 	public static final RegistryObject<DelegatedBiomeCondition<ConstantConfiguration<Biome>>> CONSTANT = of("constant");
 	public static final RegistryObject<DelegatedBiomeCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Biome>>> AND = of("and");
 	public static final RegistryObject<DelegatedBiomeCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Biome>>> OR = of("or");

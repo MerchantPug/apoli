@@ -1,14 +1,14 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
+import io.github.apace100.apoli.mixin.EntityAccessor;
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
-import io.github.apace100.apoli.mixin.EntityAccessor;
-import java.util.function.Predicate;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
+
+import java.util.function.Predicate;
 
 public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	public static SimpleEntityCondition of(Predicate<Player> predicate) {

@@ -2,12 +2,12 @@ package io.github.edwinmindcraft.apoli.common.power.configuration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.power.IActivePower;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.power.IActivePower;
+import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.Nullable;

@@ -5,7 +5,6 @@ import io.github.edwinmindcraft.apoli.api.configuration.TagConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.material.Fluid;
 
 public class InTagCondition extends EntityCondition<TagConfiguration<EntityType<?>>> {
 

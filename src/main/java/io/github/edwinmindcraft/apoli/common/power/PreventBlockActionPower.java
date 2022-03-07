@@ -6,11 +6,11 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import java.util.Optional;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+
+import java.util.Optional;
 
 public class PreventBlockActionPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredBlockCondition<?, ?>>>> {
 	public static boolean isSelectionPrevented(Entity entity, BlockPos pos) {

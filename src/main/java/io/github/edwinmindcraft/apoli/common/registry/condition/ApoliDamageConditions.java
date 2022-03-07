@@ -2,18 +2,14 @@ package io.github.edwinmindcraft.apoli.common.registry.condition;
 
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.DamageCondition;
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.condition.block.DelegatedBlockCondition;
 import io.github.edwinmindcraft.apoli.common.condition.damage.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;

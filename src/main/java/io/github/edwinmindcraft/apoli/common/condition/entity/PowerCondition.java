@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.PowerReference;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;

@@ -2,11 +2,11 @@ package io.github.edwinmindcraft.apoli.common.power.configuration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.power.IActivePower;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.power.IActivePower;
+import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +31,7 @@ public record FireProjectileConfiguration(int duration, HudRender hudRender, Ent
 	public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::duration),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(FireProjectileConfiguration::hudRender),
-			Registry.ENTITY_TYPE.fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
+			Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
 			CalioCodecHelper.optionalField(Codec.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),

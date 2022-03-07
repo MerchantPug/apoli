@@ -4,13 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.*;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import net.minecraft.util.Tuple;
+
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
-
-import io.github.edwinmindcraft.calio.api.network.IContextAwareCodec;
-import net.minecraft.util.Tuple;
 
 //Validation occurs on every subpower, this should be fine
 public record MultipleConfiguration<V>(Map<String, V> children) implements IDynamicFeatureConfiguration {

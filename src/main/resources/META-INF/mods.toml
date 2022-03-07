@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[37,)"
+loaderVersion="[39,)"
 issueTrackerURL="https://github.com/EdwinMindcraft/apoli/issues"
 license="MIT"
 
@@ -16,7 +16,7 @@ A library mod which allows entities to be imbued with data-driven powers.
 [[dependencies.apoli]]
     modId="forge"
     mandatory=true
-    versionRange="[37.0.74,)"
+    versionRange="${forge_requirements}"
     ordering="NONE"
     side="BOTH"
 

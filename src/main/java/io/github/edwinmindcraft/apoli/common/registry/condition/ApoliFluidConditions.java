@@ -2,21 +2,16 @@ package io.github.edwinmindcraft.apoli.common.registry.condition;
 
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCondition;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredFluidCondition;
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.power.factory.FluidCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.condition.entity.DelegatedEntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.fluid.DelegatedFluidCondition;
 import io.github.edwinmindcraft.apoli.common.condition.fluid.InTagFluidCondition;
 import io.github.edwinmindcraft.apoli.common.condition.fluid.SimpleFluidCondition;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
 import java.util.function.BiPredicate;

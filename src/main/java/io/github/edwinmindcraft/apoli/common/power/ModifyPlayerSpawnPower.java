@@ -1,9 +1,9 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
-import io.github.apace100.apoli.Apoli;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

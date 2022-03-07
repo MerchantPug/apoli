@@ -11,12 +11,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Optional;
+
 @Mixin(ForgeHooks.class)
 public class ForgeHooksMixin {
 
 	@Inject(method = "isLivingOnLadder", remap = false, at = @At("RETURN"), cancellable = true)
-	private static void ladder(BlockState state, Level world, BlockPos pos, LivingEntity entity, CallbackInfoReturnable<Boolean> info) {
-		if (!info.getReturnValue() && ClimbingPower.check(entity, blockPos -> {}))
-			info.setReturnValue(true);
+	private static void ladder(BlockState state, Level world, BlockPos pos, LivingEntity entity, CallbackInfoReturnable<Optional<BlockPos>> info) {
+		if (info.getReturnValue().isEmpty() && ClimbingPower.check(entity, blockPos -> {}))
+			info.setReturnValue(Optional.of(pos));
 	}
 }

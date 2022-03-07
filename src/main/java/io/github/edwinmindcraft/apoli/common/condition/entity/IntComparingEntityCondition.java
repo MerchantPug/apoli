@@ -2,9 +2,9 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 
 import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
-import java.util.function.Function;
-
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.function.Function;
 
 public class IntComparingEntityCondition extends EntityCondition<IntegerComparisonConfiguration> {
 	private final Function<LivingEntity, Integer> function;

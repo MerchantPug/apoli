@@ -12,7 +12,6 @@ import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
 import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +27,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
 

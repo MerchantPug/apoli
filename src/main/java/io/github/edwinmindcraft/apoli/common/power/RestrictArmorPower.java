@@ -5,11 +5,11 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.RestrictArmorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import java.util.stream.Stream;
-
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.stream.Stream;
 
 public class RestrictArmorPower extends PowerFactory<RestrictArmorConfiguration> {
 	public static boolean isForbidden(LivingEntity player, EquipmentSlot slot, ItemStack stack) {

@@ -3,7 +3,7 @@ package io.github.edwinmindcraft.apoli.common.network;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashSet;
 import java.util.Objects;

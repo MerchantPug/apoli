@@ -87,6 +87,11 @@ public class WrappingRegistry<T, F extends IForgeRegistryEntry<F>> extends Writa
 		return this.registry.get() instanceof ForgeRegistry<F> fr ? this.to.apply(fr.getValue(id)) : null;
 	}
 
+	@Override
+	public int size() {
+		return this.registry.get().getKeys().size();
+	}
+
 	@Nullable
 	@Override
 	public T get(@Nullable ResourceKey<T> resourceKey) {
@@ -100,7 +105,7 @@ public class WrappingRegistry<T, F extends IForgeRegistryEntry<F>> extends Writa
 	}
 
 	@Override
-	protected Lifecycle lifecycle(T p_123012_) {
+	public Lifecycle lifecycle(T p_123012_) {
 		return this.lifecycle;
 	}
 

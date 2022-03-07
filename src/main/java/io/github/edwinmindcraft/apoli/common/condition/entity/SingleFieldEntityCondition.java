@@ -11,6 +11,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+
 import java.util.function.BiPredicate;
 
 public class SingleFieldEntityCondition<T> extends EntityCondition<FieldConfiguration<T>> {
@@ -27,6 +28,7 @@ public class SingleFieldEntityCondition<T> extends EntityCondition<FieldConfigur
 		}
 		return false;
 	}
+
 	private final BiPredicate<LivingEntity, T> predicate;
 
 	public SingleFieldEntityCondition(MapCodec<T> codec, BiPredicate<LivingEntity, T> predicate) {

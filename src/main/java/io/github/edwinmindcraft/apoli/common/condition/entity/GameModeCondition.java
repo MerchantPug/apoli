@@ -1,8 +1,8 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
-import io.github.apace100.calio.data.SerializableDataType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,7 +41,7 @@ public class GameModeCondition extends EntityCondition<FieldConfiguration<GameTy
 
 		@Override
 		protected boolean testClient(GameType mode, LivingEntity entity) {
-			return entity instanceof LocalPlayer && Minecraft.getInstance().gameMode != null &&  Objects.equals(Minecraft.getInstance().gameMode.getPlayerMode(), mode);
+			return entity instanceof LocalPlayer && Minecraft.getInstance().gameMode != null && Objects.equals(Minecraft.getInstance().gameMode.getPlayerMode(), mode);
 		}
 	}
 }

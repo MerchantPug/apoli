@@ -6,9 +6,9 @@ import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import java.util.List;
-
 import net.minecraft.world.entity.Entity;
+
+import java.util.List;
 
 public class InvisibilityPower extends PowerFactory<FieldConfiguration<Boolean>> {
 

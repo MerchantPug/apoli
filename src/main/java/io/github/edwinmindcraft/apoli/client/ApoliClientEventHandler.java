@@ -108,8 +108,8 @@ public class ApoliClientEventHandler {
 	public static void renderFog(EntityViewRenderEvent.RenderFogEvent event) {
 		float start = RenderSystem.getShaderFogStart();
 		float end = RenderSystem.getShaderFogEnd();
-		FogRenderer.FogMode mode = event.getType();
-		if (event.getInfo().getEntity() instanceof LivingEntity living) {
+		FogRenderer.FogMode mode = event.getMode();
+		if (event.getCamera().getEntity() instanceof LivingEntity living) {
 			Optional<Float> renderMethod = PhasingPower.getRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS);
 			if (renderMethod.isPresent() && CoreUtils.getInWallBlockState(living) != null) {
 				float view = renderMethod.get();
@@ -131,7 +131,7 @@ public class ApoliClientEventHandler {
 	//Replaces modifyD in BackgroundRendererMixin
 	@SubscribeEvent
 	public static void fogColor(EntityViewRenderEvent.FogColors event) {
-		if (event.getInfo().getEntity() instanceof LivingEntity living && PhasingPower.hasRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS) && CoreUtils.getInWallBlockState(living) != null) {
+		if (event.getCamera().getEntity() instanceof LivingEntity living && PhasingPower.hasRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS) && CoreUtils.getInWallBlockState(living) != null) {
 			event.setBlue(0.0F);
 			event.setGreen(0.0F);
 			event.setRed(0.0F);

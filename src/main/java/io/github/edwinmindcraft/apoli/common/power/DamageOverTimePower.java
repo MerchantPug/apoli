@@ -9,6 +9,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+
 import java.util.Map;
 
 public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeConfiguration> {
@@ -63,9 +64,9 @@ public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeC
 	}
 
 	protected int getDamageBegin(DamageOverTimeConfiguration configuration, LivingEntity player) {
-        int prot = this.getProtection(configuration, player);
-        int delay = (int)(Math.pow(prot * 2, 1.3) * configuration.protectionEffectiveness());
-        return configuration.delay() + delay;
+		int prot = this.getProtection(configuration, player);
+		int delay = (int) (Math.pow(prot * 2, 1.3) * configuration.protectionEffectiveness());
+		return configuration.delay() + delay;
 	}
 
 	private int getProtection(DamageOverTimeConfiguration configuration, LivingEntity player) {

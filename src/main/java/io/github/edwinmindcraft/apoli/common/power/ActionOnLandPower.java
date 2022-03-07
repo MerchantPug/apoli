@@ -5,11 +5,8 @@ import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 public class ActionOnLandPower extends PowerFactory<FieldConfiguration<ConfiguredEntityAction<?, ?>>> {
 	public static void execute(LivingEntity player) {

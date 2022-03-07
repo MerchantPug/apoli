@@ -39,8 +39,8 @@ public abstract class AbstractBlockStateMixin {
 	private void phaseThroughBlocks(BlockGetter world, BlockPos pos, CollisionContext context, CallbackInfoReturnable<VoxelShape> info) {
 		VoxelShape blockShape = this.getBlock().getCollisionShape(this.asState(), world, pos, context);
 		if (!blockShape.isEmpty() && context instanceof EntityCollisionContext esc) {
-			if (esc.getEntity().isPresent()) {
-				Entity entity = esc.getEntity().get();
+			if (esc.getEntity() != null) {
+				Entity entity = esc.getEntity();
 				boolean isAbove = this.isAbove(entity, blockShape, pos, false);
 				if (world instanceof LevelReader reader && entity instanceof LivingEntity living && PhasingPower.shouldPhaseThrough(living, new BlockInWorld(reader, pos, true), isAbove))
 					info.setReturnValue(Shapes.empty());
@@ -50,9 +50,9 @@ public abstract class AbstractBlockStateMixin {
 
 	@Inject(at = @At("RETURN"), method = "getShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true)
 	private void modifyBlockOutline(BlockGetter world, BlockPos pos, CollisionContext context, CallbackInfoReturnable<VoxelShape> cir) {
-		if (context instanceof EntityCollisionContext) {
-			if (((EntityCollisionContext) context).getEntity().isPresent()) {
-				Entity entity = ((EntityCollisionContext) context).getEntity().get();
+		if (context instanceof EntityCollisionContext ctx) {
+			if (ctx.getEntity() != null) {
+				Entity entity = ctx.getEntity();
 				if (PreventBlockActionPower.isSelectionPrevented(entity, pos))
 					cir.setReturnValue(Shapes.empty());
 			}

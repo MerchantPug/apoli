@@ -7,10 +7,10 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import java.util.Optional;
-
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Optional;
 
 public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>> {
 

@@ -1,8 +1,8 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
+import io.github.apace100.apoli.util.Shape;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.BlockInRadiusConfiguration;
-import io.github.apace100.apoli.util.Shape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;

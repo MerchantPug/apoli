@@ -6,10 +6,10 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyHarvestConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import java.util.Optional;
-
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+
+import java.util.Optional;
 
 public class ModifyHarvestPower extends ValueModifyingPowerFactory<ModifyHarvestConfiguration> {
 	/**

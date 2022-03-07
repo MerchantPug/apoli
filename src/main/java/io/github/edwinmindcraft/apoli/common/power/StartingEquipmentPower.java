@@ -1,14 +1,14 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.StartingInventoryConfiguration;
-import io.github.apace100.apoli.Apoli;
-import java.util.Comparator;
-
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Comparator;
 
 public class StartingEquipmentPower extends PowerFactory<StartingInventoryConfiguration> {
 	public StartingEquipmentPower() {

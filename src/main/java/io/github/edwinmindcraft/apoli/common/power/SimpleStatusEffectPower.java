@@ -1,10 +1,10 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import com.mojang.serialization.Codec;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 

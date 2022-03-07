@@ -4,12 +4,12 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverItemConfiguration;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguration> {
 	public ActionOverTimePower() {

@@ -2,7 +2,7 @@ package io.github.edwinmindcraft.apoli.common.registry;
 
 import io.github.edwinmindcraft.apoli.common.power.*;
 import net.minecraft.world.inventory.DispenserMenu;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ApoliPowers {
 	public static final RegistryObject<ActionOnBlockBreakPower> ACTION_ON_BLOCK_BREAK = ApoliRegisters.POWER_FACTORIES.register("action_on_block_break", ActionOnBlockBreakPower::new);

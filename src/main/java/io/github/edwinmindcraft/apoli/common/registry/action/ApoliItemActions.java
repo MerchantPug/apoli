@@ -4,16 +4,13 @@ import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.action.entity.DelegatedEntityAction;
 import io.github.edwinmindcraft.apoli.common.action.item.ConsumeAction;
 import io.github.edwinmindcraft.apoli.common.action.item.DelegatedItemAction;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;

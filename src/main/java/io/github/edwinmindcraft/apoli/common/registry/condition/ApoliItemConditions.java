@@ -2,10 +2,7 @@ package io.github.edwinmindcraft.apoli.common.registry.condition;
 
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCondition;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredFluidCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.item.*;
@@ -14,7 +11,7 @@ import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguratio
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
 import java.util.function.BiPredicate;

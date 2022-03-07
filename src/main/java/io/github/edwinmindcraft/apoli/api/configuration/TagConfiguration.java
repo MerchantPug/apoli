@@ -5,7 +5,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagContainer;
-import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Objects;
 

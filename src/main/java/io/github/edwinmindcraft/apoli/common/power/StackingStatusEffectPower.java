@@ -4,12 +4,12 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.StackingStatusEffectConfiguration;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffectConfiguration> {
 	public StackingStatusEffectPower() {

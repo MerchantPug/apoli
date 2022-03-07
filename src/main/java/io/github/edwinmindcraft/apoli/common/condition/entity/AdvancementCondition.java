@@ -1,8 +1,8 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
+import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
-import io.github.apace100.apoli.Apoli;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
