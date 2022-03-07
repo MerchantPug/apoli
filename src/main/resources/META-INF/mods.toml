@@ -23,7 +23,7 @@ A library mod which allows entities to be imbued with data-driven powers.
 [[dependencies.apoli]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.17.1]"
+    versionRange="[${mc_version}]"
     ordering="NONE"
     side="BOTH"
 
