@@ -15,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
@@ -115,7 +116,8 @@ public abstract class GameRendererMixin {
 
 	@Inject(at = @At("RETURN"), method = "getNightVisionScale", cancellable = true)
 	private static void updateNightVisionScale(LivingEntity living, float tickDelta, CallbackInfoReturnable<Float> cir) {
-		INightVisionPower.getNightVisionStrength(living).filter(x -> x >= cir.getReturnValueF()).ifPresent(cir::setReturnValue);
+		if (!living.hasEffect(MobEffects.NIGHT_VISION)) //Should fix the flickering
+			INightVisionPower.getNightVisionStrength(living).ifPresent(cir::setReturnValue);
 	}
 
 	// PHASING: remove_blocks
