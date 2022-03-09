@@ -10,6 +10,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -47,9 +48,9 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 
 	/**
 	 * Marks this power has having a ticking function, if this isn't done,
-	 * the mod won't bother calling the {@link #tick(ConfiguredPower, LivingEntity)} function.
+	 * the mod won't bother calling the {@link #tick(ConfiguredPower, Entity)} function.
 	 *
-	 * @param whenInactive If true, tick will bypass the check to {@link #isActive(ConfiguredPower, LivingEntity)}
+	 * @param whenInactive If true, tick will bypass the check to {@link #isActive(ConfiguredPower, Entity)}
 	 *
 	 * @see #ticking() for a version that sets whenInactive to false.
 	 */
@@ -64,7 +65,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 
 	/**
 	 * Marks this power has having a ticking function, if this isn't done,
-	 * the mod won't bother calling the {@link #tick(ConfiguredPower, LivingEntity)} function.
+	 * the mod won't bother calling the {@link #tick(ConfiguredPower, Entity)} function.
 	 *
 	 * @see #ticking(boolean) for a version that allows ticking when this power is inactive.
 	 */
@@ -88,73 +89,73 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 		return new ConfiguredPower<>(this, input, data);
 	}
 
-	protected boolean shouldCheckConditions(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	protected boolean shouldCheckConditions(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.allowConditions;
 	}
 
-	protected boolean shouldTickWhenActive(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	protected boolean shouldTickWhenActive(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.ticking;
 	}
 
-	protected boolean shouldTickWhenInactive(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	protected boolean shouldTickWhenInactive(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.tickingWhenInactive;
 	}
 
-	public boolean canTick(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public boolean canTick(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.shouldTickWhenActive(configuration, entity) && (this.shouldTickWhenInactive(configuration, entity) || this.isActive(configuration, entity));
 	}
 
-	public void tick(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void tick(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.tick(configuration.getConfiguration(), entity);
 	}
 
-	public void onGained(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void onGained(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.onGained(configuration.getConfiguration(), entity);
 	}
 
-	public void onLost(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void onLost(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.onLost(configuration.getConfiguration(), entity);
 	}
 
-	public void onAdded(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void onAdded(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.onAdded(configuration.getConfiguration(), entity);
 	}
 
-	public void onRemoved(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void onRemoved(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.onRemoved(configuration.getConfiguration(), entity);
 	}
 
-	public void onRespawn(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void onRespawn(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.onRespawn(configuration.getConfiguration(), entity);
 	}
 
-	public int tickInterval(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public int tickInterval(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.tickInterval(configuration.getConfiguration(), entity);
 	}
 
-	protected void tick(T configuration, LivingEntity entity) {}
+	protected void tick(T configuration, Entity entity) {}
 
-	protected void onGained(T configuration, LivingEntity entity) {}
+	protected void onGained(T configuration, Entity entity) {}
 
-	protected void onLost(T configuration, LivingEntity entity) {}
+	protected void onLost(T configuration, Entity entity) {}
 
-	protected void onAdded(T configuration, LivingEntity entity) {}
+	protected void onAdded(T configuration, Entity entity) {}
 
-	protected void onRemoved(T configuration, LivingEntity entity) {}
+	protected void onRemoved(T configuration, Entity entity) {}
 
-	protected void onRespawn(T configuration, LivingEntity entity) {}
+	protected void onRespawn(T configuration, Entity entity) {}
 
-	protected int tickInterval(T configuration, LivingEntity entity) {return 1;}
+	protected int tickInterval(T configuration, Entity entity) {return 1;}
 
-	public boolean isActive(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public boolean isActive(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return !this.shouldCheckConditions(configuration, entity) || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
 	}
 
-	public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, IPowerContainer container) {
+	public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
 		return new CompoundTag();
 	}
 
-	public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, IPowerContainer container, Tag tag) {}
+	public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {}
 
 	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(this.getRegistryName(), this));
 

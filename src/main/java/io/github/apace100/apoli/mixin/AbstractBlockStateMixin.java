@@ -32,7 +32,8 @@ public abstract class AbstractBlockStateMixin {
 	@Shadow
 	public abstract Block getBlock();
 
-	@Shadow protected abstract BlockState asState();
+	@Shadow
+	protected abstract BlockState asState();
 
 	@SuppressWarnings("deprecation")
 	@Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true)

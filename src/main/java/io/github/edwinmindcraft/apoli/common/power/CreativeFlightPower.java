@@ -6,7 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 	public CreativeFlightPower() {
@@ -15,7 +15,7 @@ public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 	}
 
 	@Override
-	public void tick(ConfiguredPower<NoConfiguration, ?> configuration, LivingEntity entity) {
+	public void tick(ConfiguredPower<NoConfiguration, ?> configuration, Entity entity) {
 		if (!entity.level.isClientSide) {
 			boolean isActive = configuration.isActive(entity);
 			boolean hasAbility = this.hasAbility(entity);
@@ -27,26 +27,26 @@ public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 	}
 
 	@Override
-	public void onGained(ConfiguredPower<NoConfiguration, ?> configuration, LivingEntity entity) {
+	public void onGained(ConfiguredPower<NoConfiguration, ?> configuration, Entity entity) {
 		if (!entity.level.isClientSide && configuration.isActive(entity) && !this.hasAbility(entity))
 			this.grantAbility(entity);
 	}
 
 	@Override
-	public void onLost(ConfiguredPower<NoConfiguration, ?> configuration, LivingEntity entity) {
+	public void onLost(ConfiguredPower<NoConfiguration, ?> configuration, Entity entity) {
 		if (!entity.level.isClientSide && this.hasAbility(entity))
 			this.revokeAbility(entity);
 	}
 
-	public boolean hasAbility(LivingEntity entity) {
+	public boolean hasAbility(Entity entity) {
 		return CalioAPI.getAbilityHolder(entity).map(x -> x.has(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE)).orElse(false);
 	}
 
-	public void grantAbility(LivingEntity entity) {
+	public void grantAbility(Entity entity) {
 		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.grant(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE));
 	}
 
-	public void revokeAbility(LivingEntity entity) {
+	public void revokeAbility(Entity entity) {
 		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.revoke(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE));
 	}
 }

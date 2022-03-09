@@ -14,8 +14,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.scores.Score;
 import net.minecraftforge.common.util.LazyOptional;
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.CooldownPower;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
 
 import java.util.OptionalInt;
 import java.util.function.IntFunction;
@@ -23,6 +28,7 @@ import java.util.function.Supplier;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
+import java.util.Optional;
 
 public class ResourceCommand {
 
@@ -30,29 +36,29 @@ public class ResourceCommand {
 		dispatcher.register(
 				literal("resource").requires(cs -> cs.hasPermission(2))
 						.then(literal("has")
-								.then(argument("target", EntityArgument.player())
+								.then(argument("target", EntityArgument.entity())
 										.then(argument("power", PowerTypeArgumentType.power())
 												.executes((command) -> resource(command, SubCommand.HAS))))
 						)
 						.then(literal("get")
-								.then(argument("target", EntityArgument.player())
+								.then(argument("target", EntityArgument.entity())
 										.then(argument("power", PowerTypeArgumentType.power())
 												.executes((command) -> resource(command, SubCommand.GET))))
 						)
 						.then(literal("set")
-								.then(argument("target", EntityArgument.player())
+								.then(argument("target", EntityArgument.entity())
 										.then(argument("power", PowerTypeArgumentType.power())
 												.then(argument("value", IntegerArgumentType.integer())
 														.executes((command) -> resource(command, SubCommand.SET)))))
 						)
 						.then(literal("change")
-								.then(argument("target", EntityArgument.player())
+								.then(argument("target", EntityArgument.entity())
 										.then(argument("power", PowerTypeArgumentType.power())
 												.then(argument("value", IntegerArgumentType.integer())
 														.executes((command) -> resource(command, SubCommand.CHANGE)))))
 						)
 						.then(literal("operation")
-								.then(argument("target", EntityArgument.player())
+								.then(argument("target", EntityArgument.entity())
 										.then(argument("power", PowerTypeArgumentType.power())
 												.then(argument("operation", PowerOperation.operation())
 														.then(argument("entity", ScoreHolderArgument.scoreHolder())
@@ -75,7 +81,7 @@ public class ResourceCommand {
 
 	// This is a cleaner method than sticking it into every subcommand
 	private static int resource(CommandContext<CommandSourceStack> command, SubCommand sub) throws CommandSyntaxException {
-		ServerPlayer player = EntityArgument.getPlayer(command, "target");
+		Entity player = EntityArgument.getEntity(command, "target");
 		LazyOptional<IPowerContainer> optional = IPowerContainer.get(player);
 		ResourceLocation power = command.getArgument("power", ResourceLocation.class);
 		ConfiguredPower<?, ?> configuredPower = PowerTypeArgumentType.getConfiguredPower(command, "power");

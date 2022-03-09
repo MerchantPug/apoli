@@ -5,14 +5,14 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ParticleConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ParticlePower extends PowerFactory<ParticleConfiguration> {
 
 	@OnlyIn(Dist.CLIENT)
-	public static void renderParticles(LivingEntity player) {
+	public static void renderParticles(Entity player) {
 		IPowerContainer.getPowers(player, ApoliPowers.PARTICLE.get()).stream().filter(x -> player.tickCount % x.getConfiguration().frequency() == 0)
 				.forEach(power -> player.level.addParticle((ParticleOptions) power.getConfiguration().particle(), player.getRandomX(0.5), player.getRandomY(), player.getRandomZ(0.5), 0, 0, 0));
 	}

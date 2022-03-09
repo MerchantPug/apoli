@@ -9,23 +9,24 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
 public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>> {
 
 	public static boolean isUsagePrevented(Entity entity, ItemStack stack) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().anyMatch(x -> x.getFactory().doesPrevent(x, stack));
+		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().anyMatch(x -> x.getFactory().doesPrevent(x, entity.level, stack));
 	}
 
 	public PreventItemActionPower() {
 		super(FieldConfiguration.optionalCodec(ConfiguredItemCondition.CODEC, "item_condition"));
 	}
 
-	public boolean doesPrevent(ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, ?> configuration, ItemStack stack) {
+	public boolean doesPrevent(ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, ?> configuration, Level level, ItemStack stack) {
 		//FIXME Disable Food Restrictions.
 		if (stack.isEdible() && !ApoliAPI.enableFoodRestrictions())
 			return false;
-		return configuration.getConfiguration().value().map(x -> x.check(stack)).orElse(true);
+		return configuration.getConfiguration().value().map(x -> x.check(level, stack)).orElse(true);
 	}
 }

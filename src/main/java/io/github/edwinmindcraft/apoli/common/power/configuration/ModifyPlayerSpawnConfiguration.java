@@ -17,7 +17,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -45,7 +45,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
-	private static BlockPos getStructureLocation(LivingEntity entity, StructureFeature<?> structure, ResourceKey<Level> dimension) {
+	private static BlockPos getStructureLocation(Entity entity, StructureFeature<?> structure, ResourceKey<Level> dimension) {
 		BlockPos blockPos = new BlockPos(0, 70, 0);
 		ServerLevel serverWorld = ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
 		if (serverWorld == null) {
@@ -127,7 +127,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 		return null;
 	}
 
-	public Tuple<ServerLevel, BlockPos> getSpawn(LivingEntity entity, boolean isSpawnObstructed) {
+	public Tuple<ServerLevel, BlockPos> getSpawn(Entity entity, boolean isSpawnObstructed) {
 		if (entity instanceof ServerPlayer) {
 			ServerLevel world = ServerLifecycleHooks.getCurrentServer().getLevel(this.dimension);
 			BlockPos regularSpawn = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD)).getSharedSpawnPos();

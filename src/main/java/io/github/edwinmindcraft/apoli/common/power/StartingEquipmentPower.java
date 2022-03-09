@@ -4,7 +4,7 @@ import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.StartingInventoryConfiguration;
 import net.minecraft.util.Tuple;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,13 +16,13 @@ public class StartingEquipmentPower extends PowerFactory<StartingInventoryConfig
 	}
 
 	@Override
-	protected void onGained(StartingInventoryConfiguration configuration, LivingEntity player) {
+	protected void onGained(StartingInventoryConfiguration configuration, Entity player) {
 		if (player instanceof Player ple)
 			this.giveStacks(configuration, ple);
 	}
 
 	@Override
-	protected void onRespawn(StartingInventoryConfiguration configuration, LivingEntity player) {
+	protected void onRespawn(StartingInventoryConfiguration configuration, Entity player) {
 		if (configuration.recurrent() && player instanceof Player ple)
 			this.giveStacks(configuration, ple);
 	}

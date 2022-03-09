@@ -3,7 +3,7 @@ package io.github.edwinmindcraft.apoli.api.power;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	/**
@@ -15,7 +15,7 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @return The new value of this power, after clamping.
 	 */
-	int assign(ConfiguredPower<T, ?> configuration, LivingEntity player, int value);
+	int assign(ConfiguredPower<T, ?> configuration, Entity player, int value);
 
 	/**
 	 * Finds the current value of this power for the given player.
@@ -25,7 +25,7 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @return The current value of this power.
 	 */
-	int getValue(ConfiguredPower<T, ?> configuration, LivingEntity player);
+	int getValue(ConfiguredPower<T, ?> configuration, Entity player);
 
 	/**
 	 * Find the maximum value for this power for the given player.
@@ -35,7 +35,7 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @return The maximum value of this power.
 	 */
-	int getMaximum(ConfiguredPower<T, ?> configuration, LivingEntity player);
+	int getMaximum(ConfiguredPower<T, ?> configuration, Entity player);
 
 	/**
 	 * Find the minimum value for this power for the given player.
@@ -45,9 +45,9 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @return The minimum value of this power.
 	 */
-	int getMinimum(ConfiguredPower<T, ?> configuration, LivingEntity player);
+	int getMinimum(ConfiguredPower<T, ?> configuration, Entity player);
 
-	default float getProgress(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	default float getProgress(ConfiguredPower<T, ?> configuration, Entity player) {
 		float value = this.getValue(configuration, player);
 		float min = this.getMinimum(configuration, player);
 		float max = this.getMaximum(configuration, player);
@@ -63,7 +63,7 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @return The new value of this power.
 	 */
-	default int change(ConfiguredPower<T, ?> configuration, LivingEntity player, int amount) {
+	default int change(ConfiguredPower<T, ?> configuration, Entity player, int amount) {
 		return this.assign(configuration, player, this.getValue(configuration, player) + amount);
 	}
 
@@ -75,7 +75,7 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @return The new value of this power.
 	 */
-	default int increment(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	default int increment(ConfiguredPower<T, ?> configuration, Entity player) {
 		return this.change(configuration, player, 1);
 	}
 
@@ -88,7 +88,7 @@ public interface IVariableIntPower<T extends IDynamicFeatureConfiguration> {
 	 *
 	 * @return The new value of this power.
 	 */
-	default int decrement(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	default int decrement(ConfiguredPower<T, ?> configuration, Entity player) {
 		return this.change(configuration, player, -1);
 	}
 }

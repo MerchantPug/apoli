@@ -9,6 +9,7 @@ import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,12 +22,12 @@ public class AdvancementCondition extends EntityCondition<FieldConfiguration<Res
 		super(FieldConfiguration.codec(ResourceLocation.CODEC, "builder"));
 	}
 
-	protected boolean testClient(FieldConfiguration<ResourceLocation> configuration, LivingEntity entity) {
+	protected boolean testClient(FieldConfiguration<ResourceLocation> configuration, Entity entity) {
 		return false;
 	}
 
 	@Override
-	public boolean check(FieldConfiguration<ResourceLocation> configuration, LivingEntity entity) {
+	public boolean check(FieldConfiguration<ResourceLocation> configuration, Entity entity) {
 		if (entity instanceof ServerPlayer) {
 			Advancement advancement = Objects.requireNonNull(entity.getServer()).getAdvancements().getAdvancement(configuration.value());
 			if (advancement == null)
@@ -44,7 +45,7 @@ public class AdvancementCondition extends EntityCondition<FieldConfiguration<Res
 		}
 
 		@Override
-		protected boolean testClient(FieldConfiguration<ResourceLocation> configuration, LivingEntity entity) {
+		protected boolean testClient(FieldConfiguration<ResourceLocation> configuration, Entity entity) {
 			if (entity instanceof LocalPlayer) {
 				ClientAdvancements advancementManager = Objects.requireNonNull(Minecraft.getInstance().getConnection()).getAdvancements();
 				Advancement advancement = advancementManager.getAdvancements().get(configuration.value());

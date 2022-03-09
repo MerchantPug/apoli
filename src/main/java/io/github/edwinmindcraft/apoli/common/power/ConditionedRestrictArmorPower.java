@@ -2,7 +2,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.RestrictArmorConfiguration;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ConditionedRestrictArmorPower extends PowerFactory<RestrictArmorConfiguration> {
 	public ConditionedRestrictArmorPower() {
@@ -11,12 +11,12 @@ public class ConditionedRestrictArmorPower extends PowerFactory<RestrictArmorCon
 	}
 
 	@Override
-	protected void tick(RestrictArmorConfiguration configuration, LivingEntity player) {
+	protected void tick(RestrictArmorConfiguration configuration, Entity player) {
 		configuration.dropIllegalItems(player);
 	}
 
 	@Override
-	protected int tickInterval(RestrictArmorConfiguration configuration, LivingEntity player) {
+	protected int tickInterval(RestrictArmorConfiguration configuration, Entity player) {
 		return configuration.tickRate();
 	}
 }

@@ -12,6 +12,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang3.mutable.MutableLong;
 
@@ -28,75 +29,75 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 	}
 
 	@Override
-	public void use(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void use(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.setLastUseTime(configuration, entity, entity.getCommandSenderWorld().getGameTime());
 		IPowerContainer.sync(entity);
 	}
 
 	@Override
-	public void onGained(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public void onGained(ConfiguredPower<T, ?> configuration, Entity entity) {
 		this.setLastUseTime(configuration, entity, entity.getCommandSenderWorld().getGameTime());
 	}
 
 	@Override
-	public boolean canUse(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public boolean canUse(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.getRemainingDuration(configuration, entity) <= 0 && configuration.isActive(entity);
 	}
 
 	@Override
-	public HudRender getRenderSettings(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public HudRender getRenderSettings(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return configuration.getConfiguration().hudRender();
 	}
 
 	@Override
-	public float getFill(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public float getFill(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.getProgress(configuration, entity);
 	}
 
 	@Override
-	public boolean shouldRender(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public boolean shouldRender(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return this.getRemainingDuration(configuration, entity) > 0;
 	}
 
-	protected long getLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
-		return this.getLastUseTime(configuration, entity, IPowerContainer.get(entity).resolve().orElse(null));
+	protected long getLastUseTime(ConfiguredPower<T, ?> configuration, Entity entity) {
+		return this.getLastUseTime(configuration, IPowerContainer.get(entity).resolve().orElse(null));
 	}
 
-	protected abstract long getLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity, @Nullable IPowerContainer container);
+	protected abstract long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container);
 
-	protected void setLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity, long value) {
-		this.setLastUseTime(configuration, entity, IPowerContainer.get(entity).resolve().orElse(null), value);
+	protected void setLastUseTime(ConfiguredPower<T, ?> configuration, Entity entity, long value) {
+		this.setLastUseTime(configuration, IPowerContainer.get(entity).resolve().orElse(null), value);
 	}
 
-	protected abstract void setLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity, @Nullable IPowerContainer container, long value);
+	protected abstract void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, long value);
 
-	protected long getElapsedDuration(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	protected long getElapsedDuration(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return Math.max(entity.getCommandSenderWorld().getGameTime() - this.getLastUseTime(configuration, entity), 0);
 	}
 
-	protected long getRemainingDuration(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	protected long getRemainingDuration(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return Math.max(this.getLastUseTime(configuration, entity) + configuration.getConfiguration().duration() - entity.getCommandSenderWorld().getGameTime(), 0);
 	}
 
 	@Override
-	public int assign(ConfiguredPower<T, ?> configuration, LivingEntity entity, int value) {
+	public int assign(ConfiguredPower<T, ?> configuration, Entity entity, int value) {
 		value = Mth.clamp(value, this.getMaximum(configuration, entity), this.getMaximum(configuration, entity));
 		this.setLastUseTime(configuration, entity, entity.getCommandSenderWorld().getGameTime() - value);
 		return value;
 	}
 
 	@Override
-	public int getValue(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public int getValue(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return Math.toIntExact(Mth.clamp(this.getElapsedDuration(configuration, entity), this.getMinimum(configuration, entity), this.getMaximum(configuration, entity)));
 	}
 
 	@Override
-	public int getMaximum(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public int getMaximum(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return configuration.getConfiguration().duration();
 	}
 
 	@Override
-	public int getMinimum(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
+	public int getMinimum(ConfiguredPower<T, ?> configuration, Entity entity) {
 		return 0;
 	}
 
@@ -117,28 +118,28 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 		}
 
 		@Override
-		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity, @Nullable IPowerContainer container) {
+		protected long getLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container) {
 			if (container == null)
 				return 0;
 			return this.getUseTime(configuration, container).getValue();
 		}
 
 		@Override
-		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, LivingEntity entity, @Nullable IPowerContainer container, long value) {
+		protected void setLastUseTime(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, long value) {
 			if (container == null)
 				return;
 			this.getUseTime(configuration, container).setValue(value);
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, IPowerContainer container) {
-			return LongTag.valueOf(this.getLastUseTime(configuration, entity, container));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+			return LongTag.valueOf(this.getLastUseTime(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity entity, IPowerContainer container, Tag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {
 			if (tag instanceof LongTag longTag)
-				this.setLastUseTime(configuration, entity, container, longTag.getAsLong());
+				this.setLastUseTime(configuration, container, longTag.getAsLong());
 		}
 	}
 }

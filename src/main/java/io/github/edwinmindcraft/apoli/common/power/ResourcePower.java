@@ -5,7 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.HudRenderedVariableIntPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ResourceConfiguration;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ResourcePower extends HudRenderedVariableIntPowerFactory.Simple<ResourceConfiguration> {
 
@@ -14,7 +14,7 @@ public class ResourcePower extends HudRenderedVariableIntPowerFactory.Simple<Res
 	}
 
 	@Override
-	public int assign(ConfiguredPower<ResourceConfiguration, ?> configuration, LivingEntity player, int value) {
+	public int assign(ConfiguredPower<ResourceConfiguration, ?> configuration, Entity player, int value) {
 		int previous = this.get(configuration, player);
 		int minimum = this.getMinimum(configuration, player);
 		int maximum = this.getMaximum(configuration, player);

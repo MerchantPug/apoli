@@ -7,11 +7,11 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnBlockBr
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConfiguration> {
-	public static void execute(LivingEntity player, BlockInWorld pos, boolean successful) {
+	public static void execute(Entity player, BlockInWorld pos, boolean successful) {
 		IPowerContainer.getPowers(player, ApoliPowers.ACTION_ON_BLOCK_BREAK.get()).stream()
 				.filter(p -> p.getFactory().doesApply(p, player, pos))
 				.forEach(aobbp -> aobbp.getFactory().executeActions(aobbp, player, successful, pos.getPos(), null));
@@ -21,15 +21,15 @@ public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConf
 		super(ActionOnBlockBreakConfiguration.CODEC);
 	}
 
-	public boolean doesApply(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, LivingEntity player, BlockPos pos) {
+	public boolean doesApply(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, Entity player, BlockPos pos) {
 		return this.doesApply(config, player, new BlockInWorld(player.level, pos, true));
 	}
 
-	public boolean doesApply(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, LivingEntity player, BlockInWorld cbp) {
+	public boolean doesApply(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, Entity player, BlockInWorld cbp) {
 		return config.getConfiguration().blockCondition() == null || config.getConfiguration().blockCondition().check(cbp);
 	}
 
-	public void executeActions(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, LivingEntity player, boolean successfulHarvest, BlockPos pos, Direction dir) {
+	public void executeActions(ConfiguredFactory<ActionOnBlockBreakConfiguration, ?> config, Entity player, boolean successfulHarvest, BlockPos pos, Direction dir) {
 		ActionOnBlockBreakConfiguration configuration = config.getConfiguration();
 		if (successfulHarvest || !configuration.onlyWhenHarvested()) {
 			if (configuration.blockAction() != null) {

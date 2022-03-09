@@ -6,6 +6,10 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
+import net.minecraft.world.item.alchemy.PotionUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SpawnEffectCloudAction extends EntityAction<SpawnEffectCloudConfiguration> {
 
@@ -22,7 +26,9 @@ public class SpawnEffectCloudAction extends EntityAction<SpawnEffectCloudConfigu
 		areaEffectCloudEntity.setRadiusOnUse(configuration.radiusOnUse());
 		areaEffectCloudEntity.setWaitTime(configuration.waitTime());
 		areaEffectCloudEntity.setRadiusPerTick(-areaEffectCloudEntity.getRadius() / (float) areaEffectCloudEntity.getDuration());
-		configuration.effects().getContent().stream().map(MobEffectInstance::new).forEach(areaEffectCloudEntity::addEffect);
+		List<MobEffectInstance> effects = configuration.effects().getContent().stream().map(MobEffectInstance::new).collect(Collectors.toList());
+		areaEffectCloudEntity.setFixedColor(PotionUtils.getColor(effects));
+		effects.forEach(areaEffectCloudEntity::addEffect);
 		entity.level.addFreshEntity(areaEffectCloudEntity);
 	}
 }

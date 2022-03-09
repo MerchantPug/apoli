@@ -6,13 +6,13 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.RestrictArmorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.stream.Stream;
 
 public class RestrictArmorPower extends PowerFactory<RestrictArmorConfiguration> {
-	public static boolean isForbidden(LivingEntity player, EquipmentSlot slot, ItemStack stack) {
+	public static boolean isForbidden(Entity player, EquipmentSlot slot, ItemStack stack) {
 		return Stream.concat(IPowerContainer.getPowers(player, ApoliPowers.CONDITIONED_RESTRICT_ARMOR.get()).stream(), IPowerContainer.getPowers(player, ApoliPowers.RESTRICT_ARMOR.get()).stream())
 				.anyMatch(x -> x.getConfiguration().check(slot, stack));
 	}
@@ -26,7 +26,7 @@ public class RestrictArmorPower extends PowerFactory<RestrictArmorConfiguration>
 	}
 
 	@Override
-	protected void onGained(RestrictArmorConfiguration configuration, LivingEntity player) {
+	protected void onGained(RestrictArmorConfiguration configuration, Entity player) {
 		configuration.dropIllegalItems(player);
 	}
 }

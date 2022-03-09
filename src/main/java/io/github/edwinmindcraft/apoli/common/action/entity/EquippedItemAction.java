@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
+import io.github.edwinmindcraft.apoli.api.VariableAccess;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.common.action.configuration.EquippedItemConfiguration;
 import net.minecraft.world.entity.Entity;
@@ -14,6 +15,6 @@ public class EquippedItemAction extends EntityAction<EquippedItemConfiguration> 
 	@Override
 	public void execute(EquippedItemConfiguration configuration, Entity entity) {
 		if (entity instanceof LivingEntity living)
-			configuration.action().execute(living.getItemBySlot(configuration.slot()));
+			configuration.action().execute(entity.level, new VariableAccess<>(() -> living.getItemBySlot(configuration.slot()), x -> living.setItemSlot(configuration.slot(), x)));
 	}
 }

@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public abstract class ItemCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<ItemCondition<?>> implements IConditionFactory<T, ConfiguredItemCondition<T, ?>, ItemCondition<T>> {
@@ -27,11 +28,11 @@ public abstract class ItemCondition<T extends IDynamicFeatureConfiguration> exte
 		return new ConfiguredItemCondition<>(this, input, data);
 	}
 
-	public boolean check(T configuration, ItemStack stack) {
+	protected boolean check(T configuration, Level level, ItemStack stack) {
 		return false;
 	}
 
-	public boolean check(T configuration, ConditionData data, ItemStack stack) {
-		return data.inverted() ^ this.check(configuration, stack);
+	public boolean check(T configuration, ConditionData data, Level level, ItemStack stack) {
+		return data.inverted() ^ this.check(configuration, level, stack);
 	}
 }

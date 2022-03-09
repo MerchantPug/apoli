@@ -4,7 +4,7 @@ import io.github.edwinmindcraft.apoli.api.power.INightVisionPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.TogglePowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ToggleNightVisionConfiguration;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ToggleNightVisionPower extends TogglePowerFactory.Simple<ToggleNightVisionConfiguration> implements INightVisionPower<ToggleNightVisionConfiguration> {
 
@@ -13,7 +13,7 @@ public class ToggleNightVisionPower extends TogglePowerFactory.Simple<ToggleNigh
 	}
 
 	@Override
-	public float getStrength(ConfiguredPower<ToggleNightVisionConfiguration, ?> configuration, LivingEntity player) {
+	public float getStrength(ConfiguredPower<ToggleNightVisionConfiguration, ?> configuration, Entity player) {
 		return configuration.getConfiguration().strength();
 	}
 }

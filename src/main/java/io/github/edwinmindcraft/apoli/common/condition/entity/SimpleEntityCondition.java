@@ -4,6 +4,7 @@ import io.github.apace100.apoli.mixin.EntityAccessor;
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -15,7 +16,7 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 		return new SimpleEntityCondition(living -> living instanceof Player pe && predicate.test(pe));
 	}
 
-	public static boolean isExposedToSky(LivingEntity entity) {
+	public static boolean isExposedToSky(Entity entity) {
 		if (!entity.level.isDay() || ((EntityAccessor) entity).callIsBeingRainedOn())
 			return false;
 		BlockPos bp = new BlockPos(entity.getX(), (double) Math.round(entity.getY()), entity.getZ());
@@ -23,15 +24,15 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 		return entity.level.canSeeSky(bp);
 	}
 
-	private final Predicate<LivingEntity> predicate;
+	private final Predicate<Entity> predicate;
 
-	public SimpleEntityCondition(Predicate<LivingEntity> predicate) {
+	public SimpleEntityCondition(Predicate<Entity> predicate) {
 		super(NoConfiguration.CODEC);
 		this.predicate = predicate;
 	}
 
 	@Override
-	public boolean check(NoConfiguration configuration, LivingEntity entity) {
+	public boolean check(NoConfiguration configuration, Entity entity) {
 		return this.predicate.test(entity);
 	}
 }

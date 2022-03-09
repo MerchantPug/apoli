@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.api;
 
 import com.mojang.serialization.Codec;
+import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
@@ -43,5 +44,6 @@ public class MetaFactories {
 		registry.register("if_else_list", () -> func.apply(StreamConfiguration.ifElseList(conditionCodec, actionCodec, predicate, executor)));
 		registry.register("choice", () -> func.apply(ChoiceConfiguration.codec(actionCodec, executor)));
 		registry.register("delay", () -> func.apply(DelayAction.codec(actionCodec, executor)));
+		registry.register("nothing", () -> func.apply(NothingConfiguration.codec()));
 	}
 }

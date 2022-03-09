@@ -1,19 +1,22 @@
 package io.github.apace100.apoli.data;
 
-import io.github.apace100.apoli.util.AttributedEntityAttributeModifier;
-import io.github.apace100.apoli.util.Comparison;
-import io.github.apace100.apoli.util.HudRender;
-import io.github.apace100.apoli.util.Space;
+import io.github.apace100.apoli.power.factory.action.ActionFactory;
+import io.github.apace100.apoli.power.factory.action.ActionTypes;
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import io.github.apace100.apoli.power.factory.condition.ConditionTypes;
+import io.github.apace100.apoli.util.*;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.SerializationHelper;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.nbt.CompoundTag;
+import io.github.ladysnake.pal.PlayerAbility;
+import net.minecraft.util.Pair;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 //FIXME Reintroduce
@@ -23,13 +26,19 @@ public class ApoliDataTypes {
         PowerTypeReference.class, SerializableDataTypes.IDENTIFIER,
         PowerType::getIdentifier, PowerTypeReference::new);
 
-    public static final SerializableDataType<ConditionFactory<LivingEntity>.Instance> ENTITY_CONDITION =
+    public static final SerializableDataType<ConditionFactory<Entity>.Instance> ENTITY_CONDITION =
         condition(ClassUtil.castClass(ConditionFactory.Instance.class), ConditionTypes.ENTITY);
 
-    public static final SerializableDataType<List<ConditionFactory<LivingEntity>.Instance>> ENTITY_CONDITIONS =
-        SerializableDataType.list(ENTITY_CONDITION);
+    public static final SerializableDataType<List<ConditionFactory<Entity>.Instance>> ENTITY_CONDITIONS =
+        SerializableDataType.list(ENTITY_CONDITION);*/
 
-    public static final SerializableDataType<ConditionFactory<ItemStack>.Instance> ITEM_CONDITION =
+	public static final SerializableDataType<ConditionFactory<Pair<Entity, Entity>>.Instance> BIENTITY_CONDITION =
+			condition(ClassUtil.castClass(ConditionFactory.Instance.class), ConditionTypes.BIENTITY);
+
+	public static final SerializableDataType<List<ConditionFactory<Pair<Entity, Entity>>.Instance>> BIENTITY_CONDITIONS =
+			SerializableDataType.list(BIENTITY_CONDITION);
+
+    /*public static final SerializableDataType<ConditionFactory<ItemStack>.Instance> ITEM_CONDITION =
         condition(ClassUtil.castClass(ConditionFactory.Instance.class), ConditionTypes.ITEM);
 
     public static final SerializableDataType<List<ConditionFactory<ItemStack>.Instance>> ITEM_CONDITIONS =
@@ -63,21 +72,29 @@ public class ApoliDataTypes {
         action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.ENTITY);
 
     public static final SerializableDataType<List<ActionFactory<Entity>.Instance>> ENTITY_ACTIONS =
-        SerializableDataType.list(ENTITY_ACTION);
+        SerializableDataType.list(ENTITY_ACTION);*/
 
-    public static final SerializableDataType<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> BLOCK_ACTION =
+	public static final SerializableDataType<ActionFactory<Tuple<Entity, Entity>>.Instance> BIENTITY_ACTION =
+			action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.BIENTITY);
+
+	public static final SerializableDataType<List<ActionFactory<Tuple<Entity, Entity>>.Instance>> BIENTITY_ACTIONS =
+			SerializableDataType.list(BIENTITY_ACTION);
+
+    /*public static final SerializableDataType<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> BLOCK_ACTION =
         action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.BLOCK);
 
     public static final SerializableDataType<List<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance>> BLOCK_ACTIONS =
         SerializableDataType.list(BLOCK_ACTION);
 
-    public static final SerializableDataType<ActionFactory<ItemStack>.Instance> ITEM_ACTION =
+    public static final SerializableDataType<ActionFactory<Pair<World, ItemStack>>.Instance> ITEM_ACTION =
         action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.ITEM);
 
-    public static final SerializableDataType<List<ActionFactory<ItemStack>.Instance>> ITEM_ACTIONS =
+    public static final SerializableDataType<List<ActionFactory<Pair<World, ItemStack>>.Instance>> ITEM_ACTIONS =
         SerializableDataType.list(ITEM_ACTION);*/
 
 	public static final SerializableDataType<Space> SPACE = SerializableDataType.enumValue(Space.class);
+
+	public static final SerializableDataType<ResourceOperation> RESOURCE_OPERATION = SerializableDataType.enumValue(ResourceOperation.class);
 
 	public static final SerializableDataType<AttributedEntityAttributeModifier> ATTRIBUTED_ATTRIBUTE_MODIFIER = new SerializableDataType<>(AttributedEntityAttributeModifier.class, AttributedEntityAttributeModifier.CODEC);
 
@@ -92,7 +109,7 @@ public class ApoliDataTypes {
 			(data) -> {
 				ItemStack stack = new ItemStack((Item) data.get("item"), data.getInt("amount"));
 				if (data.isPresent("tag")) {
-					stack.setTag((CompoundTag) data.get("tag"));
+					stack.setTag(data.get("tag"));
 				}
 				return new Tuple<>(data.getInt("slot"), stack);
 			},
@@ -105,7 +122,7 @@ public class ApoliDataTypes {
 				return data;
 			}));
 
-    public static final SerializableDataType<List<Tuple<Integer, ItemStack>>> POSITIONED_ITEM_STACKS = SerializableDataType.list(POSITIONED_ITEM_STACK);
+	public static final SerializableDataType<List<Tuple<Integer, ItemStack>>> POSITIONED_ITEM_STACKS = SerializableDataType.list(POSITIONED_ITEM_STACK);
 
    /* public static final SerializableDataType<Active.Key> KEY = SerializableDataType.compound(Active.Key.class,
         new SerializableData()
@@ -140,6 +157,10 @@ public class ApoliDataTypes {
 
 	public static final SerializableDataType<Comparison> COMPARISON = SerializableDataType.enumValue(Comparison.class,
 			SerializationHelper.buildEnumMap(Comparison.class, Comparison::getComparisonString));
+
+	public static final SerializableDataType<PlayerAbility> PLAYER_ABILITY = SerializableDataType.wrap(
+			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
+			PlayerAbility::getRegistryName, id -> PlayerAbilities.REGISTRY.get().getValue(id));
 
     /*public static <T> SerializableDataType<ConditionFactory<T>.Instance> condition(Class<ConditionFactory<T>.Instance> dataClass, ConditionType<T> conditionType) {
         return new SerializableDataType<>(dataClass, conditionType::write, conditionType::read, conditionType::read);

@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -20,7 +20,7 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 		super(ModifyPlayerSpawnConfiguration.CODEC);
 	}
 
-	public void teleportToModifiedSpawn(ModifyPlayerSpawnConfiguration configuration, LivingEntity entity) {
+	public void teleportToModifiedSpawn(ModifyPlayerSpawnConfiguration configuration, Entity entity) {
 		if (entity instanceof ServerPlayer serverPlayer) {
 			Tuple<ServerLevel, BlockPos> spawn = configuration.getSpawn(entity, false);
 			if (spawn != null) {
@@ -36,7 +36,7 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 	}
 
 	@Override
-	public void onRemoved(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, LivingEntity player) {
+	public void onRemoved(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Entity player) {
 		if (player instanceof ServerPlayer serverPlayer) {
 			if (serverPlayer.getRespawnPosition() != null && serverPlayer.isRespawnForced())
 				serverPlayer.setRespawnPosition(Level.OVERWORLD, null, 0F, false, false);
@@ -44,7 +44,7 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 	}
 
 	@Override
-	protected void onRespawn(ModifyPlayerSpawnConfiguration configuration, LivingEntity entity) {
+	protected void onRespawn(ModifyPlayerSpawnConfiguration configuration, Entity entity) {
 		if (entity instanceof ServerPlayer player && !player.isRespawnForced())
 			this.teleportToModifiedSpawn(configuration, entity);
 	}

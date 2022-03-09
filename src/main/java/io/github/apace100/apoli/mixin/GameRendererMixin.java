@@ -106,6 +106,57 @@ public abstract class GameRendererMixin {
 	private void fixHudWithShaderEnabled(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
 		RenderSystem.enableTexture();
 	}
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;pop()V"))
+    private void renderOverlayPowers(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+        boolean hudHidden = this.client.options.hudHidden;
+        boolean thirdPerson = !client.options.getPerspective().isFirstPerson();
+        PowerHolderComponent.withPower(client.getCameraEntity(), OverlayPower.class, p -> {
+            if(p.getDrawPhase() != OverlayPower.DrawPhase.ABOVE_HUD) {
+                return false;
+            }
+            if(hudHidden && p.doesHideWithHud()) {
+                return false;
+            }
+            if(thirdPerson && !p.shouldBeVisibleInThirdPerson()) {
+                return false;
+            }
+            return true;
+        }, OverlayPower::render);
+    }
+
+    @Inject(
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getFramebuffer()Lnet/minecraft/client/gl/Framebuffer;"),
+        method = "render"
+    )
+    private void fixHudWithShaderEnabled(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
+        RenderSystem.enableTexture();
+    }
+
+    @Inject(at = @At("HEAD"), method = "toggleShadersEnabled", cancellable = true)
+    private void disableShaderToggle(CallbackInfo ci) {
+        PowerHolderComponent.withPower(client.getCameraEntity(), ShaderPower.class, null, shaderPower -> {
+            Identifier shaderLoc = shaderPower.getShaderLocation();
+            if(!shaderPower.isToggleable() && currentlyLoadedShader == shaderLoc) {
+                ci.cancel();
+            }
+        });
+    }
+/*
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setCameraEntity(Lnet/minecraft/entity/Entity;)V"))
+    private void updateShaderPowers(CallbackInfo ci) {
+        if(OriginComponent.hasPower(client.getCameraEntity(), ShaderPower.class)) {
+            OriginComponent.withPower(client.getCameraEntity(), ShaderPower.class, null, shaderPower -> {
+                Identifier shaderLoc = shaderPower.getShaderLocation();
+                loadShader(shaderLoc);
+                currentlyLoadedShader = shaderLoc;
+            });
+        } else {
+            this.shader.close();
+            this.shader = null;
+            this.shadersEnabled = false;
+            currentlyLoadedShader = null;
+        }
+    }*/
 
 	@Redirect(method = "getNightVisionScale", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/effect/MobEffectInstance;getDuration()I"))
 	private static int fixNightVision(MobEffectInstance instance) {
@@ -119,6 +170,30 @@ public abstract class GameRendererMixin {
 		if (!living.hasEffect(MobEffects.NIGHT_VISION)) //Should fix the flickering
 			INightVisionPower.getNightVisionStrength(living).ifPresent(cir::setReturnValue);
 	}
+    // NightVisionPower
+    @Inject(at = @At("HEAD"), method = "getNightVisionStrength", cancellable = true)
+    private static void getNightVisionStrength(LivingEntity livingEntity, float f, CallbackInfoReturnable<Float> info) {
+        if (livingEntity instanceof PlayerEntity && !livingEntity.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+            List<NightVisionPower> nvs = PowerHolderComponent.KEY.get(livingEntity).getPowers(NightVisionPower.class);
+            Optional<Float> strength = nvs.stream().filter(NightVisionPower::isActive).map(NightVisionPower::getStrength).max(Float::compareTo);
+            strength.ifPresent(info::setReturnValue);
+        }
+    }
+
+    @Redirect(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/client/render/CameraSubmersionType;"))
+    private CameraSubmersionType modifySubmersionType(Camera camera) {
+        CameraSubmersionType original = camera.getSubmersionType();
+        if(camera.getFocusedEntity() instanceof LivingEntity) {
+            for(ModifyCameraSubmersionTypePower p : PowerHolderComponent.getPowers(camera.getFocusedEntity(), ModifyCameraSubmersionTypePower.class)) {
+                if(p.doesModify(original)) {
+                    return p.getNewType();
+                }
+            }
+        }
+        return original;
+    }
+
+    private HashMap<BlockPos, BlockState> savedStates = new HashMap<>();
 
 	// PHASING: remove_blocks
 	@Inject(at = @At(value = "HEAD"), method = "render")

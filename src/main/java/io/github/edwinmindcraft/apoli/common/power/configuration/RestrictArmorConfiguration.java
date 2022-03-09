@@ -8,7 +8,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -40,7 +40,7 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, ConfiguredItemCondit
 		return ConfiguredItemCondition.check(this.conditions.get(slot), stack);
 	}
 
-	public void dropIllegalItems(LivingEntity entity) {
+	public void dropIllegalItems(Entity entity) {
 		this.conditions().forEach((slot, predicate) -> {
 			if (predicate == null) return;
 			ItemStack equippedItem = entity.getItemBySlot(slot);

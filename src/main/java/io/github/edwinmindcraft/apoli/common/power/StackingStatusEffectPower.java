@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.StackingStatusE
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,7 +18,7 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 		this.ticking(true);
 	}
 
-	public AtomicInteger getCurrentStacks(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
+	public AtomicInteger getCurrentStacks(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, Entity player) {
 		return configuration.getPowerData(player, () -> new AtomicInteger(0));
 	}
 
@@ -26,7 +27,7 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	@Override
-	public void tick(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
+	public void tick(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, Entity player) {
 		AtomicInteger currentStacks = this.getCurrentStacks(configuration, player);
 		StackingStatusEffectConfiguration config = configuration.getConfiguration();
 		if (configuration.isActive(player)) {
@@ -43,27 +44,29 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	@Override
-	protected int tickInterval(StackingStatusEffectConfiguration configuration, LivingEntity player) {
+	protected int tickInterval(StackingStatusEffectConfiguration configuration, Entity player) {
 		return 10;
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+	public Tag serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container) {
 		return IntTag.valueOf(this.getCurrentStacks(configuration, container).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
+	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
 		if (tag instanceof IntTag intTag)
 			this.getCurrentStacks(configuration, container).set(intTag.getAsInt());
 	}
 
-	public void applyEffects(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, LivingEntity player) {
+	public void applyEffects(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, Entity entity) {
+		if (!(entity instanceof LivingEntity living))
+			return;
 		configuration.getConfiguration().effects().getContent().forEach(sei -> {
-			int duration = configuration.getConfiguration().duration() * this.getCurrentStacks(configuration, player).get();
+			int duration = configuration.getConfiguration().duration() * this.getCurrentStacks(configuration, living).get();
 			if (duration > 0) {
 				MobEffectInstance applySei = new MobEffectInstance(sei.getEffect(), duration, sei.getAmplifier(), sei.isAmbient(), sei.isVisible(), sei.showIcon());
-				player.addEffect(applySei);
+				living.addEffect(applySei);
 			}
 		});
 	}

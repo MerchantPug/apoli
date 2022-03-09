@@ -15,7 +15,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
@@ -41,7 +41,7 @@ public record FireProjectileConfiguration(int duration, HudRender hudRender, Ent
 	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> new FireProjectileConfiguration(t1, t2, t3, t4, t5, t6, t7.orElse(null), t8.orElse(null), t9)));
 
 
-	public void fireProjectiles(LivingEntity player) {
+	public void fireProjectiles(Entity player) {
 		if (this.soundEvent != null) {
 			player.level.playSound(null, player.getX(), player.getY(), player.getZ(), this.soundEvent, SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
 		}
@@ -52,7 +52,7 @@ public record FireProjectileConfiguration(int duration, HudRender hudRender, Ent
 		}
 	}
 
-	private void fireProjectile(LivingEntity source) {
+	private void fireProjectile(Entity source) {
 		if (this.entityType() != null) {
 			Entity entity = this.entityType().create(source.level);
 			if (entity == null) {

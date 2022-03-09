@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 /**
@@ -19,12 +20,14 @@ public class SimpleStatusEffectPower extends PowerFactory<ListConfiguration<MobE
 	}
 
 	@Override
-	public int tickInterval(ConfiguredPower<ListConfiguration<MobEffectInstance>, ?> configuration, LivingEntity player) {
+	public int tickInterval(ConfiguredPower<ListConfiguration<MobEffectInstance>, ?> configuration, Entity player) {
 		return 10;
 	}
 
 	@Override
-	protected void tick(ListConfiguration<MobEffectInstance> configuration, LivingEntity player) {
-		configuration.getContent().forEach(sei -> player.addEffect(new MobEffectInstance(sei)));
+	protected void tick(ListConfiguration<MobEffectInstance> configuration, Entity entity) {
+		if (!(entity instanceof LivingEntity living))
+			return;
+		configuration.getContent().forEach(sei -> living.addEffect(new MobEffectInstance(sei)));
 	}
 }

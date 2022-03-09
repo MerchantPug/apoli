@@ -1,15 +1,19 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.authlib.GameProfile;
+import io.github.apace100.apoli.access.WaterMovingEntity;
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.ModifyAirSpeedPower;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.apace100.apoli.access.WaterMovingEntity;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Abilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -43,5 +47,10 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer imple
 
 	public boolean isInMovementPhase() {
 		return this.isMoving;
+	}
+
+	@Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Abilities;getFlyingSpeed()F"))
+	private float modifyFlySpeed(Abilities playerAbilities) {
+		return PowerHolderComponent.modify(this, ModifyAirSpeedPower.class, playerAbilities.getFlyingSpeed());
 	}
 }

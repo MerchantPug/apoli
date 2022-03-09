@@ -2,10 +2,9 @@ package io.github.apace100.apoli.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.apace100.apoli.util.HudRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
@@ -52,7 +51,11 @@ public class PowerHudRenderer extends GuiComponent implements GameHudRender {
 					}
 					this.blit(matrices, x, y, 0, 0, barWidth, 5);
 					int v = 8 + render.barIndex() * 10;
-					int w = (int) (hudPower.getFill(player).orElse(0F) * barWidth);
+					float fill = hudPower.getFill(player).orElse(0.0F);
+					if (render.isInverted()) {
+						fill = 1f - fill;
+					}
+					int w = (int) (fill * barWidth);
 					this.blit(matrices, x, y - 2, 0, v, w, barHeight);
 					this.setBlitOffset(this.getBlitOffset() + 1);
 					this.blit(matrices, x - iconSize - 2, y - 2, 73, v, iconSize, iconSize);

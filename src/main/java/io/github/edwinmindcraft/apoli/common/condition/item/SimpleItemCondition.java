@@ -4,6 +4,7 @@ import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemCondition;
 import java.util.function.Predicate;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class SimpleItemCondition extends ItemCondition<NoConfiguration> {
 	private final Predicate<ItemStack> predicate;
@@ -14,7 +15,7 @@ public class SimpleItemCondition extends ItemCondition<NoConfiguration> {
 	}
 
 	@Override
-	public boolean check(NoConfiguration configuration, ItemStack stack) {
+	public boolean check(NoConfiguration configuration, Level level, ItemStack stack) {
 		return this.predicate.test(stack);
 	}
 }

@@ -15,7 +15,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
@@ -45,33 +44,28 @@ public interface IPowerContainer {
 	ResourceLocation KEY = Apoli.identifier("powers");
 
 	@NotNull
-	static LazyOptional<IPowerContainer> get(@Nullable LivingEntity entity) {
+	static LazyOptional<IPowerContainer> get(@Nullable Entity entity) {
 		return entity == null ? LazyOptional.empty() : entity.getCapability(ApoliCapabilities.POWER_CONTAINER);
 	}
 
-	static void sync(LivingEntity living) {
-		ApoliAPI.synchronizePowerContainer(living);
+	static void sync(Entity entity) {
+		ApoliAPI.synchronizePowerContainer(entity);
 	}
 
-	static void sync(LivingEntity living, ServerPlayer with) {
-		ApoliAPI.synchronizePowerContainer(living, with);
+	static void sync(Entity entity, ServerPlayer with) {
+		ApoliAPI.synchronizePowerContainer(entity, with);
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> void withPower(Entity entity, F factory, Predicate<ConfiguredPower<T, F>> power, Consumer<ConfiguredPower<T, F>> with) {
-		if (entity instanceof LivingEntity living)
-			get(living).ifPresent(x -> x.getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
+		get(entity).ifPresent(x -> x.getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<ConfiguredPower<T, F>> getPowers(Entity entity, F factory) {
-		if (entity instanceof LivingEntity living)
-			return get(living).map(x -> x.getPowers(factory)).orElseGet(ImmutableList::of);
-		return ImmutableList.of();
+		return get(entity).map(x -> x.getPowers(factory)).orElseGet(ImmutableList::of);
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> boolean hasPower(Entity entity, F factory) {
-		if (entity instanceof LivingEntity living)
-			return get(living).map(x -> x.getPowers().stream().anyMatch(p -> Objects.equals(factory, p.getFactory()) && p.isActive(living))).orElse(false);
-		return false;
+		return get(entity).map(x -> x.getPowers().stream().anyMatch(p -> Objects.equals(factory, p.getFactory()) && p.isActive(entity))).orElse(false);
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue) {
@@ -313,4 +307,6 @@ public interface IPowerContainer {
 	 * @return Either the stored data for this power, or a new instance of the data.
 	 */
 	@Nullable <T> T getPowerData(ConfiguredPower<?, ?> power, Supplier<? extends T> supplier);
+
+	Entity getOwner();
 }

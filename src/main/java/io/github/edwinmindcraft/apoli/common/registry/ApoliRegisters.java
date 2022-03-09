@@ -29,6 +29,9 @@ public class ApoliRegisters {
 	public static final DeferredRegister<ItemAction<?>> ITEM_ACTIONS = DeferredRegister.create(ApoliRegistries.ITEM_ACTION_CLASS, Apoli.MODID);
 	public static final DeferredRegister<BlockAction<?>> BLOCK_ACTIONS = DeferredRegister.create(ApoliRegistries.BLOCK_ACTION_CLASS, Apoli.MODID);
 
+	public static final DeferredRegister<BiEntityCondition<?>> BIENTITY_CONDITIONS = DeferredRegister.create(ApoliRegistries.BIENTITY_CONDITION_CLASS, Apoli.MODID);
+	public static final DeferredRegister<BiEntityAction<?>> BIENTITY_ACTIONS = DeferredRegister.create(ApoliRegistries.BIENTITY_ACTION_CLASS, Apoli.MODID);
+
 	public static final DeferredRegister<ConfiguredPower<?, ?>> CONFIGURED_POWERS = DeferredRegister.create(ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS, Apoli.MODID);
 
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Apoli.MODID);
@@ -44,6 +47,8 @@ public class ApoliRegisters {
 		ApoliRegistries.ENTITY_ACTION = ENTITY_ACTIONS.makeRegistry("entity_action", () -> new RegistryBuilder<EntityAction<?>>().disableSaving());
 		ApoliRegistries.ITEM_ACTION = ITEM_ACTIONS.makeRegistry("item_action", () -> new RegistryBuilder<ItemAction<?>>().disableSaving());
 		ApoliRegistries.BLOCK_ACTION = BLOCK_ACTIONS.makeRegistry("block_action", () -> new RegistryBuilder<BlockAction<?>>().disableSaving());
+		ApoliRegistries.BIENTITY_CONDITION = BIENTITY_CONDITIONS.makeRegistry("bientity_condition", () -> new RegistryBuilder<BiEntityCondition<?>>().disableSaving());
+		ApoliRegistries.BIENTITY_ACTION = BIENTITY_ACTIONS.makeRegistry("bientity_action", () -> new RegistryBuilder<BiEntityAction<?>>().disableSaving());
 
 		ApoliBuiltinRegistries.CONFIGURED_POWERS = CONFIGURED_POWERS.makeRegistry("configured_powers", () -> new RegistryBuilder<ConfiguredPower<?, ?>>().disableSaving());
 
@@ -58,6 +63,8 @@ public class ApoliRegisters {
 		ENTITY_ACTIONS.register(bus);
 		ITEM_ACTIONS.register(bus);
 		BLOCK_ACTIONS.register(bus);
+		BIENTITY_CONDITIONS.register(bus);
+		BIENTITY_ACTIONS.register(bus);
 
 		CONFIGURED_POWERS.register(bus);
 

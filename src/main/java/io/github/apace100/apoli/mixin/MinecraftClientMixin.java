@@ -1,5 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.SelfGlowPower;
 import io.github.edwinmindcraft.apoli.common.power.EntityGlowPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -22,8 +24,16 @@ public class MinecraftClientMixin {
 
 	@Inject(method = "shouldEntityAppearGlowing", at = @At("RETURN"), cancellable = true)
 	private void makeEntitiesGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-		if (!cir.getReturnValue() && this.player != null && this.player != entity &&
-			entity instanceof LivingEntity && EntityGlowPower.shouldGlow(this.player, entity))
-			cir.setReturnValue(true);
+		if (!cir.getReturnValue()) {
+            if (this.player != null) {
+                if (this.player != entity && EntityGlowPower.shouldGlow(this.player, entity))
+                    cir.setReturnValue(true);
+                if (entity instanceof LivingEntity) {
+                    if (PowerHolderComponent.getPowers(entity, SelfGlowPower.class).stream().anyMatch(p -> p.doesApply(this.player))) {
+                        cir.setReturnValue(true);
+                    }
+                }
+            }
+        }
 	}
 }

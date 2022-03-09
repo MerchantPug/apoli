@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.PowerReference;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public class PowerActiveCondition extends EntityCondition<PowerReference> {
@@ -12,7 +13,7 @@ public class PowerActiveCondition extends EntityCondition<PowerReference> {
 	}
 
 	@Override
-	public boolean check(PowerReference configuration, LivingEntity entity) {
+	public boolean check(PowerReference configuration, Entity entity) {
 		return IPowerContainer.get(entity).filter(x -> x.hasPower(configuration.power()))
 				.map(x -> x.getPower(configuration.power()))
 				.map(x -> x.isActive(entity)).orElse(false);

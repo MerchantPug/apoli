@@ -10,7 +10,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCo
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -27,7 +27,7 @@ public record ConditionedCombatActionConfiguration(int duration, HudRender hudRe
 			ConfiguredEntityAction.CODEC.fieldOf("entity_action").forGetter(ConditionedCombatActionConfiguration::entityAction)
 	).apply(instance, (t1, t2, t3, t4, t5) -> new ConditionedCombatActionConfiguration(t1, t2, t3.orElse(null), t4.orElse(null), t5)));
 
-	public boolean check(LivingEntity target, DamageSource source, float amount) {
+	public boolean check(Entity target, DamageSource source, float amount) {
 		return ConfiguredEntityCondition.check(this.targetCondition(), target) && ConfiguredDamageCondition.check(this.damageCondition(), source, amount);
 	}
 }

@@ -3,17 +3,18 @@ package io.github.edwinmindcraft.apoli.api.power.factory.power;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
+import io.github.edwinmindcraft.apoli.api.power.ITogglePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.ITogglePowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> extends PowerFactory<T> implements IActivePower<T> {
+public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> extends PowerFactory<T> implements ITogglePower<T> {
 	protected TogglePowerFactory(Codec<T> codec) {
 		super(codec);
 	}
@@ -22,31 +23,36 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 		super(codec, allowConditions);
 	}
 
-	protected void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity entity, boolean status) {
-		this.setStatus(configuration, entity, IPowerContainer.get(entity).resolve().orElse(null), status);
+	protected void setStatus(ConfiguredPower<T, ?> configuration, Entity entity, boolean status) {
+		this.setStatus(configuration, IPowerContainer.get(entity).resolve().orElse(null), status);
 	}
 
-	protected boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity entity) {
-		return this.getStatus(configuration, entity, IPowerContainer.get(entity).resolve().orElse(null));
+	protected boolean getStatus(ConfiguredPower<T, ?> configuration, Entity entity) {
+		return this.getStatus(configuration, IPowerContainer.get(entity).resolve().orElse(null));
 	}
 
-	protected abstract void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container, boolean status);
+	protected abstract void setStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, boolean status);
 
-	protected abstract boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container);
+	protected abstract boolean getStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container);
 
 	@Override
-	public boolean isActive(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	public boolean isActive(ConfiguredPower<T, ?> configuration, Entity player) {
 		return super.isActive(configuration, player) && this.getStatus(configuration, player);
 	}
 
 	@Override
-	public void activate(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-		this.setStatus(configuration, player, !this.getStatus(configuration, player));
-		IPowerContainer.sync(player);
+	public void activate(ConfiguredPower<T, ?> configuration, Entity player) {
+		this.toggle(configuration, player);
 	}
 
 	@Override
-	public Key getKey(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	public void toggle(ConfiguredPower<T, ?> configuration, Entity entity) {
+		this.setStatus(configuration, entity, !this.getStatus(configuration, entity));
+		IPowerContainer.sync(entity);
+	}
+
+	@Override
+	public Key getKey(ConfiguredPower<T, ?> configuration, Entity player) {
 		return configuration.getConfiguration().key();
 	}
 
@@ -64,28 +70,28 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 		}
 
 		@Override
-		protected void setStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container, boolean status) {
+		protected void setStatus(ConfiguredPower<T, ?> configuration, IPowerContainer container, boolean status) {
 			if (container == null)
 				return;
 			this.getData(configuration, container).set(status);
 		}
 
 		@Override
-		protected boolean getStatus(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container) {
+		protected boolean getStatus(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
 			if (container == null)
 				return false;
 			return this.getData(configuration, container).get();
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container) {
-			return ByteTag.valueOf(this.getStatus(configuration, player, container));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+			return ByteTag.valueOf(this.getStatus(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {
 			if (tag instanceof ByteTag byteTag)
-				this.setStatus(configuration, player, container, byteTag.getAsByte() != 0);
+				this.setStatus(configuration, container, byteTag.getAsByte() != 0);
 		}
 	}
 }

@@ -55,9 +55,9 @@ public class PowerType<T extends Power> {
 		//this.descriptionTranslationKey = description;
 	}
 
-	public T create(LivingEntity entity) {
-		return this.factory.apply(this, entity);
-	}
+    public T create(LivingEntity entity) {
+        return this.getFactory().apply(this, entity);
+    }
 
 	public boolean isHidden() {
 		return this.configuredPower.getData().hidden();//isHidden;

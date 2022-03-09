@@ -15,7 +15,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.ItemStack;
@@ -34,33 +34,33 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	@Override
-	public void activate(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
+	public void activate(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		if (!player.level.isClientSide() && player instanceof Player ple)
 			ple.openMenu(new SimpleMenuProvider(this.getMenuCreator(configuration, player), new TranslatableComponent(configuration.getConfiguration().inventoryName())));
 	}
 
 	@Override
-	public Key getKey(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
+	public Key getKey(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		return configuration.getConfiguration().key();
 	}
 
 	@Override
-	public boolean shouldDropOnDeath(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player, ItemStack stack) {
-		return this.shouldDropOnDeath(configuration, player) && ConfiguredItemCondition.check(configuration.getConfiguration().dropFilter(), stack);
+	public boolean shouldDropOnDeath(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player, ItemStack stack) {
+		return this.shouldDropOnDeath(configuration, player) && ConfiguredItemCondition.check(configuration.getConfiguration().dropFilter(), player.level, stack);
 	}
 
 	@Override
-	public boolean shouldDropOnDeath(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
+	public boolean shouldDropOnDeath(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		return configuration.getConfiguration().dropOnDeath();
 	}
 
 	@Override
-	public Container getInventory(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
+	public Container getInventory(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		return this.getData(configuration, player);
 	}
 
 	@Override
-	public MenuConstructor getMenuCreator(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
+	public MenuConstructor getMenuCreator(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		return this.handler.apply(this.getData(configuration, player));
 	}
 
@@ -68,12 +68,12 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
 	}
 
-	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player) {
+	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+	public Tag serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container) {
 		SimpleContainer data = this.getData(configuration, container);
 		NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
 		for (int i = 0; i < data.getContainerSize(); i++)
@@ -82,7 +82,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
+	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
 		if (tag instanceof CompoundTag compoundTag) {
 			SimpleContainer data = this.getData(configuration, container);
 			NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);

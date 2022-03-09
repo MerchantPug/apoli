@@ -24,6 +24,7 @@ public class SpawnEntityAction extends EntityAction<SpawnEntityConfiguration> {
 			Apoli.LOGGER.error("Failed to create entity for type: {}", ForgeRegistries.ENTITIES.getKey(configuration.type()));
 			return;
 		}
+		newEntity.absMoveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
 		if (configuration.tag() != null) {
 			CompoundTag tag = newEntity.saveWithoutId(new CompoundTag());
 			tag.merge(configuration.tag());

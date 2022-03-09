@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,12 +21,12 @@ public class GameModeCondition extends EntityCondition<FieldConfiguration<GameTy
 		super(FieldConfiguration.codec(SerializableDataType.enumValue(GameType.class), "gamemode"));
 	}
 
-	protected boolean testClient(GameType mode, LivingEntity entity) {
+	protected boolean testClient(GameType mode, Entity entity) {
 		return false;
 	}
 
 	@Override
-	public boolean check(FieldConfiguration<GameType> configuration, LivingEntity entity) {
+	public boolean check(FieldConfiguration<GameType> configuration, Entity entity) {
 		if (entity instanceof ServerPlayer) {
 			ServerPlayerGameMode interactionMngr = ((ServerPlayer) entity).gameMode;
 			return Objects.equals(interactionMngr.getGameModeForPlayer(), configuration.value());
@@ -40,7 +41,7 @@ public class GameModeCondition extends EntityCondition<FieldConfiguration<GameTy
 		}
 
 		@Override
-		protected boolean testClient(GameType mode, LivingEntity entity) {
+		protected boolean testClient(GameType mode, Entity entity) {
 			return entity instanceof LocalPlayer && Minecraft.getInstance().gameMode != null && Objects.equals(Minecraft.getInstance().gameMode.getPlayerMode(), mode);
 		}
 	}

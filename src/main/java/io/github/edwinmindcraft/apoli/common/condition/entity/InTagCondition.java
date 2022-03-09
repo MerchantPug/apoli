@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.configuration.TagConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -13,7 +14,7 @@ public class InTagCondition extends EntityCondition<TagConfiguration<EntityType<
 	}
 
 	@Override
-	public boolean check(TagConfiguration<EntityType<?>> configuration, LivingEntity entity) {
+	public boolean check(TagConfiguration<EntityType<?>> configuration, Entity entity) {
 		return configuration.contains(entity.getType());
 	}
 }

@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.ScoreboardComparisonConfiguration;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
@@ -14,7 +15,7 @@ public class ScoreboardCondition extends EntityCondition<ScoreboardComparisonCon
 	}
 
 	@Override
-	public boolean check(ScoreboardComparisonConfiguration configuration, LivingEntity entity) {
+	public boolean check(ScoreboardComparisonConfiguration configuration, Entity entity) {
 		if (entity instanceof Player player) {
 			Scoreboard scoreboard = player.getScoreboard();
 			Objective objective = scoreboard.getOrCreateObjective(configuration.objective());

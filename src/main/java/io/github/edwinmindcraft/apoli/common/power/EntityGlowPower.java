@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
@@ -23,6 +24,6 @@ public class EntityGlowPower extends PowerFactory<FieldConfiguration<Optional<Co
 	}
 
 	public boolean doesApply(ConfiguredPower<FieldConfiguration<Optional<ConfiguredEntityCondition<?, ?>>>, ?> configuration, Entity target) {
-		return target instanceof LivingEntity livingEntity && configuration.getConfiguration().value().map(x -> x.check(livingEntity)).orElse(true);
+		return target instanceof LivingEntity living && configuration.getConfiguration().value().map(x -> x.check(living)).orElse(true);
 	}
 }

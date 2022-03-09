@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import java.util.function.BiPredicate;
 
 public class SingleFieldEntityCondition<T> extends EntityCondition<FieldConfiguration<T>> {
-	public static boolean checkPredicate(LivingEntity entity, ResourceLocation identifier) {
+	public static boolean checkPredicate(Entity entity, ResourceLocation identifier) {
 		MinecraftServer server = entity.level.getServer();
 		if (server != null) {
 			LootItemCondition lootCondition = server.getPredicateManager().get(identifier);
@@ -29,15 +30,15 @@ public class SingleFieldEntityCondition<T> extends EntityCondition<FieldConfigur
 		return false;
 	}
 
-	private final BiPredicate<LivingEntity, T> predicate;
+	private final BiPredicate<Entity, T> predicate;
 
-	public SingleFieldEntityCondition(MapCodec<T> codec, BiPredicate<LivingEntity, T> predicate) {
+	public SingleFieldEntityCondition(MapCodec<T> codec, BiPredicate<Entity, T> predicate) {
 		super(FieldConfiguration.codec(codec));
 		this.predicate = predicate;
 	}
 
 	@Override
-	public boolean check(FieldConfiguration<T> configuration, LivingEntity entity) {
+	public boolean check(FieldConfiguration<T> configuration, Entity entity) {
 		return this.predicate.test(entity, configuration.value());
 	}
 }

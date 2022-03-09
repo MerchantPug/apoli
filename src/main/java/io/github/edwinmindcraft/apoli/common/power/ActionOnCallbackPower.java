@@ -3,7 +3,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnCallbackConfiguration;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ActionOnCallbackPower extends PowerFactory<ActionOnCallbackConfiguration> {
 	public ActionOnCallbackPower() {
@@ -11,27 +11,27 @@ public class ActionOnCallbackPower extends PowerFactory<ActionOnCallbackConfigur
 	}
 
 	@Override
-	protected void onGained(ActionOnCallbackConfiguration configuration, LivingEntity player) {
+	protected void onGained(ActionOnCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionGained(), player);
 	}
 
 	@Override
-	protected void onLost(ActionOnCallbackConfiguration configuration, LivingEntity player) {
+	protected void onLost(ActionOnCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionLost(), player);
 	}
 
 	@Override
-	protected void onAdded(ActionOnCallbackConfiguration configuration, LivingEntity player) {
+	protected void onAdded(ActionOnCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionAdded(), player);
 	}
 
 	@Override
-	protected void onRemoved(ActionOnCallbackConfiguration configuration, LivingEntity player) {
+	protected void onRemoved(ActionOnCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionRemoved(), player);
 	}
 
 	@Override
-	protected void onRespawn(ActionOnCallbackConfiguration configuration, LivingEntity player) {
+	protected void onRespawn(ActionOnCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionRespawned(), player);
 	}
 }

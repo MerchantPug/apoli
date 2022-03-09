@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.api.VariableAccess;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
@@ -60,7 +61,7 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent
 	public static void finishUsing(LivingEntityUseItemEvent.Finish event) {
-		ActionOnItemUsePower.execute(event.getEntityLiving(), event.getItem(), event.getResultStack());
+		ActionOnItemUsePower.execute(event.getEntityLiving(), event.getItem(), new VariableAccess<>(event::getResultStack, event::setResultStack));
 	}
 
 	@SubscribeEvent
@@ -162,7 +163,7 @@ public class ApoliPowerEventHandler {
 		});
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST) //Don't trigger any action if events are canceled.
 	public static void preventBlockInteraction(PlayerInteractEvent.RightClickBlock event) {
 		if (PreventBlockActionPower.isUsagePrevented(event.getPlayer(), event.getPos()))
 			event.setUseBlock(Event.Result.DENY);
@@ -175,7 +176,7 @@ public class ApoliPowerEventHandler {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST) //Don't trigger any action if events are canceled.
 	public static void preventItemUsage(PlayerInteractEvent.RightClickItem event) {
 		if (PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
 			event.setCanceled(true);

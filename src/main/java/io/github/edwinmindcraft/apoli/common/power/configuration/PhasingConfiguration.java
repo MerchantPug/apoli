@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public record PhasingConfiguration(@Nullable ConfiguredBlockCondition<?, ?> phas
 			CalioCodecHelper.optionalField(ConfiguredEntityCondition.CODEC, "phase_down_condition").forGetter(x -> Optional.ofNullable(x.phaseDownCondition()))
 	).apply(instance, (t1, t2, t3, t4, t5) -> new PhasingConfiguration(t1.orElse(null), t2, t3, t4, t5.orElse(null))));
 
-	public boolean canPhaseDown(LivingEntity entity) {
+	public boolean canPhaseDown(Entity entity) {
 		return this.phaseDownCondition() == null ? entity.isCrouching() : this.phaseDownCondition().check(entity);
 	}
 
@@ -33,6 +33,6 @@ public record PhasingConfiguration(@Nullable ConfiguredBlockCondition<?, ?> phas
 	}
 
 	public enum RenderType {
-		BLINDNESS, REMOVE_BLOCKS
+		BLINDNESS, REMOVE_BLOCKS, NONE
 	}
 }

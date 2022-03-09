@@ -12,7 +12,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
@@ -48,31 +48,31 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.getFactory().getContainedPowers(this);
 	}
 
-	public boolean isActive(LivingEntity player) {
-		return this.getConfiguration().isConfigurationValid() && this.getFactory().isActive(this, player);
+	public boolean isActive(Entity entity) {
+		return this.getConfiguration().isConfigurationValid() && this.getFactory().isActive(this, entity);
 	}
 
-	public void onGained(LivingEntity player) {
-		this.getFactory().onGained(this, player);
+	public void onGained(Entity entity) {
+		this.getFactory().onGained(this, entity);
 	}
 
-	public void onRemoved(LivingEntity player) {
-		this.getFactory().onRemoved(this, player);
+	public void onRemoved(Entity entity) {
+		this.getFactory().onRemoved(this, entity);
 	}
 
-	public void onLost(LivingEntity player) {
-		this.getFactory().onLost(this, player);
+	public void onLost(Entity entity) {
+		this.getFactory().onLost(this, entity);
 	}
 
-	public void onAdded(LivingEntity player) {
-		this.getFactory().onAdded(this, player);
+	public void onAdded(Entity entity) {
+		this.getFactory().onAdded(this, entity);
 	}
 
-	public void onRespawn(LivingEntity player) {
-		this.getFactory().onRespawn(this, player);
+	public void onRespawn(Entity entity) {
+		this.getFactory().onRespawn(this, entity);
 	}
 
-	public <T> T getPowerData(LivingEntity player, Supplier<? extends T> supplier) {
+	public <T> T getPowerData(Entity player, Supplier<? extends T> supplier) {
 		return IPowerContainer.get(player).resolve().map(x -> x.getPowerData(this, supplier)).orElse(null);
 	}
 
@@ -92,36 +92,36 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return builder.build();
 	}
 
-	public Tag serialize(LivingEntity player, IPowerContainer container) {
-		return this.getFactory().serialize(this, player, container);
+	public Tag serialize(IPowerContainer container) {
+		return this.getFactory().serialize(this, container);
 	}
 
-	public void deserialize(LivingEntity player, IPowerContainer container, Tag tag) {
-		this.getFactory().deserialize(this, player, container, tag);
+	public void deserialize(IPowerContainer container, Tag tag) {
+		this.getFactory().deserialize(this, container, tag);
 	}
 
 	/**
 	 * Executes a tick of the current factory if it is eligible to.<br/>
 	 * You cannot force a tick of a non-ticking power.
 	 *
-	 * @param player The player to execute the action on.
-	 * @param force  If true, there won't be any check to {@link PowerFactory#tickInterval(ConfiguredPower, LivingEntity)}.
+	 * @param entity The entity to execute the action on.
+	 * @param force  If true, there won't be any check to {@link PowerFactory#tickInterval(ConfiguredPower, Entity)}.
 	 *
-	 * @see #tick(LivingEntity) for a version without the ability to be forced.
+	 * @see #tick(Entity) for a version without the ability to be forced.
 	 */
-	public void tick(LivingEntity player, boolean force) {
-		if (this.getFactory().canTick(this, player)) {
+	public void tick(Entity entity, boolean force) {
+		if (this.getFactory().canTick(this, entity)) {
 			if (!force) {
-				int i = this.getFactory().tickInterval(this, player);
-				if (i <= 0 || (player.tickCount % i) != 0)
+				int i = this.getFactory().tickInterval(this, entity);
+				if (i <= 0 || (entity.tickCount % i) != 0)
 					return;
 			}
-			this.getFactory().tick(this, player);
+			this.getFactory().tick(this, entity);
 		}
 	}
 
-	public void tick(LivingEntity player) {
-		this.tick(player, false);
+	public void tick(Entity entity) {
+		this.tick(entity, false);
 	}
 
 	//VariableIntPower
@@ -132,32 +132,32 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return Optional.empty();
 	}
 
-	public OptionalInt assign(LivingEntity player, int value) {
-		return this.asVariableIntPower().map(t -> t.assign(this, player, value)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
+	public OptionalInt assign(Entity entity, int value) {
+		return this.asVariableIntPower().map(t -> t.assign(this, entity, value)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
-	public OptionalInt getValue(LivingEntity player) {
-		return this.asVariableIntPower().map(t -> t.getValue(this, player)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
+	public OptionalInt getValue(Entity entity) {
+		return this.asVariableIntPower().map(t -> t.getValue(this, entity)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
-	public OptionalInt getMaximum(LivingEntity player) {
-		return this.asVariableIntPower().map(t -> t.getMaximum(this, player)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
+	public OptionalInt getMaximum(Entity entity) {
+		return this.asVariableIntPower().map(t -> t.getMaximum(this, entity)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
-	public OptionalInt getMinimum(LivingEntity player) {
-		return this.asVariableIntPower().map(t -> t.getMinimum(this, player)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
+	public OptionalInt getMinimum(Entity entity) {
+		return this.asVariableIntPower().map(t -> t.getMinimum(this, entity)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
-	public OptionalInt change(LivingEntity player, int amount) {
-		return this.asVariableIntPower().map(t -> t.change(this, player, amount)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
+	public OptionalInt change(Entity entity, int amount) {
+		return this.asVariableIntPower().map(t -> t.change(this, entity, amount)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
-	public OptionalInt increment(LivingEntity player) {
-		return this.asVariableIntPower().map(t -> t.increment(this, player)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
+	public OptionalInt increment(Entity entity) {
+		return this.asVariableIntPower().map(t -> t.increment(this, entity)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
-	public OptionalInt decrement(LivingEntity player) {
-		return this.asVariableIntPower().map(t -> t.decrement(this, player)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
+	public OptionalInt decrement(Entity entity) {
+		return this.asVariableIntPower().map(t -> t.decrement(this, entity)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
 	//Hud Renderered Power
@@ -167,16 +167,16 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.getFactory() instanceof IHudRenderedPower<?> hudRenderedPower ? Optional.of((IHudRenderedPower<C>) hudRenderedPower) : Optional.empty();
 	}
 
-	public Optional<HudRender> getRenderSettings(LivingEntity player) {
-		return this.asHudRendered().map(x -> x.getRenderSettings(this, player));
+	public Optional<HudRender> getRenderSettings(Entity entity) {
+		return this.asHudRendered().map(x -> x.getRenderSettings(this, entity));
 	}
 
-	public Optional<Boolean> shouldRender(LivingEntity player) {
-		return this.asHudRendered().map(x -> x.shouldRender(this, player));
+	public Optional<Boolean> shouldRender(Entity entity) {
+		return this.asHudRendered().map(x -> x.shouldRender(this, entity));
 	}
 
-	public Optional<Float> getFill(LivingEntity player) {
-		return this.asHudRendered().map(x -> x.getFill(this, player));
+	public Optional<Float> getFill(Entity entity) {
+		return this.asHudRendered().map(x -> x.getFill(this, entity));
 	}
 
 	//Active Power
@@ -186,14 +186,14 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.getFactory() instanceof IActivePower<?> hudRenderedPower ? Optional.of((IActivePower<C>) hudRenderedPower) : Optional.empty();
 	}
 
-	public boolean activate(LivingEntity player) {
+	public boolean activate(Entity entity) {
 		Optional<IActivePower<C>> ciActivePower = this.asActive();
-		ciActivePower.ifPresent(x -> x.activate(this, player));
+		ciActivePower.ifPresent(x -> x.activate(this, entity));
 		return ciActivePower.isPresent();
 	}
 
-	public Optional<IActivePower.Key> getKey(LivingEntity player) {
-		return this.asActive().map(x -> x.getKey(this, player));
+	public Optional<IActivePower.Key> getKey(Entity entity) {
+		return this.asActive().map(x -> x.getKey(this, entity));
 	}
 
 	@Override

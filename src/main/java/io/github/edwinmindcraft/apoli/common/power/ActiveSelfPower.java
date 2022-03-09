@@ -3,7 +3,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ActiveCooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActiveSelfConfiguration;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ActiveSelfPower extends ActiveCooldownPowerFactory.Simple<ActiveSelfConfiguration> {
 	public ActiveSelfPower() {
@@ -11,7 +11,7 @@ public class ActiveSelfPower extends ActiveCooldownPowerFactory.Simple<ActiveSel
 	}
 
 	@Override
-	protected void execute(ConfiguredPower<ActiveSelfConfiguration, ?> configuration, LivingEntity player) {
+	protected void execute(ConfiguredPower<ActiveSelfConfiguration, ?> configuration, Entity player) {
 		configuration.getConfiguration().action().execute(player);
 	}
 }

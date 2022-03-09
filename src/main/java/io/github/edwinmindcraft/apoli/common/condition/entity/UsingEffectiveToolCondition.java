@@ -7,6 +7,7 @@ import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,12 +18,12 @@ public class UsingEffectiveToolCondition extends EntityCondition<NoConfiguration
 		super(NoConfiguration.CODEC);
 	}
 
-	protected boolean checkClient(LivingEntity entity) {
+	protected boolean checkClient(Entity entity) {
 		return false;
 	}
 
 	@Override
-	public boolean check(NoConfiguration configuration, LivingEntity entity) {
+	public boolean check(NoConfiguration configuration, Entity entity) {
 		if (entity instanceof ServerPlayer spe) {
 			ServerPlayerGameMode interactionMngr = spe.gameMode;
 			if (interactionMngr.isDestroyingBlock) {
@@ -35,7 +36,7 @@ public class UsingEffectiveToolCondition extends EntityCondition<NoConfiguration
 	@OnlyIn(Dist.CLIENT)
 	public static class Client extends UsingEffectiveToolCondition {
 		@Override
-		protected boolean checkClient(LivingEntity entity) {
+		protected boolean checkClient(Entity entity) {
 			if (entity instanceof AbstractClientPlayer cpe) {
 				MultiPlayerGameMode interactionMngr = Minecraft.getInstance().gameMode;
 				if (interactionMngr != null && interactionMngr.isDestroying())

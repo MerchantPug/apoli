@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.registry.condition;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
@@ -11,6 +12,7 @@ import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguratio
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
@@ -20,15 +22,15 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ITEM
 
 public class ApoliItemConditions {
 
-	public static final BiPredicate<ConfiguredItemCondition<?, ?>, ItemStack> PREDICATE = (config, stack) -> config.check(stack);
+	public static final BiPredicate<ConfiguredItemCondition<?, ?>, Pair<Level, ItemStack>> PREDICATE = (config, pair) -> config.check(pair.getFirst(), pair.getSecond());
 
 	private static <U extends ItemCondition<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ITEM_CONDITION_CLASS, Apoli.MODID);
 	}
 
-	public static final RegistryObject<DelegatedItemCondition<ConstantConfiguration<ItemStack>>> CONSTANT = of("constant");
-	public static final RegistryObject<DelegatedItemCondition<ConditionStreamConfiguration<ConfiguredItemCondition<?, ?>, ItemStack>>> AND = of("and");
-	public static final RegistryObject<DelegatedItemCondition<ConditionStreamConfiguration<ConfiguredItemCondition<?, ?>, ItemStack>>> OR = of("or");
+	public static final RegistryObject<DelegatedItemCondition<ConstantConfiguration<Pair<Level, ItemStack>>>> CONSTANT = of("constant");
+	public static final RegistryObject<DelegatedItemCondition<ConditionStreamConfiguration<ConfiguredItemCondition<?, ?>, Pair<Level, ItemStack>>>> AND = of("and");
+	public static final RegistryObject<DelegatedItemCondition<ConditionStreamConfiguration<ConfiguredItemCondition<?, ?>, Pair<Level, ItemStack>>>> OR = of("or");
 
 	public static final RegistryObject<SimpleItemCondition> FOOD = ITEM_CONDITIONS.register("food", () -> new SimpleItemCondition(ItemStack::isEdible));
 	public static final RegistryObject<SimpleItemCondition> MEAT = ITEM_CONDITIONS.register("meat", () -> new SimpleItemCondition(stack -> stack.isEdible() && stack.getItem().getFoodProperties() != null && stack.getItem().getFoodProperties().isMeat()));

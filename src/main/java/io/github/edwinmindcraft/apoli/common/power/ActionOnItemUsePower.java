@@ -6,15 +6,16 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnItemUseConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.mutable.Mutable;
 
 public class ActionOnItemUsePower extends PowerFactory<ActionOnItemUseConfiguration> {
-	public static void execute(LivingEntity player, ItemStack stack, ItemStack target) {
+	public static void execute(Entity player, ItemStack stack, Mutable<ItemStack> target) {
 		IPowerContainer component = ApoliAPI.getPowerContainer(player);
 		if (component != null)
 			component.getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream()
-					.filter(x -> x.getFactory().doesApply(x, stack))
+					.filter(x -> x.getFactory().doesApply(x, player, stack))
 					.forEach(x -> x.getFactory().executeActions(x, player, target));
 	}
 
@@ -22,15 +23,15 @@ public class ActionOnItemUsePower extends PowerFactory<ActionOnItemUseConfigurat
 		super(ActionOnItemUseConfiguration.CODEC);
 	}
 
-	public boolean doesApply(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, ItemStack stack) {
+	public boolean doesApply(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, Entity player, ItemStack stack) {
 		ActionOnItemUseConfiguration configuration = factory.getConfiguration();
-		return configuration.itemCondition() == null || configuration.itemCondition().check(stack);
+		return configuration.itemCondition() == null || configuration.itemCondition().check(player.level, stack);
 	}
 
-	public void executeActions(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, LivingEntity player, ItemStack stack) {
+	public void executeActions(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, Entity player, Mutable<ItemStack> stack) {
 		ActionOnItemUseConfiguration configuration = factory.getConfiguration();
 		if (configuration.itemAction() != null)
-			configuration.itemAction().execute(stack);
+			configuration.itemAction().execute(player.level, stack);
 		if (configuration.entityAction() != null)
 			configuration.entityAction().execute(player);
 	}

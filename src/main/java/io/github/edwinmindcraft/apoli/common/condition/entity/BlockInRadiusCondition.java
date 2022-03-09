@@ -4,6 +4,7 @@ import io.github.apace100.apoli.util.Shape;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.BlockInRadiusConfiguration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
@@ -14,7 +15,7 @@ public class BlockInRadiusCondition extends EntityCondition<BlockInRadiusConfigu
 	}
 
 	@Override
-	public boolean check(BlockInRadiusConfiguration configuration, LivingEntity entity) {
+	public boolean check(BlockInRadiusConfiguration configuration, Entity entity) {
 		int count = 0;
 		int stopAt = configuration.comparison().getOptimalStoppingPoint();
 		for (BlockPos pos : Shape.getPositions(entity.blockPosition(), configuration.shape(), configuration.radius())) {

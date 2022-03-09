@@ -2,19 +2,35 @@ package io.github.apace100.apoli.mixin;
 
 import io.github.edwinmindcraft.apoli.common.power.ElytraFlightPower;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ElytraLayer.class)
 public class ElytraFeatureRendererMixin {
+    @Unique
+    private LivingEntity livingEntity;
 
 	@Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true, remap = false)
 	private void modifyEquippedStackToElytra(ItemStack stack, LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
-		if (ElytraFlightPower.shouldRenderElytra(entity) && !entity.isInvisible())
+        this.livingEntity = entity;
+        if (ElytraFlightPower.shouldRenderElytra(entity) && !entity.isInvisible())
 			cir.setReturnValue(true);
 	}
+
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;getArmorCutoutNoCull(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/RenderLayer;"))
+    private ResourceLocation setTexture(ResourceLocation identifier) {
+        for (ElytraFlightPower power : PowerHolderComponent.getPowers(this.livingEntity, ElytraFlightPower.class)) {
+            if (power.getTextureLocation() != null) {
+                return power.getTextureLocation();
+            }
+        }
+        return identifier;
+    }
 }

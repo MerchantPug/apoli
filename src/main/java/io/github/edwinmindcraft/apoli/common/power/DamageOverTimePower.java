@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.power.VariableIntPowerFa
 import io.github.edwinmindcraft.apoli.common.power.configuration.DamageOverTimeConfiguration;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -22,29 +23,29 @@ public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeC
 		return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration().initialValue(), 0));
 	}
 
-	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
+	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player) {
 		return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration().initialValue(), 0));
 	}
 
 	@Override
-	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player, IPowerContainer container) {
 		return this.getDataContainer(configuration, container).value;
 	}
 
 	@Override
-	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, int value) {
+	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player, IPowerContainer container, int value) {
 		this.getDataContainer(configuration, container).value = value;
 	}
 
 	@Override
-	public void tick(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
+	public void tick(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player) {
 		if (configuration.isActive(player))
 			this.doDamage(configuration, player);
 		else
 			this.resetDamage(configuration, player);
 	}
 
-	protected void doDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
+	protected void doDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player) {
 		DataContainer dataContainer = this.getDataContainer(configuration, player);
 		dataContainer.outOfDamageTicks = 0;
 		if (this.getValue(configuration, player) <= 0) {
@@ -55,7 +56,7 @@ public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeC
 		}
 	}
 
-	protected void resetDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, LivingEntity player) {
+	protected void resetDamage(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player) {
 		DataContainer dataContainer = this.getDataContainer(configuration, player);
 		if (dataContainer.outOfDamageTicks >= 20)
 			this.assign(configuration, player, this.getDamageBegin(configuration.getConfiguration(), player));
@@ -63,17 +64,19 @@ public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeC
 			dataContainer.outOfDamageTicks++;
 	}
 
-	protected int getDamageBegin(DamageOverTimeConfiguration configuration, LivingEntity player) {
+	protected int getDamageBegin(DamageOverTimeConfiguration configuration, Entity player) {
 		int prot = this.getProtection(configuration, player);
 		int delay = (int) (Math.pow(prot * 2, 1.3) * configuration.protectionEffectiveness());
 		return configuration.delay() + delay;
 	}
 
-	private int getProtection(DamageOverTimeConfiguration configuration, LivingEntity player) {
+	private int getProtection(DamageOverTimeConfiguration configuration, Entity player) {
 		if (configuration.protectionEnchantment() == null) {
 			return 0;
 		} else {
-			Map<EquipmentSlot, ItemStack> enchantedItems = configuration.protectionEnchantment().getSlotItems(player);
+			if (!(player instanceof LivingEntity living))
+				return 0;
+			Map<EquipmentSlot, ItemStack> enchantedItems = configuration.protectionEnchantment().getSlotItems(living);
 			Iterable<ItemStack> iterable = enchantedItems.values();
 			int i = 0;
 			for (ItemStack itemStack : iterable)

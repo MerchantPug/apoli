@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public class S2CSynchronizePowerContainer {
 
 	@Nullable
-	public static S2CSynchronizePowerContainer forEntity(LivingEntity living) {
+	public static S2CSynchronizePowerContainer forEntity(Entity living) {
 		return IPowerContainer.get(living).map(container -> {
 			Multimap<ResourceLocation, ResourceLocation> powerSources = HashMultimap.create();
 			Map<ResourceLocation, Tag> data = new HashMap<>();
@@ -43,7 +43,7 @@ public class S2CSynchronizePowerContainer {
 					Apoli.LOGGER.warn("Invalid power container capability for entity {}", living.getScoreboardName());
 					continue;
 				}
-				Tag tag = configuredPower.serialize(living, container);
+				Tag tag = configuredPower.serialize(container);
 				if (tag instanceof CompoundTag compound && compound.isEmpty())
 					continue;
 				data.put(power, tag);

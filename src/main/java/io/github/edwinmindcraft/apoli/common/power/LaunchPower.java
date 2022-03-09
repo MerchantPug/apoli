@@ -6,7 +6,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.LaunchConfigura
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
 public class LaunchPower extends ActiveCooldownPowerFactory.Simple<LaunchConfiguration> {
@@ -15,17 +15,17 @@ public class LaunchPower extends ActiveCooldownPowerFactory.Simple<LaunchConfigu
 	}
 
 	@Override
-	protected void execute(ConfiguredPower<LaunchConfiguration, ?> configuration, LivingEntity player) {
+	protected void execute(ConfiguredPower<LaunchConfiguration, ?> configuration, Entity player) {
 		Level world = player.getCommandSenderWorld();
 		if (!world.isClientSide()) {
 			LaunchConfiguration config = configuration.getConfiguration();
 			player.push(0, config.speed(), 0);
 			player.hurtMarked = true;
 			if (config.sound() != null)
-				world.playSound(null, player.getX(), player.getY(), player.getZ(), config.sound(), SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
+				world.playSound(null, player.getX(), player.getY(), player.getZ(), config.sound(), SoundSource.NEUTRAL, 0.5F, 0.4F / (player.level.random.nextFloat() * 0.4F + 0.8F));
 			if (player.level instanceof ServerLevel serverWorld) {
 				for (int i = 0; i < 4; ++i)
-					serverWorld.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getRandomY(), player.getZ(), 8, player.getRandom().nextGaussian(), 0.0D, player.getRandom().nextGaussian(), 0.5);
+					serverWorld.sendParticles(ParticleTypes.CLOUD, player.getX(), player.getRandomY(), player.getZ(), 8, player.level.random.nextGaussian(), 0.0D, player.level.random.nextGaussian(), 0.5);
 			}
 		}
 	}

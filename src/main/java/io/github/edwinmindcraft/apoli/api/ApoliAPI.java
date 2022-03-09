@@ -44,13 +44,13 @@ public class ApoliAPI {
 		return true;
 	}
 
-	public static void synchronizePowerContainer(LivingEntity living) {
+	public static void synchronizePowerContainer(Entity living) {
 		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
 		if (packet != null)
 			ApoliCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> living), packet);
 	}
 
-	public static void synchronizePowerContainer(LivingEntity living, ServerPlayer with) {
+	public static void synchronizePowerContainer(Entity living, ServerPlayer with) {
 		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
 		if (packet != null)
 			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> with), packet);

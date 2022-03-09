@@ -3,6 +3,9 @@ package io.github.edwinmindcraft.apoli.common.component;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -19,10 +22,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import org.intellij.lang.annotations.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,6 +123,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			this.powers.put(power, instance);
 			instance.onGained(this.owner);
 			instance.onAdded(this.owner);
+			if(this.owner instanceof ServerPlayer spe)
+				GainedPowerCriterion.INSTANCE.trigger(spe, instance);
 			return true;
 		}
 	}
@@ -199,8 +207,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			this.powerSources.clear();
 			this.powerData.clear();
 			ListTag powerList = (ListTag) tag.get("Powers");
+			Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
 			if (powerList != null) {
-				Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
 				for (int i = 0; i < powerList.size(); i++) {
 					CompoundTag powerTag = powerList.getCompound(i);
 					ResourceLocation identifier = ResourceLocation.tryParse(powerTag.getString("Type"));
@@ -218,7 +226,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 						}
 						ConfiguredPower<?, ?> instance = optionalPower.get();
 						try {
-							instance.deserialize(this.owner, this, data);
+							instance.deserialize(this, data);
 						} catch (ClassCastException e) {
 							Apoli.LOGGER.warn("Data type of \"" + identifier + "\" changed, skipping data for that power on entity " + (this.owner != null ? this.owner.getName().getContents() : "[NONE]"));
 						}
@@ -227,6 +235,21 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 							instance.onAdded(this.owner);
 					} catch (IllegalArgumentException e) {
 						Apoli.LOGGER.warn("Power data of unregistered power \"" + identifier + "\" found on entity, skipping...");
+					}
+
+				}
+				for (Map.Entry<ResourceLocation, Set<ResourceLocation>> entry : this.powerSources.entrySet()) {
+					ConfiguredPower<?, ?> power = powers.get(entry.getKey());
+					for (Map.Entry<String, ConfiguredPower<?, ?>> subPower : power.getContainedPowers().entrySet()) {
+						ResourceLocation sub = subPower.getValue().getRegistryName();
+						if (sub == null) {
+							Apoli.LOGGER.warn("Multiple power type read from data contained unregistered sub-type: \"" + entry.getKey() + subPower.getKey() + "\".");
+							continue;
+						}
+						for (ResourceLocation source : entry.getValue()) {
+							if(!this.hasPower(sub, source))
+								this.addPower(sub, source);
+						}
 					}
 				}
 			}
@@ -252,7 +275,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			this.powerSources.put(power, new HashSet<>(powerEntry.getValue()));
 			Tag tag = data.get(power);
 			if (tag != null)
-				configuredPower.deserialize(this.owner, this, tag);
+				configuredPower.deserialize(this, tag);
 		}
 	}
 
@@ -262,7 +285,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 		for (Map.Entry<ResourceLocation, ConfiguredPower<?, ?>> powerEntry : this.powers.entrySet()) {
 			CompoundTag powerTag = new CompoundTag();
 			powerTag.putString("Type", powerEntry.getKey().toString());
-			powerTag.put("Data", powerEntry.getValue().serialize(this.owner, this));
+			powerTag.put("Data", powerEntry.getValue().serialize(this));
 			ListTag sources = new ListTag();
 			this.powerSources.get(powerEntry.getKey()).forEach(id -> sources.add(StringTag.valueOf(id.toString())));
 			powerTag.put("Sources", sources);
@@ -276,6 +299,11 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@SuppressWarnings("unchecked")
 	public <T> @Nullable T getPowerData(ConfiguredPower<?, ?> power, Supplier<? extends T> supplier) {
 		return (T) this.powerData.computeIfAbsent(power.getRegistryName(), x -> supplier.get());
+	}
+
+	@Override
+	public Entity getOwner() {
+		return this.owner;
 	}
 
 	@NotNull

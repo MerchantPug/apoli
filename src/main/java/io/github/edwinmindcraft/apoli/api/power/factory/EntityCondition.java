@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -27,11 +28,11 @@ public abstract class EntityCondition<T extends IDynamicFeatureConfiguration> ex
 		return new ConfiguredEntityCondition<>(this, input, data);
 	}
 
-	public boolean check(T configuration, LivingEntity entity) {
+	protected boolean check(T configuration, Entity entity) {
 		return false;
 	}
 
-	public boolean check(T configuration, ConditionData data, LivingEntity entity) {
+	public boolean check(T configuration, ConditionData data, Entity entity) {
 		return data.inverted() ^ this.check(configuration, entity);
 	}
 }

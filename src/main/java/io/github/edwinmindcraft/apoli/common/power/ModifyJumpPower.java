@@ -6,10 +6,10 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyJumpConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ModifyJumpPower extends ValueModifyingPowerFactory<ModifyJumpConfiguration> {
-	public static double apply(LivingEntity player, double baseValue) {
+	public static double apply(Entity player, double baseValue) {
 		return IPowerContainer.modify(player, ApoliPowers.MODIFY_JUMP.get(), baseValue, x -> true, x -> x.getFactory().execute(x, player));
 	}
 
@@ -17,7 +17,7 @@ public class ModifyJumpPower extends ValueModifyingPowerFactory<ModifyJumpConfig
 		super(ModifyJumpConfiguration.CODEC);
 	}
 
-	public void execute(ConfiguredPower<ModifyJumpConfiguration, ?> configuration, LivingEntity player) {
+	public void execute(ConfiguredPower<ModifyJumpConfiguration, ?> configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.getConfiguration().condition(), player);
 	}
 }

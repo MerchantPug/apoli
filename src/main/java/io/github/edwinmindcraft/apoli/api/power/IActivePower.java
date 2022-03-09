@@ -6,15 +6,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.function.Function;
 
 public interface IActivePower<T extends IDynamicFeatureConfiguration> {
 
-	void activate(ConfiguredPower<T, ?> configuration, LivingEntity player);
+	void activate(ConfiguredPower<T, ?> configuration, Entity player);
 
-	Key getKey(ConfiguredPower<T, ?> configuration, LivingEntity player);
+	Key getKey(ConfiguredPower<T, ?> configuration, Entity player);
 
 	record Key(String key, boolean continuous) {
 		public static final Key PRIMARY = new Key("key.origins.primary_active", false);

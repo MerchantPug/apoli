@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.CommandComparisonConfiguration;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.OptionalInt;
@@ -13,7 +14,7 @@ public class CommandCondition extends EntityCondition<CommandComparisonConfigura
 	}
 
 	@Override
-	public boolean check(CommandComparisonConfiguration configuration, LivingEntity entity) {
+	public boolean check(CommandComparisonConfiguration configuration, Entity entity) {
 		OptionalInt execute = configuration.command().execute(entity);
 		return execute.isPresent() && configuration.comparison().check(execute.getAsInt());
 	}

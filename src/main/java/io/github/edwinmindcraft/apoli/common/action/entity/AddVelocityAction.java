@@ -15,7 +15,7 @@ public class AddVelocityAction extends EntityAction<AddVelocityConfiguration> {
 	public void execute(AddVelocityConfiguration configuration, Entity entity) {
 		Vector3f vec = configuration.getVector();
 		TriConsumer<Float, Float, Float> method = configuration.set() ? entity::setDeltaMovement : entity::push;
-		vec.transform(configuration.space().rotation(entity));
+		configuration.space().toGlobal(vec, entity);
 		method.accept(vec.x(), vec.y(), vec.z());
 		entity.hurtMarked = true;
 	}

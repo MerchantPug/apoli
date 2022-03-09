@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.Nullable;
@@ -23,37 +24,37 @@ public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfigu
 		super(codec, allowConditions);
 	}
 
-	protected abstract int get(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container);
+	protected abstract int get(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container);
 
-	protected abstract void set(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container, int value);
+	protected abstract void set(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, int value);
 
-	protected int get(ConfiguredPower<T, ?> configuration, LivingEntity player) {
-		return this.get(configuration, player, IPowerContainer.get(player).resolve().orElse(null));
+	protected int get(ConfiguredPower<T, ?> configuration, Entity player) {
+		return this.get(configuration, IPowerContainer.get(player).resolve().orElse(null));
 	}
 
-	protected void set(ConfiguredPower<T, ?> configuration, LivingEntity player, int value) {
-		this.set(configuration, player, IPowerContainer.get(player).resolve().orElse(null), value);
+	protected void set(ConfiguredPower<T, ?> configuration, Entity player, int value) {
+		this.set(configuration, IPowerContainer.get(player).resolve().orElse(null), value);
 	}
 
 	@Override
-	public int assign(ConfiguredPower<T, ?> configuration, LivingEntity player, int value) {
+	public int assign(ConfiguredPower<T, ?> configuration, Entity player, int value) {
 		value = Mth.clamp(value, this.getMinimum(configuration, player), this.getMaximum(configuration, player));
 		this.set(configuration, player, value);
 		return value;
 	}
 
 	@Override
-	public int getValue(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	public int getValue(ConfiguredPower<T, ?> configuration, Entity player) {
 		return this.get(configuration, player);
 	}
 
 	@Override
-	public int getMaximum(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	public int getMaximum(ConfiguredPower<T, ?> configuration, Entity player) {
 		return configuration.getConfiguration().max();
 	}
 
 	@Override
-	public int getMinimum(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	public int getMinimum(ConfiguredPower<T, ?> configuration, Entity player) {
 		return configuration.getConfiguration().min();
 	}
 
@@ -71,28 +72,28 @@ public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfigu
 		}
 
 		@Override
-		protected int get(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container) {
+		protected int get(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container) {
 			if (container == null)
 				return configuration.getConfiguration().initialValue();
 			return this.getCurrentValue(configuration, container).get();
 		}
 
 		@Override
-		protected void set(ConfiguredPower<T, ?> configuration, LivingEntity player, @Nullable IPowerContainer container, int value) {
+		protected void set(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, int value) {
 			if (container == null)
 				return;
 			this.getCurrentValue(configuration, container).set(value);
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container) {
-			return IntTag.valueOf(this.get(configuration, player, container));
+		public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+			return IntTag.valueOf(this.get(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
+		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {
 			if (tag instanceof IntTag intTag)
-				this.set(configuration, player, container, intTag.getAsInt());
+				this.set(configuration, container, intTag.getAsInt());
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package io.github.apace100.apoli.power;
 
 import com.mojang.serialization.Lifecycle;
+import io.github.apace100.apoli.integration.PowerClearCallback;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
@@ -64,9 +65,10 @@ public class PowerTypeRegistry {
 		return ApoliAPI.getPowers().containsKey(id);
 	}
 
-	public static void clear() {
-		//Dead Code
-	}
+    public static void clear() {
+        PowerClearCallback.EVENT.invoker().onPowerClear();
+        //idToPower.clear();
+    }
 
 	public static void reset() {
 		clear();

@@ -8,17 +8,19 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PreventDeathConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Optional;
 
 public class PreventDeathPower extends PowerFactory<PreventDeathConfiguration> {
 
-	public static boolean tryPreventDeath(LivingEntity entity, DamageSource source, float amount) {
+	public static boolean tryPreventDeath(Entity entity, DamageSource source, float amount) {
 		Optional<ConfiguredPower<PreventDeathConfiguration, PreventDeathPower>> first = IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_DEATH.get()).stream()
 				.filter(x -> ConfiguredDamageCondition.check(x.getConfiguration().condition(), source, amount)).findFirst();
 		first.ifPresent(x -> {
-			entity.setHealth(1.0F);
+			if (entity instanceof LivingEntity living)
+				living.setHealth(1.0F);
 			ConfiguredEntityAction.execute(x.getConfiguration().action(), entity);
 		});
 		return first.isPresent();

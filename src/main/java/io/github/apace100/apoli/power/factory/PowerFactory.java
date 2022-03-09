@@ -66,9 +66,18 @@ public class PowerFactory<P extends Power> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public P apply(PowerType<P> pPowerType, LivingEntity livingEntity) {
+			/*BiFunction<PowerType<P>, LivingEntity, P> powerFactory = factoryConstructor.apply(dataInstance);
+            P p = powerFactory.apply(pPowerType, livingEntity);
+            if(hasConditions && dataInstance.isPresent("condition")) {
+                p.addCondition((ConditionFactory<Entity>.Instance) dataInstance.get("condition"));
+            }*/
 			if (this.power.getConfiguration() instanceof FabricPowerConfiguration config)
 				return (P) this.power.getPowerData(livingEntity, () -> config.power().apply(pPowerType, livingEntity));
 			return null;
+		}
+
+		public SerializableData.Instance getDataInstance() {
+			return dataInstance;
 		}
 	}
 

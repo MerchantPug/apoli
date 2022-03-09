@@ -71,6 +71,29 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 			return false;
 		return entity.isInWaterRainOrBubble();
 	}
+    @Inject(method = "fall", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onLandedUpon(Lnet/minecraft/world/World;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;F)V"))
+    private void invokeActionOnLand(CallbackInfo ci) {
+        List<ActionOnLandPower> powers = PowerHolderComponent.getPowers((Entity)(Object)this, ActionOnLandPower.class);
+        powers.forEach(ActionOnLandPower::executeAction);
+    }
+
+    @Inject(at = @At("HEAD"), method = "isInvulnerableTo", cancellable = true)
+    private void makeOriginInvulnerable(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
+        if((Object)this instanceof LivingEntity) {
+            PowerHolderComponent component = PowerHolderComponent.KEY.get(this);
+            if(component.getPowers(InvulnerablePower.class).stream().anyMatch(inv -> inv.doesApply(damageSource))) {
+                cir.setReturnValue(true);
+            }
+        }
+    }
+
+    @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isWet()Z"))
+    private boolean preventExtinguishingFromSwimming(Entity entity) {
+        if(PowerHolderComponent.hasPower(entity, SwimmingPower.class) && entity.isSwimming() && !(getFluidHeight(FluidTags.WATER) > 0)) {
+            return false;
+        }
+        return entity.isWet();
+    }
 
 	@Inject(at = @At("HEAD"), method = "isInvisible", cancellable = true)
 	private void phantomInvisibility(CallbackInfoReturnable<Boolean> info) {
@@ -83,6 +106,34 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 		if (((Object) this) instanceof LivingEntity le && PhasingPower.shouldPhaseThrough(le, new BlockPos(x, y, z)))
 			info.cancel();
 	}
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/BlockPos;<init>(DDD)V"), method = "pushOutOfBlocks", cancellable = true)
+    protected void pushOutOfBlocks(double x, double y, double z, CallbackInfo info) {
+        List<PhasingPower> powers = PowerHolderComponent.getPowers((Entity)(Object)this, PhasingPower.class);
+        if(powers.size() > 0) {
+            if(powers.stream().anyMatch(phasingPower -> phasingPower.doesApply(new BlockPos(x, y, z)))) {
+                info.cancel();
+            }
+        }
+    }
+
+    @Inject(method = "emitGameEvent(Lnet/minecraft/world/event/GameEvent;Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/BlockPos;)V", at = @At("HEAD"), cancellable = true)
+    private void preventGameEvents(GameEvent event, @Nullable Entity entity, BlockPos pos, CallbackInfo ci) {
+        if(entity instanceof LivingEntity) {
+            List<PreventGameEventPower> preventingPowers = PowerHolderComponent.getPowers(entity, PreventGameEventPower.class).stream().filter(p -> p.doesPrevent(event)).toList();
+            if(preventingPowers.size() > 0) {
+                preventingPowers.forEach(p -> p.executeAction(entity));
+                ci.cancel();
+            }
+        }
+    }
+
+    @Redirect(method = "method_30022", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/shape/VoxelShape;"))
+    private VoxelShape preventPhasingSuffocation(BlockState state, BlockView world, BlockPos pos) {
+        return state.getCollisionShape(world, pos, ShapeContext.of((Entity)(Object)this));
+    }
+
+    private boolean isMoving;
+    private float distanceBefore;
 
 	@Inject(method = "move", at = @At("HEAD"))
 	private void saveDistanceTraveled(MoverType type, Vec3 movement, CallbackInfo ci) {

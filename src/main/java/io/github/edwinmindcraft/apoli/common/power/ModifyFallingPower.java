@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFallingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -33,11 +34,13 @@ public class ModifyFallingPower extends PowerFactory<ModifyFallingConfiguration>
 		}
 	}
 
-	public static void apply(LivingEntity entity, boolean isFalling) {
-		AttributeInstance attribute = entity.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
+	public static void apply(Entity entity, boolean isFalling) {
+		if (!(entity instanceof LivingEntity living))
+			return;
+		AttributeInstance attribute = living.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
 		if (attribute == null) return;
 		//Compare references because equals is busted.
-		OptionalDouble max = IPowerContainer.getPowers(entity, ApoliPowers.MODIFY_FALLING.get()).stream().map(ConfiguredFactory::getConfiguration).mapToDouble(ModifyFallingConfiguration::velocity).min();
+		OptionalDouble max = IPowerContainer.getPowers(living, ApoliPowers.MODIFY_FALLING.get()).stream().map(ConfiguredFactory::getConfiguration).mapToDouble(ModifyFallingConfiguration::velocity).min();
 		if (max.isEmpty()) return;
 		double modifier = max.getAsDouble() - 0.08D;
 		AttributeModifier mod = attribute.getModifier(SLOW_FALLING_ID);
@@ -57,15 +60,19 @@ public class ModifyFallingPower extends PowerFactory<ModifyFallingConfiguration>
 		super(ModifyFallingConfiguration.CODEC, true);
 	}
 
-	private void add(ConfiguredPower<ModifyFallingConfiguration, ?> configuration, LivingEntity entity) {
-		AttributeInstance attribute = entity.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
+	private void add(ConfiguredPower<ModifyFallingConfiguration, ?> configuration, Entity entity) {
+		if (!(entity instanceof LivingEntity living))
+			return;
+		AttributeInstance attribute = living.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
 		AttributeModifier modifier = configuration.getConfiguration().modifier(configuration.getRegistryName());
 		if (attribute != null && !attribute.hasModifier(modifier))
 			attribute.addTransientModifier(modifier);
 	}
 
-	private void remove(ConfiguredPower<ModifyFallingConfiguration, ?> configuration, LivingEntity entity) {
-		AttributeInstance attribute = entity.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
+	private void remove(ConfiguredPower<ModifyFallingConfiguration, ?> configuration, Entity entity) {
+		if (!(entity instanceof LivingEntity living))
+			return;
+		AttributeInstance attribute = living.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
 		AttributeModifier modifier = configuration.getConfiguration().modifier(configuration.getRegistryName());
 		if (attribute != null && attribute.hasModifier(modifier))
 			attribute.removeModifier(modifier);

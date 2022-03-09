@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
 
@@ -22,6 +22,6 @@ public class PreventEntityRenderPower extends PowerFactory<FieldConfiguration<Op
 	}
 
 	public boolean doesPrevent(ConfiguredPower<FieldConfiguration<Optional<ConfiguredEntityCondition<?, ?>>>, ?> configuration, Entity e) {
-		return e instanceof LivingEntity le && configuration.getConfiguration().value().map(x -> x.check(le)).orElse(true);
+		return configuration.getConfiguration().value().map(x -> x.check(e)).orElse(true);
 	}
 }

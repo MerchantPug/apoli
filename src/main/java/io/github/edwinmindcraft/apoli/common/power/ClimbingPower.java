@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ClimbingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class ClimbingPower extends PowerFactory<ClimbingConfiguration> {
 		super(ClimbingConfiguration.CODEC);
 	}
 
-	public boolean canHold(ConfiguredPower<ClimbingConfiguration, ?> configuration, LivingEntity player) {
+	public boolean canHold(ConfiguredPower<ClimbingConfiguration, ?> configuration, Entity player) {
 		ConfiguredEntityCondition<?, ?> holdingCondition = configuration.getConfiguration().condition();
 		return configuration.getConfiguration().allowHolding() && (holdingCondition == null ? configuration.isActive(player) : holdingCondition.check(player));
 	}

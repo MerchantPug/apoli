@@ -6,7 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverItemConfiguration;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,7 +18,8 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 	}
 
 	@Override
-	public void tick(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player) {
+	public void tick(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, Entity player) {
+		//TODO Start ticking after the power is added.
 		AtomicBoolean data = configuration.getPowerData(player, () -> new AtomicBoolean(false));
 		ActionOverItemConfiguration config = configuration.getConfiguration();
 		if (configuration.isActive(player)) {
@@ -35,17 +36,17 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 	}
 
 	@Override
-	protected int tickInterval(ActionOverItemConfiguration configuration, LivingEntity player) {
+	protected int tickInterval(ActionOverItemConfiguration configuration, Entity player) {
 		return configuration.interval();
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player, IPowerContainer container) {
+	public Tag serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container) {
 		return ByteTag.valueOf(configuration.getPowerData(container, () -> new AtomicBoolean(false)).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, LivingEntity player, IPowerContainer container, Tag tag) {
+	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
 		AtomicBoolean data = configuration.getPowerData(container, () -> new AtomicBoolean(false));
 		data.set(!Objects.equals(tag, ByteTag.ZERO));
 	}

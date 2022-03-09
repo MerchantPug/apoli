@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import io.github.apace100.apoli.power.factory.condition.BiEntityConditions;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import io.github.apace100.calio.ClassUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
@@ -51,6 +52,15 @@ public class ApoliRegistries {
 	public static Supplier<IForgeRegistry<EntityAction<?>>> ENTITY_ACTION;
 	public static Supplier<IForgeRegistry<ItemAction<?>>> ITEM_ACTION;
 	public static Supplier<IForgeRegistry<BlockAction<?>>> BLOCK_ACTION;
+
+	public static final Class<BiEntityCondition<?>> BIENTITY_CONDITION_CLASS = ClassUtil.get();
+	public static final Class<BiEntityAction<?>> BIENTITY_ACTION_CLASS = ClassUtil.get();
+
+	public static final ResourceKey<net.minecraft.core.Registry<BiEntityCondition<?>>> BIENTITY_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("bientity_condition"));
+	public static final ResourceKey<net.minecraft.core.Registry<BiEntityAction<?>>> BIENTITY_ACTION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("bientity_action"));
+
+	public static Supplier<IForgeRegistry<BiEntityCondition<?>>> BIENTITY_CONDITION;
+	public static Supplier<IForgeRegistry<BiEntityAction<?>>> BIENTITY_ACTION;
 
 	/**
 	 * This is basically {@link net.minecraft.core.Registry}, just altered in such a way that it works with

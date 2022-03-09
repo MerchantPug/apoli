@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ConditionedAttributeConfiguration;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 
@@ -14,25 +15,29 @@ public class ConditionedAttributePower extends PowerFactory<ConditionedAttribute
 		this.ticking(true);
 	}
 
-	private void add(ListConfiguration<AttributedEntityAttributeModifier> configuration, LivingEntity player) {
-		configuration.getContent().stream().filter(x -> player.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
-			AttributeInstance attributeInstance = player.getAttribute(mod.attribute());
+	private void add(ListConfiguration<AttributedEntityAttributeModifier> configuration, Entity entity) {
+		if (!(entity instanceof LivingEntity living))
+			return;
+		configuration.getContent().stream().filter(x -> living.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
+			AttributeInstance attributeInstance = living.getAttribute(mod.attribute());
 			if (attributeInstance != null && !attributeInstance.hasModifier(mod.modifier()))
 				attributeInstance.addTransientModifier(mod.modifier());
 		});
 	}
 
 
-	private void remove(ListConfiguration<AttributedEntityAttributeModifier> configuration, LivingEntity player) {
-		configuration.getContent().stream().filter(x -> player.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
-			AttributeInstance attributeInstance = player.getAttribute(mod.attribute());
+	private void remove(ListConfiguration<AttributedEntityAttributeModifier> configuration, Entity entity) {
+		if (!(entity instanceof LivingEntity living))
+			return;
+		configuration.getContent().stream().filter(x -> living.getAttributes().hasAttribute(x.attribute())).forEach(mod -> {
+			AttributeInstance attributeInstance = living.getAttribute(mod.attribute());
 			if (attributeInstance != null && attributeInstance.hasModifier(mod.modifier()))
 				attributeInstance.removeModifier(mod.modifier());
 		});
 	}
 
 	@Override
-	public void tick(ConfiguredPower<ConditionedAttributeConfiguration, ?> configuration, LivingEntity player) {
+	public void tick(ConfiguredPower<ConditionedAttributeConfiguration, ?> configuration, Entity player) {
 		if (configuration.isActive(player))
 			this.add(configuration.getConfiguration().modifiers(), player);
 		else
@@ -40,12 +45,12 @@ public class ConditionedAttributePower extends PowerFactory<ConditionedAttribute
 	}
 
 	@Override
-	protected void onRemoved(ConditionedAttributeConfiguration configuration, LivingEntity player) {
+	protected void onRemoved(ConditionedAttributeConfiguration configuration, Entity player) {
 		this.remove(configuration.modifiers(), player);
 	}
 
 	@Override
-	protected int tickInterval(ConditionedAttributeConfiguration configuration, LivingEntity player) {
+	protected int tickInterval(ConditionedAttributeConfiguration configuration, Entity player) {
 		return configuration.tickRate();
 	}
 }

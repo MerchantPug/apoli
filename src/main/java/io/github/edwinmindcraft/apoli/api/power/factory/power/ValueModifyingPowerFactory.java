@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.IValueModifyingPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
@@ -20,7 +21,7 @@ public abstract class ValueModifyingPowerFactory<T extends IValueModifyingPowerC
 	}
 
 	@Override
-	public List<AttributeModifier> getModifiers(ConfiguredPower<T, ?> configuration, LivingEntity player) {
+	public List<AttributeModifier> getModifiers(ConfiguredPower<T, ?> configuration, Entity player) {
 		return configuration.getConfiguration().modifiers().getContent();
 	}
 }

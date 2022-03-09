@@ -9,7 +9,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTak
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 
 public class ModifyDamageTakenPower extends ValueModifyingPowerFactory<ModifyDamageTakenConfiguration> {
 	public static float modify(Entity entity, DamageSource source, float amount) {
@@ -28,7 +28,7 @@ public class ModifyDamageTakenPower extends ValueModifyingPowerFactory<ModifyDam
 	public void execute(ConfiguredPower<ModifyDamageTakenConfiguration, ?> config, Entity entity, DamageSource source) {
 		ModifyDamageTakenConfiguration configuration = config.getConfiguration();
 		ConfiguredEntityAction.execute(configuration.selfAction(), entity);
-		if (source.getEntity() != null && source.getEntity() instanceof LivingEntity)
+		if (source.getEntity() != null)
 			ConfiguredEntityAction.execute(configuration.targetAction(), source.getEntity());
 	}
 }
