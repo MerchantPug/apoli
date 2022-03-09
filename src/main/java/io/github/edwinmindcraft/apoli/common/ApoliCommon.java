@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliBlockActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliIBiEntityActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliItemActions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
 import net.minecraft.resources.ResourceLocation;
@@ -54,6 +55,7 @@ public class ApoliCommon {
 		ApoliBlockActions.register();
 		ApoliEntityActions.register();
 		ApoliItemActions.register();
+		ApoliIBiEntityActions.register();
 
 		//Conditions
 		ApoliBiomeConditions.register();
@@ -62,5 +64,6 @@ public class ApoliCommon {
 		ApoliEntityConditions.register();
 		ApoliFluidConditions.register();
 		ApoliItemConditions.register();
+		ApoliBiEntityConditions.register();
 	}
 }

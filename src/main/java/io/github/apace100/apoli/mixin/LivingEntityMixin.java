@@ -1,11 +1,13 @@
 package io.github.apace100.apoli.mixin;
 
+import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.EffectImmunityPower;
 import io.github.edwinmindcraft.apoli.common.power.EntityGroupPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFallingPower;
+import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFallingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.apace100.apoli.Apoli;

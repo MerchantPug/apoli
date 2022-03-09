@@ -3,6 +3,7 @@ package io.github.apace100.apoli.mixin;
 import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
+import io.github.apace100.apoli.power.PreventGameEventPower;
 import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
@@ -71,13 +72,14 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 			return false;
 		return entity.isInWaterRainOrBubble();
 	}
-    @Inject(method = "fall", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onLandedUpon(Lnet/minecraft/world/World;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;F)V"))
+
+    /*@Inject(method = "fall", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onLandedUpon(Lnet/minecraft/world/World;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;F)V"))
     private void invokeActionOnLand(CallbackInfo ci) {
         List<ActionOnLandPower> powers = PowerHolderComponent.getPowers((Entity)(Object)this, ActionOnLandPower.class);
         powers.forEach(ActionOnLandPower::executeAction);
-    }
+    }*/
 
-    @Inject(at = @At("HEAD"), method = "isInvulnerableTo", cancellable = true)
+   /* @Inject(at = @At("HEAD"), method = "isInvulnerableTo", cancellable = true)
     private void makeOriginInvulnerable(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         if((Object)this instanceof LivingEntity) {
             PowerHolderComponent component = PowerHolderComponent.KEY.get(this);
@@ -85,15 +87,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
                 cir.setReturnValue(true);
             }
         }
-    }
-
-    @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isWet()Z"))
-    private boolean preventExtinguishingFromSwimming(Entity entity) {
-        if(PowerHolderComponent.hasPower(entity, SwimmingPower.class) && entity.isSwimming() && !(getFluidHeight(FluidTags.WATER) > 0)) {
-            return false;
-        }
-        return entity.isWet();
-    }
+    }*/
 
 	@Inject(at = @At("HEAD"), method = "isInvisible", cancellable = true)
 	private void phantomInvisibility(CallbackInfoReturnable<Boolean> info) {
@@ -103,20 +97,11 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Inject(at = @At(value = "HEAD"), method = "moveTowardsClosestSpace", cancellable = true)
 	protected void pushOutOfBlocks(double x, double y, double z, CallbackInfo info) {
-		if (((Object) this) instanceof LivingEntity le && PhasingPower.shouldPhaseThrough(le, new BlockPos(x, y, z)))
+		if (PhasingPower.shouldPhaseThrough((Entity)(Object)this, new BlockPos(x, y, z)))
 			info.cancel();
 	}
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/BlockPos;<init>(DDD)V"), method = "pushOutOfBlocks", cancellable = true)
-    protected void pushOutOfBlocks(double x, double y, double z, CallbackInfo info) {
-        List<PhasingPower> powers = PowerHolderComponent.getPowers((Entity)(Object)this, PhasingPower.class);
-        if(powers.size() > 0) {
-            if(powers.stream().anyMatch(phasingPower -> phasingPower.doesApply(new BlockPos(x, y, z)))) {
-                info.cancel();
-            }
-        }
-    }
 
-    @Inject(method = "emitGameEvent(Lnet/minecraft/world/event/GameEvent;Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/BlockPos;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "gameEvent(Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/BlockPos;)V", at = @At("HEAD"), cancellable = true)
     private void preventGameEvents(GameEvent event, @Nullable Entity entity, BlockPos pos, CallbackInfo ci) {
         if(entity instanceof LivingEntity) {
             List<PreventGameEventPower> preventingPowers = PowerHolderComponent.getPowers(entity, PreventGameEventPower.class).stream().filter(p -> p.doesPrevent(event)).toList();

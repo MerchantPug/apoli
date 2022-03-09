@@ -28,12 +28,12 @@ public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeC
 	}
 
 	@Override
-	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player, IPowerContainer container) {
+	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer container) {
 		return this.getDataContainer(configuration, container).value;
 	}
 
 	@Override
-	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, Entity player, IPowerContainer container, int value) {
+	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer container, int value) {
 		this.getDataContainer(configuration, container).value = value;
 	}
 

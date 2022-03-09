@@ -2,10 +2,9 @@ package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.ITogglePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.ITogglePowerConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.power.TogglePowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.Tag;
@@ -14,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> extends PowerFactory<T> implements ITogglePower<T> {
+public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> extends PowerFactory<T> implements ITogglePower<T> {
 	protected TogglePowerFactory(Codec<T> codec) {
 		super(codec);
 	}
@@ -41,6 +40,24 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 	}
 
 	@Override
+	protected boolean shouldTickWhenActive(ConfiguredPower<T, ?> configuration, Entity entity) {
+		return !configuration.getConfiguration().retainState() && configuration.getData().conditions().size() > 0;
+	}
+
+	@Override
+	protected boolean shouldTickWhenInactive(ConfiguredPower<T, ?> configuration, Entity entity) {
+		return true;
+	}
+
+	@Override
+	public void tick(ConfiguredPower<T, ?> configuration, Entity entity) {
+		if (!super.isActive(configuration, entity) && this.getStatus(configuration, entity)) {
+			this.setStatus(configuration, entity, false);
+			IPowerContainer.sync(entity);
+		}
+	}
+
+	@Override
 	public void activate(ConfiguredPower<T, ?> configuration, Entity player) {
 		this.toggle(configuration, player);
 	}
@@ -56,7 +73,7 @@ public abstract class TogglePowerFactory<T extends ITogglePowerConfiguration> ex
 		return configuration.getConfiguration().key();
 	}
 
-	public static abstract class Simple<T extends ITogglePowerConfiguration> extends TogglePowerFactory<T> {
+	public static abstract class Simple<T extends TogglePowerConfiguration> extends TogglePowerFactory<T> {
 		protected Simple(Codec<T> codec) {
 			super(codec);
 		}

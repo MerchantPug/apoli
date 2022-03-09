@@ -1,11 +1,11 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
+import io.github.edwinmindcraft.apoli.api.power.configuration.power.TogglePowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.TogglePowerFactory;
-import io.github.edwinmindcraft.apoli.common.power.configuration.ToggleConfiguration;
 
-public class TogglePower extends TogglePowerFactory.Simple<ToggleConfiguration> {
+public class TogglePower extends TogglePowerFactory.Simple<TogglePowerConfiguration> {
 
 	public TogglePower() {
-		super(ToggleConfiguration.CODEC);
+		super(TogglePowerConfiguration.Impl.CODEC);
 	}
 }

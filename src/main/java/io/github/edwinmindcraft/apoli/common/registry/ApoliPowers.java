@@ -1,6 +1,8 @@
 package io.github.edwinmindcraft.apoli.common.registry;
 
 import io.github.edwinmindcraft.apoli.common.power.*;
+import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityInteractionConfiguration;
+import io.github.edwinmindcraft.apoli.common.power.configuration.EntityGlowConfiguration;
 import net.minecraft.world.inventory.DispenserMenu;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -24,7 +26,7 @@ public class ApoliPowers {
 	public static final RegistryObject<DummyPower> DISABLE_REGEN = ApoliRegisters.POWER_FACTORIES.register("disable_regen", DummyPower::new);
 	public static final RegistryObject<EffectImmunityPower> EFFECT_IMMUNITY = ApoliRegisters.POWER_FACTORIES.register("effect_immunity", EffectImmunityPower::new);
 	public static final RegistryObject<ElytraFlightPower> ELYTRA_FLIGHT = ApoliRegisters.POWER_FACTORIES.register("elytra_flight", ElytraFlightPower::new);
-	public static final RegistryObject<EntityGlowPower> ENTITY_GLOW = ApoliRegisters.POWER_FACTORIES.register("entity_glow", EntityGlowPower::new);
+	public static final RegistryObject<EntityGlowPower> ENTITY_GLOW = ApoliRegisters.POWER_FACTORIES.register("entity_glow", () -> new EntityGlowPower(EntityGlowConfiguration.codec(false)));
 	public static final RegistryObject<EntityGroupPower> ENTITY_GROUP = ApoliRegisters.POWER_FACTORIES.register("entity_group", EntityGroupPower::new);
 	public static final RegistryObject<ExhaustOverTimePower> EXHAUST_OVER_TIME = ApoliRegisters.POWER_FACTORIES.register("exhaust", ExhaustOverTimePower::new);
 	public static final RegistryObject<DummyPower> FIRE_IMMUNITY = ApoliRegisters.POWER_FACTORIES.register("fire_immunity", DummyPower::new);
@@ -75,6 +77,18 @@ public class ApoliPowers {
 	public static final RegistryObject<TogglePower> TOGGLE = ApoliRegisters.POWER_FACTORIES.register("toggle", TogglePower::new);
 	public static final RegistryObject<ToggleNightVisionPower> TOGGLE_NIGHT_VISION = ApoliRegisters.POWER_FACTORIES.register("toggle_night_vision", ToggleNightVisionPower::new);
 	public static final RegistryObject<WalkOnFluidPower> WALK_ON_FLUID = ApoliRegisters.POWER_FACTORIES.register("walk_on_fluid", WalkOnFluidPower::new);
+	//region 1.17+ Powers
+	public static final RegistryObject<EntityGlowPower> SELF_GLOW = ApoliRegisters.POWER_FACTORIES.register("self_glow", () -> new EntityGlowPower(EntityGlowConfiguration.codec(true)));
+	public static final RegistryObject<ModifyValuePower> MODIFY_AIR_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_air_speed", ModifyValuePower::new);
+	public static final RegistryObject<ActionOnEntityUsePower> ACTION_ON_ENTITY_USE = ApoliRegisters.POWER_FACTORIES.register("action_on_entity_use", () -> new ActionOnEntityUsePower(BiEntityInteractionConfiguration.CODEC));
+	public static final RegistryObject<ActionOnEntityUsePower> PREVENT_ENTITY_USE = ApoliRegisters.POWER_FACTORIES.register("prevent_entity_use", () -> new ActionOnEntityUsePower(BiEntityInteractionConfiguration.PREVENTING_CODEC));
+	public static final RegistryObject<ActionOnBeingUsedPower> ACTION_ON_BEING_USED = ApoliRegisters.POWER_FACTORIES.register("action_on_being_used", () -> new ActionOnBeingUsedPower(BiEntityInteractionConfiguration.CODEC));
+	public static final RegistryObject<ActionOnBeingUsedPower> PREVENT_BEING_USED = ApoliRegisters.POWER_FACTORIES.register("prevent_being_used", () -> new ActionOnBeingUsedPower(BiEntityInteractionConfiguration.PREVENTING_CODEC));
+	public static final RegistryObject<PreventGameEventPower> PREVENT_GAME_EVENT = ApoliRegisters.POWER_FACTORIES.register("prevent_game_event", PreventGameEventPower::new);
+	public static final RegistryObject<KeepInventoryPower> KEEP_INVENTORY = ApoliRegisters.POWER_FACTORIES.register("keep_inventory", KeepInventoryPower::new);
+	public static final RegistryObject<SelfActionWhenHitPower> ACTION_WHEN_DAMAGE_TAKEN = ApoliRegisters.POWER_FACTORIES.register("action_when_damage_taken", SelfActionWhenHitPower::new);
+	public static final RegistryObject<ActionOnBlockUsePower> ACTION_ON_BLOCK_USE = ApoliRegisters.POWER_FACTORIES.register("action_on_block_use", ActionOnBlockUsePower::new);
+	//endregion
 
 	public static void register() {}
 }

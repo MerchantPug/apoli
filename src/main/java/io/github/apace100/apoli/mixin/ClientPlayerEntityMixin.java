@@ -2,8 +2,6 @@ package io.github.apace100.apoli.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.apace100.apoli.access.WaterMovingEntity;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.ModifyAirSpeedPower;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -51,6 +49,6 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer imple
 
 	@Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Abilities;getFlyingSpeed()F"))
 	private float modifyFlySpeed(Abilities playerAbilities) {
-		return PowerHolderComponent.modify(this, ModifyAirSpeedPower.class, playerAbilities.getFlyingSpeed());
+		return IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), playerAbilities.getFlyingSpeed());
 	}
 }

@@ -6,9 +6,15 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.EntityGlowConfiguration;
+import io.github.edwinmindcraft.apoli.fabric.IPowerRedirection;
+import io.github.edwinmindcraft.apoli.fabric.PowerImpl;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Pair;
+import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 

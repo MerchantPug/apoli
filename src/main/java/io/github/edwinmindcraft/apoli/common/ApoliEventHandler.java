@@ -12,12 +12,15 @@ import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
 import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -103,6 +106,8 @@ public class ApoliEventHandler {
 		}
 		player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.onRemoved(event.getOriginal())));
+		if (!event.getEntityLiving().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+		IPowerContainer.getPowers(event.getPlayer(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.getFactory().restoreItems(power, event.getPlayer()));
 
 		event.getOriginal().invalidateCaps(); // Unload capabilities.
 	}

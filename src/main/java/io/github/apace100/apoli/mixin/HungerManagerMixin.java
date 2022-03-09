@@ -1,5 +1,6 @@
 package io.github.apace100.apoli.mixin;
 
+import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import net.minecraft.world.entity.player.Player;
@@ -58,6 +59,7 @@ public class HungerManagerMixin {
 			return (float) ModifyFoodPower.apply(this.player, stack, foodComponent.getSaturationModifier(), ModifyFoodConfiguration::saturationModifiers);
 		return foodComponent.getSaturationModifier();
 	}
+
     @Redirect(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/FoodComponent;getSaturationModifier()F"))
     private float modifySaturation(FoodComponent foodComponent, Item item, ItemStack stack) {
         if(player != null) {

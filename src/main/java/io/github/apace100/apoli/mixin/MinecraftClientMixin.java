@@ -26,13 +26,9 @@ public class MinecraftClientMixin {
 	private void makeEntitiesGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
 		if (!cir.getReturnValue()) {
             if (this.player != null) {
+				//EntityGlowPower incorporates both Self and Other glow powers.
                 if (this.player != entity && EntityGlowPower.shouldGlow(this.player, entity))
                     cir.setReturnValue(true);
-                if (entity instanceof LivingEntity) {
-                    if (PowerHolderComponent.getPowers(entity, SelfGlowPower.class).stream().anyMatch(p -> p.doesApply(this.player))) {
-                        cir.setReturnValue(true);
-                    }
-                }
             }
         }
 	}

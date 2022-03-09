@@ -1,0 +1,33 @@
+package io.github.edwinmindcraft.apoli.common.power;
+
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.common.power.configuration.PreventGameEventConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.gameevent.GameEvent;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class PreventGameEventPower extends PowerFactory<PreventGameEventConfiguration> {
+	public static boolean tryPreventGameEvent(Entity entity, GameEvent event) {
+		List<ConfiguredPower<PreventGameEventConfiguration, PreventGameEventPower>> powers = IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_GAME_EVENT.get()).stream().filter(x -> x.getFactory().doesPrevent(x, event)).collect(Collectors.toList());
+		powers.forEach(x -> x.getFactory().execute(x, entity));
+		return !powers.isEmpty();
+	}
+
+	public PreventGameEventPower() {
+		super(PreventGameEventConfiguration.CODEC);
+	}
+
+	public void execute(ConfiguredPower<PreventGameEventConfiguration, ?> configuration, Entity entity) {
+		ConfiguredEntityAction.execute(configuration.getConfiguration().action(), entity);
+	}
+
+	public boolean doesPrevent(ConfiguredPower<PreventGameEventConfiguration, ?> configuration, GameEvent event) {
+		return configuration.getConfiguration().doesPrevent(event);
+	}
+}

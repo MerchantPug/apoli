@@ -1,18 +1,20 @@
 package io.github.apace100.apoli.mixin;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import io.github.apace100.apoli.ApoliClient;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.EntityGlowPower;
-import io.github.apace100.apoli.power.SelfGlowPower;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,51 +28,41 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.Iterator;
 
-@Environment(EnvType.CLIENT)
-@Mixin(WorldRenderer.class)
+@OnlyIn(Dist.CLIENT)
+@Mixin(LevelRenderer.class)
 public abstract class WorldRendererMixin {
 
-    @Final
-    @Shadow
-    private MinecraftClient client;
+	@Unique
+	private Entity renderEntity;
 
-    @Unique
-    private Entity renderEntity;
+	@Shadow
+	@Final
+	private Minecraft minecraft;
 
-    @Shadow public abstract void reload();
+	@Shadow
+	public abstract void allChanged();
 
-    @Shadow public abstract void render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f);
+	@Inject(method = "renderLevel", at = @At("HEAD"))
+	private void updateChunksIfRenderChanged(PoseStack outlinebuffersource, float i, long j, boolean k, Camera l, GameRenderer i1, LightTexture multibuffersource, Matrix4f matrix4f, CallbackInfo ci) {
+		if (ApoliClient.shouldReloadWorldRenderer) {
+			this.allChanged();
+			ApoliClient.shouldReloadWorldRenderer = false;
+		}
+	}
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void updateChunksIfRenderChanged(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
-        if(ApoliClient.shouldReloadWorldRenderer) {
-            reload();
-            ApoliClient.shouldReloadWorldRenderer = false;
-        }
-    }
+	@Inject(method = "renderLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/entity/Entity;getTeamColor()I"), locals = LocalCapture.CAPTURE_FAILHARD)
+	private void getEntity(PoseStack outlinebuffersource, float i, long j, boolean k, Camera l, GameRenderer i1, LightTexture multibuffersource, Matrix4f projection, CallbackInfo ci,
+						   ProfilerFiller profilerfiller, boolean flag, Vec3 vec3, double d0, double d1, double d2, Matrix4f matrix4f, boolean flag1, Frustum frustum, float f,
+						   boolean flag2, boolean flag3, MultiBufferSource.BufferSource immediate, Iterator var26, Entity entity) {
+		this.renderEntity = entity;
+	}
 
-    @Inject(method = "render", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/entity/Entity;getTeamColorValue()I"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void getEntity(MatrixStack matrices, float tickDelta, long var3, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci, Profiler profiler, boolean bl, Vec3d vec3d, double d, double e, double f, Matrix4f matrix4f2, boolean bl2, Frustum frustum, boolean bl4, VertexConsumerProvider.Immediate immediate, Iterator var26, Entity entity) {
-        this.renderEntity = entity;
-    }
-
-    @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/OutlineVertexConsumerProvider;setColor(IIII)V"))
-    private void setColors(Args args) {
-        for (EntityGlowPower power : PowerHolderComponent.getPowers(client.getCameraEntity(), EntityGlowPower.class)) {
-            if (power.doesApply(renderEntity)) {
-                if (!power.usesTeams()) {
-                    args.set(0, (int)(power.getRed() * 255.0F));
-                    args.set(1, (int)(power.getGreen() * 255.0F));
-                    args.set(2, (int)(power.getBlue() * 255.0F));
-                }
-            }
-        }
-        for (SelfGlowPower power : PowerHolderComponent.getPowers(renderEntity, SelfGlowPower.class)) {
-            if (!power.usesTeams()) {
-                args.set(0, (int)(power.getRed() * 255.0F));
-                args.set(1, (int)(power.getGreen() * 255.0F));
-                args.set(2, (int)(power.getBlue() * 255.0F));
-            }
-        }
-    }
+	@ModifyArgs(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/OutlineBufferSource;setColor(IIII)V"))
+	private void setColors(Args args) {
+		io.github.edwinmindcraft.apoli.common.power.EntityGlowPower.getGlowColor(this.minecraft.getCameraEntity(), this.renderEntity).ifPresent(x -> {
+			args.set(0, (int) (x.red() * 255.0F));
+			args.set(1, (int) (x.green() * 255.0F));
+			args.set(2, (int) (x.blue() * 255.0F));
+		});
+	}
 }

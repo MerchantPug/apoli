@@ -24,13 +24,16 @@ public class ElytraFeatureRendererMixin {
 			cir.setReturnValue(true);
 	}
 
-    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;getArmorCutoutNoCull(Lnet/minecraft/util/Identifier;)Lnet/minecraft/client/render/RenderLayer;"))
+    @ModifyArg(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderType;armorCutoutNoCull(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;"))
     private ResourceLocation setTexture(ResourceLocation identifier) {
-        for (ElytraFlightPower power : PowerHolderComponent.getPowers(this.livingEntity, ElytraFlightPower.class)) {
-            if (power.getTextureLocation() != null) {
-                return power.getTextureLocation();
-            }
-        }
-        return identifier;
+		return ElytraFlightPower.getElytraTexture(this.livingEntity).orElse(identifier);
     }
+
+	/*
+	//This would be the proper way to do this, but it wouldn't override capes if applicable.
+	@Inject(method = "getElytraTexture", at = @At("TAIL"), cancellable = true)
+	private void overrideTextureProperly(ItemStack stack, LivingEntity entity, CallbackInfoReturnable<ResourceLocation> cir) {
+		ElytraFlightPower.getElytraTexture(entity).ifPresent(cir::setReturnValue);
+	}
+	*/
 }

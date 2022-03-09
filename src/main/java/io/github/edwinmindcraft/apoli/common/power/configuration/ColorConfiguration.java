@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power.configuration;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -20,8 +21,18 @@ public record ColorConfiguration(float red, float green, float blue,
 			CalioCodecHelper.optionalField(Codec.FLOAT, "alpha", 1.0F).forGetter(ColorConfiguration::alpha)
 	).apply(instance, ColorConfiguration::new));
 
+	public static final MapCodec<ColorConfiguration> NO_ALPHA = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			CalioCodecHelper.optionalField(Codec.FLOAT, "red", 1.0F).forGetter(ColorConfiguration::red),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "green", 1.0F).forGetter(ColorConfiguration::green),
+			CalioCodecHelper.optionalField(Codec.FLOAT, "blue", 1.0F).forGetter(ColorConfiguration::blue)
+	).apply(instance, ColorConfiguration::new));
+
 	public static Optional<ColorConfiguration> forPower(Entity entity, PowerFactory<ColorConfiguration> factory) {
 		return IPowerContainer.getPowers(entity, factory).stream().map(ConfiguredFactory::getConfiguration).reduce(ColorConfiguration::merge);
+	}
+
+	public ColorConfiguration(float red, float green, float blue) {
+		this(red, green, blue, 1.0F);
 	}
 
 	public ColorConfiguration merge(ColorConfiguration other) {
