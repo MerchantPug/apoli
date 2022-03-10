@@ -1,4 +1,4 @@
-package io.github.apace100.apoli.action.entity.configuration;
+package io.github.apace100.apoli.action.configuration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

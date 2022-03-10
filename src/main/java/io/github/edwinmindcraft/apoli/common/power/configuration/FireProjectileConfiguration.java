@@ -7,6 +7,7 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
+import io.github.edwinmindcraft.apoli.common.power.FireProjectilePower;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +16,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
@@ -23,13 +23,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record FireProjectileConfiguration(int duration, HudRender hudRender, EntityType<?> entityType,
+public record FireProjectileConfiguration(int cooldown, HudRender hudRender, EntityType<?> entityType,
 										  int projectileCount, float speed, float divergence,
 										  @Nullable SoundEvent soundEvent, @Nullable CompoundTag tag,
-										  IActivePower.Key key) implements IActiveCooldownPowerConfiguration {
+										  IActivePower.Key key, int interval, int startDelay) implements IActiveCooldownPowerConfiguration {
 
 	public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::duration),
+			Codec.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::cooldown),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(FireProjectileConfiguration::hudRender),
 			Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
 			CalioCodecHelper.optionalField(Codec.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
@@ -37,22 +37,18 @@ public record FireProjectileConfiguration(int duration, HudRender hudRender, Ent
 			CalioCodecHelper.optionalField(Codec.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.soundEvent())),
 			CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
-			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key)
-	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> new FireProjectileConfiguration(t1, t2, t3, t4, t5, t6, t7.orElse(null), t8.orElse(null), t9)));
+			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key),
+			CalioCodecHelper.optionalField(Codec.INT, "interval", 0).forGetter(FireProjectileConfiguration::interval),
+			CalioCodecHelper.optionalField(Codec.INT, "start_delay", 0).forGetter(FireProjectileConfiguration::startDelay)
+	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> new FireProjectileConfiguration(t1, t2, t3, t4, t5, t6, t7.orElse(null), t8.orElse(null), t9, t10, t11)));
 
-
-	public void fireProjectiles(Entity player) {
+	public void playSound(Entity player) {
 		if (this.soundEvent != null) {
-			player.level.playSound(null, player.getX(), player.getY(), player.getZ(), this.soundEvent, SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
-		}
-		if (!player.level.isClientSide()) {
-			for (int i = 0; i < this.projectileCount; i++) {
-				this.fireProjectile(player);
-			}
+			player.level.playSound(null, player.getX(), player.getY(), player.getZ(), this.soundEvent, SoundSource.NEUTRAL, 0.5F, 0.4F / (player.level.getRandom().nextFloat() * 0.4F + 0.8F));
 		}
 	}
 
-	private void fireProjectile(Entity source) {
+	public void fireProjectile(Entity source) {
 		if (this.entityType() != null) {
 			Entity entity = this.entityType().create(source.level);
 			if (entity == null) {
@@ -70,12 +66,12 @@ public record FireProjectileConfiguration(int duration, HudRender hudRender, Ent
 					ahp.zPower = rotationVector.z * this.speed;
 				}
 				projectile.setOwner(source);
-				projectile.shootFromRotation(source, pitch, yaw, 0F, this.speed, this.divergence);
+				projectile.shootFromRotation(source, pitch, yaw, 0F, this.speed(), this.divergence());
 			} else {
 				float f = -Mth.sin(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
 				float g = -Mth.sin(pitch * 0.017453292F);
 				float h = Mth.cos(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
-				Vec3 vec3d = (new Vec3(f, g, h)).normalize().add(source.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence, source.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence, source.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence).scale(this.speed());
+				Vec3 vec3d = (new Vec3(f, g, h)).normalize().add(source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence(), source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence(), source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence()).scale(this.speed());
 				entity.setDeltaMovement(vec3d);
 				Vec3 entityVelo = source.getDeltaMovement();
 				entity.setDeltaMovement(entity.getDeltaMovement().add(entityVelo.x, source.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
@@ -88,4 +84,10 @@ public record FireProjectileConfiguration(int duration, HudRender hudRender, Ent
 			source.level.addFreshEntity(entity);
 		}
 	}
+
+	@Override
+	public int duration() {
+		return this.cooldown();
+	}
+
 }

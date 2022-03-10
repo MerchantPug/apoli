@@ -27,29 +27,29 @@ public class BiEntityActions {
 
     @SuppressWarnings("unchecked")
     public static void register() {
-        register(AndAction.getFactory(ApoliDataTypes.BIENTITY_ACTIONS));
+        /*register(AndAction.getFactory(ApoliDataTypes.BIENTITY_ACTIONS));
         register(ChanceAction.getFactory(ApoliDataTypes.BIENTITY_ACTION));
         register(IfElseAction.getFactory(ApoliDataTypes.BIENTITY_ACTION, ApoliDataTypes.BIENTITY_CONDITION));
         register(ChoiceAction.getFactory(ApoliDataTypes.BIENTITY_ACTION));
         register(IfElseListAction.getFactory(ApoliDataTypes.BIENTITY_ACTION, ApoliDataTypes.BIENTITY_CONDITION));
         register(DelayAction.getFactory(ApoliDataTypes.BIENTITY_ACTION));
-        register(NothingAction.getFactory());
+        register(NothingAction.getFactory());*/
 
-        register(new ActionFactory<>(Apoli.identifier("invert"), new SerializableData()
+        /*register(new ActionFactory<>(Apoli.identifier("invert"), new SerializableData()
             .add("action", ApoliDataTypes.BIENTITY_ACTION),
             (data, entities) -> {
                 ((ActionFactory<Pair<Entity, Entity>>.Instance)data.get("action")).accept(new Pair<>(entities.getRight(), entities.getLeft()));
-            }));
-        register(new ActionFactory<>(Apoli.identifier("actor_action"), new SerializableData()
+            }));*/
+        /*register(new ActionFactory<>(Apoli.identifier("actor_action"), new SerializableData()
             .add("action", ApoliDataTypes.ENTITY_ACTION),
             (data, entities) -> {
                 ((ActionFactory<Entity>.Instance)data.get("action")).accept(entities.getLeft());
-            }));
-        register(new ActionFactory<>(Apoli.identifier("target_action"), new SerializableData()
+            }));*/
+        /*register(new ActionFactory<>(Apoli.identifier("target_action"), new SerializableData()
             .add("action", ApoliDataTypes.ENTITY_ACTION),
             (data, entities) -> {
                 ((ActionFactory<Entity>.Instance)data.get("action")).accept(entities.getRight());
-            }));
+            }));*/
 
         register(new ActionFactory<>(Apoli.identifier("mount"), new SerializableData(),
             (data, entities) -> {

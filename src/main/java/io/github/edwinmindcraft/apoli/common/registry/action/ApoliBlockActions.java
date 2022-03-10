@@ -1,17 +1,18 @@
 package io.github.edwinmindcraft.apoli.common.registry.action;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.action.block.BonemealAction;
+import io.github.apace100.apoli.power.factory.action.block.ExplodeAction;
+import io.github.apace100.apoli.power.factory.action.block.ModifyBlockStateAction;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.action.block.*;
-import io.github.edwinmindcraft.apoli.common.action.entity.DelegatedEntityAction;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.registries.RegistryObject;
@@ -42,6 +43,9 @@ public class ApoliBlockActions {
 	public static final RegistryObject<SetBlockAction> SET_BLOCK = BLOCK_ACTIONS.register("set_block", SetBlockAction::new);
 	public static final RegistryObject<AddBlockAction> ADD_BLOCK = BLOCK_ACTIONS.register("add_block", AddBlockAction::new);
 	public static final RegistryObject<ExecuteCommandBlockAction> EXECUTE_COMMAND = BLOCK_ACTIONS.register("execute_command", ExecuteCommandBlockAction::new);
+	public static final RegistryObject<BonemealAction> BONEMEAL = BLOCK_ACTIONS.register("bonemeal", BonemealAction::new);
+	public static final RegistryObject<ModifyBlockStateAction> MODIFY_BLOCK_STATE = BLOCK_ACTIONS.register("modify_block_state", ModifyBlockStateAction::new);
+	public static final RegistryObject<ExplodeAction> EXPLODE = BLOCK_ACTIONS.register("explode", ExplodeAction::new);
 
 	public static void register() {
 		MetaFactories.defineMetaActions(BLOCK_ACTIONS, DelegatedBlockAction::new, ConfiguredBlockAction.CODEC, ConfiguredBlockCondition.CODEC, EXECUTOR, PREDICATE);

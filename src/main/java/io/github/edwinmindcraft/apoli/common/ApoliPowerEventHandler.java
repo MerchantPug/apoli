@@ -95,15 +95,19 @@ public class ApoliPowerEventHandler {
 		LivingEntity entityLiving = event.getEntityLiving();
 		event.setAmount(ModifyDamageTakenPower.modify(entityLiving, event.getSource(), event.getAmount()));
 	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public static void livingDamage(LivingDamageEvent event) {
 		LivingEntity target = event.getEntityLiving();
 		DamageSource source = event.getSource();
-		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(event.getAmount()));
+		float amount = event.getAmount();
+		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
 		if (source.isProjectile())
-			event.setAmount(ModifyDamageDealtPower.modifyProjectile(source.getEntity(), target, source, event.getAmount()));
+			event.setAmount(ModifyDamageDealtPower.modifyProjectile(source.getEntity(), target, source, amount));
 		else
-			event.setAmount(ModifyDamageDealtPower.modifyMelee(source.getEntity(), target, source, event.getAmount()));
+			event.setAmount(ModifyDamageDealtPower.modifyMelee(source.getEntity(), target, source, amount));
+		if (event.getAmount() != amount && event.getAmount() == 0F)
+			event.setCanceled(true);
 	}
 
 	/**
@@ -194,6 +198,12 @@ public class ApoliPowerEventHandler {
 
 	//region Prevention Block
 	//This blocks runs on EventPriority.HIGHEST as cancelling should be final in those cases.
+
+	@SubscribeEvent
+	public static void preventPotionEffect(PotionEvent.PotionApplicableEvent event) {
+		if (EffectImmunityPower.isImmune(event.getEntity(), event.getPotionEffect()))
+			event.setResult(Event.Result.DENY);
+	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void preventGameEvent(VanillaGameEvent event) {

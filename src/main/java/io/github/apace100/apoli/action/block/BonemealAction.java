@@ -1,47 +1,40 @@
 package io.github.apace100.apoli.action.block;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BoneMealItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
-import org.apache.commons.lang3.tuple.Triple;
+import com.mojang.serialization.Codec;
+import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.BoneMealItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class BonemealAction {
-    public static void action(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
-        World world = block.getLeft();
-        BlockPos blockPos = block.getMiddle();
-        Direction side = block.getRight();
-        BlockPos blockPos2 = blockPos.offset(side);
+public class BonemealAction extends BlockAction<FieldConfiguration<Boolean>> {
 
-        boolean spawnEffects = data.getBoolean("effects");
+	public BonemealAction() {
+		super(FieldConfiguration.codec(Codec.BOOL, "effects", true));
+	}
 
-        if (BoneMealItem.useOnFertilizable(ItemStack.EMPTY, world, blockPos)) {
-            if (spawnEffects && !world.isClient) {
-                world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
-            }
-        } else {
-            BlockState blockState = world.getBlockState(blockPos);
-            boolean bl = blockState.isSideSolidFullSquare(world, blockPos, side);
-            if (bl && BoneMealItem.useOnGround(ItemStack.EMPTY, world, blockPos2, side)) {
-                if (spawnEffects && !world.isClient) {
-                    world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos2, 0);
-                }
-            }
-        }
-    }
+	@Override
+	public void execute(FieldConfiguration<Boolean> configuration, Level world, BlockPos pos, Direction direction) {
+		BlockPos blockPos2 = pos.relative(direction);
 
-    public static ActionFactory<Triple<World, BlockPos, Direction>> createFactory() {
-        return new ActionFactory<>(Apoli.identifier("bonemeal"),
-                new SerializableData()
-                    .add("effects", SerializableDataTypes.BOOLEAN, true),
-                BonemealAction::action
-        );
-    }
+		boolean spawnEffects = configuration.value();
+
+		if (BoneMealItem.growCrop(ItemStack.EMPTY, world, pos)) { //Use the fake player version (Mostly because I'm lazy)
+			if (spawnEffects && !world.isClientSide()) {
+				world.globalLevelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 0);
+			}
+		} else {
+			BlockState blockState = world.getBlockState(pos);
+			boolean bl = blockState.isFaceSturdy(world, pos, direction);
+			if (bl && BoneMealItem.growWaterPlant(ItemStack.EMPTY, world, blockPos2, direction)) {
+				if (spawnEffects && !world.isClientSide()) {
+					world.globalLevelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, blockPos2, 0);
+				}
+			}
+		}
+	}
 }

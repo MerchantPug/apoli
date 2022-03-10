@@ -8,16 +8,13 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntity
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiEntityAction;
-import io.github.edwinmindcraft.apoli.api.power.factory.ItemAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.action.bientity.DelegatedBiEntityAction;
-import io.github.edwinmindcraft.apoli.common.action.item.DelegatedItemAction;
+import io.github.edwinmindcraft.apoli.common.action.bientity.DispatchBiEntityAction;
+import io.github.edwinmindcraft.apoli.common.action.bientity.InvertBiEntityAction;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.RegistryObject;
-import org.apache.commons.lang3.mutable.Mutable;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -39,6 +36,10 @@ public class ApoliIBiEntityActions {
 	public static final RegistryObject<DelegatedBiEntityAction<ChoiceConfiguration<ConfiguredItemAction<?, ?>, Pair<Entity, Entity>>>> CHOICE = of("choice");
 	public static final RegistryObject<DelegatedBiEntityAction<DelayAction<ConfiguredItemAction<?, ?>, Pair<Entity, Entity>>>> DELAY = of("delay");
 	public static final RegistryObject<DelegatedBiEntityAction<NothingConfiguration<Pair<Entity, Entity>>>> NOTHING = of("nothing");
+
+	public static final RegistryObject<InvertBiEntityAction> INVERT = BIENTITY_ACTIONS.register("invert", InvertBiEntityAction::new);
+	public static final RegistryObject<DispatchBiEntityAction> ACTOR_ACTION = BIENTITY_ACTIONS.register("actor_action", DispatchBiEntityAction::actor);
+	public static final RegistryObject<DispatchBiEntityAction> TARGET_ACTION = BIENTITY_ACTIONS.register("target_action", DispatchBiEntityAction::target);
 
 	public static void register() {
 		MetaFactories.defineMetaActions(BIENTITY_ACTIONS, DelegatedBiEntityAction::new, ConfiguredBiEntityAction.CODEC, ConfiguredBiEntityCondition.CODEC, EXECUTOR, PREDICATE);

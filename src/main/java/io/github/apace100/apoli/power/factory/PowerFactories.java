@@ -1,31 +1,29 @@
 package io.github.apace100.apoli.power.factory;
 
-import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.power.*;
 import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.apace100.calio.data.SerializableData;
 import net.minecraft.util.registry.Registry;
 
 public class PowerFactories {
 
 	@SuppressWarnings("unchecked")
 	public static void register() {
-		register(new PowerFactory<>(Apoli.identifier("simple"), new SerializableData(), data -> Power::new).allowCondition());
+		//register(new PowerFactory<>(Apoli.identifier("simple"), new SerializableData(), data -> Power::new).allowCondition());
 		//register(TogglePower::createFactory);
 		//register(AttributePower::createFactory);
 		//register(CooldownPower::createFactory);
 		//register(EffectImmunityPower::createFactory);
 		//register(ElytraFlightPower::createFactory);
 		//register(SetEntityGroupPower::createFactory);
-		register(FireProjectilePower::createFactory);
+		//register(FireProjectilePower::createFactory);
 		//register(InventoryPower::createFactory);
 		//register(InvisibilityPower::createFactory);
 		//register(InvulnerablePower::createFactory);
-		register(ActiveCooldownPower::createLaunchFactory);
+		//register(ActiveCooldownPower::createLaunchFactory);
 		//register(ModelColorPower::createFactory);
 		//register(ModifyBreakSpeedPower::createFactory);
-		register(ModifyDamageDealtPower::createFactory);
-		register(ModifyDamageTakenPower::createFactory);
+		//register(ModifyDamageDealtPower::createFactory);
+		//register(ModifyDamageTakenPower::createFactory);
 		//register(() -> ValueModifyingPower.createValueModifyingFactory(
 		//    ModifyExhaustionPower::new, Apoli.identifier("modify_exhaustion")));
 		//register(ModifyHarvestPower::createFactory);
@@ -47,8 +45,8 @@ public class PowerFactories {
 		//register(() -> ValueModifyingPower.createValueModifyingFactory(
 		//    ModifyLavaSpeedPower::new, Apoli.identifier("modify_lava_speed")));
 		//register(LavaVisionPower::createFactory);
-		register(ConditionedAttributePower::createFactory);
-		register(ActiveCooldownPower::createActiveSelfFactory);
+		//register(ConditionedAttributePower::createFactory);
+		//register(ActiveCooldownPower::createActiveSelfFactory);
 		//register(ActionOverTimePower::createFactory);
 		//register(() -> SelfActionWhenHitPower.createFactory(Apoli.identifier("self_action_when_hit")));
 		//register(AttackerActionWhenHitPower::createFactory);
@@ -57,7 +55,7 @@ public class PowerFactories {
 		//register(StartingEquipmentPower::createFactory);
 		//register(ActionOnCallbackPower::createFactory);
 		//register(WalkOnFluidPower::createFactory);
-		register(ShaderPower::createFactory);
+		//register(ShaderPower::createFactory);
 		//register(() -> Power.createSimpleFactory(ShakingPower::new, Apoli.identifier("shaking")));
 		//register(() -> Power.createSimpleFactory(DisableRegenPower::new, Apoli.identifier("disable_regen")));
 		//register(ResourcePower::createFactory);
@@ -89,7 +87,7 @@ public class PowerFactories {
 		//register(ExhaustOverTimePower::createFactory);
 		//register(PreventGameEventPower::createFactory);
 		register(ModifyCraftingPower::createFactory);
-		register(() -> Power.createSimpleFactory(FreezePower::new, Apoli.identifier("freeze")));
+		//register(() -> Power.createSimpleFactory(FreezePower::new, Apoli.identifier("freeze")));
 		register(ModifyBlockRenderPower::createFactory);
 		register(ModifyFluidRenderPower::createFactory);
 		register(ModifyCameraSubmersionTypePower::createFactory);

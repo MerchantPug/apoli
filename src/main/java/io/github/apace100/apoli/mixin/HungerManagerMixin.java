@@ -3,6 +3,8 @@ package io.github.apace100.apoli.mixin;
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
+import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.food.FoodProperties;
@@ -19,78 +21,48 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(FoodData.class)
 public class HungerManagerMixin {
 
+	@Shadow
+	private int foodLevel;
+	@Shadow
+	private float saturationLevel;
 	@Unique
 	private Player player;
-    @Shadow private int foodLevel;
-    @Shadow private float foodSaturationLevel;
-    @Unique
-    private PlayerEntity player;
 
 	@Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodProperties;getNutrition()I"))
 	private int modifyHunger(FoodProperties foodComponent, Item item, ItemStack stack) {
+		int nutrition = foodComponent.getNutrition();
 		if (this.player != null) {
-			return (int) ModifyFoodPower.apply(this.player, stack, foodComponent.getNutrition(), ModifyFoodConfiguration::foodModifiers);
+			int change = (int) ModifyFoodPower.apply(((ModifiableFoodEntity) this.player).getCurrentModifyFoodPowers(), this.player.level, stack, nutrition, ModifyFoodConfiguration::foodModifiers);
+			if (change != nutrition)
+				this.apoli$ShouldUpdateManually = true;
+			return change;
 		}
-		return foodComponent.getNutrition();
+		return nutrition;
 	}
-    @Unique
-    private boolean apoli$ShouldUpdateManually = false;
 
-    @Redirect(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/FoodComponent;getHunger()I"))
-    private int modifyHunger(FoodComponent foodComponent, Item item, ItemStack stack) {
-        apoli$ShouldUpdateManually = false;
-        if(player != null) {
-            double baseValue = foodComponent.getHunger();
-        List<EntityAttributeModifier> modifiers = ((ModifiableFoodEntity)player).getCurrentModifyFoodPowers().stream()
-            .filter(p -> p.doesApply(stack))
-            .flatMap(p -> p.getFoodModifiers().stream()).collect(Collectors.toList());
-            int newFood = (int) AttributeUtil.sortAndApplyModifiers(modifiers, baseValue);
-            if(newFood != (int)baseValue && newFood == 0) {
-                apoli$ShouldUpdateManually = true;
-            }
-            return newFood;
-        }
-        return foodComponent.getHunger();
-    }
+	@Unique
+	private boolean apoli$ShouldUpdateManually = false;
 
 	@Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodProperties;getSaturationModifier()F"))
 	private float modifySaturation(FoodProperties foodComponent, Item item, ItemStack stack) {
-		if (this.player != null)
-			return (float) ModifyFoodPower.apply(this.player, stack, foodComponent.getSaturationModifier(), ModifyFoodConfiguration::saturationModifiers);
-		return foodComponent.getSaturationModifier();
+		float saturationModifier = foodComponent.getSaturationModifier();
+		if (this.player != null) {
+			float change = (float) ModifyFoodPower.apply(((ModifiableFoodEntity) this.player).getCurrentModifyFoodPowers(), this.player.level, stack, saturationModifier, ModifyFoodConfiguration::saturationModifiers);
+			if (change != saturationModifier)
+				this.apoli$ShouldUpdateManually = true;
+			return change;
+		}
+		return saturationModifier;
 	}
-
-    @Redirect(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/FoodComponent;getSaturationModifier()F"))
-    private float modifySaturation(FoodComponent foodComponent, Item item, ItemStack stack) {
-        if(player != null) {
-            double baseValue = foodComponent.getSaturationModifier();
-            List<EntityAttributeModifier> modifiers = ((ModifiableFoodEntity)player).getCurrentModifyFoodPowers().stream()
-                .filter(p -> p.doesApply(stack))
-                .flatMap(p -> p.getSaturationModifiers().stream()).collect(Collectors.toList());
-            float newSaturation = (float) AttributeUtil.sortAndApplyModifiers(modifiers, baseValue);
-            if(newSaturation != baseValue && newSaturation == 0) {
-                apoli$ShouldUpdateManually = true;
-            }
-            return newSaturation;
-        }
-        return foodComponent.getSaturationModifier();
-    }
 
 	@Inject(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;eat(IF)V", shift = At.Shift.AFTER))
 	private void executeAdditionalEatAction(Item item, ItemStack stack, CallbackInfo ci) {
 		if (this.player != null) {
-            ModifyFoodPower.execute(this.player, stack);
+			ModifyFoodPower.execute(((ModifiableFoodEntity) this.player).getCurrentModifyFoodPowers(), this.player, this.player.level, stack);
+			if (this.apoli$ShouldUpdateManually && !this.player.level.isClientSide() && this.player instanceof ServerPlayer sp)
+				sp.connection.send(new ClientboundSetHealthPacket(this.player.getHealth(), this.foodLevel, this.saturationLevel));
 		}
 	}
-    @Inject(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;add(IF)V", shift = At.Shift.AFTER))
-    private void executeAdditionalEatAction(Item item, ItemStack stack, CallbackInfo ci) {
-        if(player != null) {
-            ((ModifiableFoodEntity)player).getCurrentModifyFoodPowers().stream().filter(p -> p.doesApply(stack)).forEach(ModifyFoodPower::eat);
-            if(apoli$ShouldUpdateManually && !player.world.isClient) {
-                ((ServerPlayerEntity)player).networkHandler.sendPacket(new HealthUpdateS2CPacket(player.getHealth(), foodLevel, foodSaturationLevel));
-            }
-        }
-    }
 
 	@Inject(method = "tick", at = @At("HEAD"))
 	private void cachePlayer(Player player, CallbackInfo ci) {

@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.power.factory.action.entity;
 
-import io.github.apace100.apoli.action.entity.configuration.RaycastConfiguration;
+import io.github.apace100.apoli.action.configuration.RaycastConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;

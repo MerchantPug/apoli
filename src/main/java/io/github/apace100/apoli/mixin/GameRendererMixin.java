@@ -22,6 +22,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FogType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -65,11 +66,13 @@ public abstract class GameRendererMixin {
 	@Shadow
 	public abstract void loadEffect(ResourceLocation identifier);
 
+	@Shadow public abstract Minecraft getMinecraft();
+
 	@Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
 	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
 		if (ApoliPowers.SHADER.isPresent()) {
 			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
-				ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
+				ResourceLocation shaderLoc = shaderPower.getConfiguration().shader();
 				if (this.resourceManager.hasResource(shaderLoc)) {
 					this.loadEffect(shaderLoc);
 					this.currentlyLoadedShader = shaderLoc;
@@ -78,11 +81,11 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	@Inject(at = @At("HEAD"), method = "render")
+	/*@Inject(at = @At("HEAD"), method = "render")
 	private void loadShaderFromPower(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
 		if (ApoliPowers.SHADER.isPresent()) {
 			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
-				ResourceLocation shaderLoc = shaderPower.getConfiguration().value();
+				ResourceLocation shaderLoc = shaderPower.getConfiguration().shader();
 				if (this.currentlyLoadedShader != shaderLoc) {
 					this.loadEffect(shaderLoc);
 					this.currentlyLoadedShader = shaderLoc;
@@ -97,17 +100,16 @@ public abstract class GameRendererMixin {
 				this.currentlyLoadedShader = null;
 			}
 		}
-	}
+	}*/
 
-	@Inject(
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getMainRenderTarget()Lcom/mojang/blaze3d/pipeline/RenderTarget;"),
-			method = "render"
-	)
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getMainRenderTarget()Lcom/mojang/blaze3d/pipeline/RenderTarget;"), method = "render")
 	private void fixHudWithShaderEnabled(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
 		RenderSystem.enableTexture();
 	}
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;pop()V"))
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"))
     private void renderOverlayPowers(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+		//TODO Power GUI
         boolean hudHidden = this.client.options.hudHidden;
         boolean thirdPerson = !client.options.getPerspective().isFirstPerson();
         PowerHolderComponent.withPower(client.getCameraEntity(), OverlayPower.class, p -> {
@@ -124,39 +126,11 @@ public abstract class GameRendererMixin {
         }, OverlayPower::render);
     }
 
-    @Inject(
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getFramebuffer()Lnet/minecraft/client/gl/Framebuffer;"),
-        method = "render"
-    )
-    private void fixHudWithShaderEnabled(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
-        RenderSystem.enableTexture();
-    }
 
-    @Inject(at = @At("HEAD"), method = "toggleShadersEnabled", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "togglePostEffect", cancellable = true)
     private void disableShaderToggle(CallbackInfo ci) {
-        PowerHolderComponent.withPower(client.getCameraEntity(), ShaderPower.class, null, shaderPower -> {
-            Identifier shaderLoc = shaderPower.getShaderLocation();
-            if(!shaderPower.isToggleable() && currentlyLoadedShader == shaderLoc) {
-                ci.cancel();
-            }
-        });
+		IPowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream().anyMatch(power -> !power.getConfiguration().toggleable() && power.getConfiguration().shader().equals(this.currentlyLoadedShader));
     }
-/*
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setCameraEntity(Lnet/minecraft/entity/Entity;)V"))
-    private void updateShaderPowers(CallbackInfo ci) {
-        if(OriginComponent.hasPower(client.getCameraEntity(), ShaderPower.class)) {
-            OriginComponent.withPower(client.getCameraEntity(), ShaderPower.class, null, shaderPower -> {
-                Identifier shaderLoc = shaderPower.getShaderLocation();
-                loadShader(shaderLoc);
-                currentlyLoadedShader = shaderLoc;
-            });
-        } else {
-            this.shader.close();
-            this.shader = null;
-            this.shadersEnabled = false;
-            currentlyLoadedShader = null;
-        }
-    }*/
 
 	@Redirect(method = "getNightVisionScale", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/effect/MobEffectInstance;getDuration()I"))
 	private static int fixNightVision(MobEffectInstance instance) {
@@ -170,20 +144,11 @@ public abstract class GameRendererMixin {
 		if (!living.hasEffect(MobEffects.NIGHT_VISION)) //Should fix the flickering
 			INightVisionPower.getNightVisionStrength(living).ifPresent(cir::setReturnValue);
 	}
-    // NightVisionPower
-    @Inject(at = @At("HEAD"), method = "getNightVisionStrength", cancellable = true)
-    private static void getNightVisionStrength(LivingEntity livingEntity, float f, CallbackInfoReturnable<Float> info) {
-        if (livingEntity instanceof PlayerEntity && !livingEntity.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-            List<NightVisionPower> nvs = PowerHolderComponent.KEY.get(livingEntity).getPowers(NightVisionPower.class);
-            Optional<Float> strength = nvs.stream().filter(NightVisionPower::isActive).map(NightVisionPower::getStrength).max(Float::compareTo);
-            strength.ifPresent(info::setReturnValue);
-        }
-    }
 
-    @Redirect(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Camera;getSubmersionType()Lnet/minecraft/client/render/CameraSubmersionType;"))
-    private CameraSubmersionType modifySubmersionType(Camera camera) {
-        CameraSubmersionType original = camera.getSubmersionType();
-        if(camera.getFocusedEntity() instanceof LivingEntity) {
+    @Redirect(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getFluidInCamera()Lnet/minecraft/world/level/material/FogType;"))
+    private FogType modifySubmersionType(Camera camera) {
+		FogType original = camera.getFluidInCamera();
+        if(camera.getEntity() instanceof LivingEntity) {
             for(ModifyCameraSubmersionTypePower p : PowerHolderComponent.getPowers(camera.getFocusedEntity(), ModifyCameraSubmersionTypePower.class)) {
                 if(p.doesModify(original)) {
                     return p.getNewType();
@@ -192,8 +157,6 @@ public abstract class GameRendererMixin {
         }
         return original;
     }
-
-    private HashMap<BlockPos, BlockState> savedStates = new HashMap<>();
 
 	// PHASING: remove_blocks
 	@Inject(at = @At(value = "HEAD"), method = "render")
@@ -252,6 +215,7 @@ public abstract class GameRendererMixin {
 		BlockPos.betweenClosedStream(cameraBox).forEach(p -> set.add(p.immutable()));
 		return set;
 	}
+
     /* TODO: make this overlay independent of phasing power
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F"))
     private void drawPhantomizedOverlay(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {

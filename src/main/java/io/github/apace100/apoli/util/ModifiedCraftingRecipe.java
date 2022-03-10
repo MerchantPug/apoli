@@ -3,110 +3,109 @@ package io.github.apace100.apoli.util;
 import com.google.common.collect.Lists;
 import io.github.apace100.apoli.access.PowerCraftingInventory;
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.mixin.CraftingInventoryAccessor;
-import io.github.apace100.apoli.mixin.CraftingScreenHandlerAccessor;
-import io.github.apace100.apoli.mixin.PlayerScreenHandlerAccessor;
+import io.github.apace100.apoli.mixin.CraftingContainerAccessor;
 import io.github.apace100.apoli.power.ModifyCraftingPower;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.recipe.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.ForgeHooks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ModifiedCraftingRecipe extends SpecialCraftingRecipe {
+public class ModifiedCraftingRecipe extends CustomRecipe {
 
-    public static final RecipeSerializer<?> SERIALIZER = new SpecialRecipeSerializer<>(ModifiedCraftingRecipe::new);
+	public static final RecipeSerializer<?> SERIALIZER = new SimpleRecipeSerializer<>(ModifiedCraftingRecipe::new);
 
-    public ModifiedCraftingRecipe(Identifier id) {
-        super(id);
-    }
+	public ModifiedCraftingRecipe(ResourceLocation id) {
+		super(id);
+	}
 
-    @Override
-    public boolean matches(CraftingInventory inv, World world) {
-        Optional<CraftingRecipe> original = getOriginalMatch(inv);
-        if(original.isEmpty()) {
-            return false;
-        }
-        return getRecipes(inv).stream().anyMatch(r -> r.doesApply(inv, original.get()));
-    }
+	@Override
+	public boolean matches(CraftingContainer inv, Level world) {
+		Player player = ForgeHooks.getCraftingPlayer();
+		if (player == null) player = getPlayerFromInventory(inv);
+		Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
+		if (original.isEmpty()) {
+			return false;
+		}
+		return this.getRecipes(player).stream().anyMatch(r -> r.doesApply(inv, original.get()));
+	}
 
-    @Override
-    public ItemStack craft(CraftingInventory inv) {
-        PlayerEntity player = getPlayerFromInventory(inv);
-        if(player != null) {
-            Optional<CraftingRecipe> original = getOriginalMatch(inv);
-            if(original.isPresent()) {
-                Optional<ModifyCraftingPower> optional = getRecipes(inv).stream().filter(r -> r.doesApply(inv, original.get())).findFirst();
-                if(optional.isPresent()) {
-                    ItemStack result = optional.get().getNewResult(inv, original.get());
-                    ((PowerCraftingInventory)inv).setPower(optional.get());
-                    return result;
-                }
-            }
-        }
-        return ItemStack.EMPTY;
-    }
+	@Override
+	public @NotNull ItemStack assemble(CraftingContainer inv) {
+		Player player = ForgeHooks.getCraftingPlayer();
+		if (player == null) player = getPlayerFromInventory(inv);
+		if (player != null) {
+			Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
+			if (original.isPresent()) {
+				Optional<ModifyCraftingPower> optional = this.getRecipes(player).stream().filter(r -> r.doesApply(inv, original.get())).findFirst();
+				if (optional.isPresent()) {
+					ItemStack result = optional.get().getNewResult(inv, original.get());
+					((PowerCraftingInventory) inv).setPower(optional.get());
+					return result;
+				}
+			}
+		}
+		return ItemStack.EMPTY;
+	}
 
-    @Override
-    public boolean fits(int width, int height) {
-        return true;
-    }
+	@Override
+	public boolean canCraftInDimensions(int width, int height) {
+		return true;
+	}
 
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return SERIALIZER;
-    }
+	@Override
+	public @NotNull RecipeSerializer<?> getSerializer() {
+		return SERIALIZER;
+	}
 
-    public static PlayerEntity getPlayerFromInventory(CraftingInventory inv) {
-        ScreenHandler handler = ((CraftingInventoryAccessor)inv).getHandler();
-        return getPlayerFromHandler(handler);
-    }
+	public static Player getPlayerFromInventory(CraftingContainer inv) {
+		AbstractContainerMenu handler = inv.menu;
+		return getPlayerFromHandler(handler);
+	}
 
-    public static Optional<BlockPos> getBlockFromInventory(CraftingInventory inv) {
-        ScreenHandler handler = ((CraftingInventoryAccessor)inv).getHandler();
-        if(handler instanceof CraftingScreenHandler) {
-            return ((CraftingScreenHandlerAccessor)handler).getContext().get((world, blockPos) -> blockPos);
-        }
-        return Optional.empty();
-    }
+	public static Optional<BlockPos> getBlockFromInventory(CraftingContainer inv) {
+		AbstractContainerMenu handler = inv.menu;
+		if (handler instanceof CraftingMenu menu) {
+			return menu.access.evaluate((world, blockPos) -> blockPos);
+		}
+		return Optional.empty();
+	}
 
-    private List<ModifyCraftingPower> getRecipes(CraftingInventory inv) {
-        ScreenHandler handler = ((CraftingInventoryAccessor)inv).getHandler();
-        PlayerEntity player = getPlayerFromHandler(handler);
-        if(player != null) {
-            return PowerHolderComponent.getPowers(player, ModifyCraftingPower.class);
-        }
-        return Lists.newArrayList();
-    }
+	private List<ModifyCraftingPower> getRecipes(Player player) {
+		if (player != null)
+			return PowerHolderComponent.getPowers(player, ModifyCraftingPower.class);
+		return Lists.newArrayList();
+	}
 
-    private Optional<CraftingRecipe> getOriginalMatch(CraftingInventory inv) {
-        ScreenHandler handler = ((CraftingInventoryAccessor)inv).getHandler();
-        PlayerEntity player = getPlayerFromHandler(handler);
-        if(player != null && player.getServer() != null) {
-            List<CraftingRecipe> recipes = player.getServer().getRecipeManager().listAllOfType(RecipeType.CRAFTING);
-            return recipes.stream()
-                .filter(cr -> !(cr instanceof ModifiedCraftingRecipe)
-                    && cr.matches(inv, player.world))
-                .findFirst();
-        }
-        return Optional.empty();
-    }
+	private Optional<CraftingRecipe> getOriginalMatch(CraftingContainer inv, Player player) {
+		if (player != null && player.getServer() != null) {
+			List<CraftingRecipe> recipes = player.getServer().getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING);
+			return recipes.stream()
+					.filter(cr -> !(cr instanceof ModifiedCraftingRecipe) && cr.matches(inv, player.level))
+					.findFirst();
+		}
+		return Optional.empty();
+	}
 
-    private static PlayerEntity getPlayerFromHandler(ScreenHandler screenHandler) {
-        if(screenHandler instanceof CraftingScreenHandler) {
-            return ((CraftingScreenHandlerAccessor)screenHandler).getPlayer();
-        }
-        if(screenHandler instanceof PlayerScreenHandler) {
-            return ((PlayerScreenHandlerAccessor)screenHandler).getOwner();
-        }
-        return null;
-    }
+	private static Player getPlayerFromHandler(AbstractContainerMenu screenHandler) {
+		if (screenHandler instanceof CraftingMenu menu)
+			return menu.player;
+		if (screenHandler instanceof InventoryMenu menu)
+			return menu.owner;
+		return null;
+	}
 }

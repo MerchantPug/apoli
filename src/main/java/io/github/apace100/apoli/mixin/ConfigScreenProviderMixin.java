@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 @Mixin(ConfigScreenProvider.class)
 public class ConfigScreenProviderMixin {
 
-    @Redirect(method = "get", at = @At(value = "INVOKE", target = "Ljava/lang/Class;getDeclaredFields()[Ljava/lang/reflect/Field;"))
+    @Redirect(method = "get()Lnet/minecraft/client/gui/screens/Screen;", at = @At(value = "INVOKE", target = "Ljava/lang/Class;getDeclaredFields()[Ljava/lang/reflect/Field;"))
     private Field[] getEvenSuperFields(Class aClass) {
         if(aClass == ApoliConfigClient.class) {
             return aClass.getFields();

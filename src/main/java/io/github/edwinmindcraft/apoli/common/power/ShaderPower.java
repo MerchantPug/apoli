@@ -1,12 +1,11 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import net.minecraft.resources.ResourceLocation;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ShaderConfiguration;
 
-public class ShaderPower extends PowerFactory<FieldConfiguration<ResourceLocation>> {
+public class ShaderPower extends PowerFactory<ShaderConfiguration> {
 
 	public ShaderPower() {
-		super(FieldConfiguration.codec(ResourceLocation.CODEC, "shader"));
+		super(ShaderConfiguration.CODEC);
 	}
 }

@@ -1,6 +1,8 @@
 package io.github.apace100.apoli.access;
 
-import io.github.apace100.apoli.power.ModifyFoodPower;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -11,7 +13,7 @@ public interface ModifiableFoodEntity {
 
 	void setOriginalFoodStack(ItemStack original);
 
-	List<ModifyFoodPower> getCurrentModifyFoodPowers();
+	List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> getCurrentModifyFoodPowers();
 
-	void setCurrentModifyFoodPowers(List<ModifyFoodPower> powers);
+	void setCurrentModifyFoodPowers(List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> powers);
 }

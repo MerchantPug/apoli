@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.action.entity;
 
-import io.github.apace100.apoli.action.entity.configuration.AreaOfEffectConfiguration;
+import io.github.apace100.apoli.action.configuration.AreaOfEffectConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.util.Mth;

@@ -88,6 +88,7 @@ public class ApoliPowers {
 	public static final RegistryObject<KeepInventoryPower> KEEP_INVENTORY = ApoliRegisters.POWER_FACTORIES.register("keep_inventory", KeepInventoryPower::new);
 	public static final RegistryObject<SelfActionWhenHitPower> ACTION_WHEN_DAMAGE_TAKEN = ApoliRegisters.POWER_FACTORIES.register("action_when_damage_taken", SelfActionWhenHitPower::new);
 	public static final RegistryObject<ActionOnBlockUsePower> ACTION_ON_BLOCK_USE = ApoliRegisters.POWER_FACTORIES.register("action_on_block_use", ActionOnBlockUsePower::new);
+	public static final RegistryObject<DummyPower> FREEZE = ApoliRegisters.POWER_FACTORIES.register("freeze", DummyPower::new);
 	//endregion
 
 	public static void register() {}

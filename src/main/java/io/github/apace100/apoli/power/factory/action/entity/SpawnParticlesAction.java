@@ -1,6 +1,6 @@
 package io.github.apace100.apoli.power.factory.action.entity;
 
-import io.github.apace100.apoli.action.entity.configuration.SpawnParticlesConfiguration;
+import io.github.apace100.apoli.action.configuration.SpawnParticlesConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;

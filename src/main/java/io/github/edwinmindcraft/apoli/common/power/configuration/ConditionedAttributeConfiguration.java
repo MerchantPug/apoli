@@ -8,10 +8,10 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
-public record ConditionedAttributeConfiguration(ListConfiguration<AttributedEntityAttributeModifier> modifiers,
+public record ConditionedAttributeConfiguration(AttributeConfiguration attributes,
 												int tickRate) implements IDynamicFeatureConfiguration {
 	public static final Codec<ConditionedAttributeConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			ListConfiguration.mapCodec(ApoliDataTypes.ATTRIBUTED_ATTRIBUTE_MODIFIER, "modifier", "modifiers").forGetter(ConditionedAttributeConfiguration::modifiers),
+			AttributeConfiguration.MAP_CODEC.forGetter(ConditionedAttributeConfiguration::attributes),
 			CalioCodecHelper.optionalField(Codec.INT, "tick_rate", 20).forGetter(ConditionedAttributeConfiguration::tickRate)
 	).apply(instance, ConditionedAttributeConfiguration::new));
 }
