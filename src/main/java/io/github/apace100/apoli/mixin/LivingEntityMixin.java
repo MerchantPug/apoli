@@ -8,6 +8,7 @@ import io.github.apace100.apoli.power.PreventEntityCollisionPower;
 import io.github.apace100.apoli.util.StackPowerUtil;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.EntityGroupPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFallingPower;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -211,7 +213,8 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@ModifyVariable(method = "travel", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/LivingEntity;onGround:Z", opcode = Opcodes.GETFIELD, ordinal = 2))
 	private float modifySlipperiness(float original) {
-		return PowerHolderComponent.modify(this, ModifySlipperinessPower.class, original, p -> p.doesApply(world, getVelocityAffectingPos()));
+		BlockInWorld blockInWorld = new BlockInWorld(this.level, this.getBlockPosBelowThatAffectsMyMovement(), true);
+		return IPowerContainer.modify(this, ApoliPowers.MODIFY_SLIPPERINESS.get(), original, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), blockInWorld));
 	}
 
 	@Inject(method = "doPush", at = @At("HEAD"), cancellable = true)

@@ -3,7 +3,6 @@ package io.github.apace100.apoli.mixin;
 import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
-import io.github.apace100.apoli.power.PreventGameEventPower;
 import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
@@ -14,11 +13,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -97,28 +99,14 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@Inject(at = @At(value = "HEAD"), method = "moveTowardsClosestSpace", cancellable = true)
 	protected void pushOutOfBlocks(double x, double y, double z, CallbackInfo info) {
-		if (PhasingPower.shouldPhaseThrough((Entity)(Object)this, new BlockPos(x, y, z)))
+		if (PhasingPower.shouldPhaseThrough((Entity) (Object) this, new BlockPos(x, y, z)))
 			info.cancel();
 	}
 
-    @Inject(method = "gameEvent(Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/BlockPos;)V", at = @At("HEAD"), cancellable = true)
-    private void preventGameEvents(GameEvent event, @Nullable Entity entity, BlockPos pos, CallbackInfo ci) {
-        if(entity instanceof LivingEntity) {
-            List<PreventGameEventPower> preventingPowers = PowerHolderComponent.getPowers(entity, PreventGameEventPower.class).stream().filter(p -> p.doesPrevent(event)).toList();
-            if(preventingPowers.size() > 0) {
-                preventingPowers.forEach(p -> p.executeAction(entity));
-                ci.cancel();
-            }
-        }
-    }
-
-    @Redirect(method = "method_30022", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/shape/VoxelShape;"))
-    private VoxelShape preventPhasingSuffocation(BlockState state, BlockView world, BlockPos pos) {
-        return state.getCollisionShape(world, pos, ShapeContext.of((Entity)(Object)this));
-    }
-
-    private boolean isMoving;
-    private float distanceBefore;
+	@Redirect(method = "lambda$isInWall$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;"))
+	private VoxelShape preventPhasingSuffocation(BlockState state, BlockGetter world, BlockPos pos) {
+		return state.getCollisionShape(world, pos, CollisionContext.of((Entity) (Object) this));
+	}
 
 	@Inject(method = "move", at = @At("HEAD"))
 	private void saveDistanceTraveled(MoverType type, Vec3 movement, CallbackInfo ci) {

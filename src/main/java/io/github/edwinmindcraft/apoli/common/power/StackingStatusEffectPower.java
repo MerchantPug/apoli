@@ -46,7 +46,7 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 
 	@Override
 	protected int tickInterval(StackingStatusEffectConfiguration configuration, Entity player) {
-		return 10;
+		return configuration.tickRate();
 	}
 
 	@Override

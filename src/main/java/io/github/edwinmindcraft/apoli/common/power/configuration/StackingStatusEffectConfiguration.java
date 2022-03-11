@@ -5,15 +5,17 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.effect.MobEffectInstance;
 
 public record StackingStatusEffectConfiguration(ListConfiguration<MobEffectInstance> effects,
 												int min, int max,
-												int duration) implements IDynamicFeatureConfiguration {
+												int duration, int tickRate) implements IDynamicFeatureConfiguration {
 	public static final Codec<StackingStatusEffectConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.mapCodec(SerializableDataTypes.STATUS_EFFECT_INSTANCE, "effect", "effects").forGetter(StackingStatusEffectConfiguration::effects),
 			Codec.INT.fieldOf("min_stacks").forGetter(StackingStatusEffectConfiguration::min),
 			Codec.INT.fieldOf("max_stacks").forGetter(StackingStatusEffectConfiguration::min),
-			Codec.INT.fieldOf("duration_per_stack").forGetter(StackingStatusEffectConfiguration::duration)
+			Codec.INT.fieldOf("duration_per_stack").forGetter(StackingStatusEffectConfiguration::duration),
+			CalioCodecHelper.optionalField(Codec.INT, "tick_rate", 10).forGetter(StackingStatusEffectConfiguration::tickRate)
 	).apply(instance, StackingStatusEffectConfiguration::new));
 }

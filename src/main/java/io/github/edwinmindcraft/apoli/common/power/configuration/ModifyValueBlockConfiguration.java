@@ -11,10 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ModifyBreakSpeedConfiguration(ListConfiguration<AttributeModifier> modifiers,
+public record ModifyValueBlockConfiguration(ListConfiguration<AttributeModifier> modifiers,
 											@Nullable ConfiguredBlockCondition<?, ?> condition) implements IValueModifyingPowerConfiguration {
-	public static final Codec<ModifyBreakSpeedConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyBreakSpeedConfiguration::modifiers),
+	public static final Codec<ModifyValueBlockConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyValueBlockConfiguration::modifiers),
 			CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition").forGetter(x -> Optional.ofNullable(x.condition()))
-	).apply(instance, (t1, t2) -> new ModifyBreakSpeedConfiguration(t1, t2.orElse(null))));
+	).apply(instance, (t1, t2) -> new ModifyValueBlockConfiguration(t1, t2.orElse(null))));
 }

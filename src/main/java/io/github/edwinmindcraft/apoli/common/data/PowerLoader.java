@@ -6,18 +6,21 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.integration.PowerLoadEvent;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryFactory;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryValidator;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, DynamicEntryValidator<ConfiguredPower<?, ?>> {
 	INSTANCE;
@@ -29,7 +32,10 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 		SerializableData.CURRENT_NAMESPACE = resourceLocation.getNamespace();
 		SerializableData.CURRENT_PATH = resourceLocation.getPath();
 		Optional<ConfiguredPower<?, ?>> definition = list.stream().flatMap(x -> {
-			DataResult<ConfiguredPower<?, ?>> power = ConfiguredPower.CODEC.decode(JsonOps.INSTANCE, x).map(Pair::getFirst);
+			PowerLoadEvent.Pre pre = new PowerLoadEvent.Pre(resourceLocation, x);
+			MinecraftForge.EVENT_BUS.post(pre);
+			if (pre.isCanceled()) return Stream.empty();
+			DataResult<ConfiguredPower<?, ?>> power = ConfiguredPower.CODEC.decode(JsonOps.INSTANCE, pre.getJson()).map(Pair::getFirst);
 			Optional<ConfiguredPower<?, ?>> powerDefinition = power.resultOrPartial(error -> Apoli.LOGGER.error("Error loading power \"{}\": {}", resourceLocation, error));
 			return powerDefinition.stream();
 		}).max(LOADING_ORDER_COMPARATOR);

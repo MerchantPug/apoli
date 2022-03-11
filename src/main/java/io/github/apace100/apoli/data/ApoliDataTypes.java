@@ -1,9 +1,5 @@
 package io.github.apace100.apoli.data;
 
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.action.ActionTypes;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionTypes;
 import io.github.apace100.apoli.util.*;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.SerializationHelper;
@@ -12,12 +8,10 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
 import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
-import net.minecraft.util.Pair;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 //FIXME Reintroduce
@@ -31,7 +25,7 @@ public class ApoliDataTypes {
         condition(ClassUtil.castClass(ConditionFactory.Instance.class), ConditionTypes.ENTITY);
 
     public static final SerializableDataType<List<ConditionFactory<Entity>.Instance>> ENTITY_CONDITIONS =
-        SerializableDataType.list(ENTITY_CONDITION);*/
+        SerializableDataType.list(ENTITY_CONDITION);
 
 	public static final SerializableDataType<ConditionFactory<Pair<Entity, Entity>>.Instance> BIENTITY_CONDITION =
 			condition(ClassUtil.castClass(ConditionFactory.Instance.class), ConditionTypes.BIENTITY);
@@ -39,7 +33,7 @@ public class ApoliDataTypes {
 	public static final SerializableDataType<List<ConditionFactory<Pair<Entity, Entity>>.Instance>> BIENTITY_CONDITIONS =
 			SerializableDataType.list(BIENTITY_CONDITION);
 
-    /*public static final SerializableDataType<ConditionFactory<ItemStack>.Instance> ITEM_CONDITION =
+    public static final SerializableDataType<ConditionFactory<ItemStack>.Instance> ITEM_CONDITION =
         condition(ClassUtil.castClass(ConditionFactory.Instance.class), ConditionTypes.ITEM);
 
     public static final SerializableDataType<List<ConditionFactory<ItemStack>.Instance>> ITEM_CONDITIONS =
@@ -73,7 +67,7 @@ public class ApoliDataTypes {
         action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.ENTITY);
 
     public static final SerializableDataType<List<ActionFactory<Entity>.Instance>> ENTITY_ACTIONS =
-        SerializableDataType.list(ENTITY_ACTION);*/
+        SerializableDataType.list(ENTITY_ACTION);
 
 	public static final SerializableDataType<ActionFactory<Tuple<Entity, Entity>>.Instance> BIENTITY_ACTION =
 			action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.BIENTITY);
@@ -81,7 +75,7 @@ public class ApoliDataTypes {
 	public static final SerializableDataType<List<ActionFactory<Tuple<Entity, Entity>>.Instance>> BIENTITY_ACTIONS =
 			SerializableDataType.list(BIENTITY_ACTION);
 
-    /*public static final SerializableDataType<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> BLOCK_ACTION =
+    public static final SerializableDataType<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance> BLOCK_ACTION =
         action(ClassUtil.castClass(ActionFactory.Instance.class), ActionTypes.BLOCK);
 
     public static final SerializableDataType<List<ActionFactory<Triple<Level, BlockPos, Direction>>.Instance>> BLOCK_ACTIONS =

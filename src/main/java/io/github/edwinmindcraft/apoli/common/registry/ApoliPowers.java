@@ -38,7 +38,7 @@ public class ApoliPowers {
 	public static final RegistryObject<LaunchPower> LAUNCH = ApoliRegisters.POWER_FACTORIES.register("launch", LaunchPower::new);
 	public static final RegistryObject<LavaVisionPower> LAVA_VISION = ApoliRegisters.POWER_FACTORIES.register("lava_vision", LavaVisionPower::new);
 	public static final RegistryObject<ModelColorPower> MODEL_COLOR = ApoliRegisters.POWER_FACTORIES.register("model_color", ModelColorPower::new);
-	public static final RegistryObject<ModifyBreakSpeedPower> MODIFY_BREAK_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_break_speed", ModifyBreakSpeedPower::new);
+	public static final RegistryObject<ModifyValueBlockPower> MODIFY_BREAK_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_break_speed", ModifyValueBlockPower::new);
 	public static final RegistryObject<ModifyDamageDealtPower> MODIFY_DAMAGE_DEALT = ApoliRegisters.POWER_FACTORIES.register("modify_damage_dealt", ModifyDamageDealtPower::new);
 	public static final RegistryObject<ModifyDamageTakenPower> MODIFY_DAMAGE_TAKEN = ApoliRegisters.POWER_FACTORIES.register("modify_damage_taken", ModifyDamageTakenPower::new);
 	public static final RegistryObject<ModifyValuePower> MODIFY_EXHAUSTION = ApoliRegisters.POWER_FACTORIES.register("modify_exhaustion", ModifyValuePower::new);
@@ -92,6 +92,8 @@ public class ApoliPowers {
 	public static final RegistryObject<CombatHitActionPower> ACTION_WHEN_HIT = ApoliRegisters.POWER_FACTORIES.register("action_when_hit", CombatHitActionPower::new);
 	public static final RegistryObject<CombatHitActionPower> ACTION_ON_HIT = ApoliRegisters.POWER_FACTORIES.register("action_on_hit", CombatHitActionPower::new);
 	public static final RegistryObject<AttributeModifyTransferPower> ATTRIBUTE_MODIFY_TRANSFER = ApoliRegisters.POWER_FACTORIES.register("attribute_modify_transfer", AttributeModifyTransferPower::new);
+	public static final RegistryObject<ModifyCameraSubmersionTypePower> MODIFY_CAMERA_SUBMERSION = ApoliRegisters.POWER_FACTORIES.register("modify_camera_submersion", ModifyCameraSubmersionTypePower::new);
+	public static final RegistryObject<ModifyValueBlockPower> MODIFY_SLIPPERINESS = ApoliRegisters.POWER_FACTORIES.register("modify_slipperiness", ModifyValueBlockPower::new);
 	//endregion
 
 	public static void bootstrap() {}

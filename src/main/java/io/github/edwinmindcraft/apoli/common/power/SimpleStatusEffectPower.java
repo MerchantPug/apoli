@@ -14,7 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
  */
 @Deprecated
 public class SimpleStatusEffectPower extends PowerFactory<ListConfiguration<MobEffectInstance>> {
-	public SimpleStatusEffectPower(Codec<ListConfiguration<MobEffectInstance>> codec) {
+	public SimpleStatusEffectPower() {
 		super(ListConfiguration.codec(SerializableDataTypes.STATUS_EFFECT_INSTANCE, "effect", "effects"));
 		this.ticking();
 	}

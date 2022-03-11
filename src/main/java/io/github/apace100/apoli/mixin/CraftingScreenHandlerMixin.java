@@ -1,13 +1,9 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.PowerCraftingInventory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.CraftingResultInventory;
-import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,20 +12,22 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(CraftingScreenHandler.class)
+@Mixin(CraftingMenu.class)
 public class CraftingScreenHandlerMixin {
 
-    @Shadow @Final private ScreenHandlerContext context;
+	@Shadow
+	@Final
+	public ContainerLevelAccess access;
 
-    @Inject(method = "updateResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/recipe/RecipeManager;getFirstMatch(Lnet/minecraft/recipe/RecipeType;Lnet/minecraft/inventory/Inventory;Lnet/minecraft/world/World;)Ljava/util/Optional;"))
-    private static void clearPowerCraftingInventory(ScreenHandler handler, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory, CallbackInfo ci) {
-        ((PowerCraftingInventory)craftingInventory).setPower(null);
-    }
+	@Inject(method = "slotChangedCraftingGrid", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/crafting/RecipeManager;getRecipeFor(Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/Container;Lnet/minecraft/world/level/Level;)Ljava/util/Optional;"))
+	private static void clearPowerCraftingInventory(AbstractContainerMenu p_150547_, Level p_150548_, Player p_150549_, CraftingContainer p_150550_, ResultContainer p_150551_, CallbackInfo ci) {
+		((PowerCraftingInventory) p_150547_).setPower(null);
+	}
 
-    @Inject(method = "canUse", at = @At("HEAD"), cancellable = true)
-    private void allowUsingViaPower(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-        if(context.get((world, pos) -> pos.equals(player.getBlockPos()), false)) {
-            cir.setReturnValue(true);
-        }
-    }
+	@Inject(method = "stillValid", at = @At("HEAD"), cancellable = true)
+	private void allowUsingViaPower(Player player, CallbackInfoReturnable<Boolean> cir) {
+		if (this.access.evaluate((world, pos) -> pos.equals(player.blockPosition()), false)) {
+			cir.setReturnValue(true);
+		}
+	}
 }

@@ -1,27 +1,10 @@
 package io.github.apace100.apoli.component;
 
-import com.google.common.collect.Lists;
-import io.github.apace100.apoli.integration.ModifyValueCallback;
-import io.github.apace100.apoli.networking.ModPackets;
-import io.github.apace100.apoli.power.*;
-import io.github.apace100.apoli.util.AttributeUtil;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.netty.buffer.Unpooled;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 public interface PowerHolderComponent /*extends AutoSyncedComponent, ServerTickingComponent*/ {
 
 	//ComponentKey<PowerHolderComponent> KEY = ComponentRegistry.getOrCreate(Apoli.identifier("powers"), PowerHolderComponent.class);
 
-	void removePower(PowerType<?> powerType, ResourceLocation source);
+	/*void removePower(PowerType<?> powerType, ResourceLocation source);
 
 	int removeAllPowersFromSource(ResourceLocation source);
 
@@ -49,7 +32,7 @@ public interface PowerHolderComponent /*extends AutoSyncedComponent, ServerTicki
 
 	static void sync(Entity entity) {
 		IPowerContainer.sync(entity);
-		KEY.sync(entity);
+		//KEY.sync(entity);
 	}
 
 	static void syncPower(Entity entity, PowerType<?> powerType) {
@@ -148,5 +131,5 @@ public interface PowerHolderComponent /*extends AutoSyncedComponent, ServerTicki
 			return AttributeUtil.sortAndApplyModifiers(mps, baseValue);
 		}
 		return baseValue;
-	}
+	}*/
 }
