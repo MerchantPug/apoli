@@ -1,0 +1,16 @@
+{
+	"ModifyAirSpeedPower": "apoli:modify_air_speed",
+	"ModifyBreakSpeedPower": "apoli:modify_break_speed",
+	"ModifyCraftingPower": "apoli:modify_crafting",
+	"ModifyDamageDealtPower": "apoli:modify_damage_dealt",
+	"ModifyDamageTakenPower": "apoli:modify_damage_taken",
+	"ModifyExhaustionPower": "apoli:modify_exhaustion",
+	"ModifyExperiencePower": "apoli:modify_experience",
+	"ModifyJumpPower": "apoli:modify_jump",
+	"ModifyLavaSpeedPower": "apoli:modify_lava_speed",
+	"ModifyProjectileDamagePower": "apoli:modify_projectile_damage",
+	"ModifySlipperinessPower": "apoli:modify_slipperiness",
+	"ModifyStatusEffectAmplifierPower": "apoli:modify_status_effect_amplifier",
+	"ModifyStatusEffectDurationPower": "apoli:modify_status_effect_duration",
+	"ModifySwimSpeedPower": "apoli:modify_swim_speed_power"
+}

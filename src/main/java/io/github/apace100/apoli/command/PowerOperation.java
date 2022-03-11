@@ -10,6 +10,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.scores.Score;
 
@@ -76,13 +77,13 @@ public class PowerOperation implements ArgumentType<PowerOperation.Operation> {
 		BuiltinOperation(Operation operation) {this.operation = operation;}
 
 		@Override
-		public void apply(LivingEntity living, ConfiguredPower<?, ?> power, Score score) throws CommandSyntaxException {
+		public void apply(Entity living, ConfiguredPower<?, ?> power, Score score) throws CommandSyntaxException {
 			this.operation.apply(living, power, score);
 		}
 	}
 
 	public interface Operation {
 		//FIXME void apply(Power power, Score score) throws CommandSyntaxException;
-		void apply(LivingEntity living, ConfiguredPower<?, ?> power, Score score) throws CommandSyntaxException;
+		void apply(Entity living, ConfiguredPower<?, ?> power, Score score) throws CommandSyntaxException;
 	}
 }

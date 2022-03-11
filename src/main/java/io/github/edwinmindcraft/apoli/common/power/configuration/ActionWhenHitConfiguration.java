@@ -8,17 +8,27 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCo
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ActionWhenHitConfiguration(int duration, HudRender hudRender,
+public record ActionWhenHitConfiguration(ICooldownPowerConfiguration cooldown,
 										 @Nullable ConfiguredDamageCondition<?, ?> damageCondition,
 										 ConfiguredEntityAction<?, ?> entityAction) implements ICooldownPowerConfiguration {
 	public static final Codec<ActionWhenHitConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("cooldown").forGetter(ActionWhenHitConfiguration::duration),
-			CalioCodecHelper.optionalField(ApoliDataTypes.HUD_RENDER, "hud_render", HudRender.DONT_RENDER).forGetter(ActionWhenHitConfiguration::hudRender),
+			ICooldownPowerConfiguration.MAP_CODEC.forGetter(ActionWhenHitConfiguration::cooldown),
 			CalioCodecHelper.optionalField(ConfiguredDamageCondition.CODEC, "damage_condition").forGetter(x -> Optional.ofNullable(x.damageCondition())),
 			ConfiguredEntityAction.CODEC.fieldOf("entity_action").forGetter(ActionWhenHitConfiguration::entityAction)
-	).apply(instance, (t1, t2, t3, t4) -> new ActionWhenHitConfiguration(t1, t2, t3.orElse(null), t4)));
+	).apply(instance, (t1, t3, t4) -> new ActionWhenHitConfiguration(t1, t3.orElse(null), t4)));
+
+	@Override
+	public int duration() {
+		return this.cooldown().duration();
+	}
+
+	@Override
+	public @NotNull HudRender hudRender() {
+		return this.cooldown().hudRender();
+	}
 }

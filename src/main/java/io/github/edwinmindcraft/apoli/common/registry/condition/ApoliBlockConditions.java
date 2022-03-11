@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.registry.condition;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.power.factory.condition.block.MaterialCondition;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
@@ -43,13 +44,15 @@ public class ApoliBlockConditions {
 	public static final RegistryObject<BlockStateCondition> BLOCK_STATE = BLOCK_CONDITIONS.register("block_state", BlockStateCondition::new);
 	public static final RegistryObject<HeightCondition> HEIGHT = BLOCK_CONDITIONS.register("height", HeightCondition::new);
 
+	public static final RegistryObject<MaterialCondition> MATERIAL = BLOCK_CONDITIONS.register("material", MaterialCondition::new);
+
 	public static ConfiguredBlockCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
 	public static ConfiguredBlockCondition<?, ?> and(ConfiguredBlockCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
 
 	public static ConfiguredBlockCondition<?, ?> or(ConfiguredBlockCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(BLOCK_CONDITIONS, DelegatedBlockCondition::new, ConfiguredBlockCondition.CODEC, PREDICATE);
 	}
 }

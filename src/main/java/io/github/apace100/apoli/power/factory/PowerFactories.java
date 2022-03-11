@@ -2,7 +2,7 @@ package io.github.apace100.apoli.power.factory;
 
 import io.github.apace100.apoli.power.*;
 import io.github.apace100.apoli.registry.ApoliRegistries;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 
 public class PowerFactories {
 
@@ -59,13 +59,13 @@ public class PowerFactories {
 		//register(() -> Power.createSimpleFactory(ShakingPower::new, Apoli.identifier("shaking")));
 		//register(() -> Power.createSimpleFactory(DisableRegenPower::new, Apoli.identifier("disable_regen")));
 		//register(ResourcePower::createFactory);
-		register(ModifyFoodPower::createFactory);
+		//register(ModifyFoodPower::createFactory);
 		//register(() -> ValueModifyingPower.createValueModifyingFactory(ModifyExperiencePower::new, Apoli.identifier("modify_xp_gain")));
 		//register(ActionOnBlockBreakPower::createFactory);
 		//register(ActionOnLandPower::createFactory);
-		register(PreventEntityRenderPower::createFactory);
-		register(EntityGlowPower::createFactory);
-		register(SelfGlowPower::createFactory);
+		//register(PreventEntityRenderPower::createFactory);
+		//register(EntityGlowPower::createFactory);
+		//register(SelfGlowPower::createFactory);
 		//register(ClimbingPower::createFactory);
 		//register(PreventBlockSelectionPower::createFactory);
 		//register(SelfActionOnKillPower::createFactory);
@@ -80,8 +80,8 @@ public class PowerFactories {
 		//register(() -> PlayerAbilityPower.createAbilityFactory(Apoli.identifier("creative_flight"), VanillaAbilities.ALLOW_FLYING));
 		//register(ActionOnEntityUsePower::createFactory);
 		//register(ActionOnBeingUsedPower::createFactory);
-		register(PreventEntityUsePower::createFactory);
-		register(PreventBeingUsedPower::createFactory);
+		//register(PreventEntityUsePower::createFactory);
+		//register(PreventBeingUsedPower::createFactory);
 		//register(ToggleNightVisionPower::createFactory);
 		//register(BurnPower::createFactory);
 		//register(ExhaustOverTimePower::createFactory);
@@ -95,11 +95,11 @@ public class PowerFactories {
 		register(ItemOnItemPower::createFactory);
 		register(OverlayPower::createFactory);
 		register(TooltipPower::createFactory);
-		register(ActionOnHitPower::createFactory);
-		register(ActionWhenHitPower::createFactory);
+		//register(ActionOnHitPower::createFactory);
+		//register(ActionWhenHitPower::createFactory);
 		//register(() -> SelfActionWhenHitPower.createFactory(Apoli.identifier("action_when_damage_taken")));
 		//register(() -> ValueModifyingPower.createValueModifyingFactory(ModifyAirSpeedPower::new, Apoli.identifier("modify_air_speed")));
-		register(AttributeModifyTransferPower::createFactory);
+		//register(AttributeModifyTransferPower::createFactory);
 		register(PreventFeatureRenderPower::createFactory);
 		register(ModifySlipperinessPower::createFactory);
 		register(PreventEntityCollisionPower::createFactory);

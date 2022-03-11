@@ -3,6 +3,7 @@ package io.github.apace100.apoli.util;
 import com.google.common.collect.Lists;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class PowerRestrictedCraftingRecipe extends CustomRecipe {
-
-	public static final RecipeSerializer<?> SERIALIZER = new SimpleRecipeSerializer<>(PowerRestrictedCraftingRecipe::new);
 
 	public PowerRestrictedCraftingRecipe(ResourceLocation id) {
 		super(id);
@@ -53,7 +52,7 @@ public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 
 	@Override
 	public @NotNull RecipeSerializer<?> getSerializer() {
-		return SERIALIZER;
+		return ApoliRecipeSerializers.POWER_RESTRICTED.get();
 	}
 
 	private Player getPlayerFromInventory(CraftingContainer inv) {

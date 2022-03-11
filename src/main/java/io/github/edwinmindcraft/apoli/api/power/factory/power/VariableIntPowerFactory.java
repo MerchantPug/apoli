@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.IVariableIntPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IVariableIntPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
@@ -85,15 +86,15 @@ public abstract class VariableIntPowerFactory<T extends IVariableIntPowerConfigu
 			this.getCurrentValue(configuration, container).set(value);
 		}
 
+
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
-			return IntTag.valueOf(this.get(configuration, container));
+		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			tag.putInt("Value", this.get(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {
-			if (tag instanceof IntTag intTag)
-				this.set(configuration, container, intTag.getAsInt());
+		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			this.set(configuration, container, tag.getInt("Value"));
 		}
 	}
 }

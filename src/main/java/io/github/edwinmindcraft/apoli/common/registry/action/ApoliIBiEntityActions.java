@@ -41,7 +41,7 @@ public class ApoliIBiEntityActions {
 	public static final RegistryObject<DispatchBiEntityAction> ACTOR_ACTION = BIENTITY_ACTIONS.register("actor_action", DispatchBiEntityAction::actor);
 	public static final RegistryObject<DispatchBiEntityAction> TARGET_ACTION = BIENTITY_ACTIONS.register("target_action", DispatchBiEntityAction::target);
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaActions(BIENTITY_ACTIONS, DelegatedBiEntityAction::new, ConfiguredBiEntityAction.CODEC, ConfiguredBiEntityCondition.CODEC, EXECUTOR, PREDICATE);
 	}
 }

@@ -1,48 +1,49 @@
 package io.github.apace100.apoli.power.factory.condition.entity;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
-import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.ElytraItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import io.github.apace100.apoli.condition.configuration.ElytraFlightPossibleConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import top.theillusivec4.caelus.api.CaelusApi;
 
-public class ElytraFlightPossibleCondition {
+public class ElytraFlightPossibleCondition extends EntityCondition<ElytraFlightPossibleConfiguration> {
 
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
-        if(!(entity instanceof LivingEntity livingEntity)) {
-            return false;
-        }
-        boolean ability = true;
-        if(data.getBoolean("check_ability")) {
-            ItemStack equippedChestItem = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
-            ability = equippedChestItem.isOf(Items.ELYTRA) && ElytraItem.isUsable(equippedChestItem);
-            if (!ability && EntityElytraEvents.CUSTOM.invoker().useCustomElytra(livingEntity, false)) {
-                ability = true;
-            }
-            if (!EntityElytraEvents.ALLOW.invoker().allowElytraFlight(livingEntity)) {
-                ability = false;
-            }
-        }
-        boolean state = true;
-        if(data.getBoolean("check_state")) {
-            state = !livingEntity.isOnGround() && !livingEntity.isFallFlying() && !livingEntity.isTouchingWater() && !livingEntity.hasStatusEffect(StatusEffects.LEVITATION);
-        }
-        return ability && state;
-    }
+	public ElytraFlightPossibleCondition() {
+		super(ElytraFlightPossibleConfiguration.CODEC);
+	}
 
-    public static ConditionFactory<Entity> getFactory() {
-        return new ConditionFactory<>(Apoli.identifier("elytra_flight_possible"),
-            new SerializableData()
-                .add("check_state", SerializableDataTypes.BOOLEAN, false)
-                .add("check_ability", SerializableDataTypes.BOOLEAN, true),
-            ElytraFlightPossibleCondition::condition
-        );
-    }
+	@Override
+	public boolean check(ElytraFlightPossibleConfiguration config, Entity entity) {
+		if (!(entity instanceof LivingEntity livingEntity))
+			return false;
+		boolean ability = true;
+		if (config.checkAbility()) {
+			//FORGE STILL DOESN'T HAVE ELYTRA EVENTS.
+			//(Also PRs are for 1.18.2 and that ain't gonna happen for quite a while)
+			ability = CaelusApi.getInstance().canFly(livingEntity);
+			//I'm just going to assume that Caelus does all the hard work for me.
+			//For when forge gets events (if ever):
+            /*
+			if (!ability && EntityElytraEvents.CUSTOM.invoker().useCustomElytra(livingEntity, false))
+				ability = true;
+			if (!EntityElytraEvents.ALLOW.invoker().allowElytraFlight(livingEntity))
+				ability = false;
+			*/
+		}
+		boolean state = true;
+		if (config.checkState()) {
+			state = !livingEntity.isOnGround() && !livingEntity.isFallFlying() && !livingEntity.isInWater() && !livingEntity.hasEffect(MobEffects.LEVITATION);
+		}
+		return ability && state;
+	}
+
+	/*public static ConditionFactory<Entity> getFactory() {
+		return new ConditionFactory<>(Apoli.identifier("elytra_flight_possible"),
+				new SerializableData()
+						.add("check_state", SerializableDataTypes.BOOLEAN, false)
+						.add("check_ability", SerializableDataTypes.BOOLEAN, true),
+				ElytraFlightPossibleCondition::condition
+		);
+	}*/
 }

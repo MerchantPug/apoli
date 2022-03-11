@@ -3,37 +3,33 @@ package io.github.apace100.apoli.action.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.apace100.apoli.configuration.RaycastSettingsConfiguration;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import net.minecraft.world.level.ClipContext;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public record RaycastConfiguration(double distance, boolean block, boolean entity, ClipContext.Block shapeType,
-								   ClipContext.Fluid fluidHandling,
+public record RaycastConfiguration(RaycastSettingsConfiguration settings,
 								   @Nullable ConfiguredEntityAction<?, ?> beforeAction,
 								   @Nullable ConfiguredBiEntityCondition<?, ?> biEntityCondition,
-								   CommandInfo commandInfo, HitAction action)  implements IDynamicFeatureConfiguration{
+								   CommandInfo commandInfo, HitAction action) implements IDynamicFeatureConfiguration {
 	public static final Codec<RaycastConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.DOUBLE.fieldOf("distance").forGetter(RaycastConfiguration::distance),
-			CalioCodecHelper.optionalField(Codec.BOOL, "block", true).forGetter(RaycastConfiguration::block),
-			CalioCodecHelper.optionalField(Codec.BOOL, "entity", true).forGetter(RaycastConfiguration::entity),
-			CalioCodecHelper.optionalField(SerializableDataTypes.SHAPE_TYPE, "shape_type", ClipContext.Block.OUTLINE).forGetter(RaycastConfiguration::shapeType),
-			CalioCodecHelper.optionalField(SerializableDataTypes.FLUID_HANDLING, "fluid_handling", ClipContext.Fluid.ANY).forGetter(RaycastConfiguration::fluidHandling),
+			RaycastSettingsConfiguration.MAP_CODEC.forGetter(RaycastConfiguration::settings),
 			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "before_action").forGetter(x -> Optional.ofNullable(x.beforeAction())),
 			CalioCodecHelper.optionalField(ConfiguredBiEntityCondition.CODEC, "bientity_condition").forGetter(x -> Optional.ofNullable(x.biEntityCondition())),
 			CommandInfo.MAP_CODEC.forGetter(RaycastConfiguration::commandInfo),
 			HitAction.MAP_CODEC.forGetter(RaycastConfiguration::action)
-	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8, t9) -> new RaycastConfiguration(t1, t2, t3, t4, t5, t6.orElse(null), t7.orElse(null), t8, t9)));
+	).apply(instance, (t1, t6, t7, t8, t9) -> new RaycastConfiguration(t1, t6.orElse(null), t7.orElse(null), t8, t9)));
 
-	public record CommandInfo(@Nullable String commandAtHit, @Nullable Double commandHitOffset, @Nullable String commandAlongRay,
-							  double commandStep, boolean commandAlongRayOnlyOnHit) implements IDynamicFeatureConfiguration {
+	public record CommandInfo(@Nullable String commandAtHit, @Nullable Double commandHitOffset,
+							  @Nullable String commandAlongRay,
+							  double commandStep,
+							  boolean commandAlongRayOnlyOnHit) implements IDynamicFeatureConfiguration {
 		private static final MapCodec<CommandInfo> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 				CalioCodecHelper.optionalField(Codec.STRING, "command_at_hit").forGetter(x -> Optional.ofNullable(x.commandAtHit())),
 				CalioCodecHelper.optionalField(Codec.DOUBLE, "command_hit_offset").forGetter(x -> Optional.ofNullable(x.commandHitOffset())),

@@ -3,7 +3,9 @@ package io.github.edwinmindcraft.apoli.common;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliLootFunctions;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliBlockActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
@@ -11,6 +13,9 @@ import io.github.edwinmindcraft.apoli.common.registry.action.ApoliIBiEntityActio
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliItemActions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -46,24 +51,34 @@ public class ApoliCommon {
 	public static void initialize() {
 		initializeNetwork();
 		//Initialises registries.
-		ApoliRegisters.register();
+		ApoliRegisters.initialize();
+
+		//Vanilla stuff
+		ApoliRecipeSerializers.bootstrap();
 
 		//Powers
-		ApoliPowers.register();
+		ApoliPowers.bootstrap();
 
 		//Actions
-		ApoliBlockActions.register();
-		ApoliEntityActions.register();
-		ApoliItemActions.register();
-		ApoliIBiEntityActions.register();
+		ApoliBlockActions.bootstrap();
+		ApoliEntityActions.bootstrap();
+		ApoliItemActions.bootstrap();
+		ApoliIBiEntityActions.bootstrap();
 
 		//Conditions
-		ApoliBiomeConditions.register();
-		ApoliBlockConditions.register();
-		ApoliDamageConditions.register();
-		ApoliEntityConditions.register();
-		ApoliFluidConditions.register();
-		ApoliItemConditions.register();
-		ApoliBiEntityConditions.register();
+		ApoliBiomeConditions.bootstrap();
+		ApoliBlockConditions.bootstrap();
+		ApoliDamageConditions.bootstrap();
+		ApoliEntityConditions.bootstrap();
+		ApoliFluidConditions.bootstrap();
+		ApoliItemConditions.bootstrap();
+		ApoliBiEntityConditions.bootstrap();
+
+		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+		bus.addListener(ApoliCommon::commonSetup);
+	}
+
+	public static void commonSetup(FMLCommonSetupEvent event) {
+		event.enqueueWork(ApoliLootFunctions::bootstrap);
 	}
 }

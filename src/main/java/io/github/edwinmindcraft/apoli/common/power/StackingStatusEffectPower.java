@@ -4,6 +4,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.StackingStatusEffectConfiguration;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -49,14 +50,13 @@ public class StackingStatusEffectPower extends PowerFactory<StackingStatusEffect
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container) {
-		return IntTag.valueOf(this.getCurrentStacks(configuration, container).get());
+	public void serialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		tag.putInt("CurrentStacks", this.getCurrentStacks(configuration, container).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
-		if (tag instanceof IntTag intTag)
-			this.getCurrentStacks(configuration, container).set(intTag.getAsInt());
+	public void deserialize(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		this.getCurrentStacks(configuration, container).set(tag.getInt("CurrentStacks"));
 	}
 
 	public void applyEffects(ConfiguredPower<StackingStatusEffectConfiguration, ?> configuration, Entity entity) {

@@ -2,24 +2,29 @@ package io.github.edwinmindcraft.apoli.api.power.configuration;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
-import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.*;
+import io.github.edwinmindcraft.apoli.api.power.IActivePower;
+import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
+import io.github.edwinmindcraft.apoli.api.power.IVariableIntPower;
+import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -31,13 +36,18 @@ import java.util.function.Supplier;
  * @param <C> The type of the configuration.
  * @param <F> The type of the factory.
  */
-public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends ConfiguredFactory<C, F> implements IForgeRegistryEntry<ConfiguredPower<?, ?>> {
+public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends CapabilityProvider<ConfiguredPower<?, ?>> implements IForgeRegistryEntry<ConfiguredPower<?, ?>>, IDynamicFeatureConfiguration {
 	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
+	private final F factory;
+	private final C configuration;
 	private final PowerData data;
 
 	public ConfiguredPower(F factory, C configuration, PowerData data) {
-		super(factory, configuration);
+		super(ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
+		this.factory = factory;
+		this.configuration = configuration;
 		this.data = data;
+		this.gatherCapabilities(this.factory::initCapabilities);
 	}
 
 	public PowerData getData() {
@@ -92,11 +102,15 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return builder.build();
 	}
 
-	public Tag serialize(IPowerContainer container) {
-		return this.getFactory().serialize(this, container);
+	public CompoundTag serialize(IPowerContainer container) {
+		CompoundTag tag = new CompoundTag();
+		CompoundTag caps = this.serializeCaps();
+		if (caps != null && !caps.isEmpty()) tag.put("ForgeCaps", caps);
+		this.getFactory().serialize(this, container, tag);
+		return caps;
 	}
 
-	public void deserialize(IPowerContainer container, Tag tag) {
+	public void deserialize(IPowerContainer container, CompoundTag tag) {
 		this.getFactory().deserialize(this, container, tag);
 	}
 
@@ -231,6 +245,29 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 
 	public ConfiguredPower<C, F> complete(ResourceLocation name) {
 		return new ConfiguredPower<>(this.getFactory(), this.getConfiguration(), this.getData().complete(name));
+	}
+
+	public F getFactory() {
+		return this.factory;
+	}
+
+	public C getConfiguration() {
+		return this.configuration;
+	}
+
+	@Override
+	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
+		return this.getConfiguration().getErrors(server);
+	}
+
+	@Override
+	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
+		return this.getConfiguration().getWarnings(server);
+	}
+
+	@Override
+	public boolean isConfigurationValid() {
+		return this.getConfiguration().isConfigurationValid();
 	}
 
 

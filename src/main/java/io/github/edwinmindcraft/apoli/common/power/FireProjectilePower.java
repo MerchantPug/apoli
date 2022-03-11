@@ -6,7 +6,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ActiveCooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.FireProjectileConfiguration;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
@@ -40,12 +39,12 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container) {
-		return this.access(configuration, container).serialize();
+	public void serialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		this.access(configuration, container).serialize(tag);
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
+	public void deserialize(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		this.access(configuration, container).deserialize(tag);
 	}
 
@@ -54,7 +53,7 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 		DataContainer dataContainer = this.access(configuration, ApoliAPI.getPowerContainer(entity));
 		FireProjectileConfiguration config = configuration.getConfiguration();
 
-		if(dataContainer.isFiringProjectiles) {
+		if (dataContainer.isFiringProjectiles) {
 			long elapsed = this.getElapsedDuration(configuration, entity);
 			if (!dataContainer.finishedStartDelay && (config.startDelay() == 0 || elapsed % config.startDelay() == 0))
 				dataContainer.finishedStartDelay = true;
@@ -62,24 +61,23 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 				return;
 			if (config.interval() == 0) {
 				config.playSound(entity);
-				if(!entity.level.isClientSide()) {
-					for(; dataContainer.shotProjectiles < config.projectileCount(); dataContainer.shotProjectiles++) {
+				if (!entity.level.isClientSide()) {
+					for (; dataContainer.shotProjectiles < config.projectileCount(); dataContainer.shotProjectiles++) {
 						config.fireProjectile(entity);
 					}
 				}
 				dataContainer.reset();
 			} else {
 				config.playSound(entity);
-				if(!entity.level.isClientSide())
+				if (!entity.level.isClientSide())
 					config.fireProjectile(entity);
 				dataContainer.shotProjectiles += 1;
-				if(dataContainer.shotProjectiles <= config.projectileCount()) {
+				if (dataContainer.shotProjectiles <= config.projectileCount()) {
 					config.playSound(entity);
-					if(!entity.level.isClientSide()) {
+					if (!entity.level.isClientSide()) {
 						config.fireProjectile(entity);
 					}
-				}
-				else
+				} else
 					dataContainer.reset();
 			}
 		}
@@ -92,13 +90,11 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 		private boolean finishedStartDelay;
 		private boolean isFiringProjectiles;
 
-		public CompoundTag serialize() {
-			CompoundTag tag = new CompoundTag();
+		public void serialize(CompoundTag tag) {
 			tag.putLong("LastUseTime", this.lastUseTime);
 			tag.putInt("ShotProjectiles", this.shotProjectiles);
 			tag.putBoolean("FinishedStartDelay", this.finishedStartDelay);
 			tag.putBoolean("IsFiringProjectiles", this.isFiringProjectiles);
-			return tag;
 		}
 
 		public void reset() {
@@ -107,15 +103,11 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 			this.isFiringProjectiles = false;
 		}
 
-		public void deserialize(Tag tag) {
-			if (tag instanceof LongTag longTag) {
-				this.lastUseTime = longTag.getAsLong();
-			} else if (tag instanceof CompoundTag compoundTag) {
-				this.lastUseTime = compoundTag.getLong("LastUseTime");
-				this.shotProjectiles = compoundTag.getInt("ShotProjectiles");
-				this.finishedStartDelay = compoundTag.getBoolean("FinishedStartDelay");
-				this.isFiringProjectiles = compoundTag.getBoolean("IsFiringProjectiles");
-			}
+		public void deserialize(CompoundTag tag) {
+			this.lastUseTime = tag.getLong("LastUseTime");
+			this.shotProjectiles = tag.getInt("ShotProjectiles");
+			this.finishedStartDelay = tag.getBoolean("FinishedStartDelay");
+			this.isFiringProjectiles = tag.getBoolean("IsFiringProjectiles");
 		}
 	}
 }

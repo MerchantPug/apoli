@@ -30,7 +30,7 @@ public class ItemMixin {
 		ItemStack itemStack = user.getItemInHand(hand);
 		if (ModifyFoodPower.isAlwaysEdible(user, world, itemStack))
 			return true;
-		return foodComponent.isAlwaysEdible();
+		return foodComponent.canAlwaysEat();
 	}
 
 	@Inject(method = "onClicked", at = @At("RETURN"), cancellable = true)

@@ -2,35 +2,38 @@ package io.github.edwinmindcraft.apoli.api.component;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.integration.ModifyValueEvent;
+import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IValueModifyingPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.common.power.AttributeModifyTransferPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.AttributeModifyTransferConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.util.AttributeUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 //FIXME Reintroduce PowerHolderComponent
+
 /**
  * Represents a power container.<br>
  * Please note that this will only be available on forge unless specified otherwise.
@@ -85,13 +88,13 @@ public interface IPowerContainer {
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, double baseValue, Predicate<ConfiguredPower<T, F>> powerFilter, Consumer<ConfiguredPower<T, F>> powerAction) {
-		if (entity instanceof Player player) {
-			List<ConfiguredPower<T, F>> powers = IPowerContainer.getPowers(player, factory).stream().filter(x -> powerFilter == null || powerFilter.test(x)).toList();
-			List<AttributeModifier> modifiers = powers.stream().flatMap(x -> x.getFactory().getModifiers(x, player).stream()).toList();
-			if (powerAction != null) powers.forEach(powerAction);
-			return AttributeUtil.applyModifiers(modifiers, baseValue);
-		}
-		return baseValue;
+		List<ConfiguredPower<T, F>> powers = IPowerContainer.getPowers(entity, factory).stream().filter(x -> powerFilter == null || powerFilter.test(x)).toList();
+		List<AttributeModifier> modifiers = powers.stream().flatMap(x -> x.getFactory().getModifiers(x, entity).stream()).collect(Collectors.toCollection(ArrayList::new));
+		if (powerAction != null) powers.forEach(powerAction);
+		modifiers.addAll(AttributeModifyTransferPower.apply(entity, factory));
+		ModifyValueEvent event = new ModifyValueEvent(entity, factory, baseValue, modifiers);
+		MinecraftForge.EVENT_BUS.post(event);
+		return AttributeUtil.applyModifiers(event.getModifiers(), baseValue);
 	}
 
 	//endregion
@@ -286,7 +289,7 @@ public interface IPowerContainer {
 	 * @param data         A map that may contain the power data if applicable.
 	 */
 	@Contract(mutates = "this")
-	void handle(Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, Tag> data);
+	void handle(Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, CompoundTag> data);
 
 	/**
 	 * Writes this component to the given tag.

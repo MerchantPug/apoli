@@ -67,16 +67,15 @@ public class KeepInventoryPower extends PowerFactory<KeepInventoryConfiguration>
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, IPowerContainer container) {
-		return ContainerHelper.saveAllItems(new CompoundTag(), this.access(configuration, container));
+	public void serialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		ContainerHelper.saveAllItems(tag, this.access(configuration, container));
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
+	public void deserialize(ConfiguredPower<KeepInventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		NonNullList<ItemStack> access = this.access(configuration, container);
 		while (access.size() <= Inventory.SLOT_OFFHAND)
 			access.add(ItemStack.EMPTY);
-		if (tag instanceof CompoundTag compound)
-			ContainerHelper.loadAllItems(compound, access);
+		ContainerHelper.loadAllItems(tag, access);
 	}
 }

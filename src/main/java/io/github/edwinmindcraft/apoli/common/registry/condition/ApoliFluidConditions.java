@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredFluidCon
 import io.github.edwinmindcraft.apoli.api.power.factory.FluidCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.fluid.DelegatedFluidCondition;
+import io.github.edwinmindcraft.apoli.common.condition.fluid.FluidMatchesCondition;
 import io.github.edwinmindcraft.apoli.common.condition.fluid.InTagFluidCondition;
 import io.github.edwinmindcraft.apoli.common.condition.fluid.SimpleFluidCondition;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
@@ -32,6 +33,7 @@ public class ApoliFluidConditions {
 	public static final RegistryObject<SimpleFluidCondition> EMPTY = FLUID_CONDITIONS.register("empty", () -> new SimpleFluidCondition(FluidState::isEmpty));
 	public static final RegistryObject<SimpleFluidCondition> STILL = FLUID_CONDITIONS.register("still", () -> new SimpleFluidCondition(FluidState::isSource));
 	public static final RegistryObject<InTagFluidCondition> IN_TAG = FLUID_CONDITIONS.register("in_tag", InTagFluidCondition::new);
+	public static final RegistryObject<FluidMatchesCondition> FLUID = FLUID_CONDITIONS.register("fluid", FluidMatchesCondition::new);
 
 	public static ConfiguredFluidCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
@@ -39,7 +41,7 @@ public class ApoliFluidConditions {
 
 	public static ConfiguredFluidCondition<?, ?> or(ConfiguredFluidCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(FLUID_CONDITIONS, DelegatedFluidCondition::new, ConfiguredFluidCondition.CODEC, PREDICATE);
 	}
 }

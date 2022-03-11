@@ -28,7 +28,7 @@ public class ApoliBiEntityConditions {
 	public static final RegistryObject<DelegatedBiEntityCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Pair<Entity, Entity>>>> AND = of("and");
 	public static final RegistryObject<DelegatedBiEntityCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Pair<Entity, Entity>>>> OR = of("or");
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(BIENTITY_CONDITIONS, DelegatedBiEntityCondition::new, ConfiguredBiEntityCondition.CODEC, PREDICATE);
 	}
 }

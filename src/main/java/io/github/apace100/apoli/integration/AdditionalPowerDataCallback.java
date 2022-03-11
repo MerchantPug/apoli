@@ -12,5 +12,5 @@ import net.minecraft.util.Identifier;
  */
 public interface AdditionalPowerDataCallback {
 
-    void readAdditionalPowerData(Identifier powerId, Identifier factoryId, boolean isSubPower, JsonElement data, PowerType<?> powerType);
+    //void readAdditionalPowerData(Identifier powerId, Identifier factoryId, boolean isSubPower, JsonElement data, PowerType<?> powerType);
 }

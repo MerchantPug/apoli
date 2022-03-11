@@ -47,7 +47,7 @@ public class ApoliBlockActions {
 	public static final RegistryObject<ModifyBlockStateAction> MODIFY_BLOCK_STATE = BLOCK_ACTIONS.register("modify_block_state", ModifyBlockStateAction::new);
 	public static final RegistryObject<ExplodeAction> EXPLODE = BLOCK_ACTIONS.register("explode", ExplodeAction::new);
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaActions(BLOCK_ACTIONS, DelegatedBlockAction::new, ConfiguredBlockAction.CODEC, ConfiguredBlockCondition.CODEC, EXECUTOR, PREDICATE);
 	}
 }

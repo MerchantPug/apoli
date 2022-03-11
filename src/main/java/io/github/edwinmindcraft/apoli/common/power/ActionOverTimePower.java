@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverItemConfiguration;
 import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 
@@ -41,13 +42,14 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container) {
-		return ByteTag.valueOf(configuration.getPowerData(container, () -> new AtomicBoolean(false)).get());
+	public void serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		tag.putBoolean("WasActive", configuration.getPowerData(container, () -> new AtomicBoolean(false)).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
+	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		AtomicBoolean data = configuration.getPowerData(container, () -> new AtomicBoolean(false));
+
 		data.set(!Objects.equals(tag, ByteTag.ZERO));
 	}
 }

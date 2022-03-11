@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
@@ -9,11 +10,12 @@ import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -23,6 +25,17 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	private static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> Codec<ConfiguredPower<T, ?>> powerCodec(Codec<T> codec, F factory) {
 		return IFactory.unionCodec(IFactory.asMap(codec), PowerData.CODEC, factory::configure, ConfiguredPower::getConfiguration, ConfiguredPower::getData);
 	}
+
+	public static final Codec<PowerFactory<?>> IGNORE_NAMESPACE_CODEC = ResourceLocation.CODEC.comapFlatMap(id -> {
+		PowerFactory<?> value = ApoliRegistries.POWER_FACTORY.get().getValue(id);
+		if (value != null)
+			return DataResult.success(value); //Avoid the slow code if we can.
+		return ApoliRegistries.POWER_FACTORY.get().getEntries().stream()
+				.filter(entry -> entry.getKey().location().getPath().equals(id.getPath()))
+				.findFirst().map(Map.Entry::getValue)
+				.map(DataResult::success)
+				.orElseGet(() -> DataResult.error("Failed to find power factory with path: " + id.getPath()));
+	}, PowerFactory::getRegistryName);
 
 	private final Codec<ConfiguredPower<T, ?>> codec;
 	private final boolean allowConditions;
@@ -83,6 +96,11 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	 */
 	public Map<String, ConfiguredPower<?, ?>> getContainedPowers(ConfiguredPower<T, ?> configuration) {
 		return ImmutableMap.of();
+	}
+
+	@Nullable
+	public ICapabilityProvider initCapabilities() {
+		return null;
 	}
 
 	public ConfiguredPower<T, ?> configure(T input, PowerData data) {
@@ -151,11 +169,9 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 		return !this.shouldCheckConditions(configuration, entity) || configuration.getData().conditions().stream().allMatch(condition -> condition.check(entity));
 	}
 
-	public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
-		return new CompoundTag();
-	}
+	public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {}
 
-	public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {}
+	public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {}
 
 	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(this.getRegistryName(), this));
 

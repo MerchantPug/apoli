@@ -40,7 +40,7 @@ public class ApoliDamageConditions {
 
 	public static ConfiguredDamageCondition<?, ?> or(ConfiguredDamageCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(DAMAGE_CONDITIONS, DelegatedDamageCondition::new, ConfiguredDamageCondition.CODEC, PREDICATE);
 	}
 }

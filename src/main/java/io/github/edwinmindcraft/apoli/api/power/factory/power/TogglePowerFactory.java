@@ -6,8 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.ITogglePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.TogglePowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
@@ -101,14 +100,13 @@ public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> ext
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
-			return ByteTag.valueOf(this.getStatus(configuration, container));
+		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			tag.putBoolean("Status", this.getStatus(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {
-			if (tag instanceof ByteTag byteTag)
-				this.setStatus(configuration, container, byteTag.getAsByte() != 0);
+		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			this.setStatus(configuration, container, tag.getBoolean("Status"));
 		}
 	}
 }

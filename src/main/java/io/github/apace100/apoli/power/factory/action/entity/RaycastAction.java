@@ -20,30 +20,11 @@ public class RaycastAction extends EntityAction<RaycastConfiguration> {
 	}
 
 	public void execute(RaycastConfiguration configuration, Entity entity) {
-
-		Vec3 origin = new Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
-		Vec3 direction = entity.getViewVector(1);
-		Vec3 target = origin.add(direction.scale(configuration.distance()));
 		ConfiguredEntityAction.execute(configuration.beforeAction(), entity);
-
-		HitResult hitResult = null;
-		if (configuration.entity())
-			hitResult = performEntityRaycast(entity, origin, target, configuration.biEntityCondition());
-		if (configuration.block()) {
-			BlockHitResult blockHit = performBlockRaycast(entity, origin, target, configuration.shapeType(), configuration.fluidHandling());
-			if (blockHit.getType() != HitResult.Type.MISS) {
-				if (hitResult == null || hitResult.getType() == HitResult.Type.MISS) {
-					hitResult = blockHit;
-				} else {
-					if (hitResult.distanceTo(entity) > blockHit.distanceTo(entity)) {
-						hitResult = blockHit;
-					}
-				}
-			}
-		}
+		HitResult hitResult = configuration.settings().perform(entity, configuration.biEntityCondition());
 		RaycastConfiguration.CommandInfo commandInfo = configuration.commandInfo();
 		RaycastConfiguration.HitAction actions = configuration.action();
-		if (hitResult != null && hitResult.getType() != HitResult.Type.MISS) {
+		if (hitResult.getType() != HitResult.Type.MISS) {
 			if (commandInfo.commandAtHit() != null) {
 				Vec3 offsetDirection = direction;
 				double offset = 0;

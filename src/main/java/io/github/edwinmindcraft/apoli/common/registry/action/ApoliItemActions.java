@@ -2,7 +2,6 @@ package io.github.edwinmindcraft.apoli.common.registry.action;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.action.meta.NothingAction;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
@@ -43,7 +42,7 @@ public class ApoliItemActions {
 	public static final RegistryObject<ModifyItemAction> MODIFY = ITEM_ACTIONS.register("modify", ModifyItemAction::new);
 	public static final RegistryObject<DamageItemAction> DAMAGE = ITEM_ACTIONS.register("damage", DamageItemAction::new);
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaActions(ITEM_ACTIONS, DelegatedItemAction::new, ConfiguredItemAction.CODEC, ConfiguredItemCondition.CODEC, EXECUTOR, PREDICATE);
 	}
 }

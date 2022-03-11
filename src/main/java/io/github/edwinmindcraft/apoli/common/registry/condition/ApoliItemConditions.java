@@ -38,6 +38,9 @@ public class ApoliItemConditions {
 	public static final RegistryObject<ComparingItemCondition> ARMOR_VALUE = ITEM_CONDITIONS.register("armor_value", () -> new ComparingItemCondition(value -> value.getItem() instanceof ArmorItem ai ? ai.getDefense() : 0));
 	public static final RegistryObject<ComparingItemCondition> HARVEST_LEVEL = ITEM_CONDITIONS.register("harvest_level", () -> new ComparingItemCondition(value -> value.getItem() instanceof DiggerItem ti ? ti.getTier().getLevel() : 0));
 	public static final RegistryObject<EnchantmentCondition> ENCHANTMENT = ITEM_CONDITIONS.register("enchantment", EnchantmentCondition::new);
+	public static final RegistryObject<NbtCondition> NBT = ITEM_CONDITIONS.register("nbt", NbtCondition::new);
+	public static final RegistryObject<SimpleItemCondition> FIREPROOF = ITEM_CONDITIONS.register("fireproof", () -> new SimpleItemCondition(x -> x.getItem().isFireResistant()));
+	public static final RegistryObject<SimpleItemCondition> ENCHANTABLE = ITEM_CONDITIONS.register("enchantable", () -> new SimpleItemCondition(ItemStack::isEnchantable));
 
 	public static ConfiguredItemCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
@@ -45,7 +48,7 @@ public class ApoliItemConditions {
 
 	public static ConfiguredItemCondition<?, ?> or(ConfiguredItemCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(ITEM_CONDITIONS, DelegatedItemCondition::new, ConfiguredItemCondition.CODEC, PREDICATE);
 	}
 }

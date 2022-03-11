@@ -29,7 +29,7 @@ public class BlockConditions {
 
     @SuppressWarnings("unchecked")
     public static void register() {
-        register(new ConditionFactory<>(Apoli.identifier("constant"), new SerializableData()
+        /*register(new ConditionFactory<>(Apoli.identifier("constant"), new SerializableData()
             .add("value", SerializableDataTypes.BOOLEAN),
             (data, block) -> data.getBoolean("value")));
         register(new ConditionFactory<>(Apoli.identifier("and"), new SerializableData()
@@ -41,8 +41,8 @@ public class BlockConditions {
             .add("conditions", ApoliDataTypes.BLOCK_CONDITIONS),
             (data, block) -> ((List<ConditionFactory<CachedBlockPosition>.Instance>)data.get("conditions")).stream().anyMatch(
                 condition -> condition.test(block)
-            )));
-        register(new ConditionFactory<>(Apoli.identifier("offset"), new SerializableData()
+            )));*/
+       register(new ConditionFactory<>(Apoli.identifier("offset"), new SerializableData()
             .add("condition", ApoliDataTypes.BLOCK_CONDITION)
             .add("x", SerializableDataTypes.INT, 0)
             .add("y", SerializableDataTypes.INT, 0)
@@ -60,7 +60,6 @@ public class BlockConditions {
             .add("comparison", ApoliDataTypes.COMPARISON)
             .add("compare_to", SerializableDataTypes.INT),
             (data, block) -> ((Comparison)data.get("comparison")).compare(block.getBlockPos().getY(), data.getInt("compare_to"))));
-        DistanceFromCoordinatesConditionRegistry.registerBlockCondition(BlockConditions::register);
         register(new ConditionFactory<>(Apoli.identifier("block"), new SerializableData()
             .add("block", SerializableDataTypes.BLOCK),
             (data, block) -> block.getBlockState().isOf((Block)data.get("block"))));
@@ -185,7 +184,8 @@ public class BlockConditions {
                 BlockState state = block.getBlockState();
                 return ((Comparison)data.get("comparison")).compare(state.getBlock().getHardness(), data.getFloat("compare_to"));
             }));
-        register(MaterialCondition.getFactory());
+        DistanceFromCoordinatesConditionRegistry.registerBlockCondition(BlockConditions::register);
+        //register(MaterialCondition.getFactory());
     }
 
     private static void register(ConditionFactory<CachedBlockPosition> conditionFactory) {

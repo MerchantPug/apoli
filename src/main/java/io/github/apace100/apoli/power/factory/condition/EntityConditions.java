@@ -59,7 +59,7 @@ public class EntityConditions {
 
     @SuppressWarnings("unchecked")
     public static void register() {
-        register(new ConditionFactory<>(Apoli.identifier("constant"), new SerializableData()
+        /*register(new ConditionFactory<>(Apoli.identifier("constant"), new SerializableData()
             .add("value", SerializableDataTypes.BOOLEAN),
             (data, entity) -> data.getBoolean("value")));
         register(new ConditionFactory<>(Apoli.identifier("and"), new SerializableData()
@@ -71,7 +71,7 @@ public class EntityConditions {
             .add("conditions", ApoliDataTypes.ENTITY_CONDITIONS),
             (data, entity) -> ((List<ConditionFactory<Entity>.Instance>)data.get("conditions")).stream().anyMatch(
                 condition -> condition.test(entity)
-            )));
+            )));*/
         register(new ConditionFactory<>(Apoli.identifier("block_collision"), new SerializableData()
             .add("offset_x", SerializableDataTypes.FLOAT)
             .add("offset_y", SerializableDataTypes.FLOAT)
@@ -568,7 +568,7 @@ public class EntityConditions {
                 }
                 return false;
             }));
-        register(RaycastCondition.getFactory());
+        //register(RaycastCondition.getFactory());
         register(ElytraFlightPossibleCondition.getFactory());
     }
 

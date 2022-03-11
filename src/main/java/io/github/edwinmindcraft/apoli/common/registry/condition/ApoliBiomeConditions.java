@@ -42,7 +42,7 @@ public class ApoliBiomeConditions {
 
 	public static ConfiguredBiomeCondition<?, ?> or(ConfiguredBiomeCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(BIOME_CONDITIONS, DelegatedBiomeCondition::new, ConfiguredBiomeCondition.CODEC, PREDICATE);
 	}
 }

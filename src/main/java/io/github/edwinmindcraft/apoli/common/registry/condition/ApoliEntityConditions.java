@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.mixin.EntityAccessor;
+import io.github.apace100.apoli.power.factory.condition.entity.ElytraFlightPossibleCondition;
+import io.github.apace100.apoli.power.factory.condition.entity.RaycastCondition;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
@@ -95,13 +97,16 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<AdvancementCondition> ADVANCEMENT = registerSided("advancement", () -> AdvancementCondition.Client::new, () -> AdvancementCondition::new);
 	public static final RegistryObject<GameModeCondition> GAMEMODE = registerSided("gamemode", () -> GameModeCondition.Client::new, () -> GameModeCondition::new);
 
+	public static final RegistryObject<RaycastCondition> RAYCAST = register("raycast", RaycastCondition::new);
+	public static final RegistryObject<ElytraFlightPossibleCondition> ELYTRA_FLIGHT_POSSIBLE = register("elytra_flight_possible", ElytraFlightPossibleCondition::new);
+
 	public static ConfiguredEntityCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
 	public static ConfiguredEntityCondition<?, ?> and(ConfiguredEntityCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
 
 	public static ConfiguredEntityCondition<?, ?> or(ConfiguredEntityCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
-	public static void register() {
+	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(ApoliRegisters.ENTITY_CONDITIONS, DelegatedEntityCondition::new, ConfiguredEntityCondition.CODEC, PREDICATE);
 	}
 

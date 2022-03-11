@@ -17,6 +17,5 @@ public class ApoliServer implements DedicatedServerModInitializer {
 
 		AutoConfig.register(ApoliConfigServer.class, JanksonConfigSerializer::new);
 		Apoli.config = AutoConfig.getConfigHolder(ApoliConfigServer.class).getConfig();
-
 	}
 }

@@ -6,6 +6,8 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IHudRenderedPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IHudRenderedVariableIntPowerConfiguration;
+import io.github.edwinmindcraft.apoli.common.power.configuration.StackingStatusEffectConfiguration;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
@@ -66,14 +68,13 @@ public abstract class HudRenderedVariableIntPowerFactory<T extends IHudRenderedV
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
-			return IntTag.valueOf(this.get(configuration, container));
+		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			tag.putInt("Value", this.get(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {
-			if (tag instanceof IntTag intTag)
-				this.set(configuration, container, intTag.getAsInt());
+		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			this.set(configuration, container, tag.getInt("Value"));
 		}
 	}
 }

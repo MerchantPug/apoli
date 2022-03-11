@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
@@ -66,14 +67,13 @@ public abstract class ActiveCooldownPowerFactory<T extends IActiveCooldownPowerC
 		}
 
 		@Override
-		public Tag serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
-			return LongTag.valueOf(this.getLastUseTime(configuration, container));
+		public void serialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			tag.putLong("LastUseTime", this.getLastUseTime(configuration, container));
 		}
 
 		@Override
-		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, Tag tag) {
-			if (tag instanceof LongTag longTag)
-				this.setLastUseTime(configuration, container, longTag.getAsLong());
+		public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {
+			this.setLastUseTime(configuration, container, tag.getLong("LastUseTime"));
 		}
 	}
 }

@@ -89,7 +89,10 @@ public class ApoliPowers {
 	public static final RegistryObject<SelfActionWhenHitPower> ACTION_WHEN_DAMAGE_TAKEN = ApoliRegisters.POWER_FACTORIES.register("action_when_damage_taken", SelfActionWhenHitPower::new);
 	public static final RegistryObject<ActionOnBlockUsePower> ACTION_ON_BLOCK_USE = ApoliRegisters.POWER_FACTORIES.register("action_on_block_use", ActionOnBlockUsePower::new);
 	public static final RegistryObject<DummyPower> FREEZE = ApoliRegisters.POWER_FACTORIES.register("freeze", DummyPower::new);
+	public static final RegistryObject<CombatHitActionPower> ACTION_WHEN_HIT = ApoliRegisters.POWER_FACTORIES.register("action_when_hit", CombatHitActionPower::new);
+	public static final RegistryObject<CombatHitActionPower> ACTION_ON_HIT = ApoliRegisters.POWER_FACTORIES.register("action_on_hit", CombatHitActionPower::new);
+	public static final RegistryObject<AttributeModifyTransferPower> ATTRIBUTE_MODIFY_TRANSFER = ApoliRegisters.POWER_FACTORIES.register("attribute_modify_transfer", AttributeModifyTransferPower::new);
 	//endregion
 
-	public static void register() {}
+	public static void bootstrap() {}
 }

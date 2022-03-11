@@ -13,14 +13,9 @@ import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.scores.Score;
 import net.minecraftforge.common.util.LazyOptional;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.CooldownPower;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
 
 import java.util.OptionalInt;
 import java.util.function.IntFunction;
@@ -28,7 +23,6 @@ import java.util.function.Supplier;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
-import java.util.Optional;
 
 public class ResourceCommand {
 
@@ -73,7 +67,7 @@ public class ResourceCommand {
 		return flatten ? optional.isPresent() ? 1 : 0 : optional.orElse(0);
 	}
 
-	private static OptionalInt operation(CommandContext<CommandSourceStack> command, ConfiguredPower<?, ?> configuredPower, ServerPlayer player) throws CommandSyntaxException {
+	private static OptionalInt operation(CommandContext<CommandSourceStack> command, ConfiguredPower<?, ?> configuredPower, Entity player) throws CommandSyntaxException {
 		Score score = command.getSource().getServer().getScoreboard().getOrCreatePlayerScore(ScoreHolderArgument.getName(command, "entity"), ObjectiveArgument.getObjective(command, "objective"));
 		command.getArgument("operation", PowerOperation.Operation.class).apply(player, configuredPower, score);
 		return configuredPower.getValue(player);

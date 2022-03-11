@@ -1,13 +1,13 @@
 package io.github.edwinmindcraft.apoli.common.registry;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.util.PowerGrantingItem;
 import io.github.apace100.apoli.util.PowerRestrictedCraftingRecipe;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.*;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -36,7 +36,7 @@ public class ApoliRegisters {
 
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Apoli.MODID);
 
-	public static void register() {
+	public static void initialize() {
 		ApoliRegistries.POWER_FACTORY = POWER_FACTORIES.makeRegistry("power_factory", () -> new RegistryBuilder<PowerFactory<?>>().disableSaving());
 		ApoliRegistries.ENTITY_CONDITION = ENTITY_CONDITIONS.makeRegistry("entity_condition", () -> new RegistryBuilder<EntityCondition<?>>().disableSaving());
 		ApoliRegistries.ITEM_CONDITION = ITEM_CONDITIONS.makeRegistry("item_condition", () -> new RegistryBuilder<ItemCondition<?>>().disableSaving());
@@ -69,13 +69,12 @@ public class ApoliRegisters {
 		CONFIGURED_POWERS.register(bus);
 
 		RECIPE_SERIALIZERS.register(bus);
-
-		RECIPE_SERIALIZERS.register("power_restricted", () -> PowerRestrictedCraftingRecipe.SERIALIZER);
 		bus.addListener(ApoliRegisters::registerCapabilities);
 	}
 
 	private static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.register(IPowerContainer.class);
 		event.register(IPowerDataCache.class);
+		event.register(PowerGrantingItem.class);
 	}
 }

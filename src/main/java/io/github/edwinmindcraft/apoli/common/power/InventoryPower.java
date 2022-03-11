@@ -73,22 +73,20 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container) {
+	public void serialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		SimpleContainer data = this.getData(configuration, container);
 		NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
 		for (int i = 0; i < data.getContainerSize(); i++)
 			stacks.set(i, data.getItem(i));
-		return ContainerHelper.saveAllItems(new CompoundTag(), stacks);
+		ContainerHelper.saveAllItems(tag, stacks);
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, Tag tag) {
-		if (tag instanceof CompoundTag compoundTag) {
-			SimpleContainer data = this.getData(configuration, container);
-			NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
-			ContainerHelper.loadAllItems(compoundTag, stacks);
-			for (int i = 0; i < data.getContainerSize(); i++)
-				data.setItem(i, stacks.get(i));
-		}
+	public void deserialize(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+		SimpleContainer data = this.getData(configuration, container);
+		NonNullList<ItemStack> stacks = NonNullList.withSize(data.getContainerSize(), ItemStack.EMPTY);
+		ContainerHelper.loadAllItems(tag, stacks);
+		for (int i = 0; i < data.getContainerSize(); i++)
+			data.setItem(i, stacks.get(i));
 	}
 }

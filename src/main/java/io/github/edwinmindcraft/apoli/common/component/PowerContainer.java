@@ -3,8 +3,6 @@ package io.github.edwinmindcraft.apoli.common.component;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
@@ -28,7 +26,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import org.intellij.lang.annotations.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -218,7 +215,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 						sources.forEach(nbtElement -> list.add(ResourceLocation.tryParse(nbtElement.getAsString())));
 					this.powerSources.put(identifier, list);
 					try {
-						Tag data = powerTag.get("Data");
+						CompoundTag data = powerTag.getCompound("Data");
 						Optional<ConfiguredPower<?, ?>> optionalPower = powers.getOptional(identifier);
 						if (optionalPower.isEmpty()) {
 							Apoli.LOGGER.warn("Power data of unregistered power \"" + identifier + "\" found on entity, skipping...");
@@ -259,7 +256,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	}
 
 	@Override
-	public void handle(Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, Tag> data) {
+	public void handle(Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, CompoundTag> data) {
 		this.powerSources.clear();
 		this.powers.clear();
 		this.powerData.clear();
@@ -273,7 +270,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			}
 			this.powers.put(power, configuredPower);
 			this.powerSources.put(power, new HashSet<>(powerEntry.getValue()));
-			Tag tag = data.get(power);
+			CompoundTag tag = data.get(power);
 			if (tag != null)
 				configuredPower.deserialize(this, tag);
 		}

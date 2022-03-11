@@ -6,6 +6,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -77,14 +78,13 @@ public class FabricPowerFactory<P extends Power> extends PowerFactory<FabricPowe
 	}
 
 	@Override
-	public Tag serialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, IPowerContainer container) {
+	public void serialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		if (container.getOwner() instanceof LivingEntity living)
-			return this.getPower(configuration, living, container).toTag();
-		return super.serialize(configuration, container);
+			tag.put("FabricData", this.getPower(configuration, living, container).toTag());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, IPowerContainer container, Tag tag) {
+	public void deserialize(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		if (container.getOwner() instanceof LivingEntity living)
 			this.getPower(configuration, living, container).fromTag(tag);
 	}

@@ -40,19 +40,12 @@ public class Apoli {
 		ArgumentTypes.register(MODID + ":power", PowerTypeArgumentType.class, new EmptyArgumentSerializer<>(PowerTypeArgumentType::power));
 		ArgumentTypes.register(MODID + ":power_operation", PowerOperation.class, new EmptyArgumentSerializer<>(PowerOperation::operation));
 
-		ModPacketsC2S.register();
+		//ModPacketsC2S.register();
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
-			PowerCommand.register(dispatcher);
-			ResourceCommand.register(dispatcher);
-		});
-
-		Registry.register(Registry.RECIPE_SERIALIZER, Apoli.identifier("power_restricted"), PowerRestrictedCraftingRecipe.SERIALIZER);
+		//Registry.register(Registry.RECIPE_SERIALIZER, Apoli.identifier("power_restricted"), PowerRestrictedCraftingRecipe.SERIALIZER);
 		Registry.register(Registry.RECIPE_SERIALIZER, Apoli.identifier("modified"), ModifiedCraftingRecipe.SERIALIZER);
 
-		Registry.register(Registry.LOOT_FUNCTION_TYPE, Apoli.identifier("add_power"), AddPowerLootFunction.TYPE);
-
-		OrderedResourceListeners.register(new PowerTypes()).complete();
+		//OrderedResourceListeners.register(new PowerTypes()).complete();
 
 		CriteriaTriggers.register(GainedPowerCriterion.INSTANCE);
 

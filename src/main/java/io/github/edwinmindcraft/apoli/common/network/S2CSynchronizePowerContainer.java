@@ -33,7 +33,7 @@ public class S2CSynchronizePowerContainer {
 	public static S2CSynchronizePowerContainer forEntity(Entity living) {
 		return IPowerContainer.get(living).map(container -> {
 			Multimap<ResourceLocation, ResourceLocation> powerSources = HashMultimap.create();
-			Map<ResourceLocation, Tag> data = new HashMap<>();
+			Map<ResourceLocation, CompoundTag> data = new HashMap<>();
 			for (ResourceLocation power : container.getPowerNames()) {
 				for (ResourceLocation source : container.getSources(power)) {
 					powerSources.put(power, source);
@@ -43,8 +43,8 @@ public class S2CSynchronizePowerContainer {
 					Apoli.LOGGER.warn("Invalid power container capability for entity {}", living.getScoreboardName());
 					continue;
 				}
-				Tag tag = configuredPower.serialize(container);
-				if (tag instanceof CompoundTag compound && compound.isEmpty())
+				CompoundTag tag = configuredPower.serialize(container);
+				if (tag.isEmpty())
 					continue;
 				data.put(power, tag);
 			}
@@ -54,7 +54,7 @@ public class S2CSynchronizePowerContainer {
 
 	public static S2CSynchronizePowerContainer decode(FriendlyByteBuf buffer) {
 		Multimap<ResourceLocation, ResourceLocation> powerSources = HashMultimap.create();
-		Map<ResourceLocation, Tag> data = new HashMap<>();
+		Map<ResourceLocation, CompoundTag> data = new HashMap<>();
 		int entity = buffer.readInt();
 		int powerCount = buffer.readVarInt();
 		for (int i = 0; i < powerCount; i++) {
@@ -65,9 +65,7 @@ public class S2CSynchronizePowerContainer {
 				powerSources.put(power, source);
 			}
 			if (buffer.readBoolean()) {
-				CompoundTag tag = buffer.readNbt();
-				if (tag != null)
-					data.put(power, tag.get("Data"));
+				data.put(power, buffer.readNbt());
 			}
 		}
 		return new S2CSynchronizePowerContainer(entity, powerSources, data);
@@ -75,9 +73,9 @@ public class S2CSynchronizePowerContainer {
 
 	private final int entity;
 	private final Multimap<ResourceLocation, ResourceLocation> powerSources;
-	private final Map<ResourceLocation, Tag> data;
+	private final Map<ResourceLocation, CompoundTag> data;
 
-	public S2CSynchronizePowerContainer(int entity, Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, Tag> data) {
+	public S2CSynchronizePowerContainer(int entity, Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, CompoundTag> data) {
 		this.entity = entity;
 		this.powerSources = powerSources;
 		this.data = data;
@@ -93,14 +91,12 @@ public class S2CSynchronizePowerContainer {
 			buffer.writeResourceLocation(power);
 			buffer.writeVarInt(sources.size());
 			sources.forEach(buffer::writeResourceLocation);
-			Tag tag = this.data.get(power);
-			if (tag == null || (tag instanceof CompoundTag compound && compound.isEmpty()))
+			CompoundTag tag = this.data.get(power);
+			if (tag == null || tag.isEmpty())
 				buffer.writeBoolean(false);
 			else {
 				buffer.writeBoolean(true);
-				CompoundTag temp = new CompoundTag();
-				temp.put("Data", tag);
-				buffer.writeNbt(temp);
+				buffer.writeNbt(tag);
 			}
 		}
 	}

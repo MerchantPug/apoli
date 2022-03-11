@@ -131,12 +131,14 @@ public class ApoliPowerEventHandler {
 	public static void onLivingHurt(LivingHurtEvent event) {
 		LivingEntity target = event.getEntityLiving();
 		DamageSource source = event.getSource();
+		Entity attacker = source.getEntity();
 		if (event.getAmount() > 0 && !event.isCanceled()) {
 			SelfActionWhenHitPower.execute(target, source, event.getAmount());
 			AttackerActionWhenHitPower.execute(target, source, event.getAmount());
-			if (source.getEntity() instanceof LivingEntity living) {
-				SelfCombatActionPower.onHit(living, target, source, event.getAmount());
-				TargetCombatActionPower.onHit(living, target, source, event.getAmount());
+			if (attacker != null) {
+				SelfCombatActionPower.onHit(attacker, target, source, event.getAmount());
+				TargetCombatActionPower.onHit(attacker, target, source, event.getAmount());
+				CombatHitActionPower.perform(attacker, target, source, event.getAmount());
 			}
 		}
 		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(event.getAmount()));

@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.registry;
 
+import io.github.apace100.apoli.util.PowerGrantingItem;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import net.minecraftforge.common.capabilities.Capability;
@@ -13,4 +14,7 @@ public class ApoliCapabilities {
 
 	@NotNull
 	public static final Capability<IPowerDataCache> POWER_DATA_CACHE = CapabilityManager.get(new CapabilityToken<>() {});
+
+	@NotNull
+	public static final Capability<PowerGrantingItem> POWER_GRANTING_ITEM = CapabilityManager.get(new CapabilityToken<>() {});
 }

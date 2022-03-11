@@ -1,35 +1,19 @@
 package io.github.apace100.apoli.power.factory.condition.block;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.block.Material;
-import net.minecraft.block.pattern.CachedBlockPosition;
+import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.material.Material;
 
-import java.util.List;
+public class MaterialCondition extends BlockCondition<ListConfiguration<Material>> {
 
-public class MaterialCondition {
+	public MaterialCondition() {
+		super(ListConfiguration.codec(SerializableDataTypes.MATERIAL, "material", "materials"));
+	}
 
-    public static boolean condition(SerializableData.Instance data, CachedBlockPosition cachedBlockPosition) {
-        Material material = cachedBlockPosition.getBlockState().getMaterial();
-        if(data.isPresent("material")) {
-            if(material == data.get("material")) {
-                return true;
-            }
-        }
-        if(data.isPresent("materials")) {
-            return data.<List<Material>>get("materials").stream().anyMatch(m -> m == material);
-        }
-        return false;
-    }
-
-    public static ConditionFactory<CachedBlockPosition> getFactory() {
-        return new ConditionFactory<>(Apoli.identifier("material"),
-            new SerializableData()
-                .add("material", SerializableDataTypes.MATERIAL, null)
-                .add("materials", SerializableDataTypes.MATERIALS, null),
-            MaterialCondition::condition
-        );
-    }
+	@Override
+	protected boolean check(ListConfiguration<Material> configuration, BlockInWorld block) {
+		return configuration.getContent().stream().anyMatch(block.getState().getMaterial()::equals);
+	}
 }
