@@ -8,21 +8,22 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import java.util.stream.Stream;
 
 public class RestrictArmorPower extends PowerFactory<RestrictArmorConfiguration> {
 	public static boolean isForbidden(Entity player, EquipmentSlot slot, ItemStack stack) {
 		return Stream.concat(IPowerContainer.getPowers(player, ApoliPowers.CONDITIONED_RESTRICT_ARMOR.get()).stream(), IPowerContainer.getPowers(player, ApoliPowers.RESTRICT_ARMOR.get()).stream())
-				.anyMatch(x -> x.getConfiguration().check(slot, stack));
+				.anyMatch(x -> x.getConfiguration().check(slot, player.level, stack));
 	}
 
 	public RestrictArmorPower() {
 		super(RestrictArmorConfiguration.CODEC, false);
 	}
 
-	public boolean canEquip(ConfiguredPower<RestrictArmorConfiguration, ?> configuration, ItemStack stack, EquipmentSlot slot) {
-		return configuration.getConfiguration().check(slot, stack);
+	public boolean canEquip(ConfiguredPower<RestrictArmorConfiguration, ?> configuration, Level level, ItemStack stack, EquipmentSlot slot) {
+		return configuration.getConfiguration().check(slot, level, stack);
 	}
 
 	@Override

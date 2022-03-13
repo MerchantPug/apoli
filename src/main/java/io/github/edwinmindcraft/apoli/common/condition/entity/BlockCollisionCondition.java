@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 import io.github.edwinmindcraft.apoli.api.configuration.ApoliCodecs;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
@@ -11,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 public class BlockCollisionCondition extends EntityCondition<FieldConfiguration<Vec3>> {
 
 	public BlockCollisionCondition() {
-		super(FieldConfiguration.codec(ApoliCodecs.vec3d("offset_")));
+		super(FieldConfiguration.codec(CalioCodecHelper.vec3d("offset_")));
 	}
 
 	@Override

@@ -1,11 +1,13 @@
 package io.github.edwinmindcraft.apoli.common.registry.condition;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.power.factory.condition.DistanceFromCoordinatesConditionRegistry;
 import io.github.apace100.apoli.power.factory.condition.block.MaterialCondition;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import io.github.edwinmindcraft.apoli.common.action.block.NbtCondition;
 import io.github.edwinmindcraft.apoli.common.condition.block.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
@@ -45,6 +47,11 @@ public class ApoliBlockConditions {
 	public static final RegistryObject<HeightCondition> HEIGHT = BLOCK_CONDITIONS.register("height", HeightCondition::new);
 
 	public static final RegistryObject<MaterialCondition> MATERIAL = BLOCK_CONDITIONS.register("material", MaterialCondition::new);
+	public static final RegistryObject<SimpleBlockCondition> BLOCK_ENTITY = BLOCK_CONDITIONS.register("block_entity", () -> new SimpleBlockCondition(SimpleBlockCondition.BLOCK_ENTITY));
+	public static final RegistryObject<FloatComparingBlockCondition> SLIPPERINESS = BLOCK_CONDITIONS.register("slipperiness", () -> new FloatComparingBlockCondition(t -> t.getState().getFriction(t.getLevel(), t.getPos(), null)));
+	public static final RegistryObject<FloatComparingBlockCondition> BLAST_RESISTANCE = BLOCK_CONDITIONS.register("blast_resistance", () -> new FloatComparingBlockCondition(t -> t.getState().getBlock().getExplosionResistance()));
+	public static final RegistryObject<FloatComparingBlockCondition> HARDNESS = BLOCK_CONDITIONS.register("hardness", () -> new FloatComparingBlockCondition(t -> t.getState().getDestroySpeed(t.getLevel(), t.getPos())));
+	public static final RegistryObject<NbtCondition> NBT = BLOCK_CONDITIONS.register("nbt", NbtCondition::new);
 
 	public static ConfiguredBlockCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
@@ -54,5 +61,6 @@ public class ApoliBlockConditions {
 
 	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(BLOCK_CONDITIONS, DelegatedBlockCondition::new, ConfiguredBlockCondition.CODEC, PREDICATE);
+		DistanceFromCoordinatesConditionRegistry.registerBlockConditions();
 	}
 }

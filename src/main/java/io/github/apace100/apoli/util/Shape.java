@@ -1,6 +1,7 @@
 package io.github.apace100.apoli.util;
 
 import net.minecraft.core.BlockPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;

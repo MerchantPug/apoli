@@ -6,11 +6,20 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.PowerReference;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import io.github.edwinmindcraft.calio.api.network.OptionalFuncs;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Optional;
 
 public record PowerSourceConfiguration(PowerReference power, ResourceLocation source) implements IDynamicFeatureConfiguration {
 	public static final Codec<PowerSourceConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			PowerReference.mapCodec("power").forGetter(PowerSourceConfiguration::power),
 			SerializableDataTypes.IDENTIFIER.fieldOf("source").forGetter(PowerSourceConfiguration::source)
 	).apply(instance, PowerSourceConfiguration::new));
+
+	public static final Codec<PowerSourceConfiguration> OPTIONAL_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			PowerReference.mapCodec("power").forGetter(PowerSourceConfiguration::power),
+			CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "source").forGetter(OptionalFuncs.opt(PowerSourceConfiguration::source))
+	).apply(instance, (PowerReference power1, Optional<ResourceLocation> source1) -> new PowerSourceConfiguration(power1, source1.orElse(null))));
 }

@@ -3,21 +3,29 @@ package io.github.edwinmindcraft.apoli.common.registry.condition;
 import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.access.MovingEntity;
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.mixin.EntityAccessor;
+import io.github.apace100.apoli.power.factory.condition.DistanceFromCoordinatesConditionRegistry;
 import io.github.apace100.apoli.power.factory.condition.entity.ElytraFlightPossibleCondition;
 import io.github.apace100.apoli.power.factory.condition.entity.RaycastCondition;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.entity.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
+import io.github.edwinmindcraft.calio.api.ability.IAbilityHolder;
+import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
@@ -57,7 +65,7 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<SimpleEntityCondition> SPRINTING = register("sprinting", Entity::isSprinting);
 	public static final RegistryObject<SimpleEntityCondition> SWIMMING = register("swimming", Entity::isSwimming);
 	public static final RegistryObject<SimpleEntityCondition> COLLIDED_HORIZONTALLY = register("collided_horizontally", t -> t.horizontalCollision);
-	public static final RegistryObject<SimpleEntityCondition> CLIMBING = registerLiving("climbing", LivingEntity::onClimbable);
+	public static final RegistryObject<SimpleEntityCondition> CLIMBING = registerLiving("climbing", living -> living.onClimbable() || IPowerContainer.hasPower(living, ApoliPowers.CLIMBING.get()));
 	public static final RegistryObject<SimpleEntityCondition> TAMED = register("tamed", x -> x instanceof TamableAnimal te && te.isTame());
 	public static final RegistryObject<SimpleEntityCondition> MOVING = register("moving", x -> ((MovingEntity) x).isMoving());
 	public static final RegistryObject<FloatComparingEntityCondition> BRIGHTNESS = registerFloat("brightness", Entity::getBrightness);
@@ -99,6 +107,18 @@ public class ApoliEntityConditions {
 
 	public static final RegistryObject<RaycastCondition> RAYCAST = register("raycast", RaycastCondition::new);
 	public static final RegistryObject<ElytraFlightPossibleCondition> ELYTRA_FLIGHT_POSSIBLE = register("elytra_flight_possible", ElytraFlightPossibleCondition::new);
+	public static final RegistryObject<BiEntityWrappedCondition> RIDING = register("riding", () -> new BiEntityWrappedCondition(BiEntityWrappedCondition::riding));
+	public static final RegistryObject<BiEntityWrappedCondition> RIDING_ROOT = register("riding_root", () -> new BiEntityWrappedCondition(BiEntityWrappedCondition::ridingRoot));
+	public static final RegistryObject<IntComparingBECEntityCondition> RIDING_RECURSIVE = register("riding_recursive", () -> new IntComparingBECEntityCondition(IntComparingBECEntityCondition::ridingRecursive));
+	public static final RegistryObject<SimpleEntityCondition> LIVING = register("living", e -> e instanceof LivingEntity);
+	public static final RegistryObject<IntComparingBECEntityCondition> PASSENGER = register("passenger", () -> new IntComparingBECEntityCondition(IntComparingBECEntityCondition::passenger));
+	public static final RegistryObject<IntComparingBECEntityCondition> PASSENGER_RECURSIVE = register("passenger_recursive", () -> new IntComparingBECEntityCondition(IntComparingBECEntityCondition::passengerRecursive));
+	public static final RegistryObject<SingleFieldEntityCondition<CompoundTag>> NBT = register("nbt", SerializableDataTypes.NBT.fieldOf("nbt"), SingleFieldEntityCondition::nbt);
+	public static final RegistryObject<SimpleEntityCondition> EXISTS = register("exists", Objects::nonNull);
+	public static final RegistryObject<SimpleEntityCondition> CREATIVE_FLYING = registerPlayer("creative_flying", x -> x.getAbilities().flying);
+	public static final RegistryObject<SingleFieldEntityCondition<ResourceLocation>> POWER_TYPE = register("power_type", SerializableDataTypes.IDENTIFIER.fieldOf("power_type"), (entity, rl) -> IPowerContainer.get(entity).map(container -> container.getPowerTypes(true).contains(rl)).orElse(false));
+	public static final RegistryObject<SingleFieldEntityCondition<PlayerAbility>> ABILITY = register("ability", ApoliDataTypes.PLAYER_ABILITY.fieldOf("player_ability"), IAbilityHolder::has);
+
 
 	public static ConfiguredEntityCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
@@ -108,6 +128,7 @@ public class ApoliEntityConditions {
 
 	public static void bootstrap() {
 		MetaFactories.defineMetaConditions(ApoliRegisters.ENTITY_CONDITIONS, DelegatedEntityCondition::new, ConfiguredEntityCondition.CODEC, PREDICATE);
+		DistanceFromCoordinatesConditionRegistry.registerEntityCondition();
 	}
 
 	private static <T extends EntityCondition<?>> RegistryObject<T> register(String name, Supplier<T> factory) {
@@ -120,6 +141,10 @@ public class ApoliEntityConditions {
 
 	private static RegistryObject<SimpleEntityCondition> registerLiving(String name, Predicate<LivingEntity> factory) {
 		return register(name, () -> new SimpleEntityCondition(x -> x instanceof LivingEntity living && factory.test(living)));
+	}
+
+	private static RegistryObject<SimpleEntityCondition> registerPlayer(String name, Predicate<Player> factory) {
+		return register(name, () -> new SimpleEntityCondition(x -> x instanceof Player player && factory.test(player)));
 	}
 
 	private static RegistryObject<IntComparingEntityCondition> registerInt(String name, Function<Entity, Integer> factory) {

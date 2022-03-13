@@ -1,16 +1,8 @@
 package io.github.apace100.apoli.power.factory.action.meta;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataType;
-
-import java.util.function.Function;
-
 public class IfElseAction {
 
-    public static <T, U> void action(SerializableData.Instance data, T t, Function<T, U> actionToConditionTypeFunction) {
+    /*public static <T, U> void action(SerializableData.Instance data, T t, Function<T, U> actionToConditionTypeFunction) {
         ConditionFactory<U>.Instance condition = data.get("condition");
         ActionFactory<T>.Instance ifAction = data.get("if_action");
         U u = actionToConditionTypeFunction.apply(t);
@@ -39,5 +31,5 @@ public class IfElseAction {
         SerializableDataType<ActionFactory<T>.Instance> actionDataType,
         SerializableDataType<ConditionFactory<T>.Instance> conditionDataType) {
         return getFactory(actionDataType, conditionDataType, t -> t);
-    }
+    }*/
 }

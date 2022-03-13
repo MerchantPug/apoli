@@ -12,6 +12,6 @@ public class EquippedItemCondition extends EntityCondition<EquippedItemConfigura
 
 	@Override
 	public boolean check(EquippedItemConfiguration configuration, Entity entity) {
-		return entity instanceof LivingEntity living && configuration.condition().check(living.getItemBySlot(configuration.slot()));
+		return entity instanceof LivingEntity living && configuration.condition().check(living.level, living.getItemBySlot(configuration.slot()));
 	}
 }

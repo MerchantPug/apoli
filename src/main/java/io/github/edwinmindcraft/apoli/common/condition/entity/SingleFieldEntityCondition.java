@@ -3,6 +3,8 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +30,12 @@ public class SingleFieldEntityCondition<T> extends EntityCondition<FieldConfigur
 			}
 		}
 		return false;
+	}
+
+	public static boolean nbt(Entity entity, CompoundTag compoundTag) {
+		CompoundTag tag = new CompoundTag();
+		entity.save(tag);
+		return NbtUtils.compareNbt(compoundTag, tag, true);
 	}
 
 	private final BiPredicate<Entity, T> predicate;

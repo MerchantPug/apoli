@@ -1,34 +1,9 @@
 package io.github.apace100.apoli.power.factory.condition;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.factory.condition.block.MaterialCondition;
-import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.apace100.apoli.util.Comparison;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataType;
-import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FluidFillable;
-import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.state.property.Property;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.LightType;
-
-import java.util.Collection;
-import java.util.List;
-
 public class BlockConditions {
 
-    @SuppressWarnings("unchecked")
-    public static void register() {
+	//@SuppressWarnings("unchecked")
+	public static void register() {
         /*register(new ConditionFactory<>(Apoli.identifier("constant"), new SerializableData()
             .add("value", SerializableDataTypes.BOOLEAN),
             (data, block) -> data.getBoolean("value")));
@@ -42,7 +17,7 @@ public class BlockConditions {
             (data, block) -> ((List<ConditionFactory<CachedBlockPosition>.Instance>)data.get("conditions")).stream().anyMatch(
                 condition -> condition.test(block)
             )));*/
-       register(new ConditionFactory<>(Apoli.identifier("offset"), new SerializableData()
+		/*register(new ConditionFactory<>(Apoli.identifier("offset"), new SerializableData()
             .add("condition", ApoliDataTypes.BLOCK_CONDITION)
             .add("x", SerializableDataTypes.INT, 0)
             .add("y", SerializableDataTypes.INT, 0)
@@ -151,10 +126,10 @@ public class BlockConditions {
                     return true;
                 }
                 return false;
-            }));
-        register(new ConditionFactory<>(Apoli.identifier("block_entity"), new SerializableData(),
-            (data, block) -> block.getBlockEntity() != null));
-        register(new ConditionFactory<>(Apoli.identifier("nbt"), new SerializableData()
+            }));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("block_entity"), new SerializableData(),
+            (data, block) -> block.getBlockEntity() != null));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("nbt"), new SerializableData()
             .add("nbt", SerializableDataTypes.NBT),
             (data, block) -> {
                 NbtCompound nbt = new NbtCompound();
@@ -162,8 +137,8 @@ public class BlockConditions {
                     nbt = block.getBlockEntity().createNbtWithIdentifyingData();
                 }
                 return NbtHelper.matches((NbtCompound)data.get("nbt"), nbt, true);
-            }));
-        register(new ConditionFactory<>(Apoli.identifier("slipperiness"), new SerializableData()
+            }));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("slipperiness"), new SerializableData()
             .add("comparison", ApoliDataTypes.COMPARISON)
             .add("compare_to", SerializableDataTypes.FLOAT),
             (data, block) -> {
@@ -183,12 +158,12 @@ public class BlockConditions {
             (data, block) -> {
                 BlockState state = block.getBlockState();
                 return ((Comparison)data.get("comparison")).compare(state.getBlock().getHardness(), data.getFloat("compare_to"));
-            }));
-        DistanceFromCoordinatesConditionRegistry.registerBlockCondition(BlockConditions::register);
-        //register(MaterialCondition.getFactory());
-    }
+            }));*/
+		//DistanceFromCoordinatesConditionRegistry.registerBlockCondition(BlockConditions::register);
+		//register(MaterialCondition.getFactory());
+	}
 
-    private static void register(ConditionFactory<CachedBlockPosition> conditionFactory) {
+    /*private static void register(ConditionFactory<CachedBlockPosition> conditionFactory) {
         Registry.register(ApoliRegistries.BLOCK_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
-    }
+    }*/
 }

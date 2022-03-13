@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.registry.action;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.power.factory.action.bientity.DamageAction;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
@@ -9,9 +10,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemActi
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiEntityAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.action.bientity.DelegatedBiEntityAction;
-import io.github.edwinmindcraft.apoli.common.action.bientity.DispatchBiEntityAction;
-import io.github.edwinmindcraft.apoli.common.action.bientity.InvertBiEntityAction;
+import io.github.edwinmindcraft.apoli.common.action.bientity.*;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.registries.RegistryObject;
@@ -40,6 +39,12 @@ public class ApoliIBiEntityActions {
 	public static final RegistryObject<InvertBiEntityAction> INVERT = BIENTITY_ACTIONS.register("invert", InvertBiEntityAction::new);
 	public static final RegistryObject<DispatchBiEntityAction> ACTOR_ACTION = BIENTITY_ACTIONS.register("actor_action", DispatchBiEntityAction::actor);
 	public static final RegistryObject<DispatchBiEntityAction> TARGET_ACTION = BIENTITY_ACTIONS.register("target_action", DispatchBiEntityAction::target);
+	public static final RegistryObject<SimpleBiEntityAction> MOUNT = BIENTITY_ACTIONS.register("mount", () -> new SimpleBiEntityAction(SimpleBiEntityAction::mount));
+	public static final RegistryObject<SimpleBiEntityAction> SET_IN_LOVE = BIENTITY_ACTIONS.register("set_in_love", () -> new SimpleBiEntityAction(SimpleBiEntityAction::setInLove));
+	public static final RegistryObject<SimpleBiEntityAction> TAME = BIENTITY_ACTIONS.register("tame", () -> new SimpleBiEntityAction(SimpleBiEntityAction::tame));
+	public static final RegistryObject<AddVelocityAction> ADD_VELOCITY = BIENTITY_ACTIONS.register("add_velocity", AddVelocityAction::new);
+	public static final RegistryObject<DamageAction> DAMAGE = BIENTITY_ACTIONS.register("damage", DamageAction::new);
+
 
 	public static void bootstrap() {
 		MetaFactories.defineMetaActions(BIENTITY_ACTIONS, DelegatedBiEntityAction::new, ConfiguredBiEntityAction.CODEC, ConfiguredBiEntityCondition.CODEC, EXECUTOR, PREDICATE);

@@ -1,44 +1,41 @@
 package io.github.apace100.apoli.util;
 
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.doubles.DoublePredicate;
+
 import java.util.function.BiFunction;
 
 public enum Comparison {
 
 	NONE("", (a, b) -> false),
-	EQUAL("==", Double::equals),
+	EQUAL("==", (a, b) -> a == b),
 	LESS_THAN("<", (a, b) -> a < b),
 	GREATER_THAN(">", (a, b) -> a > b),
 	LESS_THAN_OR_EQUAL("<=", (a, b) -> a <= b),
 	GREATER_THAN_OR_EQUAL(">=", (a, b) -> a >= b),
-	NOT_EQUAL("!=", (a, b) -> !a.equals(b));
+	NOT_EQUAL("!=", (a, b) -> a != b);
 
 	public static Comparison getFromString(String comparisonString) {
-		switch (comparisonString) {
-			case "==":
-				return EQUAL;
-			case "<":
-				return LESS_THAN;
-			case ">":
-				return GREATER_THAN;
-			case "<=":
-				return LESS_THAN_OR_EQUAL;
-			case ">=":
-				return GREATER_THAN_OR_EQUAL;
-			case "!=":
-				return NOT_EQUAL;
-		}
-		return NONE;
+		return switch (comparisonString) {
+			case "==" -> EQUAL;
+			case "<" -> LESS_THAN;
+			case ">" -> GREATER_THAN;
+			case "<=" -> LESS_THAN_OR_EQUAL;
+			case ">=" -> GREATER_THAN_OR_EQUAL;
+			case "!=" -> NOT_EQUAL;
+			default -> NONE;
+		};
 	}
 	private final String comparisonString;
-	private final BiFunction<Double, Double, Boolean> comparison;
+	private final DoubleBiPredicate comparison;
 
-	Comparison(String comparisonString, BiFunction<Double, Double, Boolean> comparison) {
+	Comparison(String comparisonString, DoubleBiPredicate comparison) {
 		this.comparisonString = comparisonString;
 		this.comparison = comparison;
 	}
 
 	public boolean compare(double a, double b) {
-		return this.comparison.apply(a, b);
+		return this.comparison.compare(a, b);
 	}
 
 	public String getComparisonString() {
@@ -51,5 +48,10 @@ public enum Comparison {
 			case LESS_THAN, GREATER_THAN_OR_EQUAL -> compareTo;
 			default -> -1;
 		};
+	}
+
+	@FunctionalInterface
+	interface DoubleBiPredicate {
+		boolean compare(double a, double b);
 	}
 }

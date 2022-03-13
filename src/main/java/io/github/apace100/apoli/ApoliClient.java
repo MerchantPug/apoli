@@ -26,8 +26,6 @@ public class ApoliClient {
 	public static void initialize() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ApoliClient::setupClient);
 
-		ModPacketsS2C.register();
-
 		ApoliClassDataClient.registerAll();
 
 		EntityConditionsClient.register();

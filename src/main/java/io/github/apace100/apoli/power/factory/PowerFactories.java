@@ -1,12 +1,11 @@
 package io.github.apace100.apoli.power.factory;
 
-import io.github.apace100.apoli.power.*;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import net.minecraft.core.Registry;
 
 public class PowerFactories {
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public static void register() {
 		//register(new PowerFactory<>(Apoli.identifier("simple"), new SerializableData(), data -> Power::new).allowCondition());
 		//register(TogglePower::createFactory);
@@ -24,8 +23,7 @@ public class PowerFactories {
 		//register(ModifyBreakSpeedPower::createFactory);
 		//register(ModifyDamageDealtPower::createFactory);
 		//register(ModifyDamageTakenPower::createFactory);
-		//register(() -> ValueModifyingPower.createValueModifyingFactory(
-		//    ModifyExhaustionPower::new, Apoli.identifier("modify_exhaustion")));
+		//register(() -> ValueModifyingPower.createValueModifyingFactory(ModifyExhaustionPower::new, Apoli.identifier("modify_exhaustion")));
 		//register(ModifyHarvestPower::createFactory);
 		//register(ModifyJumpPower::createFactory);
 		//register(ModifyPlayerSpawnPower::createFactory);
@@ -37,13 +35,11 @@ public class PowerFactories {
 		//register(RestrictArmorPower::createFactory);
 		//register(ConditionedRestrictArmorPower::createFactory);
 		//register(StackingStatusEffectPower::createFactory);
-		//register(() -> ValueModifyingPower.createValueModifyingFactory(
-		//    ModifySwimSpeedPower::new, Apoli.identifier("modify_swim_speed")));
+		//register(() -> ValueModifyingPower.createValueModifyingFactory(ModifySwimSpeedPower::new, Apoli.identifier("modify_swim_speed")));
 		//register(DamageOverTimePower::createFactory);
 		//register(() -> Power.createSimpleFactory(SwimmingPower::new, Apoli.identifier("swimming")));
 		//register(() -> Power.createSimpleFactory(FireImmunityPower::new, Apoli.identifier("fire_immunity")));
-		//register(() -> ValueModifyingPower.createValueModifyingFactory(
-		//    ModifyLavaSpeedPower::new, Apoli.identifier("modify_lava_speed")));
+		//register(() -> ValueModifyingPower.createValueModifyingFactory(ModifyLavaSpeedPower::new, Apoli.identifier("modify_lava_speed")));
 		//register(LavaVisionPower::createFactory);
 		//register(ConditionedAttributePower::createFactory);
 		//register(ActiveCooldownPower::createActiveSelfFactory);
@@ -86,28 +82,28 @@ public class PowerFactories {
 		//register(BurnPower::createFactory);
 		//register(ExhaustOverTimePower::createFactory);
 		//register(PreventGameEventPower::createFactory);
-		register(ModifyCraftingPower::createFactory);
+		//register(ModifyCraftingPower::createFactory);
 		//register(() -> Power.createSimpleFactory(FreezePower::new, Apoli.identifier("freeze")));
-		register(ModifyBlockRenderPower::createFactory);
-		register(ModifyFluidRenderPower::createFactory);
-		register(ModifyCameraSubmersionTypePower::createFactory);
-		register(OverrideHudTexturePower::createFactory);
-		register(ItemOnItemPower::createFactory);
-		register(OverlayPower::createFactory);
-		register(TooltipPower::createFactory);
+		//register(ModifyBlockRenderPower::createFactory);
+		//register(ModifyFluidRenderPower::createFactory);
+		//register(ModifyCameraSubmersionTypePower::createFactory);
+		//register(OverrideHudTexturePower::createFactory);
+		//register(ItemOnItemPower::createFactory);
+		//register(OverlayPower::createFactory);
+		//register(TooltipPower::createFactory);
 		//register(ActionOnHitPower::createFactory);
 		//register(ActionWhenHitPower::createFactory);
 		//register(() -> SelfActionWhenHitPower.createFactory(Apoli.identifier("action_when_damage_taken")));
 		//register(() -> ValueModifyingPower.createValueModifyingFactory(ModifyAirSpeedPower::new, Apoli.identifier("modify_air_speed")));
 		//register(AttributeModifyTransferPower::createFactory);
-		register(PreventFeatureRenderPower::createFactory);
-		register(ModifySlipperinessPower::createFactory);
-		register(PreventEntityCollisionPower::createFactory);
+		//register(PreventFeatureRenderPower::createFactory);
+		//register(ModifySlipperinessPower::createFactory);
+		//register(PreventEntityCollisionPower::createFactory);
 		//register(ActionOnBlockUsePower::createFactory);
-		register(PreventElytraFlightPower::createFactory);
+		//register(PreventElytraFlightPower::createFactory);
 		//register(KeepInventoryPower::createFactory);
-		register(ModifyStatusEffectDurationPower::createFactory);
-		register(ModifyStatusEffectAmplifierPower::createFactory);
+		//register(ModifyStatusEffectDurationPower::createFactory);
+		//register(ModifyStatusEffectAmplifierPower::createFactory);
 	}
 
 	private static void register(PowerFactory<?> powerFactory) {

@@ -40,7 +40,7 @@ public class ModifyFallingPower extends PowerFactory<ModifyFallingConfiguration>
 		AttributeInstance attribute = living.getAttribute(ForgeMod.ENTITY_GRAVITY.get());
 		if (attribute == null) return;
 		//Compare references because equals is busted.
-		OptionalDouble max = IPowerContainer.getPowers(living, ApoliPowers.MODIFY_FALLING.get()).stream().map(ConfiguredFactory::getConfiguration).mapToDouble(ModifyFallingConfiguration::velocity).min();
+		OptionalDouble max = IPowerContainer.getPowers(living, ApoliPowers.MODIFY_FALLING.get()).stream().map(ConfiguredPower::getConfiguration).mapToDouble(ModifyFallingConfiguration::velocity).min();
 		if (max.isEmpty()) return;
 		double modifier = max.getAsDouble() - 0.08D;
 		AttributeModifier mod = attribute.getModifier(SLOW_FALLING_ID);

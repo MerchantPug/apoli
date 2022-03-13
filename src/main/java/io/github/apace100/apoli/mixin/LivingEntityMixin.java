@@ -8,6 +8,8 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.common.network.S2CSyncAttacker;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -22,6 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements ModifiableFoodEntity {
@@ -92,22 +96,12 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		return effect;
 	}
 
-    /*@Inject(method = "setAttacker", at = @At("TAIL"))
-    private void syncAttacker(LivingEntity attacker, CallbackInfo ci) {
-        if(!world.isClient) {
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeInt(this.getId());
-            if(this.attacker == null) {
-                buf.writeBoolean(false);
-            } else {
-                buf.writeBoolean(true);
-                buf.writeInt(this.attacker.getId());
-            }
-            for (ServerPlayerEntity player : PlayerLookup.tracking(this)) {
-                ServerPlayNetworking.send(player, ModPackets.SET_ATTACKER, buf);
-            }
-        }
-    }*/
+	@Inject(method = "setLastHurtByMob", at = @At("TAIL"))
+	private void syncAttacker(LivingEntity attacker, CallbackInfo ci) {
+		if (!this.level.isClientSide()) {
+			ApoliCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> this), new S2CSyncAttacker(this.getId(), attacker != null ? OptionalInt.of(attacker.getId()) : OptionalInt.empty()));
+		}
+	}
 
 	@Inject(method = "collectEquipmentChanges", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeMap;removeAttributeModifiers(Lcom/google/common/collect/Multimap;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
 	private void removeEquipmentPowers(CallbackInfoReturnable<Map> cir, Map map, EquipmentSlot[] var2, int var3, int var4, EquipmentSlot equipmentSlot, ItemStack itemStack3, ItemStack itemStack4) {
@@ -185,12 +179,6 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 			}
 			info.setReturnValue(powers.get(0).getConfiguration().value());
 		}
-	}
-
-	@ModifyVariable(method = "travel", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/LivingEntity;onGround:Z", opcode = Opcodes.GETFIELD, ordinal = 2))
-	private float modifySlipperiness(float original) {
-		BlockInWorld blockInWorld = new BlockInWorld(this.level, this.getBlockPosBelowThatAffectsMyMovement(), true);
-		return IPowerContainer.modify(this, ApoliPowers.MODIFY_SLIPPERINESS.get(), original, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), blockInWorld));
 	}
 
 	@Inject(method = "doPush", at = @At("HEAD"), cancellable = true)

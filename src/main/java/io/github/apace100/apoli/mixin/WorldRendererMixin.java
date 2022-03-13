@@ -3,6 +3,8 @@ package io.github.apace100.apoli.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import io.github.apace100.apoli.ApoliClient;
+import io.github.edwinmindcraft.apoli.common.power.EntityGlowPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -19,14 +21,13 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 @Mixin(LevelRenderer.class)
@@ -57,12 +58,10 @@ public abstract class WorldRendererMixin {
 		this.renderEntity = entity;
 	}
 
-	@ModifyArgs(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/OutlineBufferSource;setColor(IIII)V"))
-	private void setColors(Args args) {
-		io.github.edwinmindcraft.apoli.common.power.EntityGlowPower.getGlowColor(this.minecraft.getCameraEntity(), this.renderEntity).ifPresent(x -> {
-			args.set(0, (int) (x.red() * 255.0F));
-			args.set(1, (int) (x.green() * 255.0F));
-			args.set(2, (int) (x.blue() * 255.0F));
-		});
+	//I Still can't get @ModifyArgs to not crash my game.
+	@Redirect(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getTeamColor()I"))
+	private int setColors(Entity instance) {
+		Optional<ColorConfiguration> glowColor = EntityGlowPower.getGlowColor(this.minecraft.getCameraEntity(), this.renderEntity);
+		return glowColor.map(ColorConfiguration::asRGB).orElseGet(instance::getTeamColor);
 	}
 }

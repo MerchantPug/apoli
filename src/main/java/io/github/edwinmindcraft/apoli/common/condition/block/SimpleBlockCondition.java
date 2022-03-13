@@ -2,8 +2,11 @@ package io.github.edwinmindcraft.apoli.common.condition.block;
 
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
+
+import java.util.Arrays;
 import java.util.function.Predicate;
 
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
@@ -14,6 +17,7 @@ public class SimpleBlockCondition extends BlockCondition<NoConfiguration> {
 	public static final Predicate<BlockInWorld> LIGHT_BLOCKING = t -> t.getState().getMaterial().isSolidBlocking();
 	public static final Predicate<BlockInWorld> WATER_LOGGABLE = t -> t.getState().getBlock() instanceof LiquidBlockContainer;
 	public static final Predicate<BlockInWorld> EXPOSED_TO_SKY = t -> t.getLevel().canSeeSky(t.getPos());
+	public static final Predicate<BlockInWorld> BLOCK_ENTITY = t -> t.getEntity() != null;
 
 	private final Predicate<BlockInWorld> predicate;
 

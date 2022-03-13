@@ -8,12 +8,15 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
 
 public record ColorConfiguration(float red, float green, float blue,
 								 float alpha) implements IDynamicFeatureConfiguration {
+	public static ColorConfiguration DEFAULT = new ColorConfiguration(1.0F, 1.0F, 1.0F, 1.0F);
+
 	public static final Codec<ColorConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(Codec.FLOAT, "red", 1.0F).forGetter(ColorConfiguration::red),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "green", 1.0F).forGetter(ColorConfiguration::green),
@@ -45,5 +48,12 @@ public record ColorConfiguration(float red, float green, float blue,
 
 	public ColorConfiguration withAlpha(float alpha) {
 		return new ColorConfiguration(this.red(), this.green(), this.blue(), alpha);
+	}
+
+	public int asRGB() {
+		int blue = Mth.clamp((int) (this.blue() * 255), 0, 255);
+		int green = Mth.clamp((int) (this.green() * 255), 0, 255);
+		int red = Mth.clamp((int) (this.red() * 255), 0, 255);
+		return (((blue << 8) | green) << 8) | red;
 	}
 }

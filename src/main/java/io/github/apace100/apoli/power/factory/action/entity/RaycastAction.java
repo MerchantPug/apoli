@@ -21,7 +21,9 @@ public class RaycastAction extends EntityAction<RaycastConfiguration> {
 
 	public void execute(RaycastConfiguration configuration, Entity entity) {
 		ConfiguredEntityAction.execute(configuration.beforeAction(), entity);
-		HitResult hitResult = configuration.settings().perform(entity, configuration.biEntityCondition());
+		Vec3 direction = entity.getViewVector(1);
+		Vec3 origin = new Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
+		HitResult hitResult = configuration.settings().perform(entity, origin, direction, configuration.biEntityCondition());
 		RaycastConfiguration.CommandInfo commandInfo = configuration.commandInfo();
 		RaycastConfiguration.HitAction actions = configuration.action();
 		if (hitResult.getType() != HitResult.Type.MISS) {
@@ -61,7 +63,7 @@ public class RaycastAction extends EntityAction<RaycastConfiguration> {
 			ConfiguredEntityAction.execute(actions.hitAction(), entity);
 		} else {
 			if (commandInfo.commandAlongRay() != null && !commandInfo.commandAlongRayOnlyOnHit())
-				executeStepCommands(entity, origin, target, commandInfo.commandAlongRay(), commandInfo.commandStep());
+				executeStepCommands(entity, origin, hitResult.getLocation(), commandInfo.commandAlongRay(), commandInfo.commandStep());
 			ConfiguredEntityAction.execute(actions.missAction(), entity);
 		}
 	}

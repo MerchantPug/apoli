@@ -9,7 +9,7 @@ var LabelNode = Java.type('org.objectweb.asm.tree.LabelNode')
 
 function initializeCoreMod() {
 	return {
-		'prevent_armor_equip': {
+		'apoli_prevent_armor_equip': {
 			'target': {
 				'type': 'METHOD',
 				'class': 'net.minecraftforge.common.extensions.IForgeItemStack',
@@ -30,6 +30,32 @@ function initializeCoreMod() {
 				ls.add(new InsnNode(Opcodes.IRETURN));
 				ls.add(label);
 				node.instructions.insert(ls);
+				return node;
+			}
+		},
+		'apoli_prevent_armor_equip': {
+			'target': {
+				'type': 'METHOD',
+				'class': 'net.minecraftforge.common.extensions.IForgeBlockState',
+				'methodName': 'getFriction',
+				'methodDesc': '(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F'
+			},
+			'transformer': function(node) {
+				//if (CoreUtils.isItemForbidden(this.self(), entity, slot)) return false;
+				var ls = new InsnList();
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 2));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 3));
+				ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/edwinmindcraft/apoli/common/util/CoreUtils", "modifyFriction", "(FLnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F"));
+				var iterator = node.instructions.iterator();
+				var insertionSlot = null;
+				while (iterator.hasNext()) {
+					var ain = iterator.next();
+					if (ain.getOpcode() === Opcodes.FRETURN)
+						insertionSlot = ain;
+				}
+				if (insertionSlot != null)
+					node.instructions.insertBefore(insertionSlot, ls);
 				return node;
 			}
 		}

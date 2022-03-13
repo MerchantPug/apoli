@@ -1,19 +1,8 @@
 package io.github.apace100.apoli.power.factory.action.meta;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.calio.ClassUtil;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataType;
-import net.minecraft.util.Pair;
-
-import java.util.List;
-import java.util.function.Function;
-
 public class IfElseListAction {
 
-    public static <T, U> void action(SerializableData.Instance data, T t, Function<T, U> actionToConditionTypeFunction) {
+    /*public static <T, U> void action(SerializableData.Instance data, T t, Function<T, U> actionToConditionTypeFunction) {
         List<Pair<ConditionFactory<U>.Instance, ActionFactory<T>.Instance>> actions =
             data.get("actions");
         U u = actionToConditionTypeFunction.apply(t);
@@ -49,5 +38,5 @@ public class IfElseListAction {
         SerializableDataType<ActionFactory<T>.Instance> actionDataType,
         SerializableDataType<ConditionFactory<T>.Instance> conditionDataType) {
         return getFactory(actionDataType, conditionDataType, t -> t);
-    }
+    }*/
 }

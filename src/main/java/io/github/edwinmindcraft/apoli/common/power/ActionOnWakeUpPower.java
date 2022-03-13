@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnWakeUpConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -21,15 +22,15 @@ public class ActionOnWakeUpPower extends PowerFactory<ActionOnWakeUpConfiguratio
 		super(ActionOnWakeUpConfiguration.CODEC);
 	}
 
-	public boolean doesApply(ConfiguredFactory<ActionOnWakeUpConfiguration, ?> config, Entity player, BlockPos pos) {
+	public boolean doesApply(ConfiguredPower<ActionOnWakeUpConfiguration, ?> config, Entity player, BlockPos pos) {
 		return this.doesApply(config, player, new BlockInWorld(player.level, pos, true));
 	}
 
-	public boolean doesApply(ConfiguredFactory<ActionOnWakeUpConfiguration, ?> config, Entity player, BlockInWorld cbp) {
+	public boolean doesApply(ConfiguredPower<ActionOnWakeUpConfiguration, ?> config, Entity player, BlockInWorld cbp) {
 		return config.getConfiguration().blockCondition() == null || config.getConfiguration().blockCondition().check(cbp);
 	}
 
-	public void executeActions(ConfiguredFactory<ActionOnWakeUpConfiguration, ?> config, Entity player, BlockPos pos, Direction dir) {
+	public void executeActions(ConfiguredPower<ActionOnWakeUpConfiguration, ?> config, Entity player, BlockPos pos, Direction dir) {
 		ActionOnWakeUpConfiguration configuration = config.getConfiguration();
 		if (configuration.blockAction() != null)
 			configuration.blockAction().execute(player.level, pos, dir);

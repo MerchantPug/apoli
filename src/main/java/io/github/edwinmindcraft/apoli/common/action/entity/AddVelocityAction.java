@@ -13,7 +13,7 @@ public class AddVelocityAction extends EntityAction<AddVelocityConfiguration> {
 
 	@Override
 	public void execute(AddVelocityConfiguration configuration, Entity entity) {
-		Vector3f vec = configuration.getVector();
+		Vector3f vec = configuration.direction().copy();
 		TriConsumer<Float, Float, Float> method = configuration.set() ? entity::setDeltaMovement : entity::push;
 		configuration.space().toGlobal(vec, entity);
 		method.accept(vec.x(), vec.y(), vec.z());

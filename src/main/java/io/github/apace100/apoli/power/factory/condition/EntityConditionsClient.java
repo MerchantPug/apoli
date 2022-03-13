@@ -1,35 +1,11 @@
 package io.github.apace100.apoli.power.factory.condition;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.mixin.ClientAdvancementManagerAccessor;
-import io.github.apace100.apoli.mixin.ClientPlayerInteractionManagerAccessor;
-import io.github.apace100.apoli.mixin.ServerPlayerInteractionManagerAccessor;
-import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementProgress;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientAdvancementManager;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-
-import java.util.Map;
-
 public final class EntityConditionsClient {
 
-    @SuppressWarnings("unchecked")
-    @Environment(EnvType.CLIENT)
-    public static void register() {
-        register(new ConditionFactory<>(Apoli.identifier("using_effective_tool"), new SerializableData(),
+	@SuppressWarnings("unchecked")
+	//@Environment(EnvType.CLIENT)
+	public static void register() {
+       /* register(new ConditionFactory<>(Apoli.identifier("using_effective_tool"), new SerializableData(),
             (data, entity) -> {
                 if(entity instanceof ServerPlayerEntity) {
                     ServerPlayerInteractionManagerAccessor interactionMngr = ((ServerPlayerInteractionManagerAccessor)((ServerPlayerEntity)entity).interactionManager);
@@ -81,10 +57,10 @@ public final class EntityConditionsClient {
                 // because on the client-side the advancement could just not have been received from the server.
             }
             return false;
-        }));
-    }
+        }));*/
+	}
 
-    private static void register(ConditionFactory<Entity> conditionFactory) {
+    /*private static void register(ConditionFactory<Entity> conditionFactory) {
         Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
-    }
+    }*/
 }

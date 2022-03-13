@@ -13,7 +13,7 @@ import top.theillusivec4.caelus.common.CaelusApiImpl;
 @Mixin(CaelusApiImpl.class)
 public class CaelusMixin {
 
-	@Inject(method = "canFly", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "canFly", at = @At("HEAD"), cancellable = true, remap = false)
 	public void elytraFlightHook(LivingEntity living, CallbackInfoReturnable<Boolean> cir) {
 		if (EntityActionPower.execute(ApoliPowers.PREVENT_ELYTRA_FLIGHT.get(), living))
 			cir.setReturnValue(false);

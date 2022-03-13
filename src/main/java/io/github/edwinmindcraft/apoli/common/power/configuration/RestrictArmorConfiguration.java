@@ -9,8 +9,10 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import java.util.Map;
 import java.util.Optional;
@@ -36,15 +38,17 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, ConfiguredItemCondit
 			CalioCodecHelper.optionalField(Codec.INT, "tick_rate", 80).forGetter(RestrictArmorConfiguration::tickRate)
 	).apply(instance, RestrictArmorConfiguration::new));
 
-	public boolean check(EquipmentSlot slot, ItemStack stack) {
-		return ConfiguredItemCondition.check(this.conditions.get(slot), stack);
+	public boolean check(EquipmentSlot slot, Level level, ItemStack stack) {
+		return ConfiguredItemCondition.check(this.conditions.get(slot), level, stack);
 	}
 
 	public void dropIllegalItems(Entity entity) {
+		if (!(entity instanceof LivingEntity living))
+			return;
 		this.conditions().forEach((slot, predicate) -> {
 			if (predicate == null) return;
-			ItemStack equippedItem = entity.getItemBySlot(slot);
-			if (!equippedItem.isEmpty() && !predicate.check(equippedItem)) {
+			ItemStack equippedItem = living.getItemBySlot(slot);
+			if (!equippedItem.isEmpty() && !predicate.check(living.level, equippedItem)) {
 				if (entity instanceof Player ple) {
 					if (!ple.getInventory().add(equippedItem))
 						ple.drop(equippedItem, true);

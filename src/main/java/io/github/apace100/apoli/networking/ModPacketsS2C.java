@@ -1,44 +1,7 @@
 package io.github.apace100.apoli.networking;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.MultiplePowerType;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
-import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.apace100.apoli.util.SyncStatusEffectsUtil;
-import io.github.apace100.calio.SerializationHelper;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
 public class ModPacketsS2C {
-
+/*
     @Environment(EnvType.CLIENT)
     public static void register() {
         ClientLoginNetworking.registerGlobalReceiver(ModPackets.HANDSHAKE, ModPacketsS2C::handleHandshake);
@@ -210,5 +173,5 @@ public class ModPacketsS2C {
                 power.fromTag(powerNbt);
             }, () -> Apoli.LOGGER.warn("Received sync packet for entity without power holder."));
         });
-    }
+    }*/
 }

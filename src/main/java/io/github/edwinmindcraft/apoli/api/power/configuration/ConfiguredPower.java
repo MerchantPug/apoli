@@ -115,7 +115,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		CompoundTag caps = this.serializeCaps();
 		if (caps != null && !caps.isEmpty()) tag.put("ForgeCaps", caps);
 		this.getFactory().serialize(this, container, tag);
-		return caps;
+		return tag;
 	}
 
 	public void deserialize(IPowerContainer container, CompoundTag tag) {

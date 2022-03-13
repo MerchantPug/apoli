@@ -1,9 +1,7 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
-import io.github.edwinmindcraft.apoli.common.network.S2CPlayerDismount;
-import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
+import io.github.edwinmindcraft.apoli.common.network.*;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliLootFunctions;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
@@ -49,6 +47,14 @@ public class ApoliCommon {
 		CHANNEL.messageBuilder(S2CPlayerDismount.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(S2CPlayerDismount::encode).decoder(S2CPlayerDismount::decode)
 				.consumer(S2CPlayerDismount::handle).add();
+
+		CHANNEL.messageBuilder(S2CPlayerMount.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(S2CPlayerMount::encode).decoder(S2CPlayerMount::decode)
+				.consumer(S2CPlayerMount::handle).add();
+
+		CHANNEL.messageBuilder(S2CSyncAttacker.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(S2CSyncAttacker::encode).decoder(S2CSyncAttacker::decode)
+				.consumer(S2CSyncAttacker::handle).add();
 
 		Apoli.LOGGER.debug("Registered {} newtork messages.", messageId);
 	}

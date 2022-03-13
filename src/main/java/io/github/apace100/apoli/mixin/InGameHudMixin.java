@@ -12,6 +12,7 @@ import net.minecraftforge.client.gui.ForgeIngameGui;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
@@ -21,7 +22,7 @@ public abstract class InGameHudMixin extends Gui {
 		super(pMinecraft);
 	}
 
-	@ModifyArg(method = "bind", at = @At("HEAD"))
+	@ModifyVariable(method = "bind", at = @At("HEAD"), remap = false, argsOnly = true)
 	public ResourceLocation changeStatusBarTextures(ResourceLocation original) {
 		if (Gui.GUI_ICONS_LOCATION.equals(original)) {
 			Optional<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().findFirst();

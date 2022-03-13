@@ -2,7 +2,6 @@ package io.github.edwinmindcraft.apoli.common.registry;
 
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityInteractionConfiguration;
-import io.github.edwinmindcraft.apoli.common.power.configuration.EntityGlowConfiguration;
 import net.minecraft.world.inventory.DispenserMenu;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -26,7 +25,7 @@ public class ApoliPowers {
 	public static final RegistryObject<DummyPower> DISABLE_REGEN = ApoliRegisters.POWER_FACTORIES.register("disable_regen", DummyPower::new);
 	public static final RegistryObject<EffectImmunityPower> EFFECT_IMMUNITY = ApoliRegisters.POWER_FACTORIES.register("effect_immunity", EffectImmunityPower::new);
 	public static final RegistryObject<ElytraFlightPower> ELYTRA_FLIGHT = ApoliRegisters.POWER_FACTORIES.register("elytra_flight", ElytraFlightPower::new);
-	public static final RegistryObject<EntityGlowPower> ENTITY_GLOW = ApoliRegisters.POWER_FACTORIES.register("entity_glow", () -> new EntityGlowPower(EntityGlowConfiguration.codec(false)));
+	public static final RegistryObject<EntityGlowPower> ENTITY_GLOW = ApoliRegisters.POWER_FACTORIES.register("entity_glow", () -> new EntityGlowPower(false));
 	public static final RegistryObject<EntityGroupPower> ENTITY_GROUP = ApoliRegisters.POWER_FACTORIES.register("entity_group", EntityGroupPower::new);
 	public static final RegistryObject<ExhaustOverTimePower> EXHAUST_OVER_TIME = ApoliRegisters.POWER_FACTORIES.register("exhaust", ExhaustOverTimePower::new);
 	public static final RegistryObject<DummyPower> FIRE_IMMUNITY = ApoliRegisters.POWER_FACTORIES.register("fire_immunity", DummyPower::new);
@@ -78,7 +77,7 @@ public class ApoliPowers {
 	public static final RegistryObject<ToggleNightVisionPower> TOGGLE_NIGHT_VISION = ApoliRegisters.POWER_FACTORIES.register("toggle_night_vision", ToggleNightVisionPower::new);
 	public static final RegistryObject<WalkOnFluidPower> WALK_ON_FLUID = ApoliRegisters.POWER_FACTORIES.register("walk_on_fluid", WalkOnFluidPower::new);
 	//region 1.17+ Powers
-	public static final RegistryObject<EntityGlowPower> SELF_GLOW = ApoliRegisters.POWER_FACTORIES.register("self_glow", () -> new EntityGlowPower(EntityGlowConfiguration.codec(true)));
+	public static final RegistryObject<EntityGlowPower> SELF_GLOW = ApoliRegisters.POWER_FACTORIES.register("self_glow", () -> new EntityGlowPower(true));
 	public static final RegistryObject<ModifyValuePower> MODIFY_AIR_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_air_speed", ModifyValuePower::new);
 	public static final RegistryObject<ActionOnEntityUsePower> ACTION_ON_ENTITY_USE = ApoliRegisters.POWER_FACTORIES.register("action_on_entity_use", () -> new ActionOnEntityUsePower(BiEntityInteractionConfiguration.CODEC));
 	public static final RegistryObject<ActionOnEntityUsePower> PREVENT_ENTITY_USE = ApoliRegisters.POWER_FACTORIES.register("prevent_entity_use", () -> new ActionOnEntityUsePower(BiEntityInteractionConfiguration.PREVENTING_CODEC));

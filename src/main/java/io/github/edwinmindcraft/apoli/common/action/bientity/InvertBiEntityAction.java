@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.action.bientity;
 
-import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiEntityAction;

@@ -35,12 +35,15 @@ public class EntityGlowPower extends PowerFactory<EntityGlowConfiguration> {
 		return getGlowPowers(actor, target).flatMap(x -> x.getFactory().getColor(x.getConfiguration(), actor, target).stream()).findFirst();
 	}
 
-	public EntityGlowPower(Codec<EntityGlowConfiguration> codec) {
-		super(codec);
+	private final boolean targetSelf;
+
+	public EntityGlowPower(boolean targetSelf) {
+		super(EntityGlowConfiguration.CODEC);
+		this.targetSelf = targetSelf;
 	}
 
 	public boolean doesApply(EntityGlowConfiguration configuration, Entity actor, Entity target) {
-		return ConfiguredEntityCondition.check(configuration.entityCondition(), target) && ConfiguredBiEntityCondition.check(configuration.biEntityCondition(), actor, target);
+		return configuration.applyChecks(actor, target, this.targetSelf);
 	}
 
 	public Optional<ColorConfiguration> getColor(EntityGlowConfiguration configuration, Entity actor, Entity target) {

@@ -1,10 +1,12 @@
 package io.github.apace100.apoli.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.PreventFeatureRenderPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -20,6 +22,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+import java.util.Optional;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEntity> {
@@ -43,7 +47,7 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 		return original;
 	}
 
-	/*@Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
+	@Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"))
 	private void renderColorChangedModel(EntityModel<LivingEntity> model, PoseStack postStack, VertexConsumer vertexConsumer, int p1, int overlay, float red, float green, float blue, float alpha, LivingEntity living) {
 		Optional<ColorConfiguration> opt = ColorConfiguration.forPower(living, ApoliPowers.MODEL_COLOR.get());
 		if (opt.isPresent()) {
@@ -54,8 +58,8 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 			alpha *= color.alpha();
 		}
 		model.renderToBuffer(postStack, vertexConsumer, p1, overlay, red, green, blue, alpha);
-	}*/
-
+	}
+/*
 	//FIXME: Something is wrong with mixin's ClassGenerators, ModifyArgs cannot generate a class.
 	// When this is fixed, I'll use this again, but for now, I'm using a redirect.
 	@OnlyIn(Dist.CLIENT)
@@ -63,7 +67,9 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V", ordinal = 0)
 	)
 	private void renderColorChangedModel(Args args, LivingEntity living, float f1, float f2, PoseStack ps, MultiBufferSource source, int i) {
-		ColorConfiguration.forPower(living, ApoliPowers.MODEL_COLOR.get()).ifPresent(color -> {
+		Optional<ColorConfiguration> colorConfiguration = ColorConfiguration.forPower(living, ApoliPowers.MODEL_COLOR.get());
+		if (colorConfiguration.isPresent()) {
+			ColorConfiguration color = colorConfiguration.get();
 			//Mixin is being weird.
 			//Basically: if there is a redirect, args[0] is a Model, otherwise args[0] is the PoseStack
 			int red = args.size() - 4;
@@ -74,8 +80,8 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEnt
 			args.set(green, args.<Float>get(green) * color.green());
 			args.set(blue, args.<Float>get(blue) * color.blue());
 			args.set(alpha, args.<Float>get(alpha) * color.alpha());
-		});
-	}
+		}
+	}*/
 
 	//TODO This would be more suited to a coremod since it could do continue without having to use a Redirect.
 	@Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V"))

@@ -1,44 +1,36 @@
 package io.github.apace100.apoli.power.factory.action.bientity;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
-import net.minecraft.util.Pair;
+import io.github.edwinmindcraft.apoli.api.power.factory.BiEntityAction;
+import io.github.edwinmindcraft.apoli.common.action.configuration.DamageConfiguration;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.entity.Entity;
 
-public class DamageAction {
+public class DamageAction extends BiEntityAction<DamageConfiguration> {
 
-    public static void action(SerializableData.Instance data, Pair<Entity, Entity> entities) {
-        float amount = data.get("amount");
-        DamageSource providedSource = data.get("source");
-        DamageSource source = new EntityDamageSource(providedSource.getName(), entities.getLeft());
-        if(providedSource.isExplosive()) {
-            source.setExplosive();
-        }
-        if(providedSource.isProjectile()) {
-            source.setProjectile();
-        }
-        if(providedSource.isFromFalling()) {
-            source.setFromFalling();
-        }
-        if(providedSource.isMagic()) {
-            source.setUsesMagic();
-        }
-        if(providedSource.isNeutral()) {
-            source.setNeutral();
-        }
-        entities.getRight().damage(source, amount);
-    }
+	public DamageAction() {
+		super(DamageConfiguration.CODEC);
+	}
 
-    public static ActionFactory<Pair<Entity, Entity>> getFactory() {
-        return new ActionFactory<>(Apoli.identifier("damage"),
-            new SerializableData()
-                .add("amount", SerializableDataTypes.FLOAT)
-                .add("source", SerializableDataTypes.DAMAGE_SOURCE),
-            DamageAction::action
-        );
-    }
+	@Override
+	public void execute(DamageConfiguration configuration, Entity actor, Entity target) {
+		DamageSource providedSource = configuration.source();
+		DamageSource source = new EntityDamageSource(providedSource.getMsgId(), actor);
+		if (providedSource.isExplosion()) {
+			source.setExplosion();
+		}
+		if (providedSource.isProjectile()) {
+			source.setProjectile();
+		}
+		if (providedSource.isFall()) {
+			source.setIsFall();
+		}
+		if (providedSource.isMagic()) {
+			source.setMagic();
+		}
+		if (providedSource.isNoAggro()) {
+			source.setNoAggro();
+		}
+		target.hurt(source, configuration.amount());
+	}
 }

@@ -1,32 +1,10 @@
 package io.github.apace100.apoli.power.factory.condition;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.factory.condition.bientity.RelativeRotationCondition;
-import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.apace100.apoli.util.Comparison;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataType;
-import io.github.apace100.calio.data.SerializableDataTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
-import net.minecraft.entity.mob.Angerable;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.Pair;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.RaycastContext;
-
-import java.util.List;
-import java.util.function.Predicate;
-
 public class BiEntityConditions {
 
-    @SuppressWarnings("unchecked")
-    public static void register() {
-        register(new ConditionFactory<>(Apoli.identifier("constant"), new SerializableData()
+	@SuppressWarnings("unchecked")
+	public static void register() {
+        /*register(new ConditionFactory<>(Apoli.identifier("constant"), new SerializableData()
             .add("value", SerializableDataTypes.BOOLEAN),
             (data, pair) -> data.getBoolean("value")));
         register(new ConditionFactory<>(Apoli.identifier("and"), new SerializableData()
@@ -45,8 +23,8 @@ public class BiEntityConditions {
                 Predicate<Pair<Entity, Entity>> cond = data.get("condition");
                 return cond.test(new Pair<>(pair.getRight(), pair.getLeft()));
             }
-        ));
-        register(new ConditionFactory<>(Apoli.identifier("actor_condition"), new SerializableData()
+        ));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("actor_condition"), new SerializableData()
             .add("condition", ApoliDataTypes.ENTITY_CONDITION),
             (data, pair) -> {
                 Predicate<Entity> cond = data.get("condition");
@@ -59,8 +37,8 @@ public class BiEntityConditions {
                 Predicate<Entity> cond = data.get("condition");
                 return cond.test(pair.getRight());
             }
-        ));
-        register(new ConditionFactory<>(Apoli.identifier("either"), new SerializableData()
+        ));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("either"), new SerializableData()
             .add("condition", ApoliDataTypes.ENTITY_CONDITION),
             (data, pair) -> {
                 Predicate<Entity> cond = data.get("condition");
@@ -73,16 +51,16 @@ public class BiEntityConditions {
                 Predicate<Entity> cond = data.get("condition");
                 return cond.test(pair.getLeft()) && cond.test(pair.getRight());
             }
-        ));
-        register(new ConditionFactory<>(Apoli.identifier("undirected"), new SerializableData()
+        ));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("undirected"), new SerializableData()
             .add("condition", ApoliDataTypes.BIENTITY_CONDITION),
             (data, pair) -> {
                 Predicate<Pair<Entity, Entity>> cond = data.get("condition");
                 return cond.test(pair) || cond.test(new Pair<>(pair.getRight(), pair.getLeft()));
             }
-            ));
+            ));*/
 
-        register(new ConditionFactory<>(Apoli.identifier("distance"), new SerializableData()
+        /*register(new ConditionFactory<>(Apoli.identifier("distance"), new SerializableData()
             .add("comparison", ApoliDataTypes.COMPARISON)
             .add("compare_to", SerializableDataTypes.DOUBLE),
             (data, pair) -> {
@@ -91,8 +69,8 @@ public class BiEntityConditions {
                 comp *= comp;
                 return ((Comparison)data.get("comparison")).compare(distanceSq, comp);
             }
-            ));
-        register(new ConditionFactory<>(Apoli.identifier("can_see"), new SerializableData()
+            ));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("can_see"), new SerializableData()
             .add("shape_type", SerializableDataType.enumValue(RaycastContext.ShapeType.class), RaycastContext.ShapeType.VISUAL)
             .add("fluid_handling", SerializableDataType.enumValue(RaycastContext.FluidHandling.class), RaycastContext.FluidHandling.NONE),
             (data, pair) -> {
@@ -110,16 +88,16 @@ public class BiEntityConditions {
                     }
                 }
             }
-        ));
-        register(new ConditionFactory<>(Apoli.identifier("owner"), new SerializableData(),
+        ));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("owner"), new SerializableData(),
             (data, pair) -> {
                 if(pair.getRight() instanceof Tameable) {
                     return pair.getLeft() == ((Tameable)pair.getRight()).getOwner();
                 }
                 return false;
             }
-        ));
-        register(new ConditionFactory<>(Apoli.identifier("riding"), new SerializableData(),
+        ));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("riding"), new SerializableData(),
             (data, pair) -> pair.getLeft().getVehicle() == pair.getRight()
         ));
         register(new ConditionFactory<>(Apoli.identifier("riding_root"), new SerializableData(),
@@ -136,8 +114,8 @@ public class BiEntityConditions {
                 }
                 return vehicle == pair.getRight();
             }
-        ));
-        register(new ConditionFactory<>(Apoli.identifier("attack_target"), new SerializableData(),
+        ));*/
+        /*register(new ConditionFactory<>(Apoli.identifier("attack_target"), new SerializableData(),
             (data, pair) -> {
                 if(pair.getLeft() instanceof MobEntity) {
                     return ((MobEntity)pair.getLeft()).getTarget() == pair.getRight();
@@ -155,11 +133,11 @@ public class BiEntityConditions {
                 }
                 return false;
             }
-        ));
-        register(RelativeRotationCondition.getFactory());
-    }
+        ));*/
+		//register(RelativeRotationCondition.getFactory());
+	}
 
-    private static void register(ConditionFactory<Pair<Entity, Entity>> conditionFactory) {
+    /*private static void register(ConditionFactory<Pair<Entity, Entity>> conditionFactory) {
         Registry.register(ApoliRegistries.BIENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
-    }
+    }*/
 }

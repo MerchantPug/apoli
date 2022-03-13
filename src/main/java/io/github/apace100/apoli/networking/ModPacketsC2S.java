@@ -1,22 +1,7 @@
 package io.github.apace100.apoli.networking;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.*;
-import net.fabricmc.fabric.api.networking.v1.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-
 public class ModPacketsC2S {
-
+/*
     public static void register() {
         if(Apoli.PERFORM_VERSION_CHECK) {
             ServerLoginConnectionEvents.QUERY_START.register(ModPacketsC2S::handshake);
@@ -110,5 +95,5 @@ public class ModPacketsC2S {
 
     private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
         packetSender.sendPacket(ModPackets.HANDSHAKE, PacketByteBufs.empty());
-    }
+    }*/
 }

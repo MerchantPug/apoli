@@ -12,6 +12,7 @@ import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguratio
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -41,6 +42,11 @@ public class ApoliItemConditions {
 	public static final RegistryObject<NbtCondition> NBT = ITEM_CONDITIONS.register("nbt", NbtCondition::new);
 	public static final RegistryObject<SimpleItemCondition> FIREPROOF = ITEM_CONDITIONS.register("fireproof", () -> new SimpleItemCondition(x -> x.getItem().isFireResistant()));
 	public static final RegistryObject<SimpleItemCondition> ENCHANTABLE = ITEM_CONDITIONS.register("enchantable", () -> new SimpleItemCondition(ItemStack::isEnchantable));
+	public static final RegistryObject<SimpleItemCondition> EMPTY = ITEM_CONDITIONS.register("empty", () -> new SimpleItemCondition(ItemStack::isEmpty));
+	public static final RegistryObject<IntComparingItemCondition> AMOUNT = ITEM_CONDITIONS.register("amount", () -> new IntComparingItemCondition(ItemStack::getCount));
+	public static final RegistryObject<PowerCountCondition> POWER_COUNT = ITEM_CONDITIONS.register("power_count", PowerCountCondition::new);
+	public static final RegistryObject<ItemHasPowerCondition> HAS_POWER = ITEM_CONDITIONS.register("has_power", ItemHasPowerCondition::new);
+	public static final RegistryObject<SimpleItemCondition> SMELTABLE = ITEM_CONDITIONS.register("smeltable", () -> new SimpleItemCondition((level, stack) -> SimpleItemCondition.forCookingRecipeType(level, stack, RecipeType.SMELTING)));
 
 	public static ConfiguredItemCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
