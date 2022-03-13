@@ -1,8 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.ModifyBlockRenderPower;
-import io.github.apace100.apoli.power.ModifyFluidRenderPower;
+import io.github.edwinmindcraft.apoli.common.power.ModifyBlockRenderPower;
+import io.github.edwinmindcraft.apoli.common.power.ModifyFluidRenderPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.core.BlockPos;
@@ -23,12 +22,7 @@ public class ChunkRendererRegionMixin {
 	private void modifyBlockRender(BlockPos pos, CallbackInfoReturnable<BlockState> cir) {
 		Minecraft client = Minecraft.getInstance();
 		if (client.level != null && client.player != null) {
-			for (ModifyBlockRenderPower power : PowerHolderComponent.getPowers(client.player, ModifyBlockRenderPower.class)) {
-				if (power.doesPrevent(client.level, pos)) {
-					cir.setReturnValue(power.getBlockState());
-					return;
-				}
-			}
+			ModifyBlockRenderPower.getRenderState(client.player, client.level, pos).ifPresent(cir::setReturnValue);
 		}
 	}
 
@@ -36,12 +30,7 @@ public class ChunkRendererRegionMixin {
 	private void modifyFluidRender(BlockPos pos, CallbackInfoReturnable<FluidState> cir) {
 		Minecraft client = Minecraft.getInstance();
 		if (client.level != null && client.player != null) {
-			for (ModifyFluidRenderPower power : PowerHolderComponent.getPowers(client.player, ModifyFluidRenderPower.class)) {
-				if (power.doesPrevent(client.level, pos)) {
-					cir.setReturnValue(power.getFluidState());
-					return;
-				}
-			}
+			ModifyFluidRenderPower.getRenderState(client.player, client.level, pos).ifPresent(cir::setReturnValue);
 		}
 	}
 }

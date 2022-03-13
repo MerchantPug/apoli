@@ -11,12 +11,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.Optional;
 
 public class PreventItemActionPower extends PowerFactory<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>> {
 
 	public static boolean isUsagePrevented(Entity entity, ItemStack stack) {
 		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().anyMatch(x -> x.getFactory().doesPrevent(x, entity.level, stack));
+	}
+
+	public static List<ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, PreventItemActionPower>> getPreventingForDisplay(Entity entity, ItemStack stack) {
+		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ITEM_USAGE.get()).stream().filter(x -> x.getFactory().doesPrevent(x, entity.level, stack)).toList();
 	}
 
 	public PreventItemActionPower() {

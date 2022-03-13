@@ -1,18 +1,12 @@
 package io.github.apace100.apoli.power;
 
-import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.calio.data.SerializableData;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public class Power {
@@ -23,7 +17,7 @@ public class Power {
 	private boolean shouldTick = false;
 	private boolean shouldTickWhenInactive = false;
 
-    protected final List<Predicate<Entity>> conditions;
+	protected final List<Predicate<Entity>> conditions;
 
 	public Power(PowerType<?> type, LivingEntity entity) {
 		this.type = type;
@@ -31,10 +25,10 @@ public class Power {
 		this.conditions = new LinkedList<>();
 	}
 
-    public Power addCondition(Predicate<Entity> condition) {
-        this.conditions.add(condition);
-        return this;
-    }
+	public Power addCondition(Predicate<Entity> condition) {
+		this.conditions.add(condition);
+		return this;
+	}
 
 	protected void setTicking() {
 		this.setTicking(false);
@@ -93,8 +87,8 @@ public class Power {
 		return this.type;
 	}
 
-    public static PowerFactory createSimpleFactory(BiFunction<PowerType, LivingEntity, Power> powerConstructor, Identifier identifier) {
+    /*public static PowerFactory createSimpleFactory(BiFunction<PowerType, LivingEntity, Power> powerConstructor, Identifier identifier) {
         return new PowerFactory<>(identifier,
             new SerializableData(), data -> powerConstructor::apply).allowCondition();
-    }
+    }*/
 }

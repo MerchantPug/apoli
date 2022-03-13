@@ -3,9 +3,8 @@ package io.github.edwinmindcraft.apoli.common.action.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -28,8 +27,8 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 	public static final Codec<CommandConfiguration> CODEC = MAP_CODEC.codec();
 
 	private static CommandSource getSource(Entity entity) {
-		boolean validOutput = !(entity instanceof ServerPlayer) || ((ServerPlayer)entity).connection != null;
-		return Apoli.config.executeCommand.showOutput && validOutput ? entity : CommandSource.NULL;
+		boolean validOutput = !(entity instanceof ServerPlayer) || ((ServerPlayer) entity).connection != null;
+		return ApoliConfigs.COMMON.executeCommand.showOutput.get() && validOutput ? entity : CommandSource.NULL;
 	}
 
 	public static OptionalInt executeAt(Entity entity, Vec3 position, String command) {
@@ -40,7 +39,7 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 					position,
 					entity.getRotationVector(),
 					entity.level instanceof ServerLevel sl ? sl : null,
-					Apoli.config.executeCommand.permissionLevel,
+					ApoliConfigs.COMMON.executeCommand.permissionLevel.get(),
 					entity.getName().getString(),
 					entity.getDisplayName(),
 					server,
@@ -59,11 +58,11 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 		if (server != null) {
 			String blockName = world.getBlockState(pos).getBlock().getDescriptionId();
 			CommandSourceStack source = new CommandSourceStack(
-					Apoli.config.executeCommand.showOutput ? server : CommandSource.NULL,
+					ApoliConfigs.COMMON.executeCommand.showOutput.get() ? server : CommandSource.NULL,
 					new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
 					new Vec2(0, 0),
 					(ServerLevel) world,
-					Apoli.config.executeCommand.permissionLevel,
+					ApoliConfigs.COMMON.executeCommand.permissionLevel.get(),
 					blockName,
 					new TranslatableComponent(blockName),
 					server,

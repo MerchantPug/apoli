@@ -1,20 +1,16 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.ActionOnBeingUsedPower;
-import io.github.apace100.apoli.power.ActionOnEntityUsePower;
-import io.github.apace100.apoli.power.KeepInventoryPower;
-import io.github.apace100.apoli.power.PreventBeingUsedPower;
-import io.github.apace100.apoli.power.PreventEntityUsePower;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.ApoliCommon;
+import io.github.edwinmindcraft.apoli.common.network.S2CPlayerDismount;
 import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import net.minecraft.commands.CommandSource;
-import net.minecraft.world.Container;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -22,16 +18,15 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -59,7 +54,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	@Nullable
 	public abstract ItemEntity drop(ItemStack p_36179_, boolean p_36180_, boolean p_36181_);
 
-	@Shadow public abstract Inventory getInventory();
+	@Shadow
+	public abstract Inventory getInventory();
 
 	@Inject(method = "updateSwimming", at = @At("TAIL"))
 	private void updateSwimmingPower(CallbackInfo ci) {
@@ -77,23 +73,21 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	}
 
 	@ModifyVariable(method = "eat", at = @At("HEAD"), argsOnly = true)
-    private ItemStack modifyEatenItemStack(ItemStack original) {
+	private ItemStack modifyEatenItemStack(ItemStack original) {
 		List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> mfps = ModifyFoodPower.getValidPowers(this, original);
 		MutableObject<ItemStack> stack = new MutableObject<>(original.copy());
 		ModifyFoodPower.modifyStack(mfps, this.level, stack);
-		((ModifiableFoodEntity)this).setCurrentModifyFoodPowers(mfps);
-		((ModifiableFoodEntity)this).setOriginalFoodStack(original);
+		((ModifiableFoodEntity) this).setCurrentModifyFoodPowers(mfps);
+		((ModifiableFoodEntity) this).setOriginalFoodStack(original);
 		return stack.getValue();
-    }
+	}
 
-    @Inject(method = "dismountVehicle", at = @At("HEAD"))
-    private void sendPlayerDismountPacket(CallbackInfo ci) {
-        if(!world.isClient && getVehicle() instanceof PlayerEntity) {
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeInt(getId());
-            ServerPlayNetworking.send((ServerPlayerEntity) getVehicle(), ModPackets.PLAYER_DISMOUNT, buf);
-        }
-    }
+	@Inject(method = "removeVehicle", at = @At("HEAD"))
+	private void sendPlayerDismountPacket(CallbackInfo ci) {
+		if (!this.level.isClientSide() && this.getVehicle() instanceof ServerPlayer player) {
+			ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new S2CPlayerDismount(this.getId()));
+		}
+	}
 
 	// ModifyExhaustion
 	@ModifyVariable(at = @At("HEAD"), method = "causeFoodExhaustion", ordinal = 0, name = "exhaustion")
@@ -101,8 +95,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 		return IPowerContainer.modify(this, ApoliPowers.MODIFY_EXHAUSTION.get(), exhaustionIn);
 	}
 
-    // Prevent healing if DisableRegenPower
-    // Note that this function was called "shouldHeal" instead of "canFoodHeal" at some point in time.
+	// Prevent healing if DisableRegenPower
+	// Note that this function was called "shouldHeal" instead of "canFoodHeal" at some point in time.
     /*@Inject(method = "canFoodHeal", at = @At("HEAD"), cancellable = true)
     private void disableHeal(CallbackInfoReturnable<Boolean> info) {
         if(PowerHolderComponent.hasPower(this, DisableRegenPower.class)) {

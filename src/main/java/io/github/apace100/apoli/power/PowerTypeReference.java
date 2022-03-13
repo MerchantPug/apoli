@@ -41,10 +41,10 @@ public class PowerTypeReference<T extends Power> extends PowerType<T> {
 
     @SuppressWarnings("unchecked")
     public PowerType<T> getReferencedPowerType() {
-        if(isReferenceInvalid()) {
+        if(this.isReferenceInvalid()) {
             try {
                 this.referencedPowerType = null;
-                this.referencedPowerType = PowerTypeRegistry.get(this.getIdentifier());
+                this.referencedPowerType = (PowerType<T>) PowerTypeRegistry.get(this.getIdentifier());
             } catch(IllegalArgumentException e) {
                 //cooldown = 600;
                 //Apoli.LOGGER.warn("Invalid PowerTypeReference: no power type exists with id \"" + getIdentifier() + "\"");

@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.common.network.C2SUseActivePowers;
+import io.github.edwinmindcraft.apoli.common.network.S2CPlayerDismount;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliLootFunctions;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -44,6 +45,10 @@ public class ApoliCommon {
 		CHANNEL.messageBuilder(S2CSynchronizePowerContainer.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(S2CSynchronizePowerContainer::encode).decoder(S2CSynchronizePowerContainer::decode)
 				.consumer(S2CSynchronizePowerContainer::handle).add();
+
+		CHANNEL.messageBuilder(S2CPlayerDismount.class, messageId++, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(S2CPlayerDismount::encode).decoder(S2CPlayerDismount::decode)
+				.consumer(S2CPlayerDismount::handle).add();
 
 		Apoli.LOGGER.debug("Registered {} newtork messages.", messageId);
 	}

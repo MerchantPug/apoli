@@ -1,7 +1,9 @@
 package io.github.apace100.apoli.util;
 
-import me.shedaniel.autoconfig.annotation.Config;
+import net.minecraftforge.common.ForgeConfigSpec;
 
-@Config(name = "power_config")
-public class ApoliConfigServer extends ApoliConfig {
+public class ApoliConfigServer {
+	public ApoliConfigServer(ForgeConfigSpec.Builder builder) {
+
+	}
 }

@@ -1,7 +1,6 @@
 package io.github.apace100.apoli.power;
 
 import com.mojang.serialization.Lifecycle;
-import io.github.apace100.apoli.integration.PowerClearCallback;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
@@ -9,7 +8,6 @@ import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
@@ -65,10 +63,10 @@ public class PowerTypeRegistry {
 		return ApoliAPI.getPowers().containsKey(id);
 	}
 
-    public static void clear() {
-        PowerClearCallback.EVENT.invoker().onPowerClear();
-        //idToPower.clear();
-    }
+	public static void clear() {
+		//PowerClearCallback.EVENT.invoker().onPowerClear();
+		//idToPower.clear();
+	}
 
 	public static void reset() {
 		clear();

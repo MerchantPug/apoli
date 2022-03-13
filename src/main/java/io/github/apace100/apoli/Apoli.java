@@ -1,12 +1,12 @@
 package io.github.apace100.apoli;
 
-import io.github.apace100.apoli.util.GainedPowerCriterion;
-import io.github.apace100.calio.mixin.CriteriaRegistryInvoker;
-import io.github.edwinmindcraft.apoli.client.ApoliClient;
-import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.apace100.apoli.command.PowerOperation;
 import io.github.apace100.apoli.command.PowerTypeArgumentType;
+import io.github.apace100.apoli.util.ApoliConfig;
+import io.github.apace100.apoli.util.ApoliConfigs;
+import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.apace100.apoli.util.Scheduler;
+import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
@@ -15,6 +15,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,14 +37,16 @@ public class Apoli {
 		return new ResourceLocation(MODID, path);
 	}
 
+	public static ApoliConfig config;
+
 	public Apoli() {
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ApoliConfigs.COMMON_SPECS);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ApoliConfigs.CLIENT_SPECS);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ApoliConfigs.SERVER_SPECS);
 		ArgumentTypes.register(MODID + ":power", PowerTypeArgumentType.class, new EmptyArgumentSerializer<>(PowerTypeArgumentType::power));
 		ArgumentTypes.register(MODID + ":power_operation", PowerOperation.class, new EmptyArgumentSerializer<>(PowerOperation::operation));
 
 		//ModPacketsC2S.register();
-
-		//Registry.register(Registry.RECIPE_SERIALIZER, Apoli.identifier("power_restricted"), PowerRestrictedCraftingRecipe.SERIALIZER);
-		Registry.register(Registry.RECIPE_SERIALIZER, Apoli.identifier("modified"), ModifiedCraftingRecipe.SERIALIZER);
 
 		//OrderedResourceListeners.register(new PowerTypes()).complete();
 

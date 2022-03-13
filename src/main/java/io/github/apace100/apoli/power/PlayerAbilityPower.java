@@ -1,17 +1,7 @@
 package io.github.apace100.apoli.power;
 
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.apace100.calio.data.SerializableData;
-import io.github.ladysnake.pal.AbilitySource;
-import io.github.ladysnake.pal.Pal;
-import io.github.ladysnake.pal.PlayerAbility;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
-
-public class PlayerAbilityPower extends Power {
-
+public class PlayerAbilityPower {
+/*
     private final PlayerAbility ability;
     private final AbilitySource source;
 
@@ -83,5 +73,5 @@ public class PlayerAbilityPower extends Power {
             data ->
                 (type, player) -> new PlayerAbilityPower(type, player, ability))
             .allowCondition();
-    }
+    }*/
 }

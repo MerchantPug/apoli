@@ -2,6 +2,7 @@ package io.github.apace100.apoli.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -27,9 +28,8 @@ public class PowerHudRenderer extends GuiComponent implements GameHudRender {
 		if (player == null)
 			return;
 		IPowerContainer.get(player).ifPresent(component -> {
-			// TODO: Reintroduce config for this
-			int x = client.getWindow().getGuiScaledWidth() / 2 + 20;// + OriginsClient.config.xOffset;
-			int y = client.getWindow().getGuiScaledHeight() - 47;// + OriginsClient.config.yOffset;
+			int x = client.getWindow().getGuiScaledWidth() / 2 + 20 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetX.get();
+			int y = client.getWindow().getGuiScaledHeight() - 47 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetY.get();
 			if (player.getVehicle() instanceof LivingEntity vehicle)
 				y -= 8 * (int) (vehicle.getMaxHealth() / 20f);
 			if (player.isEyeInFluid(FluidTags.WATER) || player.getAirSupply() < player.getMaxAirSupply()) {

@@ -19,6 +19,7 @@ public class C2SUseActivePowers {
 		}
 		return new C2SUseActivePowers(set);
 	}
+
 	private final Set<ResourceLocation> powers;
 
 	public C2SUseActivePowers(Set<ResourceLocation> powers) {this.powers = powers;}

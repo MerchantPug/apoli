@@ -2,22 +2,24 @@ package io.github.apace100.apoli.util;
 
 import com.google.common.collect.Lists;
 import io.github.apace100.apoli.access.PowerCraftingInventory;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.mixin.CraftingContainerAccessor;
-import io.github.apace100.apoli.power.ModifyCraftingPower;
+import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.common.power.ModifyCraftingPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyCraftingConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.recipe.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
@@ -27,33 +29,36 @@ import java.util.Optional;
 
 public class ModifiedCraftingRecipe extends CustomRecipe {
 
-	public static final RecipeSerializer<?> SERIALIZER = new SimpleRecipeSerializer<>(ModifiedCraftingRecipe::new);
-
 	public ModifiedCraftingRecipe(ResourceLocation id) {
 		super(id);
 	}
 
 	@Override
-	public boolean matches(CraftingContainer inv, Level world) {
-		Player player = ForgeHooks.getCraftingPlayer();
-		if (player == null) player = getPlayerFromInventory(inv);
+	public boolean matches(@NotNull CraftingContainer inv, @NotNull Level world) {
+		Player player = getCraftingPlayer(inv);
 		Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
 		if (original.isEmpty()) {
 			return false;
 		}
-		return this.getRecipes(player).stream().anyMatch(r -> r.doesApply(inv, original.get()));
+		return this.getRecipes(player).stream().anyMatch(r -> r.getConfiguration().doesApply(inv, original.get(), world));
+	}
+
+	private static Player getCraftingPlayer(@NotNull CraftingContainer inv) {
+		Player player = ForgeHooks.getCraftingPlayer();
+		if (player != null)
+			return player;
+		return getPlayerFromInventory(inv);
 	}
 
 	@Override
-	public @NotNull ItemStack assemble(CraftingContainer inv) {
-		Player player = ForgeHooks.getCraftingPlayer();
-		if (player == null) player = getPlayerFromInventory(inv);
+	public @NotNull ItemStack assemble(@NotNull CraftingContainer inv) {
+		Player player = getCraftingPlayer(inv);
 		if (player != null) {
 			Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
 			if (original.isPresent()) {
-				Optional<ModifyCraftingPower> optional = this.getRecipes(player).stream().filter(r -> r.doesApply(inv, original.get())).findFirst();
+				Optional<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> optional = this.getRecipes(player).stream().filter(r -> r.getConfiguration().doesApply(inv, original.get(), player.level)).findFirst();
 				if (optional.isPresent()) {
-					ItemStack result = optional.get().getNewResult(inv, original.get());
+					ItemStack result = optional.get().getConfiguration().createResult(inv, original.get(), player.level);
 					((PowerCraftingInventory) inv).setPower(optional.get());
 					return result;
 				}
@@ -69,7 +74,7 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 
 	@Override
 	public @NotNull RecipeSerializer<?> getSerializer() {
-		return SERIALIZER;
+		return ApoliRecipeSerializers.MODIFIED.get();
 	}
 
 	public static Player getPlayerFromInventory(CraftingContainer inv) {
@@ -85,9 +90,9 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 		return Optional.empty();
 	}
 
-	private List<ModifyCraftingPower> getRecipes(Player player) {
+	private List<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> getRecipes(Player player) {
 		if (player != null)
-			return PowerHolderComponent.getPowers(player, ModifyCraftingPower.class);
+			return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_CRAFTING.get());
 		return Lists.newArrayList();
 	}
 

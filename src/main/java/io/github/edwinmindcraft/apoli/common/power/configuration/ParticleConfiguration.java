@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -13,11 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record ParticleConfiguration(ParticleType<?> particle,
-									int frequency) implements IDynamicFeatureConfiguration {
+									int frequency, boolean visibleInFirstPerson) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ParticleConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.PARTICLE_TYPE.fieldOf("particle").forGetter(ParticleConfiguration::particle),
-			Codec.intRange(1, Integer.MAX_VALUE).fieldOf("frequency").forGetter(ParticleConfiguration::frequency)
+			Codec.intRange(1, Integer.MAX_VALUE).fieldOf("frequency").forGetter(ParticleConfiguration::frequency),
+			CalioCodecHelper.optionalField(Codec.BOOL, "visible_in_first_person", false).forGetter(ParticleConfiguration::visibleInFirstPerson)
 	).apply(instance, ParticleConfiguration::new));
 
 	@Override

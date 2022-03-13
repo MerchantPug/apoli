@@ -94,6 +94,18 @@ public class ApoliPowers {
 	public static final RegistryObject<AttributeModifyTransferPower> ATTRIBUTE_MODIFY_TRANSFER = ApoliRegisters.POWER_FACTORIES.register("attribute_modify_transfer", AttributeModifyTransferPower::new);
 	public static final RegistryObject<ModifyCameraSubmersionTypePower> MODIFY_CAMERA_SUBMERSION = ApoliRegisters.POWER_FACTORIES.register("modify_camera_submersion", ModifyCameraSubmersionTypePower::new);
 	public static final RegistryObject<ModifyValueBlockPower> MODIFY_SLIPPERINESS = ApoliRegisters.POWER_FACTORIES.register("modify_slipperiness", ModifyValueBlockPower::new);
+	public static final RegistryObject<ItemOnItemPower> ITEM_ON_ITEM = ApoliRegisters.POWER_FACTORIES.register("item_on_item", ItemOnItemPower::new);
+	public static final RegistryObject<TooltipPower> TOOLTIP = ApoliRegisters.POWER_FACTORIES.register("tooltip", TooltipPower::new);
+	public static final RegistryObject<ModifyStatusEffectPower> MODIFY_STATUS_EFFECT_AMPLIFIER = ApoliRegisters.POWER_FACTORIES.register("modify_status_effect_amplifier", ModifyStatusEffectPower::new);
+	public static final RegistryObject<ModifyStatusEffectPower> MODIFY_STATUS_EFFECT_DURATION = ApoliRegisters.POWER_FACTORIES.register("modify_status_effect_duration", ModifyStatusEffectPower::new);
+	public static final RegistryObject<BiEntityConditionPower> PREVENT_ENTITY_COLLISION = ApoliRegisters.POWER_FACTORIES.register("prevent_entity_collision", BiEntityConditionPower::new);
+	public static final RegistryObject<OverlayPower> OVERLAY = ApoliRegisters.POWER_FACTORIES.register("overlay", OverlayPower::new);
+	public static final RegistryObject<PreventFeatureRenderPower> PREVENT_FEATURE_RENDER = ApoliRegisters.POWER_FACTORIES.register("prevent_feature_render", PreventFeatureRenderPower::new);
+	public static final RegistryObject<ModifyCraftingPower> MODIFY_CRAFTING = ApoliRegisters.POWER_FACTORIES.register("modify_crafting", ModifyCraftingPower::new);
+	public static final RegistryObject<EntityActionPower> PREVENT_ELYTRA_FLIGHT = ApoliRegisters.POWER_FACTORIES.register("prevent_elytra_flight", EntityActionPower::new);
+	public static final RegistryObject<OverrideHudTexturePower> STATUS_BAR_TEXTURE = ApoliRegisters.POWER_FACTORIES.register("status_bar_texture", OverrideHudTexturePower::new);
+	public static final RegistryObject<ModifyBlockRenderPower> MODIFY_BLOCK_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_block_render", ModifyBlockRenderPower::new);
+	public static final RegistryObject<ModifyFluidRenderPower> MODIFY_FLUID_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_fluid_render", ModifyFluidRenderPower::new);
 	//endregion
 
 	public static void bootstrap() {}

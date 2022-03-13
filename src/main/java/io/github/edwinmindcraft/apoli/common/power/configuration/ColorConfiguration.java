@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +28,7 @@ public record ColorConfiguration(float red, float green, float blue,
 	).apply(instance, ColorConfiguration::new));
 
 	public static Optional<ColorConfiguration> forPower(Entity entity, PowerFactory<ColorConfiguration> factory) {
-		return IPowerContainer.getPowers(entity, factory).stream().map(ConfiguredFactory::getConfiguration).reduce(ColorConfiguration::merge);
+		return IPowerContainer.getPowers(entity, factory).stream().map(ConfiguredPower::getConfiguration).reduce(ColorConfiguration::merge);
 	}
 
 	public ColorConfiguration(float red, float green, float blue) {
@@ -37,5 +37,13 @@ public record ColorConfiguration(float red, float green, float blue,
 
 	public ColorConfiguration merge(ColorConfiguration other) {
 		return new ColorConfiguration(this.red() * other.red(), this.green() * other.green(), this.blue() * other.blue(), Math.min(this.alpha(), other.alpha()));
+	}
+
+	public ColorConfiguration multiply(float value) {
+		return new ColorConfiguration(this.red() * value, this.green() * value, this.blue() * value, this.alpha() * value);
+	}
+
+	public ColorConfiguration withAlpha(float alpha) {
+		return new ColorConfiguration(this.red(), this.green(), this.blue(), alpha);
 	}
 }

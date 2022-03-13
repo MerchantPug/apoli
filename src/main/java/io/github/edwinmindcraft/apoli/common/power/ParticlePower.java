@@ -12,9 +12,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ParticlePower extends PowerFactory<ParticleConfiguration> {
 
 	@OnlyIn(Dist.CLIENT)
-	public static void renderParticles(Entity player) {
-		IPowerContainer.getPowers(player, ApoliPowers.PARTICLE.get()).stream().filter(x -> player.tickCount % x.getConfiguration().frequency() == 0)
-				.forEach(power -> player.level.addParticle((ParticleOptions) power.getConfiguration().particle(), player.getRandomX(0.5), player.getRandomY(), player.getRandomZ(0.5), 0, 0, 0));
+	public static void renderParticles(Entity entity, Entity camera, boolean firstPerson) {
+		IPowerContainer.getPowers(entity, ApoliPowers.PARTICLE.get()).stream()
+				.filter(x -> entity.tickCount % x.getConfiguration().frequency() == 0 && (x.getConfiguration().visibleInFirstPerson() || entity != camera || !firstPerson))
+				.forEach(power -> entity.level.addParticle((ParticleOptions) power.getConfiguration().particle(), entity.getRandomX(0.5), entity.getRandomY(), entity.getRandomZ(0.5), 0, 0, 0));
 	}
 
 	public ParticlePower() {

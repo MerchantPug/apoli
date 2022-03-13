@@ -1,13 +1,25 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
+import io.github.apace100.apoli.util.ApoliConfigs;
+import io.github.apace100.apoli.util.StackPowerUtil;
 import io.github.edwinmindcraft.apoli.api.VariableAccess;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
+import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
@@ -27,16 +39,16 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.living.*;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
+import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -173,6 +185,56 @@ public class ApoliPowerEventHandler {
 			});
 			IPowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.getFactory().captureItems(power, player));
 		}
+	}
+
+	@SubscribeEvent
+	public static void onTooltip(ItemTooltipEvent event) {
+		List<Component> tooltips = event.getToolTip();
+		if (ApoliConfigs.CLIENT.tooltips.showUsabilityHints.get()) {
+			List<ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, PreventItemActionPower>> powers = new ArrayList<>(PreventItemActionPower.getPreventingForDisplay(event.getEntity(), event.getItemStack()));
+			int size = powers.size();
+			if (!powers.isEmpty()) {
+				powers.removeIf(x -> x.getData().hidden());
+				String key = "tooltip.apoli.unusable." + event.getItemStack().getUseAnimation().name().toLowerCase(Locale.ROOT);
+				ChatFormatting textColor = ChatFormatting.GRAY;
+				ChatFormatting powerColor = ChatFormatting.RED;
+				if (ApoliConfigs.CLIENT.tooltips.compactUsabilityHints.get() || powers.size() == 0) {
+					if (powers.size() == 1) {
+						ConfiguredPower<?, ?> power = powers.get(0);
+						tooltips.add(new TranslatableComponent(key + ".single", power.getData().getName().withStyle(powerColor)).withStyle(textColor));
+					} else {
+						tooltips.add(new TranslatableComponent(key + ".multiple", new TextComponent((powers.size() == 0 ? size : powers.size()) + "").withStyle(powerColor)).withStyle(textColor));
+					}
+				} else {
+					MutableComponent powerNameList = powers.get(0).getData().getName().withStyle(powerColor);
+					for (int i = 1; i < powers.size(); i++) {
+						powerNameList = powerNameList.append(new TextComponent(", ").withStyle(textColor));
+						powerNameList = powerNameList.append(powers.get(i).getData().getName().withStyle(powerColor));
+					}
+					MutableComponent preventText = new TranslatableComponent(key + ".single", powerNameList).withStyle(textColor);
+					tooltips.add(preventText);
+				}
+			}
+		}
+		for (EquipmentSlot slot : EquipmentSlot.values()) {
+			List<StackPowerUtil.StackPower> powers = StackPowerUtil.getPowers(event.getItemStack(), slot)
+					.stream()
+					.filter(sp -> !sp.isHidden)
+					.toList();
+			if (powers.size() > 0) {
+				tooltips.add(TextComponent.EMPTY);
+				tooltips.add(new TranslatableComponent("item.modifiers." + slot.getName()).withStyle(ChatFormatting.GRAY));
+				powers.forEach(sp -> {
+					if (PowerTypeRegistry.contains(sp.powerId)) {
+						PowerType<?> powerType = PowerTypeRegistry.get(sp.powerId);
+						tooltips.add(new TextComponent(" ").append(powerType.getName()).withStyle(sp.isNegative ? ChatFormatting.RED : ChatFormatting.BLUE));
+						if (event.getFlags().isAdvanced())
+							tooltips.add(new TextComponent("  ").append(powerType.getDescription()).withStyle(ChatFormatting.GRAY));
+					}
+				});
+			}
+		}
+		TooltipPower.tryAdd(event.getEntity(), event.getItemStack(), event.getToolTip());
 	}
 
 	//If the interaction isn't canceled, let other mod interaction play, as this can cancel interactions.

@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.InvisibilityPower;
+import io.github.edwinmindcraft.apoli.common.power.ParticlePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -17,11 +18,13 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -52,9 +55,20 @@ public class ApoliClientEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onLivingRender(RenderLivingEvent.Pre<LivingEntity, ?> event) {
-		//TODO Check if this is fired correctly.
+		//FIXME Doesn't seem to work with armor.
 		if (InvisibilityPower.isArmorHidden(event.getEntity()))
 			event.setCanceled(true);
+	}
+
+	@SubscribeEvent
+	public static void onLivingTick(LivingEvent.LivingUpdateEvent event) {
+		Player player = Minecraft.getInstance().player;
+		if (player != null) {
+			boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
+			if (!event.getEntity().isInvisibleTo(player)) {
+				ParticlePower.renderParticles(event.getEntity(), player, firstPerson);
+			}
+		}
 	}
 
 	private static KeyMapping getKeyBinding(String key) {

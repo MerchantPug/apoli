@@ -3,6 +3,7 @@ package io.github.apace100.apoli.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.INightVisionPower;
+import io.github.edwinmindcraft.apoli.common.power.ModifyCameraSubmersionTypePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
@@ -10,7 +11,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.PostChain;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -53,10 +53,6 @@ public abstract class GameRendererMixin {
 	@Shadow
 	@Final
 	private Minecraft minecraft;
-	@Shadow
-	private PostChain postEffect;
-	@Shadow
-	private boolean effectActive;
 	@Unique
 	private ResourceLocation currentlyLoadedShader;
 	@Shadow
@@ -66,7 +62,8 @@ public abstract class GameRendererMixin {
 	@Shadow
 	public abstract void loadEffect(ResourceLocation identifier);
 
-	@Shadow public abstract Minecraft getMinecraft();
+	@Shadow
+	public abstract Minecraft getMinecraft();
 
 	@Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
 	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
@@ -107,30 +104,12 @@ public abstract class GameRendererMixin {
 		RenderSystem.enableTexture();
 	}
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"))
-    private void renderOverlayPowers(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
-		//TODO Power GUI
-        boolean hudHidden = this.client.options.hudHidden;
-        boolean thirdPerson = !client.options.getPerspective().isFirstPerson();
-        PowerHolderComponent.withPower(client.getCameraEntity(), OverlayPower.class, p -> {
-            if(p.getDrawPhase() != OverlayPower.DrawPhase.ABOVE_HUD) {
-                return false;
-            }
-            if(hudHidden && p.doesHideWithHud()) {
-                return false;
-            }
-            if(thirdPerson && !p.shouldBeVisibleInThirdPerson()) {
-                return false;
-            }
-            return true;
-        }, OverlayPower::render);
-    }
-
-
-    @Inject(at = @At("HEAD"), method = "togglePostEffect", cancellable = true)
-    private void disableShaderToggle(CallbackInfo ci) {
-		IPowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream().anyMatch(power -> !power.getConfiguration().toggleable() && power.getConfiguration().shader().equals(this.currentlyLoadedShader));
-    }
+	@Inject(at = @At("HEAD"), method = "togglePostEffect", cancellable = true)
+	private void disableShaderToggle(CallbackInfo ci) {
+		if (IPowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream().anyMatch(power -> !power.getConfiguration().toggleable() && power.getConfiguration().shader().equals(this.currentlyLoadedShader))) {
+			ci.cancel();
+		}
+	}
 
 	@Redirect(method = "getNightVisionScale", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/effect/MobEffectInstance;getDuration()I"))
 	private static int fixNightVision(MobEffectInstance instance) {
@@ -145,18 +124,11 @@ public abstract class GameRendererMixin {
 			INightVisionPower.getNightVisionStrength(living).ifPresent(cir::setReturnValue);
 	}
 
-    @Redirect(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getFluidInCamera()Lnet/minecraft/world/level/material/FogType;"))
-    private FogType modifySubmersionType(Camera camera) {
+	@Redirect(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getFluidInCamera()Lnet/minecraft/world/level/material/FogType;"))
+	private FogType modifySubmersionType(Camera camera) {
 		FogType original = camera.getFluidInCamera();
-        if(camera.getEntity() instanceof LivingEntity) {
-            for(ModifyCameraSubmersionTypePower p : PowerHolderComponent.getPowers(camera.getFocusedEntity(), ModifyCameraSubmersionTypePower.class)) {
-                if(p.doesModify(original)) {
-                    return p.getNewType();
-                }
-            }
-        }
-        return original;
-    }
+		return ModifyCameraSubmersionTypePower.tryReplace(camera.getEntity(), original).orElse(original);
+	}
 
 	// PHASING: remove_blocks
 	@Inject(at = @At(value = "HEAD"), method = "render")
