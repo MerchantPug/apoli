@@ -2,11 +2,15 @@ package io.github.edwinmindcraft.apoli.common.power.configuration;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Function3;
 import com.mojang.serialization.*;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import net.minecraft.util.Tuple;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -15,7 +19,7 @@ import java.util.stream.Stream;
 public record MultipleConfiguration<V>(Map<String, V> children) implements IDynamicFeatureConfiguration {
 
 
-	public static <V> MapCodec<MultipleConfiguration<V>> mapCodec(Codec<V> codec, Predicate<String> filter, UnaryOperator<String> keyMapper, UnaryOperator<V> configurator) {
+	public static <V> MapCodec<MultipleConfiguration<V>> mapCodec(Codec<V> codec, Predicate<String> filter, UnaryOperator<String> keyMapper, Function3<String, V, JsonElement, V> configurator) {
 		return new MultipleMapCodec<>(codec, filter, keyMapper, configurator);
 	}
 
@@ -23,9 +27,9 @@ public record MultipleConfiguration<V>(Map<String, V> children) implements IDyna
 		private final Codec<V> codec;
 		private final Predicate<String> keyFilter;
 		private final UnaryOperator<String> keyMapper;
-		private final UnaryOperator<V> configurator;
+		private final Function3<String, V, JsonElement, V> configurator;
 
-		private MultipleMapCodec(Codec<V> codec, Predicate<String> keyFilter, UnaryOperator<String> keyMapper, UnaryOperator<V> configurator) {
+		private MultipleMapCodec(Codec<V> codec, Predicate<String> keyFilter, UnaryOperator<String> keyMapper, Function3<String, V, JsonElement, V> configurator) {
 			this.codec = codec;
 			this.keyFilter = keyFilter;
 			this.keyMapper = keyMapper;
@@ -50,13 +54,13 @@ public record MultipleConfiguration<V>(Map<String, V> children) implements IDyna
 				map.entries().forEach(entry -> {
 					DataResult<String> stringValue = ops.getStringValue(entry.getFirst());
 					if (stringValue.result().filter(this.keyFilter).isPresent())
-						stringValue.flatMap(name -> this.codec.decode(ops, entry.getSecond()).map(x -> new Tuple<>(name, x.getFirst())))
+						stringValue.flatMap(name -> this.codec.decode(ops, entry.getSecond()).map(x -> new ImmutableTriple<>(name, x.getFirst(), x.getSecond())))
 								.resultOrPartial(failures::add)
 								.ifPresent(pair -> {
 									if (this.useJson(ops))
-										successes.put(this.keyMapper.apply(pair.getA()), this.configurator.apply(pair.getB()));
+										successes.put(this.keyMapper.apply(pair.getLeft()), this.configurator.apply(pair.getLeft(), pair.getMiddle(), (JsonElement) pair.getRight()));
 									else
-										successes.put(pair.getA(), pair.getB());
+										successes.put(pair.getLeft(), pair.getMiddle());
 								});
 				});
 				ImmutableSet<String> build = failures.build();

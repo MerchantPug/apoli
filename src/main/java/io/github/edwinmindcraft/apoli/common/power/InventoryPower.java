@@ -19,6 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -40,7 +41,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	@Override
-	public Key getKey(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
+	public Key getKey(ConfiguredPower<InventoryConfiguration, ?> configuration, @Nullable Entity player) {
 		return configuration.getConfiguration().key();
 	}
 

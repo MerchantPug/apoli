@@ -33,7 +33,7 @@ function initializeCoreMod() {
 				return node;
 			}
 		},
-		'apoli_prevent_armor_equip': {
+		'apoli_modify_friction': {
 			'target': {
 				'type': 'METHOD',
 				'class': 'net.minecraftforge.common.extensions.IForgeBlockState',

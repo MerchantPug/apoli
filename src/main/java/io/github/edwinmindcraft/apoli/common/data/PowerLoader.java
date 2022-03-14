@@ -37,6 +37,7 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 			if (pre.isCanceled()) return Stream.empty();
 			DataResult<ConfiguredPower<?, ?>> power = ConfiguredPower.CODEC.decode(JsonOps.INSTANCE, pre.getJson()).map(Pair::getFirst);
 			Optional<ConfiguredPower<?, ?>> powerDefinition = power.resultOrPartial(error -> Apoli.LOGGER.error("Error loading power \"{}\": {}", resourceLocation, error));
+			powerDefinition.ifPresent(cp -> MinecraftForge.EVENT_BUS.post(new PowerLoadEvent.Post(resourceLocation, x, cp)));
 			return powerDefinition.stream();
 		}).max(LOADING_ORDER_COMPARATOR);
 		SerializableData.CURRENT_NAMESPACE = null;

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjectileConfiguration> {
 	public FireProjectilePower() {
 		super(FireProjectileConfiguration.CODEC);
+		this.ticking();
 	}
 
 	protected DataContainer access(ConfiguredPower<FireProjectileConfiguration, ?> configuration, IPowerContainer container) {

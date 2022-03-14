@@ -33,7 +33,7 @@ public abstract class ActiveCooldownPowerFactory<T extends IActiveCooldownPowerC
 	}
 
 	@Override
-	public Key getKey(ConfiguredPower<T, ?> configuration, Entity player) {
+	public Key getKey(ConfiguredPower<T, ?> configuration, @Nullable Entity player) {
 		return configuration.getConfiguration().key();
 	}
 

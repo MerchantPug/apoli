@@ -1,10 +1,16 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonElement;
+import io.github.apace100.apoli.integration.PowerLoadEvent;
+import io.github.apace100.calio.data.SerializableData;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.power.configuration.MultipleConfiguration;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -23,9 +29,11 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	}
 
 	/**
-	 * Has the effect of hiding the power from the origin screen.
+	 * Has the effect of hiding the power from the origin screen.<br/>
+	 * Additionally, this will post the event to {@link PowerLoadEvent.Post} which will be used to handle additional data.
 	 */
-	private static <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, ?> reconfigure(ConfiguredPower<C, F> source) {
+	private static <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, ?> reconfigure(String suffix, ConfiguredPower<C, F> source, JsonElement root) {
+		MinecraftForge.EVENT_BUS.post(new PowerLoadEvent.Post(new ResourceLocation(SerializableData.CURRENT_NAMESPACE, SerializableData.CURRENT_PATH + suffix), root, source));
 		return source.getFactory().configure(source.getConfiguration(), source.getData().copyOf().hidden().build());
 	}
 }

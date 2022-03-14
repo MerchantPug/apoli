@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -14,7 +15,7 @@ public interface IActivePower<T extends IDynamicFeatureConfiguration> {
 
 	void activate(ConfiguredPower<T, ?> configuration, Entity player);
 
-	Key getKey(ConfiguredPower<T, ?> configuration, Entity player);
+	Key getKey(ConfiguredPower<T, ?> configuration, @Nullable Entity player);
 
 	record Key(String key, boolean continuous) {
 		public static final Key PRIMARY = new Key("key.origins.primary_active", false);

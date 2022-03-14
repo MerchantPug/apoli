@@ -9,7 +9,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> extends PowerFactory<T> implements ITogglePower<T> {
@@ -68,7 +68,7 @@ public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> ext
 	}
 
 	@Override
-	public Key getKey(ConfiguredPower<T, ?> configuration, Entity player) {
+	public Key getKey(ConfiguredPower<T, ?> configuration, @Nullable Entity player) {
 		return configuration.getConfiguration().key();
 	}
 

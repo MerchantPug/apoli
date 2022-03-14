@@ -214,7 +214,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return ciActivePower.isPresent();
 	}
 
-	public Optional<IActivePower.Key> getKey(Entity entity) {
+	public Optional<IActivePower.Key> getKey(@Nullable Entity entity) {
 		return this.asActive().map(x -> x.getKey(this, entity));
 	}
 
