@@ -17,8 +17,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.coremod.api.ASMAPI;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 

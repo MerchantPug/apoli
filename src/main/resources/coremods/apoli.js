@@ -58,6 +58,35 @@ function initializeCoreMod() {
 					node.instructions.insertBefore(insertionSlot, ls);
 				return node;
 			}
+		},
+		'apoli_prevent_suffocation': {
+			'target': {
+				'type': 'CLASS',
+				'name': 'net.minecraft.world.entity.Entity'
+			},
+			'transformer': function(classNode) {
+				var iter = classNode.methods.iterator()
+				while (iter.hasNext()) {
+					var node = iter.next();
+					var methodName = ASMAPI.mapMethod('m_201940_');
+					if (node.desc === "(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Lnet/minecraft/world/level/block/state/BlockState;)Z") {
+						var gsc2 = ASMAPI.mapMethod("m_60812_");
+						var gsc3 = ASMAPI.mapMethod("m_60742_");
+						var ccof = ASMAPI.mapMethod("m_82750_");
+
+						var target = ASMAPI.findFirstMethodCall(node, ASMAPI.MethodType.VIRTUAL, "net/minecraft/world/level/block/state/BlockState", gsc2, "(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;");
+						var ls = new InsnList();
+						ls.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/world/phys/shapes/CollisionContext", ccof, "(Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/phys/shapes/CollisionContext;", true));
+						ls.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/world/level/block/state/BlockState", gsc3, "(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", false));
+						if (target != null) {
+							node.instructions.insertBefore(target, ls);
+							node.instructions.remove(target);
+						}
+					}
+				}
+				return classNode;
+			}
 		}
 	}
 }

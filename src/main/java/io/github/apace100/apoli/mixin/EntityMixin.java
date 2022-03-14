@@ -103,10 +103,12 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 			info.cancel();
 	}
 
+	/*
+	Apparently targeting lambda doesn't work. Who knew.
 	@Redirect(method = "lambda$isInWall$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;"))
 	private VoxelShape preventPhasingSuffocation(BlockState state, BlockGetter world, BlockPos pos) {
 		return state.getCollisionShape(world, pos, CollisionContext.of((Entity) (Object) this));
-	}
+	}*/
 
 	@Inject(method = "move", at = @At("HEAD"))
 	private void saveDistanceTraveled(MoverType type, Vec3 movement, CallbackInfo ci) {

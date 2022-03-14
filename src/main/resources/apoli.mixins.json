@@ -37,6 +37,7 @@
 		"PlayerEntityRendererMixin",
 		"WorldRendererMixin"
 	],
+	"refmap": "apoli.refmap.json",
 	"injectors": {
 		"defaultRequire": 1
 	}
