@@ -7,7 +7,6 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.DamageCondition;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import net.minecraft.world.damagesource.DamageSource;
 
 public final class ConfiguredDamageCondition<C extends IDynamicFeatureConfiguration, F extends DamageCondition<C>> extends ConfiguredCondition<C, F> {

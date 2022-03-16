@@ -1,7 +1,6 @@
 package io.github.edwinmindcraft.apoli.api;
 
 import com.mojang.serialization.Codec;
-import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
@@ -30,7 +29,7 @@ public class MetaFactories {
 	 * @param func           The that creates a factory from a {@link IDelegatedActionConfiguration}
 	 * @param actionCodec    The codec to serialize the action type.
 	 * @param conditionCodec The codec to serialize the condition type.
-	 * @param executor       The function used to execute the an instance of the action type.
+	 * @param executor       The function used to execute an instance of the action type.
 	 * @param predicate      The predicate used to test an instance of the condition type.
 	 * @param <F>            The type of the action factory.
 	 * @param <A>            The type of the configured action.

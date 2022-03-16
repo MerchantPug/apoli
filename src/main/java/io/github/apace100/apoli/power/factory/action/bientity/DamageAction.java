@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.common.action.configuration.DamageConfigur
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class DamageAction extends BiEntityAction<DamageConfiguration> {
 
@@ -13,7 +14,7 @@ public class DamageAction extends BiEntityAction<DamageConfiguration> {
 	}
 
 	@Override
-	public void execute(DamageConfiguration configuration, Entity actor, Entity target) {
+	public void execute(@NotNull DamageConfiguration configuration, @NotNull Entity actor, @NotNull Entity target) {
 		DamageSource providedSource = configuration.source();
 		DamageSource source = new EntityDamageSource(providedSource.getMsgId(), actor);
 		if (providedSource.isExplosion()) {

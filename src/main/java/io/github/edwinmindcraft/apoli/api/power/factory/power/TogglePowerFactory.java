@@ -86,14 +86,14 @@ public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> ext
 		}
 
 		@Override
-		protected void setStatus(ConfiguredPower<T, ?> configuration, IPowerContainer container, boolean status) {
+		protected void setStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container, boolean status) {
 			if (container == null)
 				return;
 			this.getData(configuration, container).set(status);
 		}
 
 		@Override
-		protected boolean getStatus(ConfiguredPower<T, ?> configuration, IPowerContainer container) {
+		protected boolean getStatus(ConfiguredPower<T, ?> configuration, @Nullable IPowerContainer container) {
 			if (container == null)
 				return false;
 			return this.getData(configuration, container).get();

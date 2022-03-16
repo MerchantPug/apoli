@@ -2,7 +2,6 @@ package io.github.edwinmindcraft.apoli.api.power;
 
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
-import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

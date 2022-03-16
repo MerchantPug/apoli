@@ -6,7 +6,6 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import net.minecraft.world.entity.Entity;
 
 public final class ConfiguredEntityAction<C extends IDynamicFeatureConfiguration, F extends EntityAction<C>> extends ConfiguredFactory<C, F> {

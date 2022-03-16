@@ -8,7 +8,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCo
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.util.Lazy;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

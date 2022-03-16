@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class SwingHandAction extends EntityAction<FieldConfiguration<InteractionHand>> {
 
@@ -14,7 +15,7 @@ public class SwingHandAction extends EntityAction<FieldConfiguration<Interaction
 	}
 
 	@Override
-	public void execute(FieldConfiguration<InteractionHand> configuration, Entity entity) {
+	public void execute(@NotNull FieldConfiguration<InteractionHand> configuration, @NotNull Entity entity) {
 		if (entity instanceof LivingEntity living)
 			living.swing(configuration.value(), true);
 	}

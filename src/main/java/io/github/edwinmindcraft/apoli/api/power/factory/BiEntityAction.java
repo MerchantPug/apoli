@@ -1,13 +1,11 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.mojang.serialization.Codec;
-import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public abstract class BiEntityAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BiEntityAction<?>> implements IFactory<T, ConfiguredBiEntityAction<T, ?>, BiEntityAction<T>> {

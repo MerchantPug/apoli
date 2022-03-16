@@ -88,7 +88,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 
 	/**
 	 * Returns a map containing children of this power.<br/>
-	 * Origins uses this for the "multiple" power type, which contains children.
+	 * Apoli uses this for the "multiple" power type, which contains children.
 	 *
 	 * @param configuration The configuration of this power.
 	 *

@@ -11,6 +11,7 @@ import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliIBiEntityActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliItemActions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
+import io.github.edwinmindcraft.apoli.compat.ApoliCompat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -91,5 +92,6 @@ public class ApoliCommon {
 
 	public static void commonSetup(FMLCommonSetupEvent event) {
 		event.enqueueWork(ApoliLootFunctions::bootstrap);
+		ApoliCompat.apply();
 	}
 }

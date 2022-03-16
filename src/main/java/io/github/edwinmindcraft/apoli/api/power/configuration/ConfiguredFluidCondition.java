@@ -7,7 +7,6 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.FluidCondition;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import net.minecraft.world.level.material.FluidState;
 
 public final class ConfiguredFluidCondition<C extends IDynamicFeatureConfiguration, F extends FluidCondition<C>> extends ConfiguredCondition<C, F> {

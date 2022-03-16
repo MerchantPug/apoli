@@ -1,13 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.power.configuration;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
@@ -18,22 +12,19 @@ import io.github.edwinmindcraft.apoli.api.power.IVariableIntPower;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
-import io.github.edwinmindcraft.calio.api.network.IContextAwareCodec;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.util.Lazy;
+import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * This is a replacement for the power system used by fabric.
@@ -90,11 +81,11 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		this.getFactory().onRespawn(this, entity);
 	}
 
-	public <T> T getPowerData(Entity player, Supplier<? extends T> supplier) {
-		return IPowerContainer.get(player).resolve().map(x -> x.getPowerData(this, supplier)).orElse(null);
+	public <T> T getPowerData(Entity player, NonNullSupplier<? extends T> supplier) {
+		return IPowerContainer.get(player).resolve().<T>map(x -> x.getPowerData(this, supplier)).orElseGet(supplier::get);
 	}
 
-	public <T> T getPowerData(IPowerContainer container, Supplier<? extends T> supplier) {
+	public <T> T getPowerData(IPowerContainer container, NonNullSupplier<? extends T> supplier) {
 		return container.getPowerData(this, supplier);
 	}
 
@@ -182,7 +173,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.asVariableIntPower().map(t -> t.decrement(this, entity)).map(OptionalInt::of).orElseGet(OptionalInt::empty);
 	}
 
-	//Hud Renderered Power
+	//Hud Rendered Power
 
 	@SuppressWarnings("unchecked")
 	public Optional<IHudRenderedPower<C>> asHudRendered() {
@@ -329,6 +320,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		public T get() {return this.referent;}
 
 		@Override
+		@Nullable
 		public ResourceLocation name() {return this.name;}
 
 		@Override

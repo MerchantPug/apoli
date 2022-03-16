@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 public class BonemealAction extends BlockAction<FieldConfiguration<Boolean>> {
 
@@ -18,7 +19,8 @@ public class BonemealAction extends BlockAction<FieldConfiguration<Boolean>> {
 	}
 
 	@Override
-	public void execute(FieldConfiguration<Boolean> configuration, Level world, BlockPos pos, Direction direction) {
+	@SuppressWarnings("deprecation")
+	public void execute(@NotNull FieldConfiguration<Boolean> configuration, @NotNull Level world, @NotNull BlockPos pos, @NotNull Direction direction) {
 		BlockPos blockPos2 = pos.relative(direction);
 
 		boolean spawnEffects = configuration.value();

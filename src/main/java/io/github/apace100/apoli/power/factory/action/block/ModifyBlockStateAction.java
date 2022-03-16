@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -20,7 +21,8 @@ public class ModifyBlockStateAction extends BlockAction<ModifyBlockStateConfigur
 	}
 
 	@Override
-	public void execute(ModifyBlockStateConfiguration configuration, Level world, BlockPos pos, Direction direction) {
+	@SuppressWarnings("unckecked")
+	public void execute(@NotNull ModifyBlockStateConfiguration configuration, @NotNull Level world, @NotNull BlockPos pos, @NotNull Direction direction) {
 		BlockState state = world.getBlockState(pos);
 		Collection<Property<?>> properties = state.getProperties();
 		String desiredPropertyName = configuration.property();

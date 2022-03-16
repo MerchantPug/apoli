@@ -26,6 +26,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,13 +36,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PowerContainer implements IPowerContainer, ICapabilitySerializable<Tag> {
+	@NotNull
 	private final LivingEntity owner;
 	private final Map<ResourceLocation, ConfiguredPower<?, ?>> powers;
 	private final Map<ResourceLocation, Set<ResourceLocation>> powerSources;
 	private final Map<ResourceLocation, Object> powerData;
 	private transient final LazyOptional<IPowerContainer> thisOptional = LazyOptional.of(() -> this);
 
-	public PowerContainer(LivingEntity owner) {
+	public PowerContainer(@NotNull LivingEntity owner) {
 		this.owner = owner;
 		this.powers = new ConcurrentHashMap<>();
 		this.powerSources = new ConcurrentHashMap<>();
@@ -191,9 +193,6 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	public void readNbt(CompoundTag tag, boolean applyEvents) {
 		try {
-			if (this.owner == null) {
-				Apoli.LOGGER.error("Owner was null in PowerHolderComponent#fromTag!");
-			}
 			if (applyEvents) {
 				for (ConfiguredPower<?, ?> power : this.powers.values()) {
 					power.onRemoved(this.owner);
@@ -225,7 +224,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 						try {
 							instance.deserialize(this, data);
 						} catch (ClassCastException e) {
-							Apoli.LOGGER.warn("Data type of \"" + identifier + "\" changed, skipping data for that power on entity " + (this.owner != null ? this.owner.getName().getContents() : "[NONE]"));
+							Apoli.LOGGER.warn("Data type of \"" + identifier + "\" changed, skipping data for that power on entity " + this.owner.getName().getContents());
 						}
 						this.powers.put(identifier, instance);
 						if (applyEvents)
@@ -237,6 +236,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 				}
 				for (Map.Entry<ResourceLocation, Set<ResourceLocation>> entry : this.powerSources.entrySet()) {
 					ConfiguredPower<?, ?> power = powers.get(entry.getKey());
+					if (power == null) //This would take a miracle to occur.
+						continue;
 					for (Map.Entry<String, ConfiguredPower<?, ?>> subPower : power.getContainedPowers().entrySet()) {
 						ResourceLocation sub = subPower.getValue().getRegistryName();
 						if (sub == null) {
@@ -294,7 +295,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> @Nullable T getPowerData(ConfiguredPower<?, ?> power, Supplier<? extends T> supplier) {
+	public <T> @NotNull T getPowerData(ConfiguredPower<?, ?> power, NonNullSupplier<? extends T> supplier) {
 		return (T) this.powerData.computeIfAbsent(power.getRegistryName(), x -> supplier.get());
 	}
 

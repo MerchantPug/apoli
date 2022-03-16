@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 public class SpawnParticlesAction extends EntityAction<SpawnParticlesConfiguration> {
 
@@ -13,7 +14,7 @@ public class SpawnParticlesAction extends EntityAction<SpawnParticlesConfigurati
 	}
 
 	@Override
-	public void execute(SpawnParticlesConfiguration configuration, Entity entity) {
+	public void execute(@NotNull SpawnParticlesConfiguration configuration, @NotNull Entity entity) {
 		if (entity.level.isClientSide() || !(entity.level instanceof ServerLevel level)) {
 			return;
 		}

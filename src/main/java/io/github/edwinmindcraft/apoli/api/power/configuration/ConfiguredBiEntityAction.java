@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiEntityAction;
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 

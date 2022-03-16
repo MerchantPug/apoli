@@ -8,6 +8,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class ExplodeAction extends BlockAction<ExplodeConfiguration> {
 
@@ -17,7 +18,7 @@ public class ExplodeAction extends BlockAction<ExplodeConfiguration> {
 	}
 
 	@Override
-	public void execute(ExplodeConfiguration configuration, Level world, BlockPos pos, Direction direction) {
+	public void execute(@NotNull ExplodeConfiguration configuration, @NotNull Level world, @NotNull BlockPos pos, @NotNull Direction direction) {
 		if (world.isClientSide())
 			return;
 		ExplosionDamageCalculator calculator = configuration.calculator();

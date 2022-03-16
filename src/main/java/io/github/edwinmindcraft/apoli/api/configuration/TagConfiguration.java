@@ -7,7 +7,6 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.tags.SerializationTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagContainer;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -23,7 +22,7 @@ public record TagConfiguration<V>(Tag<V> value) implements IDynamicFeatureConfig
 	}
 
 	public boolean isLoaded() {
-		return SerializationTags.getInstance() != null && SerializationTags.getInstance() != TagContainer.EMPTY;
+		return SerializationTags.getInstance() != TagContainer.EMPTY;
 	}
 
 	public boolean contains(V value) {

@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.NotNull;
 
 public class RaycastCondition extends EntityCondition<RaycastConfiguration> {
 
@@ -15,7 +16,7 @@ public class RaycastCondition extends EntityCondition<RaycastConfiguration> {
 	}
 
 	@Override
-	protected boolean check(RaycastConfiguration configuration, Entity entity) {
+	protected boolean check(@NotNull RaycastConfiguration configuration, @NotNull Entity entity) {
 		HitResult hitResult = configuration.settings().perform(entity, configuration.matchCondition());
 
 		if (hitResult.getType() == HitResult.Type.MISS)

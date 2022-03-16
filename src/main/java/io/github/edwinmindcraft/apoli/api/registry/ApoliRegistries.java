@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import io.github.apace100.apoli.power.factory.condition.BiEntityConditions;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import io.github.apace100.calio.ClassUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
@@ -78,7 +77,7 @@ public class ApoliRegistries {
 				return dynamicOps.compressMaps() ? dynamicOps.getNumberValue(input).flatMap((number) -> {
 					T object = supplier.get().getValue(number.intValue());
 					return object == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(object);
-				}).map((objectx) -> Pair.of(objectx, dynamicOps.empty())) : ResourceLocation.CODEC.decode(dynamicOps, input).flatMap((pair) -> {
+				}).map((obj) -> Pair.of(obj, dynamicOps.empty())) : ResourceLocation.CODEC.decode(dynamicOps, input).flatMap((pair) -> {
 					T object = supplier.get().getValue(pair.getFirst());
 					if (object == null && NamespaceAlias.hasAlias(pair.getFirst()))
 						object = supplier.get().getValue(NamespaceAlias.resolveAlias(pair.getFirst()));

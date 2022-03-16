@@ -33,13 +33,6 @@ import java.util.Optional;
 @Mixin(LevelRenderer.class)
 public abstract class WorldRendererMixin {
 
-	@Unique
-	private Entity renderEntity;
-
-	@Shadow
-	@Final
-	private Minecraft minecraft;
-
 	@Shadow
 	public abstract void allChanged();
 
@@ -49,19 +42,5 @@ public abstract class WorldRendererMixin {
 			this.allChanged();
 			ApoliClient.shouldReloadWorldRenderer = false;
 		}
-	}
-
-	@Inject(method = "renderLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/entity/Entity;getTeamColor()I"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void getEntity(PoseStack outlinebuffersource, float i, long j, boolean k, Camera l, GameRenderer i1, LightTexture multibuffersource, Matrix4f projection, CallbackInfo ci,
-						   ProfilerFiller profilerfiller, boolean flag, Vec3 vec3, double d0, double d1, double d2, Matrix4f matrix4f, boolean flag1, Frustum frustum, float f,
-						   boolean flag2, boolean flag3, MultiBufferSource.BufferSource immediate, Iterator var26, Entity entity) {
-		this.renderEntity = entity;
-	}
-
-	//I Still can't get @ModifyArgs to not crash my game.
-	@Redirect(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getTeamColor()I"))
-	private int setColors(Entity instance) {
-		Optional<ColorConfiguration> glowColor = EntityGlowPower.getGlowColor(this.minecraft.getCameraEntity(), this.renderEntity);
-		return glowColor.map(ColorConfiguration::asRGB).orElseGet(instance::getTeamColor);
 	}
 }

@@ -11,17 +11,15 @@ import io.github.edwinmindcraft.apoli.api.power.IValueModifyingPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.AttributeModifyTransferPower;
-import io.github.edwinmindcraft.apoli.common.power.configuration.AttributeModifyTransferConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullSupplier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 //FIXME Reintroduce PowerHolderComponent
@@ -276,8 +273,8 @@ public interface IPowerContainer {
 	 * Reads the data from this component to from the given tag.
 	 *
 	 * @param tag         The input tag.
-	 * @param applyEvents Whether to apply {@link ConfiguredPower#onRemoved(LivingEntity)}, {@link ConfiguredPower#onLost(LivingEntity)},
-	 *                    {@link ConfiguredPower#onAdded(LivingEntity)} and {@link ConfiguredPower#onGained(LivingEntity)} or not.
+	 * @param applyEvents Whether to apply {@link ConfiguredPower#onRemoved(Entity)}, {@link ConfiguredPower#onLost(Entity)},
+	 *                    {@link ConfiguredPower#onAdded(Entity)} and {@link ConfiguredPower#onGained(Entity)} or not.
 	 */
 	@Contract(mutates = "this")
 	void readNbt(CompoundTag tag, boolean applyEvents);
@@ -309,7 +306,7 @@ public interface IPowerContainer {
 	 *
 	 * @return Either the stored data for this power, or a new instance of the data.
 	 */
-	@Nullable <T> T getPowerData(ConfiguredPower<?, ?> power, Supplier<? extends T> supplier);
+	@NotNull <T> T getPowerData(ConfiguredPower<?, ?> power, NonNullSupplier<? extends T> supplier);
 
 	Entity getOwner();
 }

@@ -1,8 +1,6 @@
 package io.github.edwinmindcraft.apoli.api.configuration;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;

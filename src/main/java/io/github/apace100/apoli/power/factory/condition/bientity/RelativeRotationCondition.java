@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.function.Function;
@@ -19,7 +20,7 @@ public class RelativeRotationCondition extends BiEntityCondition<RelativeRotatio
 	}
 
 	@Override
-	protected boolean check(RelativeRotationConfiguration configuration, Entity actor, Entity target) {
+	protected boolean check(@NotNull RelativeRotationConfiguration configuration, @NotNull Entity actor, @NotNull Entity target) {
 		Vec3 vec0 = configuration.actorRotation().getRotation(actor);
 		Vec3 vec1 = configuration.targetRotation().getRotation(target);
 		EnumSet<Direction.Axis> axes = configuration.axes();

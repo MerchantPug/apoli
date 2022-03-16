@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.*;
+import org.jetbrains.annotations.NotNull;
 
 public class RaycastAction extends EntityAction<RaycastConfiguration> {
 
@@ -19,7 +20,7 @@ public class RaycastAction extends EntityAction<RaycastConfiguration> {
 		super(RaycastConfiguration.CODEC);
 	}
 
-	public void execute(RaycastConfiguration configuration, Entity entity) {
+	public void execute(@NotNull RaycastConfiguration configuration, @NotNull Entity entity) {
 		ConfiguredEntityAction.execute(configuration.beforeAction(), entity);
 		Vec3 direction = entity.getViewVector(1);
 		Vec3 origin = new Vec3(entity.getX(), entity.getEyeY(), entity.getZ());

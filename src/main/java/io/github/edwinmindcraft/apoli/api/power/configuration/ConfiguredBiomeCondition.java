@@ -7,7 +7,6 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiomeCondition;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import net.minecraft.world.level.biome.Biome;
 
 public final class ConfiguredBiomeCondition<C extends IDynamicFeatureConfiguration, F extends BiomeCondition<C>> extends ConfiguredCondition<C, F> {

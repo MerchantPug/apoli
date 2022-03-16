@@ -30,5 +30,5 @@ public abstract class EntityAction<T extends IDynamicFeatureConfiguration> exten
 
 	public abstract void execute(T configuration, Entity entity);
 
-	private final Lazy<ActionFactory<Entity>> legacyType = Lazy.of(() -> new ActionFactory<Entity>(this.getRegistryName(), CODEC, this));
+	private final Lazy<ActionFactory<Entity>> legacyType = Lazy.of(() -> new ActionFactory<>(this.getRegistryName(), CODEC, this));
 }

@@ -2,15 +2,15 @@ package io.github.edwinmindcraft.apoli.api.configuration;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import net.minecraft.server.MinecraftServer;
+import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Used to avoid boilerplate code by implementing {@link IDynamicFeatureConfiguration#getWarnings(MinecraftServer)} and
- * {@link IDynamicFeatureConfiguration#getErrors(MinecraftServer)} for children.
+ * Used to avoid boilerplate code by implementing {@link IDynamicFeatureConfiguration#getWarnings(ICalioDynamicRegistryManager)} and
+ * {@link IDynamicFeatureConfiguration#getErrors(ICalioDynamicRegistryManager)} for children.
  */
 public interface IStreamConfiguration<T> extends IDynamicFeatureConfiguration {
 	List<T> entries();
