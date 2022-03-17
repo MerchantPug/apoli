@@ -37,9 +37,8 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 	public boolean matches(@NotNull CraftingContainer inv, @NotNull Level world) {
 		Player player = getCraftingPlayer(inv);
 		Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
-		if (original.isEmpty()) {
+		if (original.isEmpty())
 			return false;
-		}
 		return this.getRecipes(player).stream().anyMatch(r -> r.getConfiguration().doesApply(inv, original.get(), world));
 	}
 

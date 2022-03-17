@@ -20,8 +20,8 @@ public class CraftingScreenHandlerMixin {
 	public ContainerLevelAccess access;
 
 	@Inject(method = "slotChangedCraftingGrid", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/crafting/RecipeManager;getRecipeFor(Lnet/minecraft/world/item/crafting/RecipeType;Lnet/minecraft/world/Container;Lnet/minecraft/world/level/Level;)Ljava/util/Optional;"))
-	private static void clearPowerCraftingInventory(AbstractContainerMenu p_150547_, Level p_150548_, Player p_150549_, CraftingContainer p_150550_, ResultContainer p_150551_, CallbackInfo ci) {
-		((PowerCraftingInventory) p_150547_).setPower(null);
+	private static void clearPowerCraftingInventory(AbstractContainerMenu menu, Level level, Player player, CraftingContainer container, ResultContainer result, CallbackInfo ci) {
+		((PowerCraftingInventory) container).setPower(null);
 	}
 
 	@Inject(method = "stillValid", at = @At("HEAD"), cancellable = true)

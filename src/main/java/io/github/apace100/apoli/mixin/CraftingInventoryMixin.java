@@ -1,10 +1,11 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.PowerCraftingInventory;
-import io.github.apace100.apoli.power.Power;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.world.inventory.CraftingContainer;
 import org.spongepowered.asm.mixin.Mixin;
+
+import javax.annotation.Nullable;
 
 @Mixin(CraftingContainer.class)
 public class CraftingInventoryMixin implements PowerCraftingInventory {
@@ -17,6 +18,7 @@ public class CraftingInventoryMixin implements PowerCraftingInventory {
 	}
 
 	@Override
+	@Nullable
 	public ConfiguredPower<?, ?> getPower() {
 		return this.apoli$CachedPower;
 	}
