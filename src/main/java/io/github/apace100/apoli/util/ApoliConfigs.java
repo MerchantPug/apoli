@@ -1,6 +1,5 @@
 package io.github.apace100.apoli.util;
 
-import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -13,6 +12,7 @@ public class ApoliConfigs {
 	public static final ApoliConfig COMMON;
 	public static final ApoliConfigClient CLIENT;
 	public static final ApoliConfigServer SERVER;
+
 	static {
 		final Pair<ApoliConfig, ForgeConfigSpec> common = new ForgeConfigSpec.Builder().configure(ApoliConfig::new);
 		COMMON_SPECS = common.getRight();

@@ -30,6 +30,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.GameRules;
@@ -310,7 +311,8 @@ public class ApoliPowerEventHandler {
 	public static void preventBlockInteraction(PlayerInteractEvent.RightClickBlock event) {
 		if (PreventBlockActionPower.isUsagePrevented(event.getPlayer(), event.getPos()))
 			event.setUseBlock(Event.Result.DENY);
-		if (PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
+		//Allow food restricted origins to plant carrots and potatoes
+		if (!(event.getItemStack().getItem() instanceof BlockItem) && PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
 			event.setUseItem(Event.Result.DENY);
 		if (event.getItemStack().getItem() instanceof ArmorItem) {
 			EquipmentSlot slot = Mob.getEquipmentSlotForItem(event.getItemStack());
@@ -321,7 +323,7 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void preventItemUsage(PlayerInteractEvent.RightClickItem event) {
-		if (PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
+		if ( PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
 			event.setCanceled(true);
 		if (event.getItemStack().getItem() instanceof ArmorItem) {
 			EquipmentSlot slot = Mob.getEquipmentSlotForItem(event.getItemStack());

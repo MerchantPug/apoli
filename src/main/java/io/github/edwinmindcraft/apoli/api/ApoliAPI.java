@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.api;
 
+import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
@@ -41,7 +42,7 @@ public class ApoliAPI {
 
 	public static boolean enableFoodRestrictions() {
 		//FIXME Support for disabling food restrictions.
-		return true;
+		return ApoliConfigs.SERVER.enforceFoodRestrictions.get();
 	}
 
 	public static void synchronizePowerContainer(Entity living) {

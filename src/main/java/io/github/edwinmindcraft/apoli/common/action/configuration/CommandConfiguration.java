@@ -28,7 +28,7 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 
 	private static CommandSource getSource(Entity entity) {
 		boolean validOutput = !(entity instanceof ServerPlayer) || ((ServerPlayer) entity).connection != null;
-		return ApoliConfigs.COMMON.executeCommand.showOutput.get() && validOutput ? entity : CommandSource.NULL;
+		return ApoliConfigs.SERVER.executeCommand.showOutput.get() && validOutput ? entity : CommandSource.NULL;
 	}
 
 	public static OptionalInt executeAt(Entity entity, Vec3 position, String command) {
@@ -39,7 +39,7 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 					position,
 					entity.getRotationVector(),
 					entity.level instanceof ServerLevel sl ? sl : null,
-					ApoliConfigs.COMMON.executeCommand.permissionLevel.get(),
+					ApoliConfigs.SERVER.executeCommand.permissionLevel.get(),
 					entity.getName().getString(),
 					entity.getDisplayName(),
 					server,
@@ -58,11 +58,11 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 		if (server != null) {
 			String blockName = world.getBlockState(pos).getBlock().getDescriptionId();
 			CommandSourceStack source = new CommandSourceStack(
-					ApoliConfigs.COMMON.executeCommand.showOutput.get() ? server : CommandSource.NULL,
+					ApoliConfigs.SERVER.executeCommand.showOutput.get() ? server : CommandSource.NULL,
 					new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5),
 					new Vec2(0, 0),
 					(ServerLevel) world,
-					ApoliConfigs.COMMON.executeCommand.permissionLevel.get(),
+					ApoliConfigs.SERVER.executeCommand.permissionLevel.get(),
 					blockName,
 					new TranslatableComponent(blockName),
 					server,
