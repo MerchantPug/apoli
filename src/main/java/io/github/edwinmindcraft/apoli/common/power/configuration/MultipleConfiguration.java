@@ -54,7 +54,7 @@ public record MultipleConfiguration<V>(Map<String, V> children) implements IDyna
 				map.entries().forEach(entry -> {
 					DataResult<String> stringValue = ops.getStringValue(entry.getFirst());
 					if (stringValue.result().filter(this.keyFilter).isPresent())
-						stringValue.flatMap(name -> this.codec.decode(ops, entry.getSecond()).map(x -> new ImmutableTriple<>(name, x.getFirst(), x.getSecond())))
+						stringValue.flatMap(name -> this.codec.decode(ops, entry.getSecond()).map(x -> new ImmutableTriple<>(name, x.getFirst(), entry.getSecond())))
 								.resultOrPartial(failures::add)
 								.ifPresent(pair -> {
 									if (this.useJson(ops))

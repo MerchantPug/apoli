@@ -2,8 +2,12 @@ package io.github.apace100.apoli.integration;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
+import io.github.apace100.apoli.Apoli;
+import io.github.apace100.calio.Calio;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.calio.api.event.DynamicRegistrationEvent;
+import io.github.edwinmindcraft.calio.common.CalioConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
@@ -64,6 +68,12 @@ public class PowerLoadEvent extends Event {
 
 		@NotNull
 		public JsonElement getAdditionalData(String key) {
+			if (!ApoliAPI.isAdditionalDataField(key)) {
+				Apoli.LOGGER.warn("Using unregistered field {} some things may not work", key);
+				if (!Calio.isDebugMode()) //If calio isn't in debug mode, assume something is wrong and prevent the field from parsing
+					return JsonNull.INSTANCE;
+				Apoli.LOGGER.warn("Debug Mode is enabled, error will be ignored.");
+			}
 			return this.getOriginal().isJsonObject() && this.getOriginal().getAsJsonObject().has(key) ? this.getOriginal().getAsJsonObject().get(key) : JsonNull.INSTANCE;
 		}
 	}

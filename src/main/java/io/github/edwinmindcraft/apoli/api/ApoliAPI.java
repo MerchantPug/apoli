@@ -20,9 +20,13 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ApoliAPI {
+	private static final Set<String> ADDITIONAL_DATA_FIELDS = new HashSet<>();
+	private static final Set<String> ADDITIONAL_DATA_FIELDS_VIEW = Collections.unmodifiableSet(ADDITIONAL_DATA_FIELDS);
 	public static final String MODID = "apoli";
 
 	@Nullable
@@ -59,6 +63,18 @@ public class ApoliAPI {
 
 	public static ResourceLocation identifier(String path) {
 		return new ResourceLocation(MODID, path);
+	}
+
+	public static void addAdditionalDataField(String name) {
+		ADDITIONAL_DATA_FIELDS.add(name);
+	}
+
+	public static Set<String> getAdditionalDataFields() {
+		return ADDITIONAL_DATA_FIELDS_VIEW;
+	}
+
+	public static boolean isAdditionalDataField(String name) {
+		return ADDITIONAL_DATA_FIELDS_VIEW.contains(name);
 	}
 
 	/**
