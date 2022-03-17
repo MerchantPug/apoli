@@ -6,6 +6,7 @@ var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode')
 var VarInsnNode = Java.type('org.objectweb.asm.tree.VarInsnNode')
 var InsnNode = Java.type('org.objectweb.asm.tree.InsnNode')
 var LabelNode = Java.type('org.objectweb.asm.tree.LabelNode')
+var LookupSwitchInsnNode = Java.type('org.objectweb.asm.tree.LookupSwitchInsnNode')
 
 function initializeCoreMod() {
 	return {
@@ -86,6 +87,35 @@ function initializeCoreMod() {
 					}
 				}
 				return classNode;
+			}
+		},
+		'apoli_modify_harvest_check': {
+			'target': {
+				'type': 'METHOD',
+				'class': 'net.minecraftforge.common.extensions.IForgeBlockState',
+				'methodName': 'canHarvestBlock',
+				'methodDesc': '(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/player/Player;)Z'
+			},
+			'transformer': function(node) {
+				//switch(CoreUtils.allowHarvest(arg1, arg2, arg3)) case 0: return false; case 1: return true; default: <...>
+				var labelFalse = new LabelNode();
+				var labelTrue = new LabelNode();
+				var labelNone = new LabelNode();
+				var ls = new InsnList();
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 2));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 3));
+				ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/edwinmindcraft/apoli/common/util/CoreUtils", "allowHarvest", "(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/player/Player;)I", false));
+				ls.add(new LookupSwitchInsnNode(labelNone, [0, 1], [labelFalse, labelTrue]));
+				ls.add(labelFalse);
+				ls.add(new InsnNode(Opcodes.ICONST_0));
+				ls.add(new InsnNode(Opcodes.IRETURN));
+				ls.add(labelTrue);
+				ls.add(new InsnNode(Opcodes.ICONST_1));
+				ls.add(new InsnNode(Opcodes.IRETURN));
+				ls.add(labelNone);
+				node.instructions.insert(ls);
+				return node;
 			}
 		}
 	}

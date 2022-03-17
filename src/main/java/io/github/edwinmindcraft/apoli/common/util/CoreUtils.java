@@ -2,24 +2,22 @@ package io.github.edwinmindcraft.apoli.common.util;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
+import io.github.edwinmindcraft.apoli.common.power.ModifyHarvestPower;
 import io.github.edwinmindcraft.apoli.common.power.RestrictArmorPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraftforge.coremod.api.ASMAPI;
 import org.jetbrains.annotations.Nullable;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
-
-import java.util.ListIterator;
 
 public class CoreUtils {
 	/**
@@ -62,5 +60,11 @@ public class CoreUtils {
 			return IPowerContainer.modify(entity, ApoliPowers.MODIFY_SLIPPERINESS.get(), friction, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), blockInWorld));
 		}
 		return friction;
+	}
+
+	public static int allowHarvest(BlockGetter level, BlockPos pos, Player player) {
+		if (level instanceof LevelReader reader)
+			return ModifyHarvestPower.isHarvestAllowed(player, new BlockInWorld(reader, pos, true)).map(x -> x ? 1 : 0).orElse(-1);
+		return -1;
 	}
 }

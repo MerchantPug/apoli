@@ -90,7 +90,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	}
 
 	// ModifyExhaustion
-	@ModifyVariable(at = @At("HEAD"), method = "causeFoodExhaustion", ordinal = 0, name = "exhaustion")
+	@ModifyVariable(at = @At("HEAD"), method = "causeFoodExhaustion", ordinal = 0, name = "exhaustion", argsOnly = true)
 	private float modifyExhaustion(float exhaustionIn) {
 		return IPowerContainer.modify(this, ApoliPowers.MODIFY_EXHAUSTION.get(), exhaustionIn);
 	}

@@ -63,13 +63,21 @@ public class ApoliPowerEventHandler {
 		if (hardness <= 0)
 			return;
 		float speed = event.getNewSpeed();
-		int toolFactor = ForgeHooks.isCorrectToolForDrops(event.getState(), event.getPlayer()) ? 30 : 100;
+		//This is less than ideal since it fires two hooks, but hey, I do what I can.
+		boolean stateCheck = event.getState().canHarvestBlock(event.getPlayer().getLevel(), event.getPos(), event.getPlayer());
+		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(event.getState(), event.getPlayer());
+		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
 		BlockInWorld cbp = new BlockInWorld(world, event.getPos(), true);
 		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed * factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), cbp)) / factor;
-		event.setNewSpeed(speed);
-	}
+		if (stateCheck == forgeCheck)
+			event.setNewSpeed(speed);
+		else if (stateCheck) //State returned true, forge returned false >> Speed *= 100 / 30
+			event.setNewSpeed(speed * 3.3333333f);
+		else //State returned false, forge returned true >> Speed *= 30 / 100
+			event.setNewSpeed(speed * 0.3f);
 
+	}
 
 	@SubscribeEvent
 	public static void onSleep(PlayerSleepInBedEvent event) {
@@ -323,7 +331,7 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void preventItemUsage(PlayerInteractEvent.RightClickItem event) {
-		if ( PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
+		if (PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
 			event.setCanceled(true);
 		if (event.getItemStack().getItem() instanceof ArmorItem) {
 			EquipmentSlot slot = Mob.getEquipmentSlotForItem(event.getItemStack());
