@@ -26,7 +26,7 @@ public enum Space {
 	 */
 	private static Matrix3f getBaseTransformMatrixFromNormalizedDirectionVector(Vec3 vector, float yaw) {
 		double xX, xZ, // X vector
-				zX = 0.0D, zY = vector.x(), zZ = 0.0D; // Z vector
+				zX = 0.0D, zY = vector.y(), zZ = 0.0D; // Z vector
 
 		if (Math.abs(zY) != 1.0F) { // Z not vertical, can infer X from it
 			// Z

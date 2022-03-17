@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -104,7 +105,8 @@ public class ApoliClientEventHandler {
 									currentKeyBindingStates.put(key.key(), binding.isDown());
 								if (currentKeyBindingStates.get(key.key()) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false)))
 									pressedPowers.add(powers.getKey(power));
-							}
+							} else if (Calio.isDebugMode())
+								Apoli.LOGGER.warn("No such key: {}", key.key());
 						});
 					}
 					lastKeyBindingStates.clear();

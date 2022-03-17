@@ -1,6 +1,5 @@
 package io.github.apace100.apoli;
 
-import io.github.apace100.apoli.networking.ModPacketsS2C;
 import io.github.apace100.apoli.power.factory.condition.EntityConditionsClient;
 import io.github.apace100.apoli.power.factory.condition.ItemConditionsClient;
 import io.github.apace100.apoli.registry.ApoliClassDataClient;
