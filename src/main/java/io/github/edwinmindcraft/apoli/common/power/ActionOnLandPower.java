@@ -15,7 +15,7 @@ public class ActionOnLandPower extends PowerFactory<FieldConfiguration<Configure
 	}
 
 	public ActionOnLandPower() {
-		super(FieldConfiguration.codec(ConfiguredEntityAction.CODEC, "action_on_land"));
+		super(FieldConfiguration.codec(ConfiguredEntityAction.CODEC, "entity_action"));
 	}
 
 	public void executeAction(ConfiguredPower<FieldConfiguration<ConfiguredEntityAction<?, ?>>, ?> config, Entity player) {
