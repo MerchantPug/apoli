@@ -37,7 +37,8 @@
 		"MinecraftClientMixin",
 		"PlayerEntityRendererMixin",
 		"WorldRendererMixin",
-		"forge.ChangeGlowColorMixin"
+		"forge.ChangeGlowColorMixin",
+		"forge.EarsCompatMixin"
 	],
 	"refmap": "apoli.refmap.json",
 	"injectors": {

@@ -10,14 +10,21 @@ import java.util.Set;
 public class ApoliMixinPlugin implements IMixinConfigPlugin {
 	private boolean citadelLoaded;
 
+	private static boolean classExists(String cls) {
+		try {
+			Class.forName(cls, false, ApoliMixinPlugin.class.getClassLoader());
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}
+
+	private boolean earsLoaded;
+
 	@Override
 	public void onLoad(String mixinPackage) {
-		try {
-			Class.forName("com.github.alexthe666.citadel.client.event.EventGetOutlineColor", false, this.getClass().getClassLoader());
-			this.citadelLoaded = true;
-		} catch (ClassNotFoundException e) {
-			this.citadelLoaded = false;
-		}
+		this.citadelLoaded = classExists("com.github.alexthe666.citadel.client.event.EventGetOutlineColor");
+		this.earsLoaded = classExists("com.github.alexthe666.citadel.client.event.EventGetOutlineColor");
 	}
 
 	@Override
@@ -29,6 +36,8 @@ public class ApoliMixinPlugin implements IMixinConfigPlugin {
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 		if (mixinClassName.equals("io.github.apace100.apoli.mixin.forge.ChangeGlowColorMixin"))
 			return !this.citadelLoaded; //If citadel is loaded, handle this by event.
+		if (mixinClassName.equals("io.github.apace100.apoli.mixin.forge.EarsCompatMixin"))
+			return this.earsLoaded;
 		return true;
 	}
 
