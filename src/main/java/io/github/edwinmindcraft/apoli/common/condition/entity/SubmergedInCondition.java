@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
+import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.configuration.TagConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
@@ -15,6 +16,6 @@ public class SubmergedInCondition extends EntityCondition<TagConfiguration<Fluid
 
 	@Override
 	public boolean check(TagConfiguration<Fluid> configuration, Entity entity) {
-		return configuration.isLoaded() && entity.isEyeInFluid(configuration.value());
+		return configuration.isLoaded() && ((SubmergableEntity)entity).isSubmergedInLoosely(configuration.value());
 	}
 }

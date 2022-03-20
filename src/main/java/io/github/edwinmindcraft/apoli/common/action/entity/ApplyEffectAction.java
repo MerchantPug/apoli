@@ -15,7 +15,7 @@ public class ApplyEffectAction extends EntityAction<ListConfiguration<MobEffectI
 
 	@Override
 	public void execute(ListConfiguration<MobEffectInstance> configuration, Entity entity) {
-		if (!(entity instanceof LivingEntity) || !entity.getCommandSenderWorld().isClientSide())
+		if (!(entity instanceof LivingEntity) || entity.getCommandSenderWorld().isClientSide())
 			return;
 		for (MobEffectInstance effect : configuration.getContent())
 			((LivingEntity) entity).addEffect(new MobEffectInstance(effect));

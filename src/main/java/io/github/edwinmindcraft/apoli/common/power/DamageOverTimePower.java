@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeConfiguration> {
@@ -19,7 +20,9 @@ public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeC
 		this.ticking(true);
 	}
 
-	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer player) {
+	protected DataContainer getDataContainer(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, @Nullable IPowerContainer player) {
+		if (player == null)
+			return new DataContainer(configuration.getConfiguration().initialValue(), 0);
 		return configuration.getPowerData(player, () -> new DataContainer(configuration.getConfiguration().initialValue(), 0));
 	}
 
@@ -28,12 +31,12 @@ public class DamageOverTimePower extends VariableIntPowerFactory<DamageOverTimeC
 	}
 
 	@Override
-	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer container) {
+	protected int get(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, @Nullable IPowerContainer container) {
 		return this.getDataContainer(configuration, container).value;
 	}
 
 	@Override
-	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, IPowerContainer container, int value) {
+	protected void set(ConfiguredPower<DamageOverTimeConfiguration, ?> configuration, @Nullable IPowerContainer container, int value) {
 		this.getDataContainer(configuration, container).value = value;
 	}
 

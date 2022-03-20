@@ -38,7 +38,7 @@ public record ChangeResourceConfiguration(ResourceLocation resource,
 
 	@Override
 	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
-		if (this.amount() == 0)
+		if (this.amount() == 0 && this.operation() == ResourceOperation.ADD)
 			return ImmutableList.of("Change expected, was 0");
 		return ImmutableList.of();
 	}

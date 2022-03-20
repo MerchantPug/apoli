@@ -69,14 +69,16 @@ public class ApoliPowerEventHandler {
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
 		BlockInWorld cbp = new BlockInWorld(world, event.getPos(), true);
-		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed * factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), cbp)) / factor;
+		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), cbp)) * factor;
+
 		if (stateCheck == forgeCheck)
 			event.setNewSpeed(speed);
 		else if (stateCheck) //State returned true, forge returned false >> Speed *= 100 / 30
 			event.setNewSpeed(speed * 3.3333333f);
 		else //State returned false, forge returned true >> Speed *= 30 / 100
 			event.setNewSpeed(speed * 0.3f);
-
+		if (speed <= 0)
+			event.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -118,16 +120,31 @@ public class ApoliPowerEventHandler {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
-	public static void livingDamage(LivingDamageEvent event) {
+	public static void livingDamage(LivingHurtEvent event) {
 		LivingEntity target = event.getEntityLiving();
 		DamageSource source = event.getSource();
 		float amount = event.getAmount();
 		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
 		if (source.isProjectile())
-			event.setAmount(ModifyDamageDealtPower.modifyProjectile(source.getEntity(), target, source, amount));
+			event.setAmount(ModifyDamageDealtPower.modifyProjectileNoExec(source.getEntity(), target, source, amount));
 		else
-			event.setAmount(ModifyDamageDealtPower.modifyMelee(source.getEntity(), target, source, amount));
-		if (event.getAmount() != amount && event.getAmount() == 0F)
+			event.setAmount(ModifyDamageDealtPower.modifyMeleeNoExec(source.getEntity(), target, source, amount));
+		if (event.getAmount() != amount && event.getAmount() <= 0)
+			event.setCanceled(true);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public static void livingAttack(LivingAttackEvent event) {
+		LivingEntity target = event.getEntityLiving();
+		DamageSource source = event.getSource();
+		float amount = event.getAmount();
+		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
+		float newAmount;
+		if (source.isProjectile())
+			newAmount = ModifyDamageDealtPower.modifyProjectile(source.getEntity(), target, source, amount);
+		else
+			newAmount = ModifyDamageDealtPower.modifyMelee(source.getEntity(), target, source, amount);
+		if (newAmount != amount && newAmount <= 0)
 			event.setCanceled(true);
 	}
 

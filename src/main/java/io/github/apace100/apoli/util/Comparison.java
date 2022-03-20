@@ -1,10 +1,5 @@
 package io.github.apace100.apoli.util;
 
-import it.unimi.dsi.fastutil.doubles.DoubleComparator;
-import it.unimi.dsi.fastutil.doubles.DoublePredicate;
-
-import java.util.function.BiFunction;
-
 public enum Comparison {
 
 	NONE("", (a, b) -> false),
@@ -26,6 +21,7 @@ public enum Comparison {
 			default -> NONE;
 		};
 	}
+
 	private final String comparisonString;
 	private final DoubleBiPredicate comparison;
 

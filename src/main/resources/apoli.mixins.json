@@ -20,6 +20,7 @@
 		"PlayerEntityMixin",
 		"RecipeManagerMixin",
 		"StatusEffectInstanceMixin",
+		"forge.CaelusMixin",
 		"forge.FoodDataMixin",
 		"forge.ForgeHooksMixin"
 	],
