@@ -29,7 +29,7 @@ public final class AttributeUtil {
 			switch (modifier.getOperation()) {
 				case ADDITION -> value += modifier.getAmount();
 				case MULTIPLY_BASE -> value += modifier.getAmount() * baseValue;
-				case MULTIPLY_TOTAL -> multiplier *= modifier.getAmount();
+				case MULTIPLY_TOTAL -> multiplier *= (1 + modifier.getAmount());
 			}
 		}
 		return multiplier * value;
