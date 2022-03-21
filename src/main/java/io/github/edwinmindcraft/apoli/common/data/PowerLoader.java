@@ -36,7 +36,14 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 			MinecraftForge.EVENT_BUS.post(pre);
 			if (pre.isCanceled()) return Stream.empty();
 			DataResult<ConfiguredPower<?, ?>> power = ConfiguredPower.CODEC.decode(JsonOps.INSTANCE, pre.getJson()).map(Pair::getFirst);
-			Optional<ConfiguredPower<?, ?>> powerDefinition = power.resultOrPartial(error -> Apoli.LOGGER.error("Error loading power \"{}\": {}", resourceLocation, error));
+			Optional<ConfiguredPower<?, ?>> powerDefinition = power.resultOrPartial(error -> {});
+			if (power.error().isPresent()) {
+				if (powerDefinition.isEmpty()) {
+					Apoli.LOGGER.error("Error loading power \"{}\": {}", resourceLocation, power.error().get().message());
+					return Stream.empty();
+				} else
+					Apoli.LOGGER.warn("Power \"{}\" will only be partially loaded: {}", resourceLocation, power.error().get().message());
+			}
 			powerDefinition.ifPresent(cp -> MinecraftForge.EVENT_BUS.post(new PowerLoadEvent.Post(resourceLocation, x, cp)));
 			return powerDefinition.stream();
 		}).max(LOADING_ORDER_COMPARATOR);

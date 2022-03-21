@@ -47,7 +47,7 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 
 	@Override
 	public float getFill(ConfiguredPower<T, ?> configuration, Entity entity) {
-		return this.getProgress(configuration, entity);
+		return 1F - this.getProgress(configuration, entity);
 	}
 
 	@Override
