@@ -22,10 +22,6 @@ public class RestrictArmorPower extends PowerFactory<RestrictArmorConfiguration>
 		super(RestrictArmorConfiguration.CODEC, false);
 	}
 
-	public boolean canEquip(ConfiguredPower<RestrictArmorConfiguration, ?> configuration, Level level, ItemStack stack, EquipmentSlot slot) {
-		return configuration.getConfiguration().check(slot, level, stack);
-	}
-
 	@Override
 	protected void onGained(RestrictArmorConfiguration configuration, Entity player) {
 		configuration.dropIllegalItems(player);

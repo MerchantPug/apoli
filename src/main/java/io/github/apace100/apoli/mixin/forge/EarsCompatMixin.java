@@ -17,7 +17,7 @@ import java.util.Optional;
 @Mixin(targets = "com.unascribed.ears.EarsLayerRenderer$1")
 public abstract class EarsCompatMixin extends IndirectEarsRenderDelegate<PoseStack, MultiBufferSource, VertexConsumer, AbstractClientPlayer, ModelPart> {
 
-	@Redirect(method = "addVertex", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;color(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"), remap = false)
+	@Redirect(method = "addVertex", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;color(FFFF)Lcom/mojang/blaze3d/vertex/VertexConsumer;"))
 	public VertexConsumer inject(VertexConsumer consumer, float r, float g, float b, float alpha) {
 		ColorConfiguration config = new ColorConfiguration(r, g, b, alpha);
 		Optional<ColorConfiguration> opt = ColorConfiguration.forPower(this.peer, ApoliPowers.MODEL_COLOR.get());
