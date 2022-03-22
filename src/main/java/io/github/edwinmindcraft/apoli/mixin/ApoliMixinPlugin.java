@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 public class ApoliMixinPlugin implements IMixinConfigPlugin {
-	private boolean citadelLoaded;
 
 	private static boolean classExists(String cls) {
 		try {
@@ -19,12 +18,13 @@ public class ApoliMixinPlugin implements IMixinConfigPlugin {
 		}
 	}
 
+	private boolean citadelLoaded;
 	private boolean earsLoaded;
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		this.citadelLoaded = classExists("com.github.alexthe666.citadel.client.event.EventGetOutlineColor");
-		this.earsLoaded = classExists("com.github.alexthe666.citadel.client.event.EventGetOutlineColor");
+		this.citadelLoaded = classExists("com.github.alexthe666.citadel.Citadel");
+		this.earsLoaded = classExists("com.unascribed.ears.EarsMod");
 	}
 
 	@Override
