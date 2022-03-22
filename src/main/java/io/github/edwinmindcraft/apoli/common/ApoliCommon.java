@@ -61,7 +61,6 @@ public class ApoliCommon {
 	}
 
 	public static void initialize() {
-		initializeNetwork();
 		//Initialises registries.
 		ApoliRegisters.initialize();
 
@@ -93,5 +92,6 @@ public class ApoliCommon {
 	public static void commonSetup(FMLCommonSetupEvent event) {
 		event.enqueueWork(ApoliLootFunctions::bootstrap);
 		ApoliCompat.apply();
+		initializeNetwork();
 	}
 }

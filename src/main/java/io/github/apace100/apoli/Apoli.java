@@ -53,7 +53,7 @@ public class Apoli {
 		CriteriaTriggers.register(GainedPowerCriterion.INSTANCE);
 
 		ApoliCommon.initialize();
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ApoliClient::initialize);
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ApoliClient::initialize);
 		LOGGER.info("Apoli " + ModLoadingContext.get().getActiveContainer().getModInfo().getVersion() + " has initialized. Ready to power up your game!");
 	}
 }
