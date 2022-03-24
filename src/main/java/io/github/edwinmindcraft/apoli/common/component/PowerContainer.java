@@ -32,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PowerContainer implements IPowerContainer, ICapabilitySerializable<Tag> {
@@ -257,6 +256,20 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	}
 
 	@Override
+	public void rebuildCache() { //Storing powers
+		ImmutableSet<ResourceLocation> powers = ImmutableSet.copyOf(this.powers.keySet());
+		Registry<ConfiguredPower<?, ?>> registry = ApoliAPI.getPowers();
+		for (ResourceLocation power : powers) {
+			if (registry.containsKey(power)) {
+				this.powers.put(power, registry.get(power));
+			} else {
+				this.powerSources.get(power).forEach(source -> this.removePower(power, source)); //Safely remove powers while the previous is still in cache.
+				Apoli.LOGGER.warn("Power {} was removed from entity {} as it doesn't exist anymore.", power, this.owner.getScoreboardName());
+			}
+		}
+	}
+
+	@Override
 	public void handle(Multimap<ResourceLocation, ResourceLocation> powerSources, Map<ResourceLocation, CompoundTag> data) {
 		this.powerSources.clear();
 		this.powers.clear();
@@ -296,7 +309,12 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> @NotNull T getPowerData(ConfiguredPower<?, ?> power, NonNullSupplier<? extends T> supplier) {
-		return (T) this.powerData.computeIfAbsent(power.getRegistryName(), x -> supplier.get());
+		Object obj = this.powerData.computeIfAbsent(power.getRegistryName(), x -> supplier.get());
+		try {
+			return (T) obj;
+		} catch (ClassCastException e) {
+			return (T) this.powerData.put(power.getRegistryName(), supplier.get());
+		}
 	}
 
 	@Override

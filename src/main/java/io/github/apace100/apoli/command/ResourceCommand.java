@@ -98,6 +98,8 @@ public class ResourceCommand {
 			case GET -> () -> new TranslatableComponent("commands.scoreboard.players.get.null", power, player.getScoreboardName());
 			case SET, CHANGE, OPERATION -> () -> new TranslatableComponent("argument.scoreHolder.empty");
 		};
+		if (sub == SubCommand.SET || sub == SubCommand.GET || sub == SubCommand.CHANGE)
+			IPowerContainer.sync(player);
 		return extract(result, command, success, failure, sub != SubCommand.GET);
 	}
 

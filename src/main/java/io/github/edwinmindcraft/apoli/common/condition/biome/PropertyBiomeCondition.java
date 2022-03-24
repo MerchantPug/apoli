@@ -7,17 +7,17 @@ import java.util.Objects;
 import java.util.function.Function;
 import net.minecraft.world.level.biome.Biome;
 
-public class StringBiomeCondition extends BiomeCondition<FieldConfiguration<String>> {
+public class PropertyBiomeCondition<E extends Enum<E>> extends BiomeCondition<FieldConfiguration<E>> {
 
-	private final Function<Biome, String> function;
+	private final Function<Biome, E> function;
 
-	public StringBiomeCondition(String field, Function<Biome, String> function) {
-		super(FieldConfiguration.codec(Codec.STRING, field));
+	public PropertyBiomeCondition(String field, Codec<E> codec, Function<Biome, E> function) {
+		super(FieldConfiguration.codec(codec, field));
 		this.function = function;
 	}
 
 	@Override
-	protected boolean check(FieldConfiguration<String> configuration, Biome biome) {
+	protected boolean check(FieldConfiguration<E> configuration, Biome biome) {
 		return Objects.equals(this.function.apply(biome), configuration.value());
 	}
 }

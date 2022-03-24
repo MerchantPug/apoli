@@ -279,6 +279,8 @@ public interface IPowerContainer {
 	@Contract(mutates = "this")
 	void readNbt(CompoundTag tag, boolean applyEvents);
 
+	void rebuildCache();
+
 	/**
 	 * Replaces the currently held data by the data provided
 	 *

@@ -6,7 +6,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ActiveCooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.FireProjectileConfiguration;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,16 +67,12 @@ public class FireProjectilePower extends ActiveCooldownPowerFactory<FireProjecti
 					}
 				}
 				dataContainer.reset();
-			} else {
-				config.playSound(entity);
-				if (!entity.level.isClientSide())
-					config.fireProjectile(entity);
+			} else if ((entity.getLevel().getGameTime() - this.getLastUseTime(configuration, entity)) % config.interval() == 0) {
 				dataContainer.shotProjectiles += 1;
 				if (dataContainer.shotProjectiles <= config.projectileCount()) {
 					config.playSound(entity);
-					if (!entity.level.isClientSide()) {
+					if (!entity.level.isClientSide())
 						config.fireProjectile(entity);
-					}
 				} else
 					dataContainer.reset();
 			}

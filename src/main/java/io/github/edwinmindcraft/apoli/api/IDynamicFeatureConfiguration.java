@@ -49,7 +49,7 @@ public interface IDynamicFeatureConfiguration {
 			if (o2 instanceof IDynamicFeatureConfiguration config)
 				builder.put(prefix + key, config);
 			else if (o2 instanceof Map<?, ?> map2)
-				populate(builder, map, prefix + key + "/");
+				populate(builder, map2, prefix + key + "/");
 			else if (o2 instanceof Iterable<?> iterable)
 				populate(builder, iterable, prefix + key + "/");
 		});

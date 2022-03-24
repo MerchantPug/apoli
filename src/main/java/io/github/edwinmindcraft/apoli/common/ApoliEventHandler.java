@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -23,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -76,6 +78,16 @@ public class ApoliEventHandler {
 			Apoli.LOGGER.info("Status report for power: {}", configuredPower.getRegistryName());
 			warnings.forEach(Apoli.LOGGER::warn);
 			errors.forEach(Apoli.LOGGER::error);
+		}
+	}
+
+	@SubscribeEvent
+	public static void onDataSync(OnDatapackSyncEvent event) {
+		if (event.getPlayer() == null) {
+			for (ServerPlayer player : event.getPlayerList().getPlayers()) {
+				IPowerContainer.get(player).ifPresent(IPowerContainer::rebuildCache);
+				IPowerContainer.sync(player);
+			}
 		}
 	}
 

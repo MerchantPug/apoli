@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.registry.condition;
 
 
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiomeCondition;
@@ -9,7 +10,7 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.biome.DelegatedBiomeCondition;
 import io.github.edwinmindcraft.apoli.common.condition.biome.FloatComparingBiomeCondition;
 import io.github.edwinmindcraft.apoli.common.condition.biome.HighHumidityCondition;
-import io.github.edwinmindcraft.apoli.common.condition.biome.StringBiomeCondition;
+import io.github.edwinmindcraft.apoli.common.condition.biome.PropertyBiomeCondition;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
 import net.minecraft.world.level.biome.Biome;
@@ -31,9 +32,9 @@ public class ApoliBiomeConditions {
 	public static final RegistryObject<DelegatedBiomeCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Biome>>> AND = of("and");
 	public static final RegistryObject<DelegatedBiomeCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Biome>>> OR = of("or");
 
-	public static final RegistryObject<StringBiomeCondition> CATEGORY = BIOME_CONDITIONS.register("category", () -> new StringBiomeCondition("category", biome -> biome.getBiomeCategory().getName()));
+	public static final RegistryObject<PropertyBiomeCondition<Biome.BiomeCategory>> CATEGORY = BIOME_CONDITIONS.register("category", () -> new PropertyBiomeCondition<>("category", SerializableDataType.enumValue(Biome.BiomeCategory.class, Biome.BiomeCategory::getName), Biome::getBiomeCategory));
 	public static final RegistryObject<HighHumidityCondition> HIGH_HUMIDITY = BIOME_CONDITIONS.register("high_humidity", HighHumidityCondition::new);
-	public static final RegistryObject<StringBiomeCondition> PRECIPITATION = BIOME_CONDITIONS.register("precipitation", () -> new StringBiomeCondition("precipitation", biome -> biome.getBiomeCategory().getName()));
+	public static final RegistryObject<PropertyBiomeCondition<Biome.Precipitation>> PRECIPITATION = BIOME_CONDITIONS.register("precipitation", () -> new PropertyBiomeCondition<>("precipitation", SerializableDataType.enumValue(Biome.Precipitation.class, Biome.Precipitation::getName), Biome::getPrecipitation));
 	public static final RegistryObject<FloatComparingBiomeCondition> TEMPERATURE = BIOME_CONDITIONS.register("temperature", () -> new FloatComparingBiomeCondition(Biome::getBaseTemperature));
 
 	public static ConfiguredBiomeCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}

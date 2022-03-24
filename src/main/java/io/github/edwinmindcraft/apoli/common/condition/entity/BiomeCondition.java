@@ -18,6 +18,8 @@ public class BiomeCondition extends EntityCondition<BiomeConfiguration> {
 		Biome biome = entity.level.getBiome(entity.blockPosition());
 		if (!ConfiguredBiomeCondition.check(configuration.condition(), biome))
 			return false;
+		if (configuration.biomes().getContent().isEmpty()) //No biome
+			return true;
 		return entity.level.getBiomeName(entity.blockPosition()).map(x -> configuration.biomes().getContent().stream().anyMatch(x::equals)).orElse(false);
 	}
 }

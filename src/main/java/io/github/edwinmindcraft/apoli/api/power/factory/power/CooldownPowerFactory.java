@@ -77,8 +77,8 @@ public abstract class CooldownPowerFactory<T extends ICooldownPowerConfiguration
 
 	@Override
 	public int assign(ConfiguredPower<T, ?> configuration, Entity entity, int value) {
-		value = Mth.clamp(value, this.getMaximum(configuration, entity), this.getMaximum(configuration, entity));
-		this.setLastUseTime(configuration, entity, entity.getCommandSenderWorld().getGameTime() - value);
+		value = Mth.clamp(value, this.getMinimum(configuration, entity), this.getMaximum(configuration, entity));
+		this.setLastUseTime(configuration, entity, entity.getCommandSenderWorld().getGameTime() - this.getMaximum(configuration, entity) + value);
 		return value;
 	}
 
