@@ -9,10 +9,10 @@ import java.util.function.BiPredicate;
 
 public class SimpleBiEntityCondition extends BiEntityCondition<NoConfiguration> {
 	public static boolean ridingRecursive(Entity actor, Entity target) {
-		if(actor.getVehicle() == null)
+		if (actor.getVehicle() == null)
 			return false;
 		Entity vehicle = actor.getVehicle();
-		while(vehicle != target && vehicle != null)
+		while (vehicle != target && vehicle != null)
 			vehicle = vehicle.getVehicle();
 		return Objects.equals(vehicle, target);
 	}

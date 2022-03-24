@@ -9,11 +9,12 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class TooltipPower extends PowerFactory<TooltipConfiguration> {
-	public static void tryAdd(Entity entity, ItemStack itemStack, List<Component> tooltips) {
+	public static void tryAdd(@Nullable Entity entity, ItemStack itemStack, List<Component> tooltips) {
 		if (entity == null) return;
 		IPowerContainer.getPowers(entity, ApoliPowers.TOOLTIP.get()).forEach(power -> power.getFactory().tryAdd(power, entity, itemStack, tooltips));
 	}

@@ -1,12 +1,12 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverItemConfiguration;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Objects;
@@ -24,14 +24,13 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 		AtomicBoolean data = configuration.getPowerData(player, () -> new AtomicBoolean(false));
 		ActionOverItemConfiguration config = configuration.getConfiguration();
 		if (configuration.isActive(player)) {
-			if (!data.get() && config.risingAction() != null)
-				config.risingAction().execute(player);
-			if (config.entityAction() != null)
-				config.entityAction().execute(player);
+			if (!data.get())
+				ConfiguredEntityAction.execute(config.risingAction(), player);
+			ConfiguredEntityAction.execute(config.entityAction(), player);
 			data.set(true);
 		} else {
-			if (data.get() && config.fallingAction() != null)
-				config.fallingAction().execute(player);
+			if (data.get())
+				ConfiguredEntityAction.execute(config.fallingAction(), player);
 			data.set(false);
 		}
 	}

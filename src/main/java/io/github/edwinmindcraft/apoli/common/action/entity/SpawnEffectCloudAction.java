@@ -1,11 +1,11 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
+import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.common.action.configuration.SpawnEffectCloudConfiguration;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.world.item.alchemy.PotionUtils;
 
 import java.util.List;

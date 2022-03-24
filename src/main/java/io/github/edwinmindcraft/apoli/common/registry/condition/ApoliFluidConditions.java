@@ -11,6 +11,7 @@ import io.github.edwinmindcraft.apoli.common.condition.fluid.InTagFluidCondition
 import io.github.edwinmindcraft.apoli.common.condition.fluid.SimpleFluidCondition;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
+import net.minecraft.core.HolderSet;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -23,7 +24,7 @@ public class ApoliFluidConditions {
 	public static final BiPredicate<ConfiguredFluidCondition<?, ?>, FluidState> PREDICATE = (config, biome) -> config.check(biome);
 
 	private static <U extends FluidCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.FLUID_CONDITION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.FLUID_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedFluidCondition<ConstantConfiguration<FluidState>>> CONSTANT = of("constant");
@@ -37,11 +38,13 @@ public class ApoliFluidConditions {
 
 	public static ConfiguredFluidCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
-	public static ConfiguredFluidCondition<?, ?> and(ConfiguredFluidCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredFluidCondition<?, ?> and(HolderSet<ConfiguredFluidCondition<?, ?>>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
 
-	public static ConfiguredFluidCondition<?, ?> or(ConfiguredFluidCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredFluidCondition<?, ?> or(HolderSet<ConfiguredFluidCondition<?, ?>>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaConditions(FLUID_CONDITIONS, DelegatedFluidCondition::new, ConfiguredFluidCondition.CODEC, PREDICATE);
+		MetaFactories.defineMetaConditions(FLUID_CONDITIONS, DelegatedFluidCondition::new, ConfiguredFluidCondition.CODEC_SET, PREDICATE);
 	}
 }

@@ -2,8 +2,8 @@ package io.github.edwinmindcraft.apoli.common.action.configuration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import net.minecraft.world.damagesource.DamageSource;
 
 public record DamageConfiguration(DamageSource source, float amount) implements IDynamicFeatureConfiguration {

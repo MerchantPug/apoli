@@ -6,13 +6,14 @@ import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public record ModifyJumpConfiguration(ListConfiguration<AttributeModifier> modifiers,
-									  @Nullable ConfiguredEntityAction<?, ?> condition) implements IValueModifyingPowerConfiguration {
+									  Holder<ConfiguredEntityAction<?,?>> condition) implements IValueModifyingPowerConfiguration {
 
 	public ModifyJumpConfiguration(AttributeModifier... modifiers) {
 		this(ListConfiguration.of(modifiers), null);
@@ -20,6 +21,6 @@ public record ModifyJumpConfiguration(ListConfiguration<AttributeModifier> modif
 
 	public static final Codec<ModifyJumpConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyJumpConfiguration::modifiers),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(x -> Optional.ofNullable(x.condition()))
-	).apply(instance, (t1, t2) -> new ModifyJumpConfiguration(t1, t2.orElse(null))));
+			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyJumpConfiguration::condition)
+	).apply(instance, ModifyJumpConfiguration::new));
 }

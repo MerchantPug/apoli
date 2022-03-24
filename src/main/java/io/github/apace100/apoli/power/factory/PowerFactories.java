@@ -1,8 +1,5 @@
 package io.github.apace100.apoli.power.factory;
 
-import io.github.apace100.apoli.registry.ApoliRegistries;
-import net.minecraft.core.Registry;
-
 public class PowerFactories {
 
 	//@SuppressWarnings("unchecked")
@@ -106,11 +103,11 @@ public class PowerFactories {
 		//register(ModifyStatusEffectAmplifierPower::createFactory);
 	}
 
-	private static void register(PowerFactory<?> powerFactory) {
+	/*private static void register(PowerFactory<?> powerFactory) {
 		Registry.register(ApoliRegistries.POWER_FACTORY, powerFactory.getSerializerId(), powerFactory);
 	}
 
 	private static void register(PowerFactorySupplier<?> factorySupplier) {
 		register(factorySupplier.createFactory());
-	}
+	}*/
 }

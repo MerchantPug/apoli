@@ -11,12 +11,12 @@ import net.minecraftforge.common.util.NonNullSupplier;
 public class OffsetCondition extends BlockCondition<OffsetConfiguration<ConfiguredBlockCondition<?, ?>>> {
 
 	public OffsetCondition() {
-		super(OffsetConfiguration.codec("condition", ConfiguredBlockCondition.CODEC));
+		super(OffsetConfiguration.codec(ConfiguredBlockCondition.required("condition")));
 	}
 
 	@Override
 	protected boolean check(OffsetConfiguration<ConfiguredBlockCondition<?, ?>> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
 		BlockPos target = position.offset(configuration.asBlockPos());
-		return configuration.value().check(reader, target, () -> reader.getBlockState(target));
+		return ConfiguredBlockCondition.check(configuration.value(), reader, target, () -> reader.getBlockState(target));
 	}
 }

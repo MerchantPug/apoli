@@ -3,10 +3,11 @@ package io.github.edwinmindcraft.apoli.common.action.entity;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
-import java.util.function.BiConsumer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.function.BiConsumer;
 
 public class IntegerEntityAction extends EntityAction<FieldConfiguration<Integer>> {
 

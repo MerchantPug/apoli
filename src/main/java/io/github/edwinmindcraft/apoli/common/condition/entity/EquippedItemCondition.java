@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.EquippedItemConfiguration;
 import net.minecraft.world.entity.Entity;
@@ -12,6 +13,6 @@ public class EquippedItemCondition extends EntityCondition<EquippedItemConfigura
 
 	@Override
 	public boolean check(EquippedItemConfiguration configuration, Entity entity) {
-		return entity instanceof LivingEntity living && configuration.condition().check(living.level, living.getItemBySlot(configuration.slot()));
+		return entity instanceof LivingEntity living && ConfiguredItemCondition.check(configuration.condition(), living.level, living.getItemBySlot(configuration.slot()));
 	}
 }

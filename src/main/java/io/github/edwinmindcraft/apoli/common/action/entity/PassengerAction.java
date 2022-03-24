@@ -14,7 +14,7 @@ public class PassengerAction extends EntityAction<VehicleActionConfiguration> {
 
 	@Override
 	public void execute(VehicleActionConfiguration configuration, Entity entity) {
-		if (!entity.isVehicle() || (configuration.biEntityAction() == null && configuration.action() == null))
+		if (!entity.isVehicle() || (!configuration.biEntityAction().isBound() && !configuration.action().isBound()))
 			return;
 		Iterable<Entity> passengers = configuration.recursive() ? entity.getIndirectPassengers() : entity.getPassengers();
 		for (Entity passenger : passengers) {

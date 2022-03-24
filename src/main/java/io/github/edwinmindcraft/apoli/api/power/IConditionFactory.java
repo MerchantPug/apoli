@@ -8,8 +8,8 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
  * Most of the time you won't need to override the version with {@link ConditionData},
  * but it may be useful to optimize the code.
  */
-public interface IConditionFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F>, F extends IConditionFactory<T, C, F>> extends IFactory<T, C, F> {
-	static <T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F>, F extends IConditionFactory<T, C, F>> Codec<C> conditionCodec(Codec<T> codec, F factory) {
+public interface IConditionFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F, ?>, F extends IConditionFactory<T, C, F>> extends IFactory<T, C, F> {
+	static <T extends IDynamicFeatureConfiguration, C extends ConfiguredCondition<T, ? extends F, ?>, F extends IConditionFactory<T, C, F>> Codec<C> conditionCodec(Codec<T> codec, F factory) {
 		return IFactory.unionCodec(IFactory.asMap(codec), ConditionData.CODEC, factory::configure, ConfiguredCondition::getConfiguration, ConfiguredCondition::getData);
 	}
 

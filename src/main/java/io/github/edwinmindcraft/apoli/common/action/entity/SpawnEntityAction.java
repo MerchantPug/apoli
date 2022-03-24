@@ -1,10 +1,9 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
+import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.common.action.configuration.SpawnEntityConfiguration;
-import io.github.apace100.apoli.Apoli;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.registries.ForgeRegistries;

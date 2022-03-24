@@ -4,6 +4,7 @@ import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfigu
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemCondition;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -16,7 +17,7 @@ public class IntComparingItemCondition extends ItemCondition<IntegerComparisonCo
 	}
 
 	@Override
-	protected boolean check(IntegerComparisonConfiguration configuration, Level level, ItemStack stack) {
+	protected boolean check(IntegerComparisonConfiguration configuration, @Nullable Level level, ItemStack stack) {
 		Integer apply = this.function.apply(stack);
 		return apply != null && configuration.check(apply);
 	}

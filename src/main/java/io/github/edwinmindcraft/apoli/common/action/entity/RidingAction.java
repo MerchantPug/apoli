@@ -14,7 +14,7 @@ public class RidingAction extends EntityAction<VehicleActionConfiguration> {
 
 	@Override
 	public void execute(VehicleActionConfiguration configuration, Entity entity) {
-		if (!entity.isPassenger() || (configuration.biEntityAction() == null && configuration.action() == null))
+		if (!entity.isPassenger() || (!configuration.biEntityAction().isBound() && !configuration.action().isBound()))
 			return;
 		Entity vehicle = entity.getVehicle();
 		while (vehicle != null) {

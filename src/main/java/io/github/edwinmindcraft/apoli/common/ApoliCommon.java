@@ -2,14 +2,8 @@ package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.common.network.*;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliLootFunctions;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliBlockActions;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliIBiEntityActions;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliItemActions;
+import io.github.edwinmindcraft.apoli.common.registry.*;
+import io.github.edwinmindcraft.apoli.common.registry.action.*;
 import io.github.edwinmindcraft.apoli.common.registry.condition.*;
 import io.github.edwinmindcraft.apoli.compat.ApoliCompat;
 import net.minecraft.resources.ResourceLocation;
@@ -63,6 +57,7 @@ public class ApoliCommon {
 	public static void initialize() {
 		//Initialises registries.
 		ApoliRegisters.initialize();
+		ApoliDynamicRegisters.initialize();
 
 		//Vanilla stuff
 		ApoliRecipeSerializers.bootstrap();
@@ -74,7 +69,7 @@ public class ApoliCommon {
 		ApoliBlockActions.bootstrap();
 		ApoliEntityActions.bootstrap();
 		ApoliItemActions.bootstrap();
-		ApoliIBiEntityActions.bootstrap();
+		ApoliBiEntityActions.bootstrap();
 
 		//Conditions
 		ApoliBiomeConditions.bootstrap();
@@ -84,6 +79,10 @@ public class ApoliCommon {
 		ApoliFluidConditions.bootstrap();
 		ApoliItemConditions.bootstrap();
 		ApoliBiEntityConditions.bootstrap();
+
+		//Dynamic registries
+		ApoliDefaultActions.bootstrap();
+		ApoliDefaultConditions.bootstrap();
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		bus.addListener(ApoliCommon::commonSetup);

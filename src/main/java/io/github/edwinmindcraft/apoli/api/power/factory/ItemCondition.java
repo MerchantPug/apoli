@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class ItemCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<ItemCondition<?>> implements IConditionFactory<T, ConfiguredItemCondition<T, ?>, ItemCondition<T>> {
 	public static final Codec<ItemCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ITEM_CONDITION);
@@ -25,14 +26,14 @@ public abstract class ItemCondition<T extends IDynamicFeatureConfiguration> exte
 
 	@Override
 	public final ConfiguredItemCondition<T, ?> configure(T input, ConditionData data) {
-		return new ConfiguredItemCondition<>(this, input, data);
+		return new ConfiguredItemCondition<>(() -> this, input, data);
 	}
 
-	protected boolean check(T configuration, Level level, ItemStack stack) {
+	protected boolean check(T configuration, @Nullable Level level, ItemStack stack) {
 		return false;
 	}
 
-	public boolean check(T configuration, ConditionData data, Level level, ItemStack stack) {
+	public boolean check(T configuration, ConditionData data, @Nullable Level level, ItemStack stack) {
 		return data.inverted() ^ this.check(configuration, level, stack);
 	}
 }

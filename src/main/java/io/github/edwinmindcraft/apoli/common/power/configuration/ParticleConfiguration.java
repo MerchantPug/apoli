@@ -25,8 +25,6 @@ public record ParticleConfiguration(ParticleType<?> particle,
 	@Override
 	@NotNull
 	public List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
-		ImmutableList.Builder<String> builder = ImmutableList.builder();
-		if (this.particle() == null) builder.add("Optional particle was missing.");
 		return ImmutableList.of();
 	}
 

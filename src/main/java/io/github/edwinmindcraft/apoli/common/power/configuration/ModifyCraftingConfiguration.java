@@ -12,6 +12,7 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.OptionalFuncs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -25,23 +26,23 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public record ModifyCraftingConfiguration(@Nullable ResourceLocation recipeIdentifier,
-										  @Nullable ConfiguredItemCondition<?, ?> itemCondition,
+										  Holder<ConfiguredItemCondition<?, ?>> itemCondition,
 										  @Nullable ItemStack newStack,
-										  @Nullable ConfiguredItemAction<?, ?> itemAction,
-										  @Nullable ConfiguredEntityAction<?, ?> entityAction,
-										  @Nullable ConfiguredBlockAction<?, ?> blockAction) implements IDynamicFeatureConfiguration {
+										  Holder<ConfiguredItemAction<?, ?>> itemAction,
+										  Holder<ConfiguredEntityAction<?, ?>> entityAction,
+										  Holder<ConfiguredBlockAction<?, ?>> blockAction) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyCraftingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(SerializableDataTypes.IDENTIFIER, "recipe").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::recipeIdentifier)),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "item_condition").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::itemCondition)),
+			ConfiguredItemCondition.optional("item_condition").forGetter(ModifyCraftingConfiguration::itemCondition),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::newStack)),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "item_action").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::itemAction)),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::entityAction)),
-			CalioCodecHelper.optionalField(ConfiguredBlockAction.CODEC, "block_action").forGetter(OptionalFuncs.opt(ModifyCraftingConfiguration::blockAction))
-	).apply(instance, OptionalFuncs.of(ModifyCraftingConfiguration::new)));
+			ConfiguredItemAction.optional("item_action").forGetter(ModifyCraftingConfiguration::itemAction),
+			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyCraftingConfiguration::entityAction),
+			ConfiguredBlockAction.optional("block_action").forGetter(ModifyCraftingConfiguration::blockAction)
+	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyCraftingConfiguration(t1.orElse(null), t2, t3.orElse(null), t4, t5, t6)));
 
 	public boolean doesApply(CraftingContainer container, Recipe<? super CraftingContainer> recipe, Level level) {
 		return (this.recipeIdentifier() == null || Objects.equals(recipe.getId(), this.recipeIdentifier())) &&
-			   (this.itemCondition() == null || this.itemCondition().check(level, recipe.assemble(container)));
+			   (!this.itemCondition().isBound() || ConfiguredItemCondition.check(this.itemCondition(), level, recipe.assemble(container)));
 	}
 
 	public ItemStack createResult(CraftingContainer container, Recipe<? super CraftingContainer> recipe, Level level) {
@@ -55,8 +56,8 @@ public record ModifyCraftingConfiguration(@Nullable ResourceLocation recipeIdent
 	}
 
 	public void execute(Entity entity, @Nullable BlockPos pos) {
-		if (pos != null && this.blockAction() != null)
-			this.blockAction().execute(entity.level, pos, Direction.UP);
+		if (pos != null && this.blockAction().isBound())
+			ConfiguredBlockAction.execute(this.blockAction(), entity.level, pos, Direction.UP);
 		ConfiguredEntityAction.execute(this.entityAction(), entity);
 	}
 }

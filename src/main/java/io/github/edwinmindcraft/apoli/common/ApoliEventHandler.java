@@ -5,7 +5,7 @@ import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
@@ -62,6 +62,20 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void calioRegistries(CalioDynamicRegistryEvent.Initialize event) {
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ApoliBuiltinRegistries.CONFIGURED_POWERS, ConfiguredPower.CODEC);
+
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS, ConfiguredBiEntityAction.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_ACTIONS, ConfiguredBlockAction.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_ACTIONS, ConfiguredEntityAction.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_ACTIONS, ConfiguredItemAction.CODEC);
+
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_CONDITIONS, ConfiguredBiEntityCondition.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIOME_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIOME_CONDITIONS, ConfiguredBiomeCondition.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS, ConfiguredBlockCondition.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_DAMAGE_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_DAMAGE_CONDITIONS, ConfiguredDamageCondition.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_CONDITIONS, ConfiguredEntityCondition.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_FLUID_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_FLUID_CONDITIONS, ConfiguredFluidCondition.CODEC);
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS, ConfiguredItemCondition.CODEC);
+
 		event.getRegistryManager().addReload(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, "powers", PowerLoader.INSTANCE);
 		event.getRegistryManager().addValidation(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, PowerLoader.INSTANCE, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
 	}

@@ -24,7 +24,7 @@ public abstract class ItemAction<T extends IDynamicFeatureConfiguration> extends
 
 	@Override
 	public final ConfiguredItemAction<T, ?> configure(T input) {
-		return new ConfiguredItemAction<>(this, input);
+		return new ConfiguredItemAction<>(() -> this, input);
 	}
 
 	public abstract void execute(T configuration, Level level, Mutable<ItemStack> stack);

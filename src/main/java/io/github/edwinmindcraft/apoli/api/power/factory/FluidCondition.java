@@ -24,7 +24,7 @@ public abstract class FluidCondition<T extends IDynamicFeatureConfiguration> ext
 
 	@Override
 	public final ConfiguredFluidCondition<T, ?> configure(T input, ConditionData data) {
-		return new ConfiguredFluidCondition<>(this, input, data);
+		return new ConfiguredFluidCondition<>(() -> this, input, data);
 	}
 
 	public boolean check(T configuration, FluidState fluid) {

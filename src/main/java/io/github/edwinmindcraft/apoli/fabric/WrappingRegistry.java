@@ -1,24 +1,6 @@
 package io.github.edwinmindcraft.apoli.fabric;
 
-import com.mojang.serialization.Lifecycle;
-import net.minecraft.core.Registry;
-import net.minecraft.core.WritableRegistry;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
+/*
 public class WrappingRegistry<T, F extends IForgeRegistryEntry<F>> extends WritableRegistry<T> {
 	private final Lifecycle lifecycle;
 	private final Lazy<IForgeRegistry<F>> registry;
@@ -147,4 +129,4 @@ public class WrappingRegistry<T, F extends IForgeRegistryEntry<F>> extends Writa
 	public Iterator<T> iterator() {
 		return this.registry.get().getValues().stream().map(this.to).iterator();
 	}
-}
+}*/

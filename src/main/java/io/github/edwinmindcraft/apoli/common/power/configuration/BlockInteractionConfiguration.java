@@ -11,6 +11,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionP
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -24,19 +25,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumSet;
 import java.util.Optional;
 
-public record BlockInteractionConfiguration(@Nullable ConfiguredBlockCondition<?, ?> blockCondition,
-											@Nullable ConfiguredBlockAction<?, ?> blockAction,
+public record BlockInteractionConfiguration(Holder<ConfiguredBlockCondition<?,?>> blockCondition,
+											Holder<ConfiguredBlockAction<?,?>> blockAction,
 											EnumSet<Direction> directions,
-											@Nullable ConfiguredEntityAction<?, ?> entityAction,
+											Holder<ConfiguredEntityAction<?,?>> entityAction,
 											InteractionPowerConfiguration interaction) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<BlockInteractionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition").forGetter(x -> Optional.ofNullable(x.blockCondition())),
-			CalioCodecHelper.optionalField(ConfiguredBlockAction.CODEC, "block_action").forGetter(x -> Optional.ofNullable(x.blockAction())),
+			ConfiguredBlockCondition.optional("block_condition").forGetter(BlockInteractionConfiguration::blockCondition),
+			ConfiguredBlockAction.optional("block_action").forGetter(BlockInteractionConfiguration::blockAction),
 			CalioCodecHelper.<EnumSet<Direction>>optionalField(SerializableDataTypes.DIRECTION_SET, "directions", () -> EnumSet.allOf(Direction.class)).forGetter(BlockInteractionConfiguration::directions),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(x -> Optional.ofNullable(x.entityAction())),
+			ConfiguredEntityAction.optional("entity_action").forGetter(BlockInteractionConfiguration::entityAction),
 			InteractionPowerConfiguration.MAP_CODEC.forGetter(BlockInteractionConfiguration::interaction)
-	).apply(instance, (t1, t2, t3, t4, t5) -> new BlockInteractionConfiguration(t1.orElse(null), t2.orElse(null), t3, t4.orElse(null), t5)));
+	).apply(instance, BlockInteractionConfiguration::new));
 
 
 

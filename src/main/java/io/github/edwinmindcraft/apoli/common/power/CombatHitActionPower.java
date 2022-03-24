@@ -24,7 +24,7 @@ public class CombatHitActionPower extends CooldownPowerFactory.Simple<CombatHitA
 		if (this.canUse(power, self)) {
 			if (ConfiguredBiEntityCondition.check(power.getConfiguration().biEntityCondition(), attacker, self) &&
 				ConfiguredDamageCondition.check(power.getConfiguration().damageCondition(), damageSource, damageAmount)) {
-				power.getConfiguration().biEntityAction().execute(attacker, self);
+				power.getConfiguration().biEntityAction().value().execute(attacker, self);
 				this.use(power, self);
 			}
 		}
@@ -34,7 +34,7 @@ public class CombatHitActionPower extends CooldownPowerFactory.Simple<CombatHitA
 		if (this.canUse(power, self)) {
 			if (ConfiguredBiEntityCondition.check(power.getConfiguration().biEntityCondition(), self, target) &&
 				ConfiguredDamageCondition.check(power.getConfiguration().damageCondition(), damageSource, damageAmount)) {
-				power.getConfiguration().biEntityAction().execute(self, target);
+				power.getConfiguration().biEntityAction().value().execute(self, target);
 				this.use(power, self);
 			}
 		}

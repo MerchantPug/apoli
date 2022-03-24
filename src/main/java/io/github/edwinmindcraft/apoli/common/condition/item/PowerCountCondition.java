@@ -1,11 +1,11 @@
 package io.github.edwinmindcraft.apoli.common.condition.item;
 
-import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.util.StackPowerUtil;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.PowerCountConfiguration;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -15,7 +15,7 @@ public class PowerCountCondition extends ItemCondition<PowerCountConfiguration> 
 	}
 
 	@Override
-	protected boolean check(PowerCountConfiguration configuration, Level level, ItemStack stack) {
+	protected boolean check(PowerCountConfiguration configuration, @Nullable Level level, ItemStack stack) {
 		int count = Arrays.stream(configuration.target()).mapToInt(x -> StackPowerUtil.getPowers(stack, x).size()).sum();
 		return configuration.comparison().check(count);
 	}

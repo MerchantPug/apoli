@@ -14,7 +14,6 @@ import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -25,16 +24,16 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.BLOC
 
 public class ApoliBlockActions {
 	public static final BiConsumer<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>> EXECUTOR = (action, o) -> action.execute(o.getLeft(), o.getMiddle(), o.getRight());
-	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, Triple<Level, BlockPos, Direction>> PREDICATE = (condition, triple) -> ConfiguredBlockCondition.check(condition, triple.getLeft(), triple.getMiddle());
+	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, Triple<Level, BlockPos, Direction>> PREDICATE = (condition, triple) -> condition.check(triple.getLeft(), triple.getMiddle(), () -> triple.getLeft().getBlockState(triple.getMiddle()));
 
 	private static <U extends BlockAction<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_ACTION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_ACTION_KEY.location(), Apoli.MODID);
 	}
 
-	public static final RegistryObject<DelegatedBlockAction<StreamConfiguration<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> AND = of("and");
+	public static final RegistryObject<DelegatedBlockAction<ExecuteMultipleConfiguration<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> AND = of("and");
 	public static final RegistryObject<DelegatedBlockAction<ChanceConfiguration<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> CHANCE = of("chance");
 	public static final RegistryObject<DelegatedBlockAction<IfElseConfiguration<ConfiguredBlockCondition<?, ?>, ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> IF_ELSE = of("if_else");
-	public static final RegistryObject<DelegatedBlockAction<StreamConfiguration<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> IF_ELSE_LIST = of("if_else_list");
+	public static final RegistryObject<DelegatedBlockAction<IfElseListConfiguration<ConfiguredBlockCondition<?, ?>, ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> IF_ELSE_LIST = of("if_else_list");
 	public static final RegistryObject<DelegatedBlockAction<ChoiceConfiguration<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> CHOICE = of("choice");
 	public static final RegistryObject<DelegatedBlockAction<DelayAction<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> DELAY = of("delay");
 	public static final RegistryObject<DelegatedBlockAction<NothingConfiguration<Triple<Level, BlockPos, Direction>>>> NOTHING = of("nothing");
@@ -48,6 +47,6 @@ public class ApoliBlockActions {
 	public static final RegistryObject<ExplodeAction> EXPLODE = BLOCK_ACTIONS.register("explode", ExplodeAction::new);
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaActions(BLOCK_ACTIONS, DelegatedBlockAction::new, ConfiguredBlockAction.CODEC, ConfiguredBlockCondition.CODEC, EXECUTOR, PREDICATE);
+		MetaFactories.defineMetaActions(BLOCK_ACTIONS, DelegatedBlockAction::new, ConfiguredBlockAction.CODEC_SET, ConfiguredBlockCondition.CODEC_SET, ConfiguredBlockAction::optional, EXECUTOR, PREDICATE);
 	}
 }

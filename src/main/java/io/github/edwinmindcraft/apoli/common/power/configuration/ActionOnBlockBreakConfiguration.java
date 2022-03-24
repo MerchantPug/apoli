@@ -7,19 +7,20 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAct
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ActionOnBlockBreakConfiguration(@Nullable ConfiguredBlockCondition<?, ?> blockCondition,
-											  @Nullable ConfiguredEntityAction<?, ?> entityAction,
-											  @Nullable ConfiguredBlockAction<?, ?> blockAction,
+public record ActionOnBlockBreakConfiguration(Holder<ConfiguredBlockCondition<?, ?>> blockCondition,
+											  Holder<ConfiguredEntityAction<?, ?>> entityAction,
+											  Holder<ConfiguredBlockAction<?, ?>> blockAction,
 											  boolean onlyWhenHarvested) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ActionOnBlockBreakConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition").forGetter(x -> Optional.ofNullable(x.blockCondition())),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(x -> Optional.ofNullable(x.entityAction())),
-			CalioCodecHelper.optionalField(ConfiguredBlockAction.CODEC, "block_action").forGetter(x -> Optional.ofNullable(x.blockAction())),
+			ConfiguredBlockCondition.optional("block_condition").forGetter(ActionOnBlockBreakConfiguration::blockCondition),
+			ConfiguredEntityAction.optional("entity_action").forGetter(ActionOnBlockBreakConfiguration::entityAction),
+			ConfiguredBlockAction.optional("block_action").forGetter(ActionOnBlockBreakConfiguration::blockAction),
 			CalioCodecHelper.optionalField(Codec.BOOL, "only_when_harvested", true).forGetter(ActionOnBlockBreakConfiguration::onlyWhenHarvested)
-	).apply(instance, (bc, ea, ba, owh) -> new ActionOnBlockBreakConfiguration(bc.orElse(null), ea.orElse(null), ba.orElse(null), owh)));
+	).apply(instance, ActionOnBlockBreakConfiguration::new));
 }

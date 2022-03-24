@@ -25,7 +25,7 @@ public abstract class EntityAction<T extends IDynamicFeatureConfiguration> exten
 
 	@Override
 	public final ConfiguredEntityAction<T, ?> configure(T input) {
-		return new ConfiguredEntityAction<>(this, input);
+		return new ConfiguredEntityAction<>(() -> this, input);
 	}
 
 	public abstract void execute(T configuration, Entity entity);

@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
@@ -16,35 +17,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public record SpawnEntityConfiguration(EntityType<?> type, CompoundTag tag,
-									   ConfiguredEntityAction<?, ?> action) implements IDynamicFeatureConfiguration {
+public record SpawnEntityConfiguration(EntityType<?> type, @Nullable CompoundTag tag,
+									   Holder<ConfiguredEntityAction<?, ?>> action) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<SpawnEntityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.ENTITY_TYPE.fieldOf("entity_type").forGetter(SpawnEntityConfiguration::type),
 			CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(x -> Optional.ofNullable(x.action()))
-	).apply(instance, (t1, t2, t3) -> new SpawnEntityConfiguration(t1, t2.orElse(null), t3.orElse(null))));
-
-	public SpawnEntityConfiguration(@Nullable EntityType<?> type, @Nullable CompoundTag tag, @Nullable ConfiguredEntityAction<?, ?> action) {
-		this.type = type;
-		this.tag = tag;
-		this.action = action;
-	}
+			ConfiguredEntityAction.optional("entity_action").forGetter(SpawnEntityConfiguration::action)
+	).apply(instance, (t1, t2, t3) -> new SpawnEntityConfiguration(t1, t2.orElse(null), t3)));
 
 	@Override
 	public @NotNull List<String> getErrors(@NotNull ICalioDynamicRegistryManager server) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
-		if (this.action() != null)
-			builder.addAll(this.action().getErrors(server).stream().map("SpawnEntity/%s"::formatted).toList());
+		if (this.action().isBound())
+			builder.addAll(this.action().value().getErrors(server).stream().map("SpawnEntity/%s"::formatted).toList());
 		return builder.build();
 	}
 
 	@Override
 	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
-		if (this.action() != null)
-			builder.addAll(this.action().getWarnings(server).stream().map("SpawnEntity/%s"::formatted).toList());
-		if (this.type() == null) builder.add("SpawnEntity/Missing Entity");
+		if (this.action().isBound())
+			builder.addAll(this.action().value().getWarnings(server).stream().map("SpawnEntity/%s"::formatted).toList());
 		return builder.build();
 	}
 }

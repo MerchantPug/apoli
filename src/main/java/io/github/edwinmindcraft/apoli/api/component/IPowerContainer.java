@@ -144,7 +144,7 @@ public interface IPowerContainer {
 	 * @return {@code true} if the player has the power, {@code false} otherwise
 	 */
 	@Contract(pure = true)
-	boolean hasPower(ResourceLocation power);
+	boolean hasPower(@Nullable ResourceLocation power);
 
 	/**
 	 * Checks if the given source gives the requested power.

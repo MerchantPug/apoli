@@ -1,7 +1,9 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnBlockBreakConfiguration;
@@ -11,7 +13,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.common.util.NonNullSupplier;
 
 public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConfiguration> {
@@ -32,12 +33,8 @@ public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConf
 	public void executeActions(ConfiguredPower<ActionOnBlockBreakConfiguration, ?> config, Entity player, boolean successfulHarvest, BlockPos pos, Direction dir) {
 		ActionOnBlockBreakConfiguration configuration = config.getConfiguration();
 		if (successfulHarvest || !configuration.onlyWhenHarvested()) {
-			if (configuration.blockAction() != null) {
-				configuration.blockAction().execute(player.level, pos, dir);
-			}
-			if (configuration.entityAction() != null) {
-				configuration.entityAction().execute(player);
-			}
+			ConfiguredBlockAction.execute(configuration.blockAction(), player.level, pos, dir);
+			ConfiguredEntityAction.execute(configuration.entityAction(), player);
 		}
 	}
 }

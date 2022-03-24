@@ -2,11 +2,14 @@ package io.github.edwinmindcraft.apoli.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.api.configuration.MustBeBound;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -21,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -28,30 +32,30 @@ import java.util.function.UnaryOperator;
  * utility methods to help with coding and verification.
  */
 public interface IDynamicFeatureConfiguration {
-	static void populate(Map<String, IDynamicFeatureConfiguration> builder, Iterable<?> iterable, String prefix) {
+	static void populate(BiConsumer<String, IDynamicFeatureConfiguration> consumer, Iterable<?> iterable, String prefix) {
 		int i = 0;
 		for (Object o : iterable) {
 			if (o instanceof IDynamicFeatureConfiguration config)
-				builder.put(prefix + i, config);
+				consumer.accept(prefix + i, config);
 			else if (o instanceof Map<?, ?> map)
-				populate(builder, map, prefix + i + "/");
+				populate(consumer, map, prefix + i + "/");
 			else if (o instanceof Iterable<?> iterable2)
-				populate(builder, iterable2, prefix + i + "/");
+				populate(consumer, iterable2, prefix + i + "/");
 			++i;
 		}
 	}
 
-	static void populate(Map<String, IDynamicFeatureConfiguration> builder, Map<?, ?> map, String prefix) {
+	static void populate(BiConsumer<String, IDynamicFeatureConfiguration> consumer, Map<?, ?> map, String prefix) {
 		map.forEach((o, o2) -> {
 			String key = "?";
 			if (o instanceof String str) key = str;
 			else if (o instanceof StringRepresentable identifiable) key = identifiable.getSerializedName();
 			if (o2 instanceof IDynamicFeatureConfiguration config)
-				builder.put(prefix + key, config);
+				consumer.accept(prefix + key, config);
 			else if (o2 instanceof Map<?, ?> map2)
-				populate(builder, map2, prefix + key + "/");
+				populate(consumer, map2, prefix + key + "/");
 			else if (o2 instanceof Iterable<?> iterable)
-				populate(builder, iterable, prefix + key + "/");
+				populate(consumer, iterable, prefix + key + "/");
 		});
 	}
 
@@ -85,31 +89,73 @@ public interface IDynamicFeatureConfiguration {
 
 	@NotNull
 	default Map<String, IDynamicFeatureConfiguration> getChildrenComponent() {
+		Map<String, IDynamicFeatureConfiguration> builder = new HashMap<>();
+		this.forChildren(builder::put);
+		return ImmutableMap.copyOf(builder);
+	}
+
+	default void forChildren(BiConsumer<String, IDynamicFeatureConfiguration> consumer) {
 		if (this instanceof Record record) {
-			Map<String, IDynamicFeatureConfiguration> builder = new HashMap<>();
 			for (RecordComponent component : record.getClass().getRecordComponents()) {
 				try {
 					Object invoke = component.getAccessor().invoke(record);
 					if (invoke instanceof IDynamicFeatureConfiguration config)
-						builder.put(component.getName(), config);
+						consumer.accept(component.getName(), config);
 					else if (invoke instanceof Map<?, ?> map)
-						populate(builder, map, component.getName() + "/");
+						populate(consumer, map, component.getName() + "/");
 					else if (invoke instanceof Iterable<?> iterable)
-						populate(builder, iterable, component.getName() + "/");
+						populate(consumer, iterable, component.getName() + "/");
 				} catch (IllegalAccessException | InvocationTargetException e) {
 					Apoli.LOGGER.warn("Failed to access record component \"{}\" for \"{}\", auto logging may fail.", component, this.name());
 					Apoli.LOGGER.debug(e);
 				}
 			}
-			return ImmutableMap.copyOf(builder);
 		}
-		return ImmutableMap.of();
 	}
 
 	/**
 	 * This is used to check whether this configuration is valid. i.e. if there is a point in executing the power.
 	 */
-	default boolean isConfigurationValid() { return true; }
+	default boolean isConfigurationValid() {return true;} //TODO Config check should be moved on load.
+
+	static String holderAsString(String name, Holder<?> holder) {
+		if (holder instanceof Holder.Reference<?> ref)
+			return name + ": " + ref.key();
+		else
+			return name;
+	}
+
+	default List<String> getUnbound() {
+		ImmutableList.Builder<String> builder = ImmutableList.builder();
+		if (this instanceof Record record) {
+			for (RecordComponent component : record.getClass().getRecordComponents()) {
+				if (component.getAnnotation(MustBeBound.class) != null) {
+					try {
+						Object invoke = component.getAccessor().invoke(record);
+						if (invoke instanceof Holder<?> holder && !holder.isBound()) {
+							builder.add(holderAsString(component.getName(), holder));
+						} else if (invoke instanceof HolderSet<?> set) {
+							if (set instanceof HolderSet.Direct<?> direct) {
+								direct.stream().forEach(holder -> builder.add(holderAsString(component.getName(), holder)));
+							}
+							//Ignore tags as there is no realistic way to check those.
+						}
+					} catch (IllegalAccessException | InvocationTargetException e) {
+						Apoli.LOGGER.warn("Failed to access record component \"{}\" for \"{}\", auto logging may fail.", component, this.name());
+						Apoli.LOGGER.debug(e);
+					}
+				}
+			}
+		}
+		return builder.build();
+	}
+
+	//TODO Use this.
+	default List<String> getMissingBinds() {
+		ImmutableList.Builder<String> builder = ImmutableList.<String>builder().addAll(this.getUnbound());
+		this.forChildren((path, configuration) -> configuration.getUnbound().forEach(s -> builder.add("%s/%s".formatted(path, s))));
+		return builder.build();
+	}
 
 	/**
 	 * Returns a list of powers that are not registered in the dynamic registry.

@@ -15,7 +15,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
-import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.entity.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
@@ -24,30 +23,30 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
 import io.github.edwinmindcraft.calio.api.ability.IAbilityHolder;
 import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class ApoliEntityConditions {
-	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = (config, entity) -> config.check(entity);
+	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = ConfiguredEntityCondition::check;
 
 	private static <U extends EntityCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_CONDITION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedEntityCondition<ConstantConfiguration<Entity>>> CONSTANT = of("constant");
@@ -88,11 +87,11 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<PowerCondition> POWER = register("power", PowerCondition::new);
 	public static final RegistryObject<FluidHeightCondition> FLUID_HEIGHT = register("fluid_height", FluidHeightCondition::new);
 	public static final RegistryObject<OnBlockCondition> ON_BLOCK = register("on_block", OnBlockCondition::new);
-	public static final RegistryObject<SingleFieldEntityCondition<ConfiguredBlockCondition<?, ?>>> IN_BLOCK = register("in_block", ConfiguredBlockCondition.CODEC.fieldOf("block_condition"), (entity, configuration) -> ConfiguredBlockCondition.check(configuration, entity.level, entity.blockPosition()));
+	public static final RegistryObject<HolderBasedEntityCondition<ConfiguredBlockCondition<?, ?>>> IN_BLOCK = register("in_block", () -> HolderBasedEntityCondition.required(ConfiguredBlockCondition.required("block_condition"), (entity, configuration) -> ConfiguredBlockCondition.check(configuration, entity.level, entity.blockPosition())));
 	public static final RegistryObject<ResourceCondition> RESOURCE = register("resource", ResourceCondition::new);
 	public static final RegistryObject<SingleFieldEntityCondition<ResourceKey<Level>>> DIMENSION = register("dimension", SerializableDataTypes.DIMENSION.fieldOf("dimension"), (entity, dimension) -> entity.getCommandSenderWorld().dimension().equals(dimension));
 	public static final RegistryObject<SingleFieldEntityCondition<MobType>> ENTITY_GROUP = register("entity_group", SerializableDataTypes.ENTITY_GROUP.fieldOf("group"), (entity, group) -> entity instanceof LivingEntity living && living.getMobType().equals(group));
-	public static final RegistryObject<SingleFieldEntityCondition<Optional<ConfiguredItemCondition<?, ?>>>> USING_ITEM = register("using_item", CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "item_condition"), (entity, configuration) -> entity instanceof LivingEntity living && living.isUsingItem() && configuration.map(x -> x.check(living.level, living.getItemInHand(living.getUsedItemHand()))).orElse(true));
+	public static final RegistryObject<HolderBasedEntityCondition<ConfiguredItemCondition<?, ?>>> USING_ITEM = register("using_item", () -> HolderBasedEntityCondition.optional(ConfiguredItemCondition.optional("item_condition"), (entity, configuration) -> entity instanceof LivingEntity living && living.isUsingItem() && ConfiguredItemCondition.check(configuration, living.level, living.getItemInHand(living.getUsedItemHand()))));
 	public static final RegistryObject<SingleFieldEntityCondition<ResourceLocation>> PREDICATE_CONDITION = register("predicate", ResourceLocation.CODEC.fieldOf("predicate"), SingleFieldEntityCondition::checkPredicate);
 	public static final RegistryObject<EquippedItemCondition> EQUIPPED_ITEM = register("equipped_item", EquippedItemCondition::new);
 	public static final RegistryObject<CommandCondition> COMMAND = register("command", CommandCondition::new);
@@ -122,12 +121,26 @@ public class ApoliEntityConditions {
 
 	public static ConfiguredEntityCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
-	public static ConfiguredEntityCondition<?, ?> and(ConfiguredEntityCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredEntityCondition<?, ?> and(HolderSet<ConfiguredEntityCondition<?, ?>>... conditions) {
+		return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));
+	}
 
-	public static ConfiguredEntityCondition<?, ?> or(ConfiguredEntityCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
+	public static ConfiguredEntityCondition<?, ?> and(ConfiguredEntityCondition<?, ?>... conditions) {
+		return and(HolderSet.direct(Holder::direct, conditions));
+	}
+
+	@SafeVarargs
+	public static ConfiguredEntityCondition<?, ?> or(HolderSet<ConfiguredEntityCondition<?, ?>>... conditions) {
+		return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));
+	}
+
+	public static ConfiguredEntityCondition<?, ?> or(ConfiguredEntityCondition<?, ?>... conditions) {
+		return or(HolderSet.direct(Holder::direct, conditions));
+	}
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaConditions(ApoliRegisters.ENTITY_CONDITIONS, DelegatedEntityCondition::new, ConfiguredEntityCondition.CODEC, PREDICATE);
+		MetaFactories.defineMetaConditions(ApoliRegisters.ENTITY_CONDITIONS, DelegatedEntityCondition::new, ConfiguredEntityCondition.CODEC_SET, PREDICATE);
 		DistanceFromCoordinatesConditionRegistry.registerEntityCondition();
 	}
 

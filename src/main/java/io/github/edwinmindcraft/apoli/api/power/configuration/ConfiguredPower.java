@@ -2,8 +2,10 @@ package io.github.edwinmindcraft.apoli.api.power.configuration;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
@@ -12,19 +14,26 @@ import io.github.edwinmindcraft.apoli.api.power.IVariableIntPower;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.util.Lazy;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.IRegistryDelegate;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * This is a replacement for the power system used by fabric.
@@ -37,16 +46,32 @@ import java.util.*;
  */
 public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends CapabilityProvider<ConfiguredPower<?, ?>> implements IForgeRegistryEntry<ConfiguredPower<?, ?>>, IDynamicFeatureConfiguration {
 	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
-	private final F factory;
+	public static final CodecSet<ConfiguredPower<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
+	public static final Codec<Holder<ConfiguredPower<?, ?>>> HOLDER = CODEC_SET.holder();
+
+	public static MapCodec<Holder<ConfiguredPower<?, ?>>> required(String name) {
+		return HOLDER.fieldOf(name);
+	}
+
+	public static MapCodec<Optional<Holder<ConfiguredPower<?, ?>>>> optional(String name) {
+		return CalioCodecHelper.optionalField(HOLDER, name);
+	}
+
+	private final Lazy<F> factory;
 	private final C configuration;
 	private final PowerData data;
 
-	public ConfiguredPower(F factory, C configuration, PowerData data) {
+	public ConfiguredPower(Supplier<F> factory, C configuration, PowerData data) {
 		super(ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
-		this.factory = factory;
 		this.configuration = configuration;
 		this.data = data;
-		this.gatherCapabilities(this.factory::initCapabilities);
+		this.factory = Lazy.of(() -> {
+			F f = factory.get();
+			this.gatherCapabilities(f::initCapabilities);
+			return f;
+		});
+		if (!(factory instanceof RegistryObject<F> ro) || !ro.isPresent())
+			this.factory.get(); //Should be mostly safe.
 	}
 
 	public PowerData getData() {
@@ -243,11 +268,11 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public ConfiguredPower<C, F> complete(ResourceLocation name) {
-		return new ConfiguredPower<>(this.getFactory(), this.getConfiguration(), this.getData().complete(name));
+		return new ConfiguredPower<>(this::getFactory, this.getConfiguration(), this.getData().complete(name));
 	}
 
 	public F getFactory() {
-		return this.factory;
+		return this.factory.get();
 	}
 
 	public C getConfiguration() {

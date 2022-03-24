@@ -17,7 +17,7 @@ public class AttributeCondition extends EntityCondition<AttributeComparisonConfi
 		double value = 0;
 		if (entity instanceof LivingEntity) {
 			AttributeInstance instance = ((LivingEntity) entity).getAttribute(configuration.attribute());
-			value = instance != null ? instance.getValue() :  value;
+			value = instance != null ? instance.getValue() : value;
 		}
 		return configuration.comparison().check(value);
 	}

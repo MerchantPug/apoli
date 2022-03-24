@@ -8,17 +8,18 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemActi
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.OptionalFuncs;
+import net.minecraft.core.Holder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ActionOnItemUseConfiguration(@Nullable ConfiguredItemCondition<?, ?> itemCondition,
-										   @Nullable ConfiguredEntityAction<?, ?> entityAction,
-										   @Nullable ConfiguredItemAction<?, ?> itemAction) implements IDynamicFeatureConfiguration {
+public record ActionOnItemUseConfiguration(Holder<ConfiguredItemCondition<?,?>> itemCondition,
+										   Holder<ConfiguredEntityAction<?,?>> entityAction,
+										   Holder<ConfiguredItemAction<?,?>> itemAction) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ActionOnItemUseConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "item_condition").forGetter(OptionalFuncs.opt(ActionOnItemUseConfiguration::itemCondition)),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(OptionalFuncs.opt(ActionOnItemUseConfiguration::entityAction)),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "item_action").forGetter(OptionalFuncs.opt(ActionOnItemUseConfiguration::itemAction))
-	).apply(instance, OptionalFuncs.of(ActionOnItemUseConfiguration::new)));
+			ConfiguredItemCondition.optional("item_condition").forGetter(ActionOnItemUseConfiguration::itemCondition),
+			ConfiguredEntityAction.optional("entity_action").forGetter(ActionOnItemUseConfiguration::entityAction),
+			ConfiguredItemAction.optional("item_action").forGetter(ActionOnItemUseConfiguration::itemAction)
+	).apply(instance, ActionOnItemUseConfiguration::new));
 }

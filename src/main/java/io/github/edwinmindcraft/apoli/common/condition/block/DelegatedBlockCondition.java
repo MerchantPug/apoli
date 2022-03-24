@@ -6,9 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.context.BlockConditionCo
 import io.github.edwinmindcraft.apoli.common.condition.meta.IDelegatedConditionConfiguration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.common.util.NonNullSupplier;
 
 public class DelegatedBlockCondition<T extends IDelegatedConditionConfiguration<BlockConditionContext>> extends BlockCondition<T> {

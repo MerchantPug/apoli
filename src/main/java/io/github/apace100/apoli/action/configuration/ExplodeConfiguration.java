@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
@@ -22,25 +23,23 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class ExplodeConfiguration implements IDynamicFeatureConfiguration {
-	public static final Codec<ExplodeConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final Codec<ExplodeConfiguration> CODEC = RecordCodecBuilder.create(instance -> /*, t6*/ instance.group(
 			Codec.FLOAT.fieldOf("power").forGetter(ExplodeConfiguration::power),
 			CalioCodecHelper.optionalField(SerializableDataTypes.DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.BREAK).forGetter(ExplodeConfiguration::destructionType),
 			CalioCodecHelper.optionalField(Codec.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
-			CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "indestructible").forGetter(x -> Optional.ofNullable(x.indestructible())),
+			ConfiguredBlockCondition.optional("indestructible").forGetter(ExplodeConfiguration::indestructible),
 			CalioCodecHelper.optionalField(Codec.BOOL, "create_fire", false).forGetter(ExplodeConfiguration::createFire)
-			//CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "destructible").forGetter(x -> Optional.empty()) //Ignored
-	).apply(instance, (t1, t2, t3, t4, t5/*, t6*/) -> new ExplodeConfiguration(t1, t2, t3, t4.orElse(null), t5)));
+			//ConfiguredBlockCondition.optional("destructible").forGetter(x -> Optional.empty()) //Ignored
+	).apply(instance, ExplodeConfiguration::new));
 	private final float power;
 	private final Explosion.BlockInteraction destructionType;
 	private final boolean damageSelf;
-	@Nullable
-	private final ConfiguredBlockCondition<?, ?> indestructible;
+	private final Holder<ConfiguredBlockCondition<?, ?>> indestructible;
 	private final boolean createFire;
-
 
 	private final transient Lazy<ExplosionDamageCalculator> explosionCalculator;
 
-	public ExplodeConfiguration(float power, Explosion.BlockInteraction destructionType, boolean damageSelf, @Nullable ConfiguredBlockCondition<?, ?> indestructible, boolean createFire) {
+	public ExplodeConfiguration(float power, Explosion.BlockInteraction destructionType, boolean damageSelf, Holder<ConfiguredBlockCondition<?, ?>> indestructible, boolean createFire) {
 		this.power = power;
 		this.destructionType = destructionType;
 		this.damageSelf = damageSelf;
@@ -63,8 +62,7 @@ public final class ExplodeConfiguration implements IDynamicFeatureConfiguration 
 
 	public boolean damageSelf() {return this.damageSelf;}
 
-	@Nullable
-	public ConfiguredBlockCondition<?, ?> indestructible() {return this.indestructible;}
+	public Holder<ConfiguredBlockCondition<?, ?>> indestructible() {return this.indestructible;}
 
 	public boolean createFire() {return this.createFire;}
 

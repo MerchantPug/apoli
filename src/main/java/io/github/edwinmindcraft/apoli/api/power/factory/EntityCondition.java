@@ -24,7 +24,7 @@ public abstract class EntityCondition<T extends IDynamicFeatureConfiguration> ex
 
 	@Override
 	public final ConfiguredEntityCondition<T, ?> configure(T input, ConditionData data) {
-		return new ConfiguredEntityCondition<>(this, input, data);
+		return new ConfiguredEntityCondition<>(() -> this, input, data);
 	}
 
 	protected boolean check(T configuration, Entity entity) {

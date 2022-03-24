@@ -2,6 +2,9 @@ package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOnItemUseConfiguration;
@@ -25,14 +28,12 @@ public class ActionOnItemUsePower extends PowerFactory<ActionOnItemUseConfigurat
 
 	public boolean doesApply(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, Entity player, ItemStack stack) {
 		ActionOnItemUseConfiguration configuration = factory.getConfiguration();
-		return configuration.itemCondition() == null || configuration.itemCondition().check(player.level, stack);
+		return ConfiguredItemCondition.check(configuration.itemCondition(), player.level, stack);
 	}
 
 	public void executeActions(ConfiguredPower<ActionOnItemUseConfiguration, ?> factory, Entity player, Mutable<ItemStack> stack) {
 		ActionOnItemUseConfiguration configuration = factory.getConfiguration();
-		if (configuration.itemAction() != null)
-			configuration.itemAction().execute(player.level, stack);
-		if (configuration.entityAction() != null)
-			configuration.entityAction().execute(player);
+		ConfiguredItemAction.execute(configuration.itemAction(), player.level, stack);
+		ConfiguredEntityAction.execute(configuration.entityAction(), player);
 	}
 }

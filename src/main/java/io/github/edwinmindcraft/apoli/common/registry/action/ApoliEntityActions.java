@@ -25,17 +25,17 @@ import java.util.function.BiPredicate;
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ENTITY_ACTIONS;
 
 public class ApoliEntityActions {
-	public static final BiConsumer<ConfiguredEntityAction<?, ?>, Entity> EXECUTOR = (action, entity) -> action.execute(entity);
-	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = (condition, entity) -> condition.check(entity);
+	public static final BiConsumer<ConfiguredEntityAction<?, ?>, Entity> EXECUTOR = ConfiguredEntityAction::execute;
+	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = ConfiguredEntityCondition::check;
 
 	private static <U extends EntityAction<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_ACTION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_ACTION_KEY.location(), Apoli.MODID);
 	}
 
-	public static final RegistryObject<DelegatedEntityAction<StreamConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> AND = of("and");
+	public static final RegistryObject<DelegatedEntityAction<ExecuteMultipleConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> AND = of("and");
 	public static final RegistryObject<DelegatedEntityAction<ChanceConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> CHANCE = of("chance");
 	public static final RegistryObject<DelegatedEntityAction<IfElseConfiguration<ConfiguredEntityCondition<?, ?>, ConfiguredEntityAction<?, ?>, Entity>>> IF_ELSE = of("if_else");
-	public static final RegistryObject<DelegatedEntityAction<StreamConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> IF_ELSE_LIST = of("if_else_list");
+	public static final RegistryObject<DelegatedEntityAction<IfElseListConfiguration<ConfiguredEntityCondition<?, ?>, ConfiguredEntityAction<?, ?>, Entity>>> IF_ELSE_LIST = of("if_else_list");
 	public static final RegistryObject<DelegatedEntityAction<ChoiceConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> CHOICE = of("choice");
 	public static final RegistryObject<DelegatedEntityAction<DelayAction<ConfiguredEntityAction<?, ?>, Entity>>> DELAY = of("delay");
 	public static final RegistryObject<DelegatedEntityAction<NothingConfiguration<Entity>>> NOTHING = of("nothing");
@@ -79,6 +79,6 @@ public class ApoliEntityActions {
 	public static final RegistryObject<SpawnParticlesAction> SPAWN_PARTICLES = ENTITY_ACTIONS.register("spawn_particles", SpawnParticlesAction::new);
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaActions(ENTITY_ACTIONS, DelegatedEntityAction::new, ConfiguredEntityAction.CODEC, ConfiguredEntityCondition.CODEC, EXECUTOR, PREDICATE);
+		MetaFactories.defineMetaActions(ENTITY_ACTIONS, DelegatedEntityAction::new, ConfiguredEntityAction.CODEC_SET, ConfiguredEntityCondition.CODEC_SET, ConfiguredEntityAction::optional, EXECUTOR, PREDICATE);
 	}
 }

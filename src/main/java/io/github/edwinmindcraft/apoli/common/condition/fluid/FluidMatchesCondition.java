@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.condition.fluid;
 
-import com.mojang.serialization.Codec;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.FluidCondition;

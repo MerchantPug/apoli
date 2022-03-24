@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -17,20 +18,20 @@ import java.util.Optional;
 
 public record ModifyFoodConfiguration(ListConfiguration<AttributeModifier> foodModifiers,
 									  ListConfiguration<AttributeModifier> saturationModifiers,
-									  @Nullable ConfiguredItemCondition<?, ?> itemCondition,
-									  @Nullable ConfiguredEntityAction<?, ?> entityAction,
+									  Holder<ConfiguredItemCondition<?, ?>> itemCondition,
+									  Holder<ConfiguredEntityAction<?, ?>> entityAction,
 									  @Nullable ItemStack replaceStack,
-									  @Nullable ConfiguredItemAction<?, ?> itemAction,
+									  Holder<ConfiguredItemAction<?, ?>> itemAction,
 									  boolean alwaysEdible,
 									  boolean preventEffects) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyFoodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.modifierCodec("food_modifier").forGetter(ModifyFoodConfiguration::foodModifiers),
 			ListConfiguration.modifierCodec("saturation_modifier").forGetter(ModifyFoodConfiguration::saturationModifiers),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "item_condition").forGetter(x -> Optional.ofNullable(x.itemCondition())),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(x -> Optional.ofNullable(x.entityAction())),
+			ConfiguredItemCondition.optional("item_condition").forGetter(ModifyFoodConfiguration::itemCondition),
+			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyFoodConfiguration::entityAction),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "replace_stack").forGetter(x -> Optional.ofNullable(x.replaceStack())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "item_action").forGetter(x -> Optional.ofNullable(x.itemAction())),
+			ConfiguredItemAction.optional("item_action").forGetter(ModifyFoodConfiguration::itemAction),
 			CalioCodecHelper.optionalField(Codec.BOOL, "always_edible", false).forGetter(ModifyFoodConfiguration::alwaysEdible),
 			CalioCodecHelper.optionalField(Codec.BOOL, "prevent_effects", false).forGetter(ModifyFoodConfiguration::preventEffects)
-	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8) -> new ModifyFoodConfiguration(t1, t2, t3.orElse(null), t4.orElse(null), t5.orElse(null), t6.orElse(null), t7, t8)));
+	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8) -> new ModifyFoodConfiguration(t1, t2, t3, t4, t5.orElse(null), t6, t7, t8)));
 }

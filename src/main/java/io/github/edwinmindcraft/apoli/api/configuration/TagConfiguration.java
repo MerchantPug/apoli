@@ -4,31 +4,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagContainer;
+import net.minecraft.tags.TagKey;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public record TagConfiguration<V>(Tag<V> value) implements IDynamicFeatureConfiguration {
+public record TagConfiguration<V>(TagKey<V> value) implements IDynamicFeatureConfiguration {
 
-	public static <T> Codec<TagConfiguration<T>> codec(Codec<Tag<T>> codec, String fieldName) {
+	public static <T> Codec<TagConfiguration<T>> codec(Codec<TagKey<T>> codec, String fieldName) {
 		return codec.fieldOf(fieldName).xmap(TagConfiguration::new, TagConfiguration::value).codec();
 	}
 
-	public static <T> MapCodec<Optional<TagConfiguration<T>>> optionalField(Codec<Tag<T>> codec, String fieldName) {
+	public static <T> MapCodec<Optional<TagConfiguration<T>>> optionalField(Codec<TagKey<T>> codec, String fieldName) {
 		return CalioCodecHelper.optionalField(codec, fieldName).xmap(x -> x.map(TagConfiguration::new), x -> x.map(TagConfiguration::value));
-	}
-
-	public boolean isLoaded() {
-		return SerializationTags.getInstance() != TagContainer.EMPTY;
-	}
-
-	public boolean contains(V value) {
-		if (!this.isLoaded())
-			return false;
-		return this.value().contains(value);
 	}
 
 	@Override

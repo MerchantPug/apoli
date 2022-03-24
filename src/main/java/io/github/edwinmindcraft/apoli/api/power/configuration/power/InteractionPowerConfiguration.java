@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.api.VariableAccess;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,10 +23,10 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public record InteractionPowerConfiguration(EnumSet<InteractionHand> hands, InteractionResult actionResult,
-											@Nullable ConfiguredItemCondition<?, ?> itemCondition,
-											@Nullable ConfiguredItemAction<?, ?> heldItemAction,
+											Holder<ConfiguredItemCondition<?, ?>> itemCondition,
+											Holder<ConfiguredItemAction<?, ?>> heldItemAction,
 											@Nullable ItemStack itemResult,
-											@Nullable ConfiguredItemAction<?, ?> resultItemAction) {
+											Holder<ConfiguredItemAction<?, ?>> resultItemAction) {
 	public static InteractionResult reduce(InteractionResult first, InteractionResult second) {
 		return second.consumesAction() && !first.consumesAction() || second.shouldSwing() && !first.shouldSwing() ? second : first;
 	}
@@ -33,19 +34,19 @@ public record InteractionPowerConfiguration(EnumSet<InteractionHand> hands, Inte
 	public static final MapCodec<InteractionPowerConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.optionalField(SerializableDataTypes.HAND_SET, "hands", (Supplier<EnumSet<InteractionHand>>) () -> EnumSet.allOf(InteractionHand.class)).forGetter(InteractionPowerConfiguration::hands),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ACTION_RESULT, "action_result", InteractionResult.SUCCESS).forGetter(InteractionPowerConfiguration::actionResult),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "item_condition").forGetter(x -> Optional.ofNullable(x.itemCondition())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "held_item_action").forGetter(x -> Optional.ofNullable(x.heldItemAction())),
+			ConfiguredItemCondition.optional("item_condition").forGetter(InteractionPowerConfiguration::itemCondition),
+			ConfiguredItemAction.optional("held_item_action").forGetter(InteractionPowerConfiguration::heldItemAction),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(x -> Optional.ofNullable(x.itemResult())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "result_item_action").forGetter(x -> Optional.ofNullable(x.resultItemAction()))
-	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new InteractionPowerConfiguration(t1, t2, t3.orElse(null), t4.orElse(null), t5.orElse(null), t6.orElse(null))));
+			ConfiguredItemAction.optional("result_item_action").forGetter(InteractionPowerConfiguration::resultItemAction)
+	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new InteractionPowerConfiguration(t1, t2, t3, t4, t5.orElse(null), t6)));
 
 	public static final MapCodec<InteractionPowerConfiguration> PREVENTING_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.optionalField(SerializableDataTypes.HAND_SET, "hands", (Supplier<EnumSet<InteractionHand>>) () -> EnumSet.allOf(InteractionHand.class)).forGetter(InteractionPowerConfiguration::hands),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "item_condition").forGetter(x -> Optional.ofNullable(x.itemCondition())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "held_item_action").forGetter(x -> Optional.ofNullable(x.heldItemAction())),
+			ConfiguredItemCondition.optional("item_condition").forGetter(InteractionPowerConfiguration::itemCondition),
+			ConfiguredItemAction.optional("held_item_action").forGetter(InteractionPowerConfiguration::heldItemAction),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result_stack").forGetter(x -> Optional.ofNullable(x.itemResult())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "result_item_action").forGetter(x -> Optional.ofNullable(x.resultItemAction()))
-	).apply(instance, (t1, t3, t4, t5, t6) -> new InteractionPowerConfiguration(t1, InteractionResult.FAIL, t3.orElse(null), t4.orElse(null), t5.orElse(null), t6.orElse(null))));
+			ConfiguredItemAction.optional("result_item_action").forGetter(InteractionPowerConfiguration::resultItemAction)
+	).apply(instance, (t1, t3, t4, t5, t6) -> new InteractionPowerConfiguration(t1, InteractionResult.FAIL, t3, t4, t5.orElse(null), t6)));
 
 	public boolean appliesTo(Level level, InteractionHand hand, ItemStack stack) {
 		return this.appliesTo(hand) && this.appliesTo(level, stack);
@@ -64,8 +65,8 @@ public record InteractionPowerConfiguration(EnumSet<InteractionHand> hands, Inte
 		ConfiguredItemAction.execute(this.heldItemAction(), actor.level, heldStack);
 		Mutable<ItemStack> resultingStack = this.itemResult() == null ? heldStack : new MutableObject<>(this.itemResult().copy());
 		boolean modified = this.itemResult() != null;
-		if (this.resultItemAction() != null) {
-			this.resultItemAction().execute(actor.level, resultingStack);
+		if (this.resultItemAction().isBound()) {
+			this.resultItemAction().value().execute(actor.level, resultingStack);
 			modified = true;
 		}
 		if (modified) {

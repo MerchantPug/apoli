@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.common.action.configuration.CommandConfiguration;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -86,7 +87,7 @@ public class RaycastAction extends EntityAction<RaycastConfiguration> {
 		return source.level.clip(context);
 	}
 
-	private static EntityHitResult performEntityRaycast(Entity source, Vec3 origin, Vec3 target, ConfiguredBiEntityCondition<?, ?> biEntityCondition) {
+	private static EntityHitResult performEntityRaycast(Entity source, Vec3 origin, Vec3 target, Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition) {
 		Vec3 ray = target.subtract(origin);
 		AABB box = source.getBoundingBox().expandTowards(ray).inflate(1.0D, 1.0D, 1.0D);
 		return ProjectileUtil.getEntityHitResult(source, origin, target, box, (entityx) -> !entityx.isSpectator() && ConfiguredBiEntityCondition.check(biEntityCondition, source, entityx), ray.lengthSqr());

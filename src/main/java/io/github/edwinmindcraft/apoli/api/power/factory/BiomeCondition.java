@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -25,14 +26,14 @@ public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> ext
 
 	@Override
 	public ConfiguredBiomeCondition<T, ?> configure(T input, ConditionData configuration) {
-		return new ConfiguredBiomeCondition<>(this, input, configuration);
+		return new ConfiguredBiomeCondition<>(() -> this, input, configuration);
 	}
 
-	protected boolean check(T configuration, Biome biome) {
+	protected boolean check(T configuration, Holder<Biome> biome) {
 		return false;
 	}
 
-	public boolean check(T configuration, ConditionData data, Biome biome) {
+	public boolean check(T configuration, ConditionData data, Holder<Biome> biome) {
 		return data.inverted() ^ this.check(configuration, biome);
 	}
 }

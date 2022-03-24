@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.damage.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
+import net.minecraft.core.HolderSet;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,7 +22,7 @@ public class ApoliDamageConditions {
 	public static final BiPredicate<ConfiguredDamageCondition<?, ?>, Pair<DamageSource, Float>> PREDICATE = (config, pair) -> config.check(pair.getLeft(), pair.getRight());
 
 	private static <U extends DamageCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.DAMAGE_CONDITION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.DAMAGE_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedDamageCondition<ConstantConfiguration<Pair<DamageSource, Float>>>> CONSTANT = of("constant");
@@ -36,11 +37,13 @@ public class ApoliDamageConditions {
 
 	public static ConfiguredDamageCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
-	public static ConfiguredDamageCondition<?, ?> and(ConfiguredDamageCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredDamageCondition<?, ?> and(HolderSet<ConfiguredDamageCondition<?, ?>>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
 
-	public static ConfiguredDamageCondition<?, ?> or(ConfiguredDamageCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredDamageCondition<?, ?> or(HolderSet<ConfiguredDamageCondition<?, ?>>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaConditions(DAMAGE_CONDITIONS, DelegatedDamageCondition::new, ConfiguredDamageCondition.CODEC, PREDICATE);
+		MetaFactories.defineMetaConditions(DAMAGE_CONDITIONS, DelegatedDamageCondition::new, ConfiguredDamageCondition.CODEC_SET, PREDICATE);
 	}
 }

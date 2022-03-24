@@ -1,17 +1,11 @@
 package io.github.edwinmindcraft.apoli.common.action.configuration;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public record PlaySoundConfiguration(SoundEvent sound, float volume,
 									 float pitch) implements IDynamicFeatureConfiguration {
@@ -21,16 +15,4 @@ public record PlaySoundConfiguration(SoundEvent sound, float volume,
 			CalioCodecHelper.optionalField(Codec.FLOAT, "volume", 1F).forGetter(PlaySoundConfiguration::volume),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "pitch", 1F).forGetter(PlaySoundConfiguration::pitch)
 	).apply(instance, PlaySoundConfiguration::new));
-
-	@Override
-	public @NotNull List<String> getWarnings(@NotNull ICalioDynamicRegistryManager server) {
-		if (this.sound() == null)
-			return ImmutableList.of("PlaySound/Missing sound");
-		return IDynamicFeatureConfiguration.super.getWarnings(server);
-	}
-
-	@Override
-	public boolean isConfigurationValid() {
-		return this.sound() != null;
-	}
 }

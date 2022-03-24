@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntity
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -33,12 +34,12 @@ public record RaycastSettingsConfiguration(double distance, boolean block, boole
 	}
 
 	@NotNull
-	public HitResult perform(@NotNull Entity entity, @Nullable ConfiguredBiEntityCondition<?, ?> entityValidator) {
+	public HitResult perform(@NotNull Entity entity, Holder<ConfiguredBiEntityCondition<?, ?>> entityValidator) {
 		return this.perform(entity, new Vec3(entity.getX(), entity.getEyeY(), entity.getZ()), entity.getViewVector(1), entityValidator);
 	}
 
 	@NotNull
-	public HitResult perform(@NotNull Entity entity, @NotNull Vec3 origin, @NotNull Vec3 direction, @Nullable ConfiguredBiEntityCondition<?, ?> entityValidator) {
+	public HitResult perform(@NotNull Entity entity, @NotNull Vec3 origin, @NotNull Vec3 direction, Holder<ConfiguredBiEntityCondition<?, ?>> entityValidator) {
 		Vec3 target = origin.add(direction.normalize().scale(this.distance()));
 		HitResult result = null;
 		if (this.entity())
@@ -60,7 +61,7 @@ public record RaycastSettingsConfiguration(double distance, boolean block, boole
 		return source.level.clip(context);
 	}
 
-	private EntityHitResult performEntityRaycast(Entity source, Vec3 origin, Vec3 target, ConfiguredBiEntityCondition<?, ?> biEntityCondition) {
+	private EntityHitResult performEntityRaycast(Entity source, Vec3 origin, Vec3 target, Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition) {
 		Vec3 ray = target.subtract(origin);
 		AABB box = source.getBoundingBox().expandTowards(ray).inflate(1.0D, 1.0D, 1.0D);
 		return ProjectileUtil.getEntityHitResult(source, origin, target, box, (entityx) -> !entityx.isSpectator() && ConfiguredBiEntityCondition.check(biEntityCondition, source, entityx), ray.lengthSqr());

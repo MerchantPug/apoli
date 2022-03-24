@@ -23,25 +23,26 @@ import java.util.function.Function;
  * This is a conversion of Alluysl's work on distance object.
  * While the code is significantly different, it should do exactly the same thing.
  *
+ * @param reference                 The reference point
+ * @param offset                    The offset vector from the reference point
+ * @param ignoreX                   Whether to ignore the x-axis for distance calculations
+ * @param ignoreY                   Whether to ignore the y-axis for distance calculations
+ * @param ignoreZ                   Whether to ignore the z-axis for distance calculations
+ * @param shape                     The distance type (norms 1, 2 or infinity)
+ * @param scaleReferenceToDimension Whether to scale the reference's coordinates according to the dimension it's in and the player is in
+ * @param scaleDistanceToDimension  Whether to scale the calculated distance to the current dimension
+ * @param comparison                The distance comparison
+ * @param resultOnWrongDimension    If set and the dimension is not the same as the reference's, the value to set the condition to
+ * @param roundToDigit              If set, rounds the distance to this amount of digits (e.g. 0 for unitary values, 1 for decimals, -1 for multiples of ten)
+ *
  * @author Alluysl
  * @author Edwin
- *
- * @param reference The reference point
- * @param offset The offset vector from the reference point
- * @param ignoreX Whether to ignore the x-axis for distance calculations
- * @param ignoreY Whether to ignore the y-axis for distance calculations
- * @param ignoreZ Whether to ignore the z-axis for distance calculations
- * @param shape The distance type (norms 1, 2 or infinity)
- * @param scaleReferenceToDimension Whether to scale the reference's coordinates according to the dimension it's in and the player is in
- * @param scaleDistanceToDimension Whether to scale the calculated distance to the current dimension
- * @param comparison The distance comparison
- * @param resultOnWrongDimension If set and the dimension is not the same as the reference's, the value to set the condition to
- * @param roundToDigit If set, rounds the distance to this amount of digits (e.g. 0 for unitary values, 1 for decimals, -1 for multiples of ten)
  */
 public record DistanceFromPointConfiguration(ReferencePoint reference, Vec3 offset, boolean ignoreX, boolean ignoreY,
 											 boolean ignoreZ, Shape shape, boolean scaleReferenceToDimension,
 											 boolean scaleDistanceToDimension, DoubleComparisonConfiguration comparison,
-											 Optional<Boolean> resultOnWrongDimension, Optional<Integer> roundToDigit) implements IDynamicFeatureConfiguration {
+											 Optional<Boolean> resultOnWrongDimension,
+											 Optional<Integer> roundToDigit) implements IDynamicFeatureConfiguration {
 	public static final MapCodec<Vec3> OFFSET_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.optionalField(SerializableDataTypes.VECTOR, "offset", Vec3.ZERO).forGetter(Function.identity()),
 			CalioCodecHelper.optionalField(SerializableDataTypes.VECTOR, "coordinates", Vec3.ZERO).forGetter(x -> Vec3.ZERO)

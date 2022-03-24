@@ -1,10 +1,10 @@
 package io.github.edwinmindcraft.apoli.common.condition.bientity;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiEntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.meta.IDelegatedConditionConfiguration;
 import net.minecraft.world.entity.Entity;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class DelegatedBiEntityCondition<T extends IDelegatedConditionConfiguration<Pair<Entity, Entity>>> extends BiEntityCondition<T> {
 	public DelegatedBiEntityCondition(Codec<T> codec) {

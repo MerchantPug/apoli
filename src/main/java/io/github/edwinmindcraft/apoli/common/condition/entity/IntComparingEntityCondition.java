@@ -3,7 +3,6 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 import io.github.edwinmindcraft.apoli.api.configuration.IntegerComparisonConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Function;
 

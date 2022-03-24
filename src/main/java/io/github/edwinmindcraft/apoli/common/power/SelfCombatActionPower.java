@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.CooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ConditionedCombatActionConfiguration;
@@ -24,7 +25,7 @@ public class SelfCombatActionPower extends CooldownPowerFactory.Simple<Condition
 
 	public void execute(ConfiguredPower<ConditionedCombatActionConfiguration, ?> configuration, Entity player, Entity target, DamageSource source, float amount) {
 		if (configuration.getConfiguration().check(target, source, amount) && this.canUse(configuration, player)) {
-			configuration.getConfiguration().entityAction().execute(player);
+			ConfiguredEntityAction.execute(configuration.getConfiguration().entityAction(), player);
 			this.use(configuration, player);
 		}
 	}
