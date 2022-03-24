@@ -2,21 +2,24 @@ package io.github.edwinmindcraft.apoli.api.power.configuration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.ConfiguredCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.common.util.NonNullSupplier;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Represents a block condition.
@@ -26,15 +29,18 @@ import java.util.Optional;
  *
  * @author Edwin
  */
-public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfiguration, F extends BlockCondition<T>> extends ConfiguredCondition<T, F> {
+public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfiguration, F extends BlockCondition<T>> extends ConfiguredCondition<T, F, ConfiguredBlockCondition<?, ?>> {
 	public static final Codec<ConfiguredBlockCondition<?, ?>> CODEC = BlockCondition.CODEC.dispatch(ConfiguredBlockCondition::getFactory, BlockCondition::getConditionCodec);
 	public static final MapCodec<Optional<ConfiguredBlockCondition<?, ?>>> OPTIONAL_FIELD = CalioCodecHelper.optionalField(CODEC, "block_condition");
+	public static final CodecSet<ConfiguredBlockCondition<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
+	public static final Codec<Holder<ConfiguredBlockCondition<?, ?>>> HOLDER = CODEC_SET.holder();
 
-	@Contract("null, _ -> true")
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "1.19")
-	public static boolean check(@Nullable ConfiguredBlockCondition<?, ?> condition, BlockInWorld block) {
-		return condition == null || condition.check(block.getLevel(), block.getPos(), block::getState);
+	public static MapCodec<Holder<ConfiguredBlockCondition<?, ?>>> required(String name) {
+		return HOLDER.fieldOf(name);
+	}
+
+	public static MapCodec<Holder<ConfiguredBlockCondition<?, ?>>> optional(String name) {
+		return CalioCodecHelper.registryDefaultedField(HOLDER, name, ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS);
 	}
 
 	/**
@@ -47,11 +53,10 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 	 * @return The result of the check or {@code true} if the condition is {@code null}
 	 *
 	 * @see #check(LevelReader, BlockPos, NonNullSupplier) for a non-nullable version
-	 * @see #check(ConfiguredBlockCondition, LevelReader, BlockPos) for a version that accesses the state from the world
+	 * @see #check(Holder, LevelReader, BlockPos) for a version that accesses the state from the world
 	 */
-	@Contract("null, _, _, _ -> true")
-	public static boolean check(@Nullable ConfiguredBlockCondition<?, ?> condition, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {
-		return condition == null || condition.check(reader, position, state);
+	public static boolean check(Holder<ConfiguredBlockCondition<?, ?>> condition, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {
+		return !condition.isBound() || condition.value().check(reader, position, state);
 	}
 
 	/**
@@ -62,21 +67,14 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 	 *
 	 * @return The result of the check or {@code true} if the condition is {@code null}
 	 *
-	 * @see #check(ConfiguredBlockCondition, LevelReader, BlockPos, NonNullSupplier) for a version with a block state provider
+	 * @see #check(Holder, LevelReader, BlockPos, NonNullSupplier) for a version with a block state provider
 	 */
-	@Contract("null, _, _ -> true")
-	public static boolean check(@Nullable ConfiguredBlockCondition<?, ?> condition, LevelReader reader, BlockPos position) {
+	public static boolean check(Holder<ConfiguredBlockCondition<?, ?>> condition, LevelReader reader, BlockPos position) {
 		return check(condition, reader, position, () -> reader.getBlockState(position));
 	}
 
-	public ConfiguredBlockCondition(F factory, T configuration, ConditionData data) {
+	public ConfiguredBlockCondition(Supplier<F> factory, T configuration, ConditionData data) {
 		super(factory, configuration, data);
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "1.19")
-	public boolean check(BlockInWorld block) {
-		return this.check(block.getLevel(), block.getPos(), block::getState);
 	}
 
 	/**
@@ -88,7 +86,7 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 	 *
 	 * @return The result of the check
 	 *
-	 * @see #check(ConfiguredBlockCondition, LevelReader, BlockPos, NonNullSupplier)  for a nullable version
+	 * @see #check(Holder, LevelReader, BlockPos, NonNullSupplier)  for a nullable version
 	 */
 	public boolean check(LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {
 		return this.getFactory().check(this, reader, position, state);

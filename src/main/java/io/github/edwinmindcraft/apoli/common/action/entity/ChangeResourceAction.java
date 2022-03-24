@@ -17,9 +17,9 @@ public class ChangeResourceAction extends EntityAction<ChangeResourceConfigurati
 
 	@Override
 	public void execute(ChangeResourceConfiguration configuration, Entity entity) {
-		if (entity instanceof Player player) {
-			ConfiguredPower<?, ?> power = IPowerContainer.get(player).resolve().map(x -> x.getPower(configuration.resource())).orElse(null);
-			if (power != null) {
+		if (entity instanceof Player player && configuration.resource().isBound()) {
+			ConfiguredPower<?, ?> power = configuration.resource().value();
+			if (IPowerContainer.get(entity).map(x -> x.hasPower(power.getRegistryName())).orElse(false)) {
 				if (configuration.operation() == ResourceOperation.ADD)
 					power.change(player, configuration.amount());
 				else if (configuration.operation() == ResourceOperation.SET)

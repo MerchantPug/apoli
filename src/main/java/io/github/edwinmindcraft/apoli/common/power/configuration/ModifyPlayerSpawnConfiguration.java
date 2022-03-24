@@ -1,14 +1,13 @@
 package io.github.edwinmindcraft.apoli.common.power.configuration;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.SectionPos;
+import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,19 +15,21 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.Unit;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -45,14 +46,17 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
-	private static BlockPos getStructureLocation(Entity entity, StructureFeature<?> structure, ResourceKey<Level> dimension) {
+	@Nullable
+	private static Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> getStructureLocation(Entity entity, StructureFeature<?> structure, ResourceKey<Level> dimension) {
 		BlockPos blockPos = new BlockPos(0, 70, 0);
 		ServerLevel serverWorld = ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
 		if (serverWorld == null) {
 			Apoli.LOGGER.warn("No worlds exist for dimension {}", dimension);
 			return null;
 		}
-		BlockPos blockPos2 = serverWorld.findNearestMapFeature(structure, blockPos, 100, false);
+		RegistryAccess registryAccess = serverWorld.registryAccess();
+		List<Holder.Reference<ConfiguredStructureFeature<?, ?>>> collect = registryAccess.registry(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY).stream().flatMap(Registry::holders).filter(x -> Objects.equals(x.value().feature, structure)).toList();
+		Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> blockPos2 = serverWorld.getChunkSource().getGenerator().findNearestMapFeature(serverWorld, HolderSet.direct(collect), blockPos, 100, false);
 		if (blockPos2 == null) {
 			Apoli.LOGGER.warn("Could not find '{}' in dimension: {}", structure.getRegistryName(), dimension.location());
 			return null;
@@ -61,6 +65,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 		}
 	}
 
+	@Nullable
 	private static Vec3 getValidSpawn(BlockPos startPos, int range, ServerLevel world) {
 		//Force load the chunk in which we are working.
 		//This method will generate the chunk if it needs to.
@@ -127,6 +132,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 		return null;
 	}
 
+	@Nullable
 	public Tuple<ServerLevel, BlockPos> getSpawn(Entity entity, boolean isSpawnObstructed) {
 		if (entity instanceof ServerPlayer) {
 			ServerLevel world = ServerLifecycleHooks.getCurrentServer().getLevel(this.dimension);
@@ -164,30 +170,26 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			}
 
 			if (this.biome() != null) {
-				Optional<Biome> biomeOptional = world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getOptional(this.biome());
-				if (biomeOptional.isPresent()) {
-					BlockPos biomePos = world.findNearestBiome(biomeOptional.get(), spawnToDimPos, 6400, 8);
-					if (biomePos != null) {
-						spawnToDimPos = biomePos;
-					} else {
-						Apoli.LOGGER.warn("Could not find biome \"{}\" in dimension \"{}\".", this.biome(), this.dimension.toString());
-					}
+				Pair<BlockPos, Holder<Biome>> biomePos = world.findNearestBiome(x -> x.is(this.biome()), spawnToDimPos, 6400, 8);
+				if (biomePos != null) {
+					spawnToDimPos = biomePos.getFirst();
 				} else {
-					Apoli.LOGGER.warn("Biome with ID \"{}\" was not registered.", this.biome());
+					Apoli.LOGGER.warn("Could not find biome \"{}\" in dimension \"{}\".", this.biome(), this.dimension.toString());
 				}
 			}
 
 			if (this.structure == null) {
 				tpPos = getValidSpawn(spawnToDimPos, range, world);
 			} else {
-				BlockPos structurePos = getStructureLocation(entity, this.structure, this.dimension);
+				Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> structure = getStructureLocation(entity, this.structure, this.dimension);
 				ChunkPos structureChunkPos;
 
-				if (structurePos == null) {
+				if (structure == null) {
 					return null;
 				}
+				BlockPos structurePos = structure.getFirst();
 				structureChunkPos = new ChunkPos(structurePos.getX() >> 4, structurePos.getZ() >> 4);
-				StructureStart<?> structureStart = world.structureFeatureManager().getStartForFeature(SectionPos.of(structureChunkPos, 0), this.structure, world.getChunk(structurePos));
+				StructureStart structureStart = world.structureFeatureManager().getStartForFeature(SectionPos.of(structureChunkPos, 0), structure.getSecond().value(), world.getChunk(structurePos));
 				if (structureStart != null) {
 					BlockPos structureCenter = new BlockPos(structureStart.getBoundingBox().getCenter());
 					tpPos = getValidSpawn(structureCenter, range, world);

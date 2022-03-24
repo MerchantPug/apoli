@@ -8,10 +8,10 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.context.BlockConditionContext;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.condition.block.NbtCondition;
 import io.github.edwinmindcraft.apoli.common.condition.block.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
+import net.minecraft.core.HolderSet;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class ApoliBlockConditions {
 	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, BlockConditionContext> PREDICATE = (config, context) -> config.check(context.reader(), context.position(), context.stateGetter());
 
 	private static <U extends BlockCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_CONDITION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedBlockCondition<ConstantConfiguration<BlockConditionContext>>> CONSTANT = of("constant");
@@ -55,12 +55,14 @@ public class ApoliBlockConditions {
 
 	public static ConfiguredBlockCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
-	public static ConfiguredBlockCondition<?, ?> and(ConfiguredBlockCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredBlockCondition<?, ?> and(HolderSet<ConfiguredBlockCondition<?, ?>>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
 
-	public static ConfiguredBlockCondition<?, ?> or(ConfiguredBlockCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredBlockCondition<?, ?> or(HolderSet<ConfiguredBlockCondition<?, ?>>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaConditions(BLOCK_CONDITIONS, DelegatedBlockCondition::new, ConfiguredBlockCondition.CODEC, PREDICATE);
+		MetaFactories.defineMetaConditions(BLOCK_CONDITIONS, DelegatedBlockCondition::new, ConfiguredBlockCondition.CODEC_SET, PREDICATE);
 		DistanceFromCoordinatesConditionRegistry.registerBlockConditions();
 	}
 }

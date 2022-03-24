@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.condition.block;
 
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.AdjacentConfiguration;
 import net.minecraft.core.BlockPos;
@@ -18,7 +19,7 @@ public class AdjacentCondition extends BlockCondition<AdjacentConfiguration> {
 	@Override
 	protected boolean check(AdjacentConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
 		int count = Math.toIntExact(Arrays.stream(Direction.values())
-				.filter(x -> configuration.condition().check(reader, position.relative(x), stateGetter)).count());
+				.filter(x -> ConfiguredBlockCondition.check(configuration.condition(), reader, position.relative(x), stateGetter)).count());
 		return configuration.comparison().check(count);
 	}
 }

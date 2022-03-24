@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.registry.condition;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.power.factory.condition.bientity.RelativeRotationCondition;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
@@ -13,6 +12,7 @@ import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfi
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
 import net.minecraft.world.entity.*;
 import net.minecraftforge.registries.RegistryObject;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
 import java.util.function.BiPredicate;
@@ -20,10 +20,10 @@ import java.util.function.BiPredicate;
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.BIENTITY_CONDITIONS;
 
 public class ApoliBiEntityConditions {
-	public static final BiPredicate<ConfiguredBiEntityCondition<?, ?>, Pair<Entity, Entity>> PREDICATE = (config, pair) -> config.check(pair.getFirst(), pair.getSecond());
+	public static final BiPredicate<ConfiguredBiEntityCondition<?, ?>, Pair<Entity, Entity>> PREDICATE = (config, pair) -> config.check(pair.getKey(), pair.getValue());
 
 	private static <U extends BiEntityCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BIENTITY_CONDITION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BIENTITY_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedBiEntityCondition<ConstantConfiguration<Pair<Entity, Entity>>>> CONSTANT = of("constant");
@@ -47,6 +47,6 @@ public class ApoliBiEntityConditions {
 	public static final RegistryObject<RelativeRotationCondition> RELATIVE_ROTATION = BIENTITY_CONDITIONS.register("relative_rotation", RelativeRotationCondition::new);
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaConditions(BIENTITY_CONDITIONS, DelegatedBiEntityCondition::new, ConfiguredBiEntityCondition.CODEC, PREDICATE);
+		MetaFactories.defineMetaConditions(BIENTITY_CONDITIONS, DelegatedBiEntityCondition::new, ConfiguredBiEntityCondition.CODEC_SET, PREDICATE);
 	}
 }

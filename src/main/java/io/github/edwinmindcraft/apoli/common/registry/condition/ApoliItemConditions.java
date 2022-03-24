@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.registry.condition;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
@@ -9,12 +8,15 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.item.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.RegistryObject;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.function.BiPredicate;
@@ -23,10 +25,10 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ITEM
 
 public class ApoliItemConditions {
 
-	public static final BiPredicate<ConfiguredItemCondition<?, ?>, Pair<Level, ItemStack>> PREDICATE = (config, pair) -> config.check(pair.getFirst(), pair.getSecond());
+	public static final BiPredicate<ConfiguredItemCondition<?, ?>, Pair<Level, ItemStack>> PREDICATE = (config, pair) -> config.check(pair.getKey(), pair.getValue());
 
 	private static <U extends ItemCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ITEM_CONDITION_CLASS, Apoli.MODID);
+		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ITEM_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedItemCondition<ConstantConfiguration<Pair<Level, ItemStack>>>> CONSTANT = of("constant");
@@ -50,11 +52,15 @@ public class ApoliItemConditions {
 
 	public static ConfiguredItemCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
-	public static ConfiguredItemCondition<?, ?> and(ConfiguredItemCondition<?, ?>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
+	@SafeVarargs
+	public static ConfiguredItemCondition<?, ?> and(HolderSet<ConfiguredItemCondition<?, ?>>... conditions) {return AND.get().configure(ConditionStreamConfiguration.and(Arrays.asList(conditions), PREDICATE));}
 
-	public static ConfiguredItemCondition<?, ?> or(ConfiguredItemCondition<?, ?>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
+	public static ConfiguredItemCondition<?, ?> and(ConfiguredItemCondition<?, ?>... conditions) {return and(HolderSet.direct(Holder::direct, conditions));}
+
+	@SafeVarargs
+	public static ConfiguredItemCondition<?, ?> or(HolderSet<ConfiguredItemCondition<?, ?>>... conditions) {return OR.get().configure(ConditionStreamConfiguration.or(Arrays.asList(conditions), PREDICATE));}
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaConditions(ITEM_CONDITIONS, DelegatedItemCondition::new, ConfiguredItemCondition.CODEC, PREDICATE);
+		MetaFactories.defineMetaConditions(ITEM_CONDITIONS, DelegatedItemCondition::new, ConfiguredItemCondition.CODEC_SET, PREDICATE);
 	}
 }

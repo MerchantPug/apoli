@@ -1,29 +1,32 @@
 package io.github.edwinmindcraft.apoli.common.action.meta;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import org.jetbrains.annotations.Nullable;
+import io.github.edwinmindcraft.apoli.api.configuration.MustBeBound;
+import io.github.edwinmindcraft.calio.api.network.CodecSet;
+import net.minecraft.core.Holder;
 
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 
-public record IfElseConfiguration<C, A, V>(C condition, A ifAction, @Nullable A elseAction, BiPredicate<C, V> predicate,
+public record IfElseConfiguration<C, A, V>(@MustBeBound Holder<C> condition, @MustBeBound Holder<A> ifAction,
+										   Holder<A> elseAction, BiPredicate<C, V> predicate,
 										   BiConsumer<A, V> executor) implements IDelegatedActionConfiguration<V> {
-	public static <C, A, V> Codec<IfElseConfiguration<C, A, V>> codec(Codec<C> conditionCodec, Codec<A> actionCodec, BiPredicate<C, V> predicate, BiConsumer<A, V> executor) {
+	public static <C, A, V> Codec<IfElseConfiguration<C, A, V>> codec(CodecSet<C> conditionCodec, CodecSet<A> actionCodec, Function<String, MapCodec<Holder<A>>> optional, BiPredicate<C, V> predicate, BiConsumer<A, V> executor) {
 		return RecordCodecBuilder.create(instance -> instance.group(
-				conditionCodec.fieldOf("condition").forGetter(IfElseConfiguration::condition),
-				actionCodec.fieldOf("if_action").forGetter(IfElseConfiguration::ifAction),
-				CalioCodecHelper.optionalField(actionCodec, "else_action").forGetter(x -> Optional.ofNullable(x.elseAction()))
-		).apply(instance, (c, i, e) -> new IfElseConfiguration<>(c, i, e.orElse(null), predicate, executor)));
+				conditionCodec.holder().fieldOf("condition").forGetter(IfElseConfiguration::condition),
+				actionCodec.holder().fieldOf("if_action").forGetter(IfElseConfiguration::ifAction),
+				optional.apply("else_action").forGetter(IfElseConfiguration::elseAction)
+		).apply(instance, (c, i, e) -> new IfElseConfiguration<>(c, i, e, predicate, executor)));
 	}
 
 	@Override
 	public void execute(V parameters) {
-		if (this.predicate().test(this.condition(), parameters))
-			this.executor().accept(this.ifAction(), parameters);
-		else if (this.elseAction() != null)
-			this.executor().accept(this.elseAction(), parameters);
+		if (this.predicate().test(this.condition().value(), parameters))
+			this.executor().accept(this.ifAction().value(), parameters);
+		else if (this.elseAction().isBound())
+			this.executor().accept(this.elseAction().value(), parameters);
 	}
 }

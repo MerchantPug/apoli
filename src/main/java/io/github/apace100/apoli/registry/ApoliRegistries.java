@@ -1,17 +1,10 @@
 package io.github.apace100.apoli.registry;
 
-import com.mojang.serialization.Lifecycle;
-import io.github.apace100.apoli.Apoli;
-import io.github.apace100.apoli.power.factory.PowerFactory;
-import io.github.edwinmindcraft.apoli.fabric.WrappingRegistry;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
-
 //TODO Introduce Architectury if possible.
 // Probably won't be here.
 public class ApoliRegistries {
 
-	public static final Registry<PowerFactory> POWER_FACTORY;
+	//public static final Registry<PowerFactory> POWER_FACTORY;
 
 	/*    public static final Registry<ConditionFactory<Entity>> ENTITY_CONDITION;
 		public static final Registry<ConditionFactory<Pair<Entity, Entity>>> BIENTITY_CONDITION;
@@ -26,7 +19,7 @@ public class ApoliRegistries {
 		public static final Registry<ActionFactory<Pair<Entity, Entity>>> BIENTITY_ACTION;
 	*/
 	static {
-		POWER_FACTORY = new WrappingRegistry<>(ResourceKey.createRegistryKey(Apoli.identifier("power_factory")), Lifecycle.experimental(), io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries.POWER_FACTORY, io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries.POWER_FACTORY_CLASS, PowerFactory::getWrapped, io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory::getLegacyFactory);
+		//POWER_FACTORY = new WrappingRegistry<>(ResourceKey.createRegistryKey(Apoli.identifier("power_factory")), Lifecycle.experimental(), io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries.POWER_FACTORY, io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries.POWER_FACTORY_CLASS, PowerFactory::getWrapped, io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory::getLegacyFactory);
  /*       ENTITY_CONDITION = FabricRegistryBuilder.createSimple(ClassUtil.<ConditionFactory<Entity>>castClass(ConditionFactory.class), Apoli.identifier("entity_condition")).buildAndRegister();
         BIENTITY_CONDITION = FabricRegistryBuilder.createSimple(ClassUtil.<ConditionFactory<Pair<Entity, Entity>>>castClass(ConditionFactory.class), Apoli.identifier("bientity_condition")).buildAndRegister();
         ITEM_CONDITION = FabricRegistryBuilder.createSimple(ClassUtil.<ConditionFactory<ItemStack>>castClass(ConditionFactory.class), Apoli.identifier("item_condition")).buildAndRegister();

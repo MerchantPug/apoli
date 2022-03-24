@@ -3,11 +3,11 @@ package io.github.edwinmindcraft.apoli.common.condition.damage;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.DamageCondition;
-import java.util.Optional;
-
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.Optional;
 
 public class AttackerCondition extends DamageCondition<FieldConfiguration<Optional<ConfiguredEntityCondition<?, ?>>>> {
 

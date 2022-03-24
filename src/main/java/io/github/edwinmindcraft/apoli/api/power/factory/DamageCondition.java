@@ -25,7 +25,7 @@ public abstract class DamageCondition<T extends IDynamicFeatureConfiguration> ex
 
 	@Override
 	public final ConfiguredDamageCondition<T, ?> configure(T input, ConditionData data) {
-		return new ConfiguredDamageCondition<>(this, input, data);
+		return new ConfiguredDamageCondition<>(() -> this, input, data);
 	}
 
 	protected boolean check(T configuration, DamageSource source, float amount) {

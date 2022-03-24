@@ -14,6 +14,6 @@ public class InTagFluidCondition extends FluidCondition<TagConfiguration<Fluid>>
 
 	@Override
 	public boolean check(TagConfiguration<Fluid> configuration, FluidState fluid) {
-		return configuration.contains(fluid.getType());
+		return fluid.is(configuration.value());
 	}
 }

@@ -6,18 +6,19 @@ import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public record ModifyDamageDealtConfiguration(ListConfiguration<AttributeModifier> modifiers,
-											 @Nullable ConfiguredDamageCondition<?, ?> damageCondition,
-											 @Nullable ConfiguredEntityCondition<?, ?> targetCondition,
-											 @Nullable ConfiguredBiEntityCondition<?, ?> biEntityCondition,
-											 @Nullable ConfiguredEntityAction<?, ?> selfAction,
-											 @Nullable ConfiguredEntityAction<?, ?> targetAction,
-											 @Nullable ConfiguredBiEntityAction<?, ?> biEntityAction) implements IValueModifyingPowerConfiguration {
+											 Holder<ConfiguredDamageCondition<?,?>> damageCondition,
+											 Holder<ConfiguredEntityCondition<?,?>> targetCondition,
+											 Holder<ConfiguredBiEntityCondition<?,?>> biEntityCondition,
+											 Holder<ConfiguredEntityAction<?,?>> selfAction,
+											 Holder<ConfiguredEntityAction<?,?>> targetAction,
+											 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements IValueModifyingPowerConfiguration {
 
 	public ModifyDamageDealtConfiguration(AttributeModifier... modifiers) {
 		this(ListConfiguration.of(modifiers), null, null, null, null, null, null);
@@ -25,11 +26,11 @@ public record ModifyDamageDealtConfiguration(ListConfiguration<AttributeModifier
 
 	public static final Codec<ModifyDamageDealtConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyDamageDealtConfiguration::modifiers),
-			CalioCodecHelper.optionalField(ConfiguredDamageCondition.CODEC, "damage_condition").forGetter(x -> Optional.ofNullable(x.damageCondition())),
-			CalioCodecHelper.optionalField(ConfiguredEntityCondition.CODEC, "target_condition").forGetter(x -> Optional.ofNullable(x.targetCondition())),
-			CalioCodecHelper.optionalField(ConfiguredBiEntityCondition.CODEC, "bientity_condition").forGetter(x -> Optional.ofNullable(x.biEntityCondition())),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "self_action").forGetter(x -> Optional.ofNullable(x.selfAction())),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "target_action").forGetter(x -> Optional.ofNullable(x.targetAction())),
-			CalioCodecHelper.optionalField(ConfiguredBiEntityAction.CODEC, "bientity_action").forGetter(x -> Optional.ofNullable(x.biEntityAction()))
-	).apply(instance, (t1, t2, t3, t4, t5, t6, t7) -> new ModifyDamageDealtConfiguration(t1, t2.orElse(null), t3.orElse(null), t4.orElse(null), t5.orElse(null), t6.orElse(null), t7.orElse(null))));
+			ConfiguredDamageCondition.optional("damage_condition").forGetter(ModifyDamageDealtConfiguration::damageCondition),
+			ConfiguredEntityCondition.optional("target_condition").forGetter(ModifyDamageDealtConfiguration::targetCondition),
+			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(ModifyDamageDealtConfiguration::biEntityCondition),
+			ConfiguredEntityAction.optional("self_action").forGetter(ModifyDamageDealtConfiguration::selfAction),
+			ConfiguredEntityAction.optional("target_action").forGetter(ModifyDamageDealtConfiguration::targetAction),
+			ConfiguredBiEntityAction.optional("bientity_action").forGetter(ModifyDamageDealtConfiguration::biEntityAction)
+	).apply(instance, ModifyDamageDealtConfiguration::new));
 }

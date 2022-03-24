@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.component;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
@@ -11,7 +12,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
-import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -121,15 +121,15 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			this.powers.put(power, instance);
 			instance.onGained(this.owner);
 			instance.onAdded(this.owner);
-			if(this.owner instanceof ServerPlayer spe)
+			if (this.owner instanceof ServerPlayer spe)
 				GainedPowerCriterion.INSTANCE.trigger(spe, instance);
 			return true;
 		}
 	}
 
 	@Override
-	public boolean hasPower(ResourceLocation power) {
-		return this.powers.containsKey(power);
+	public boolean hasPower(@Nullable ResourceLocation power) {
+		return power != null && this.powers.containsKey(power);
 	}
 
 	@Override
@@ -231,7 +231,6 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 					} catch (IllegalArgumentException e) {
 						Apoli.LOGGER.warn("Power data of unregistered power \"" + identifier + "\" found on entity, skipping...");
 					}
-
 				}
 				for (Map.Entry<ResourceLocation, Set<ResourceLocation>> entry : this.powerSources.entrySet()) {
 					ConfiguredPower<?, ?> power = powers.get(entry.getKey());
@@ -244,7 +243,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 							continue;
 						}
 						for (ResourceLocation source : entry.getValue()) {
-							if(!this.hasPower(sub, source))
+							if (!this.hasPower(sub, source))
 								this.addPower(sub, source);
 						}
 					}

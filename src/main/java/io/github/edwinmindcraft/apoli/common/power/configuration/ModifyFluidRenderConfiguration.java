@@ -8,16 +8,17 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredFluidCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.OptionalFuncs;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
-public record ModifyFluidRenderConfiguration(@Nullable ConfiguredBlockCondition<?, ?> blockCondition,
-											 @Nullable ConfiguredFluidCondition<?, ?> fluidCondition,
+public record ModifyFluidRenderConfiguration(Holder<ConfiguredBlockCondition<?,?>> blockCondition,
+											 Holder<ConfiguredFluidCondition<?,?>> fluidCondition,
 											 Fluid fluid) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyFluidRenderConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition").forGetter(OptionalFuncs.opt(ModifyFluidRenderConfiguration::blockCondition)),
-			CalioCodecHelper.optionalField(ConfiguredFluidCondition.CODEC, "fluid_condition").forGetter(OptionalFuncs.opt(ModifyFluidRenderConfiguration::fluidCondition)),
+			ConfiguredBlockCondition.optional("block_condition").forGetter(ModifyFluidRenderConfiguration::blockCondition),
+			ConfiguredFluidCondition.optional("fluid_condition").forGetter(ModifyFluidRenderConfiguration::fluidCondition),
 			SerializableDataTypes.FLUID.fieldOf("fluid").forGetter(ModifyFluidRenderConfiguration::fluid)
-	).apply(instance, (cbc, cfc, fluid) -> new ModifyFluidRenderConfiguration(cbc.orElse(null), cfc.orElse(null), fluid)));
+	).apply(instance, ModifyFluidRenderConfiguration::new));
 }

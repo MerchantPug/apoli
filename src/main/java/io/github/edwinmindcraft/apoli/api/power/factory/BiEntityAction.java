@@ -23,7 +23,7 @@ public abstract class BiEntityAction<T extends IDynamicFeatureConfiguration> ext
 
 	@Override
 	public final ConfiguredBiEntityAction<T, ?> configure(T input) {
-		return new ConfiguredBiEntityAction<>(this, input);
+		return new ConfiguredBiEntityAction<>(() -> this, input);
 	}
 
 	public abstract void execute(T configuration, Entity actor, Entity target);

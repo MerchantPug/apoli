@@ -30,23 +30,11 @@ public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> ext
 
 	@Override
 	public final ConfiguredBlockCondition<T, ?> configure(T input, ConditionData data) {
-		return new ConfiguredBlockCondition<>(this, input, data);
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "1.19")
-	protected boolean check(T configuration, BlockInWorld block) {
-		return false;
+		return new ConfiguredBlockCondition<>(() -> this, input, data);
 	}
 
 	protected boolean check(T configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
-		return this.check(configuration, new BlockInWorld(reader, position, true));
-	}
-
-	@Deprecated(forRemoval = true)
-	@ApiStatus.ScheduledForRemoval(inVersion = "1.19")
-	public boolean check(ConfiguredBlockCondition<T, ?> configuration, BlockInWorld block) {
-		return this.check(configuration.getConfiguration(), block.getLevel(), block.getPos(), block::getState);
+		return false;
 	}
 
 	public boolean check(ConfiguredBlockCondition<T, ?> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {

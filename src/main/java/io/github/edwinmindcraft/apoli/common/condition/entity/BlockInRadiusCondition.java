@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.condition.entity;
 
 import io.github.apace100.apoli.util.Shape;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.BlockInRadiusConfiguration;
 import net.minecraft.core.BlockPos;
@@ -56,7 +57,7 @@ public class BlockInRadiusCondition extends EntityCondition<BlockInRadiusConfigu
 			int y = pos.getY() >> 4;
 			int z = pos.getZ() >> 4;
 			LevelChunkSection section = sections[y - yStart + (x - xStart + xSize * (z - zStart)) * ySize];
-			if (configuration.blockCondition().check(entity.level, pos, () -> section == null ? Blocks.VOID_AIR.defaultBlockState() : section.getBlockState(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15)))
+			if (ConfiguredBlockCondition.check(configuration.blockCondition(), entity.level, pos, () -> section == null ? Blocks.VOID_AIR.defaultBlockState() : section.getBlockState(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15)))
 				count.increment();
 		}, stopping);
 		return configuration.comparison().check(count.intValue());

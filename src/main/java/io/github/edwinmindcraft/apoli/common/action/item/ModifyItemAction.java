@@ -1,13 +1,11 @@
 package io.github.edwinmindcraft.apoli.common.action.item;
 
-import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemAction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.ItemModifierManager;
@@ -27,7 +25,7 @@ public class ModifyItemAction extends ItemAction<FieldConfiguration<ResourceLoca
 	@Override
 	public void execute(FieldConfiguration<ResourceLocation> configuration, Level level, Mutable<ItemStack> stack) {
 		MinecraftServer server = level.getServer();
-		if(server != null) {
+		if (server != null) {
 			ItemModifierManager lootFunctionManager = server.getItemModifierManager();
 			LootItemFunction lootFunction = lootFunctionManager.get(configuration.value());
 			if (lootFunction == null) {

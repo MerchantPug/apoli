@@ -25,7 +25,7 @@ public abstract class RecipeManagerMixin {
 	@Inject(method = "getRecipeFor", at = @At("HEAD"), cancellable = true)
 	private void prioritizeModifiedRecipes(RecipeType<Recipe<Container>> type, Container inventory, Level world, CallbackInfoReturnable<Optional<Recipe<Container>>> cir) {
 		Optional<Recipe<Container>> modifiedRecipe = this.getAllRecipesFor(type).stream()
-				.flatMap((recipe) -> Util.toStream(type.tryMatch(recipe, world, inventory)))
+				.flatMap((recipe) -> type.tryMatch(recipe, world, inventory).stream())
 				.filter(r -> r.getClass() == ModifiedCraftingRecipe.class).findFirst();
 		if (modifiedRecipe.isPresent())
 			cir.setReturnValue(modifiedRecipe);

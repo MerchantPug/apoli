@@ -24,7 +24,7 @@ public abstract class BiEntityCondition<T extends IDynamicFeatureConfiguration> 
 
 	@Override
 	public final ConfiguredBiEntityCondition<T, ?> configure(T input, ConditionData data) {
-		return new ConfiguredBiEntityCondition<>(this, input, data);
+		return new ConfiguredBiEntityCondition<>(() -> this, input, data);
 	}
 
 	protected abstract boolean check(T configuration, Entity actor, Entity target);

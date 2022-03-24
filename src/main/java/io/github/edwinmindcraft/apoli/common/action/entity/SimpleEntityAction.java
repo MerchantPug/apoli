@@ -2,10 +2,11 @@ package io.github.edwinmindcraft.apoli.common.action.entity;
 
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
-import java.util.function.Consumer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.function.Consumer;
 
 public class SimpleEntityAction extends EntityAction<NoConfiguration> {
 

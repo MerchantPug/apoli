@@ -20,7 +20,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -45,8 +45,8 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	}
 
 	@Inject(method = "canStandOnFluid", at = @At("HEAD"), cancellable = true)
-	private void modifyWalkableFluids(Fluid fluid, CallbackInfoReturnable<Boolean> info) {
-		if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> p.getConfiguration().contains(fluid))) {
+	private void modifyWalkableFluids(FluidState fluid, CallbackInfoReturnable<Boolean> info) {
+		if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.getConfiguration().value()))) {
 			info.setReturnValue(true);
 		}
 	}

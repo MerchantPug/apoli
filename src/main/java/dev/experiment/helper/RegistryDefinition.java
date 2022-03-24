@@ -13,8 +13,8 @@ public record RegistryDefinition<T extends IForgeRegistryEntry<T>>(DeferredRegis
 																   Supplier<IForgeRegistry<T>> registry) {
 	public static <T extends IForgeRegistryEntry<T>> RegistryDefinition<T> define(String registryName, T... arr) {
 		Class<T> cls = ClassUtil.get(arr);
-		DeferredRegister<T> deferredRegister = DeferredRegister.create(cls, Apoli.MODID);
-		Supplier<IForgeRegistry<T>> registry = deferredRegister.makeRegistry(registryName, () -> new RegistryBuilder<T>().disableSaving());
+		DeferredRegister<T> deferredRegister = DeferredRegister.create(Apoli.identifier(registryName), Apoli.MODID);
+		Supplier<IForgeRegistry<T>> registry = deferredRegister.makeRegistry(cls, () -> new RegistryBuilder<T>().disableSaving());
 		return new RegistryDefinition<>(deferredRegister, registry);
 	}
 }

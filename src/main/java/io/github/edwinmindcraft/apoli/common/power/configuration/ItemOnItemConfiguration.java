@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -19,32 +20,32 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record ItemOnItemConfiguration(@Nullable ConfiguredItemCondition<?, ?> usingItemCondition,
-									  @Nullable ConfiguredItemCondition<?, ?> onItemCondition,
+public record ItemOnItemConfiguration(Holder<ConfiguredItemCondition<?, ?>> usingItemCondition,
+									  Holder<ConfiguredItemCondition<?, ?>> onItemCondition,
 									  int resultFromOnStack,
 									  @Nullable ItemStack newStack,
-									  @Nullable ConfiguredItemAction<?, ?> usingItemAction,
-									  @Nullable ConfiguredItemAction<?, ?> onItemAction,
-									  @Nullable ConfiguredItemAction<?, ?> resultItemAction,
-									  @Nullable ConfiguredEntityAction<?, ?> entityAction) implements IDynamicFeatureConfiguration {
+									  Holder<ConfiguredItemAction<?, ?>> usingItemAction,
+									  Holder<ConfiguredItemAction<?, ?>> onItemAction,
+									  Holder<ConfiguredItemAction<?, ?>> resultItemAction,
+									  Holder<ConfiguredEntityAction<?, ?>> entityAction) implements IDynamicFeatureConfiguration {
 	public static final Codec<ItemOnItemConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "using_item_condition").forGetter(x -> Optional.ofNullable(x.usingItemCondition())),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "on_item_condition").forGetter(x -> Optional.ofNullable(x.onItemCondition())),
+			ConfiguredItemCondition.optional("using_item_condition").forGetter(ItemOnItemConfiguration::usingItemCondition),
+			ConfiguredItemCondition.optional("on_item_condition").forGetter(ItemOnItemConfiguration::onItemCondition),
 			CalioCodecHelper.optionalField(Codec.INT, "result_from_on_stack", 0).forGetter(ItemOnItemConfiguration::resultFromOnStack),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "result").forGetter(x -> Optional.ofNullable(x.newStack())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "using_item_action").forGetter(x -> Optional.ofNullable(x.usingItemAction())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "on_item_action").forGetter(x -> Optional.ofNullable(x.onItemAction())),
-			CalioCodecHelper.optionalField(ConfiguredItemAction.CODEC, "result_item_action").forGetter(x -> Optional.ofNullable(x.resultItemAction())),
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "entity_action").forGetter(x -> Optional.ofNullable(x.entityAction()))
+			ConfiguredItemAction.optional("using_item_action").forGetter(ItemOnItemConfiguration::usingItemAction),
+			ConfiguredItemAction.optional("on_item_action").forGetter(ItemOnItemConfiguration::onItemAction),
+			ConfiguredItemAction.optional("result_item_action").forGetter(ItemOnItemConfiguration::resultItemAction),
+			ConfiguredEntityAction.optional("entity_action").forGetter(ItemOnItemConfiguration::entityAction)
 	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8) -> new ItemOnItemConfiguration(
-			t1.orElse(null),
-			t2.orElse(null),
+			t1,
+			t2,
 			t3,
 			t4.orElse(null),
-			t5.orElse(null),
-			t6.orElse(null),
-			t7.orElse(null),
-			t8.orElse(null)
+			t5,
+			t6,
+			t7,
+			t8
 	)));
 
 	public boolean check(Level level, ItemStack using, ItemStack on) {
@@ -62,7 +63,7 @@ public record ItemOnItemConfiguration(@Nullable ConfiguredItemCondition<?, ?> us
 		ConfiguredItemAction.execute(this.resultItemAction(), entity.level, stack);
 		ConfiguredItemAction.execute(this.usingItemAction(), entity.level, using);
 		ConfiguredItemAction.execute(this.onItemAction(), entity.level, on);
-		if (this.newStack() != null || this.resultItemAction() != null) {
+		if (this.newStack() != null || this.resultItemAction().isBound()) {
 			if (slot.getItem().isEmpty())
 				slot.set(stack.getValue());
 			else if (entity instanceof Player player)

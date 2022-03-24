@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.CooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ActionWhenHitConfiguration;
@@ -22,7 +23,7 @@ public class AttackerActionWhenHitPower extends CooldownPowerFactory.Simple<Acti
 		if (damageSource.getEntity() != null && damageSource.getEntity() != player) {
 			if (ConfiguredDamageCondition.check(configuration.getConfiguration().damageCondition(), damageSource, damageAmount)) {
 				if (this.canUse(configuration, player)) {
-					configuration.getConfiguration().entityAction().execute(damageSource.getEntity());
+					ConfiguredEntityAction.execute(configuration.getConfiguration().entityAction(), damageSource.getEntity());
 					this.use(configuration, player);
 				}
 			}

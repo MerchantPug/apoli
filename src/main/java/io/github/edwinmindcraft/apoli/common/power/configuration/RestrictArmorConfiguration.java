@@ -6,7 +6,11 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,19 +21,23 @@ import net.minecraft.world.level.Level;
 import java.util.Map;
 import java.util.Optional;
 
-public record RestrictArmorConfiguration(Map<EquipmentSlot, ConfiguredItemCondition<?, ?>> conditions,
+public record RestrictArmorConfiguration(Map<EquipmentSlot, Holder<ConfiguredItemCondition<?, ?>>> conditions,
 										 int tickRate) implements IDynamicFeatureConfiguration {
-	private static final MapCodec<Map<EquipmentSlot, ConfiguredItemCondition<?, ?>>> EQUIPMENT_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "head").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.HEAD))),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "chest").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.CHEST))),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "legs").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.LEGS))),
-			CalioCodecHelper.optionalField(ConfiguredItemCondition.CODEC, "feet").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.FEET)))
+	private static Holder<ConfiguredItemCondition<?, ?>> itemDefault() {
+		return ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS.get().getHolder(ApoliDynamicRegistries.DENY).orElseThrow();
+	}
+
+	private static final MapCodec<Map<EquipmentSlot, Holder<ConfiguredItemCondition<?, ?>>>> EQUIPMENT_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			ConfiguredItemCondition.optional("head").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.HEAD)).orElseGet(RestrictArmorConfiguration::itemDefault)),
+			ConfiguredItemCondition.optional("chest").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.CHEST)).orElseGet(RestrictArmorConfiguration::itemDefault)),
+			ConfiguredItemCondition.optional("legs").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.LEGS)).orElseGet(RestrictArmorConfiguration::itemDefault)),
+			ConfiguredItemCondition.optional("feet").forGetter(x -> Optional.ofNullable(x.get(EquipmentSlot.FEET)).orElseGet(RestrictArmorConfiguration::itemDefault))
 	).apply(instance, (head, chest, legs, feet) -> {
-		ImmutableMap.Builder<EquipmentSlot, ConfiguredItemCondition<?, ?>> builder = ImmutableMap.builder();
-		head.ifPresent(x -> builder.put(EquipmentSlot.HEAD, x));
-		chest.ifPresent(x -> builder.put(EquipmentSlot.CHEST, x));
-		legs.ifPresent(x -> builder.put(EquipmentSlot.LEGS, x));
-		feet.ifPresent(x -> builder.put(EquipmentSlot.FEET, x));
+		ImmutableMap.Builder<EquipmentSlot, Holder<ConfiguredItemCondition<?, ?>>> builder = ImmutableMap.builder();
+		builder.put(EquipmentSlot.HEAD, head);
+		builder.put(EquipmentSlot.CHEST, chest);
+		builder.put(EquipmentSlot.LEGS, legs);
+		builder.put(EquipmentSlot.FEET, feet);
 		return builder.build();
 	}));
 
@@ -46,9 +54,8 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, ConfiguredItemCondit
 		if (!(entity instanceof LivingEntity living))
 			return;
 		this.conditions().forEach((slot, predicate) -> {
-			if (predicate == null) return;
 			ItemStack equippedItem = living.getItemBySlot(slot);
-			if (!equippedItem.isEmpty() && predicate.check(living.level, equippedItem)) {
+			if (!equippedItem.isEmpty() && ConfiguredItemCondition.check(predicate, living.level, equippedItem)) {
 				if (entity instanceof Player ple) {
 					if (!ple.getInventory().add(equippedItem))
 						ple.drop(equippedItem, true);

@@ -17,6 +17,6 @@ public class InTagBlockCondition extends BlockCondition<TagConfiguration<Block>>
 
 	@Override
 	protected boolean check(TagConfiguration<Block> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
-		return configuration.contains(stateGetter.get().getBlock());
+		return stateGetter.get().is(configuration.value());
 	}
 }

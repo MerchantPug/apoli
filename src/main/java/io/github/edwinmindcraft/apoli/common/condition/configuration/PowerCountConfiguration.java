@@ -10,13 +10,14 @@ import io.github.edwinmindcraft.calio.api.network.OptionalFuncs;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.jetbrains.annotations.Nullable;
 
-public record PowerCountConfiguration(@Nullable EquipmentSlot slot, IntegerComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
+public record PowerCountConfiguration(@Nullable EquipmentSlot slot,
+									  IntegerComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 	public static final Codec<PowerCountConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(SerializableDataTypes.EQUIPMENT_SLOT, "slot").forGetter(OptionalFuncs.opt(PowerCountConfiguration::slot)),
 			IntegerComparisonConfiguration.MAP_CODEC.forGetter(PowerCountConfiguration::comparison)
 	).apply(instance, (equipmentSlot, integerComparisonConfiguration) -> new PowerCountConfiguration(equipmentSlot.orElse(null), integerComparisonConfiguration)));
 
 	public EquipmentSlot[] target() {
-		return this.slot() == null ? EquipmentSlot.values() : new EquipmentSlot[] {this.slot()};
+		return this.slot() == null ? EquipmentSlot.values() : new EquipmentSlot[]{this.slot()};
 	}
 }

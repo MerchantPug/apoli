@@ -25,7 +25,7 @@ public abstract class BlockAction<T extends IDynamicFeatureConfiguration> extend
 
 	@Override
 	public final ConfiguredBlockAction<T, ?> configure(T input) {
-		return new ConfiguredBlockAction<>(this, input);
+		return new ConfiguredBlockAction<>(() -> this, input);
 	}
 
 	public abstract void execute(T configuration, Level world, BlockPos pos, Direction direction);

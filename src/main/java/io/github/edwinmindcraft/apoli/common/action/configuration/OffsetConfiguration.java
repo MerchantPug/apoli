@@ -6,13 +6,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 
-public record OffsetConfiguration<T>(T value, int x, int y, int z) implements IDynamicFeatureConfiguration {
-	public static <T> Codec<OffsetConfiguration<T>> codec(String name, Codec<T> codec) {
-		return codec(codec.fieldOf(name));
-	}
+public record OffsetConfiguration<T>(Holder<T> value, int x, int y, int z) implements IDynamicFeatureConfiguration {
 
-	public static <T> Codec<OffsetConfiguration<T>> codec(MapCodec<T> codec) {
+	public static <T> Codec<OffsetConfiguration<T>> codec(MapCodec<Holder<T>> codec) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 				codec.forGetter(OffsetConfiguration::value),
 				CalioCodecHelper.optionalField(Codec.INT, "x", 0).forGetter(OffsetConfiguration::x),

@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
-import io.github.edwinmindcraft.apoli.common.action.configuration.FoodConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
+import io.github.edwinmindcraft.apoli.common.action.configuration.FoodConfiguration;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 

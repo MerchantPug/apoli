@@ -3,10 +3,9 @@ package io.github.edwinmindcraft.apoli.common.condition.configuration;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
 import org.jetbrains.annotations.NotNull;
 

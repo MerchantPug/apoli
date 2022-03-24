@@ -72,7 +72,7 @@ function initializeCoreMod() {
 				while (iter.hasNext()) {
 					var node = iter.next();
 					var methodName = ASMAPI.mapMethod('m_201940_');
-					if (node.desc === "(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Lnet/minecraft/world/level/block/state/BlockState;)Z") {
+					if (node.desc === "(Lnet/minecraft/world/phys/AABB;Lnet/minecraft/core/BlockPos;)Z") {
 						var gsc2 = ASMAPI.mapMethod("m_60812_");
 						var gsc3 = ASMAPI.mapMethod("m_60742_");
 						var ccof = ASMAPI.mapMethod("m_82750_");

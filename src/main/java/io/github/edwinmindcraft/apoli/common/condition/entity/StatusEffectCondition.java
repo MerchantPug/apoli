@@ -13,7 +13,7 @@ public class StatusEffectCondition extends EntityCondition<StatusEffectConfigura
 
 	@Override
 	public boolean check(StatusEffectConfiguration configuration, Entity entity) {
-		if (configuration.effect() == null || !(entity instanceof LivingEntity living) || !living.hasEffect(configuration.effect()))
+		if (!(entity instanceof LivingEntity living) || !living.hasEffect(configuration.effect()))
 			return false;
 		MobEffectInstance instance = living.getEffect(configuration.effect());
 		assert instance != null;

@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.common.action.entity;
 
-import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.apace100.apoli.action.configuration.ExplodeConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;

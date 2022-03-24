@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @param <C> The type of the {@link ConfiguredFactory} this factory will instantiate.
  * @param <F> The type of this {@link IFactory}.
  */
-public interface IFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredFactory<T, ? extends F>, F extends IFactory<T, C, F>> {
+public interface IFactory<T extends IDynamicFeatureConfiguration, C extends ConfiguredFactory<T, ? extends F, ?>, F extends IFactory<T, C, F>> {
 
 	/**
 	 * Gets or create a {@link MapCodec} from the given {@link Codec}

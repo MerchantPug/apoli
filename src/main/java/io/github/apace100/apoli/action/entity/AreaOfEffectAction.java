@@ -21,7 +21,7 @@ public class AreaOfEffectAction extends EntityAction<AreaOfEffectConfiguration> 
 			if (check == entity && !configuration.includeTarget())
 				continue;
 			if (ConfiguredBiEntityCondition.check(configuration.condition(), entity, check) && check.distanceToSqr(entity) < Mth.square(configuration.radius()))
-				configuration.action().execute(entity, check);
+				configuration.action().value().execute(entity, check);
 		}
 	}
 }

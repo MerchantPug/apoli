@@ -7,19 +7,16 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntity
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.Holder;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
-
-public record VehicleActionConfiguration(@Nullable ConfiguredEntityAction<?, ?> action,
-										 @Nullable ConfiguredBiEntityAction<?, ?> biEntityAction,
-										 @Nullable ConfiguredBiEntityCondition<?, ?> biEntityCondition,
+public record VehicleActionConfiguration(Holder<ConfiguredEntityAction<?, ?>> action,
+										 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction,
+										 Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition,
 										 boolean recursive) implements IDynamicFeatureConfiguration {
 	public static final Codec<VehicleActionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredEntityAction.CODEC, "action").forGetter(x -> Optional.ofNullable(x.action())),
-			CalioCodecHelper.optionalField(ConfiguredBiEntityAction.CODEC, "bientity_action").forGetter(x -> Optional.ofNullable(x.biEntityAction())),
-			CalioCodecHelper.optionalField(ConfiguredBiEntityCondition.CODEC, "bientity_condition").forGetter(x -> Optional.ofNullable(x.biEntityCondition())),
+			ConfiguredEntityAction.optional("action").forGetter(VehicleActionConfiguration::action),
+			ConfiguredBiEntityAction.optional("bientity_action").forGetter(VehicleActionConfiguration::biEntityAction),
+			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(VehicleActionConfiguration::biEntityCondition),
 			CalioCodecHelper.optionalField(Codec.BOOL, "recursive", false).forGetter(VehicleActionConfiguration::recursive)
-	).apply(instance, (t1, t2, t3, t4) -> new VehicleActionConfiguration(t1.orElse(null), t2.orElse(null), t3.orElse(null), t4)));
-
+	).apply(instance, VehicleActionConfiguration::new));
 }

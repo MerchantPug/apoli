@@ -1,23 +1,20 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.MovingEntity;
-import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
-import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,18 +23,20 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Set;
+
 @Mixin(Entity.class)
-public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
+public abstract class EntityMixin implements MovingEntity {
 
 	@Shadow
 	public Level level;
 	@Shadow
 	public float moveDist;
+	@Final
 	@Shadow
-	@Nullable
-	protected Tag<Fluid> fluidOnEyes;
+	private Set<TagKey<Fluid>> fluidOnEyes;
 	@Shadow
-	protected Object2DoubleMap<Tag<Fluid>> fluidHeight;
+	protected Object2DoubleMap<TagKey<Fluid>> fluidHeight;
 	private boolean isMoving;
 	private float distanceBefore;
 
@@ -49,7 +48,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 	}
 
 	@Shadow
-	public abstract double getFluidHeight(Tag<Fluid> fluid);
+	public abstract double getFluidHeight(TagKey<Fluid> fluid);
 
 	@Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
 	private void makeEntitiesIgnoreWater(CallbackInfoReturnable<Boolean> cir) {
@@ -114,33 +113,6 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 	private void checkIsMoving(MoverType type, Vec3 movement, CallbackInfo ci) {
 		if (this.moveDist > this.distanceBefore)
 			this.isMoving = true;
-	}
-
-	@Override
-	public boolean isSubmergedInLoosely(Tag<Fluid> tag) {
-		if (tag == null || this.fluidOnEyes == null) {
-			return false;
-		}
-		if (tag == this.fluidOnEyes) {
-			return true;
-		}
-		return Calio.areTagsEqual(Registry.FLUID_REGISTRY, tag, this.fluidOnEyes);
-	}
-
-	@Override
-	public double getFluidHeightLoosely(Tag<Fluid> tag) {
-		if (tag == null) {
-			return 0;
-		}
-		if (this.fluidHeight.containsKey(tag)) {
-			return this.fluidHeight.getDouble(tag);
-		}
-		for (Tag<Fluid> ft : this.fluidHeight.keySet()) {
-			if (Calio.areTagsEqual(Registry.FLUID_REGISTRY, ft, tag)) {
-				return this.fluidHeight.getDouble(ft);
-			}
-		}
-		return 0;
 	}
 
 	@Override

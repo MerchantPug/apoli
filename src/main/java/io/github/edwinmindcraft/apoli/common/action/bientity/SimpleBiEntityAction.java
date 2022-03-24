@@ -27,7 +27,8 @@ public class SimpleBiEntityAction extends BiEntityAction<NoConfiguration> {
 	}
 
 	public static void tame(Entity actor, Entity target) {
-		if (target instanceof TamableAnimal animal && actor instanceof Player player && !animal.isTame()) animal.tame(player);
+		if (target instanceof TamableAnimal animal && actor instanceof Player player && !animal.isTame())
+			animal.tame(player);
 	}
 
 

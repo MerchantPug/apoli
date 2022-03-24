@@ -104,7 +104,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	}
 
 	public ConfiguredPower<T, ?> configure(T input, PowerData data) {
-		return new ConfiguredPower<>(this, input, data);
+		return new ConfiguredPower<>(() -> this, input, data);
 	}
 
 	protected boolean shouldCheckConditions(ConfiguredPower<T, ?> configuration, Entity entity) {

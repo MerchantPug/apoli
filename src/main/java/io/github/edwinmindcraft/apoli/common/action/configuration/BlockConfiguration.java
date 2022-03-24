@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
