@@ -46,7 +46,7 @@ public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> ext
 	@Deprecated(forRemoval = true)
 	@ApiStatus.ScheduledForRemoval(inVersion = "1.19")
 	public boolean check(ConfiguredBlockCondition<T, ?> configuration, BlockInWorld block) {
-		return configuration.getData().inverted() ^ this.check(configuration.getConfiguration(), block);
+		return this.check(configuration.getConfiguration(), block.getLevel(), block.getPos(), block::getState);
 	}
 
 	public boolean check(ConfiguredBlockCondition<T, ?> configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> state) {

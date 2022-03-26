@@ -55,7 +55,7 @@ public abstract class AbstractBlockStateMixin {
 		if (context instanceof EntityCollisionContext ctx) {
 			if (ctx.getEntity() != null) {
 				Entity entity = ctx.getEntity();
-				if (PreventBlockActionPower.isSelectionPrevented(entity, pos))
+				if (PreventBlockActionPower.isSelectionPrevented(entity, pos, this::asState))
 					cir.setReturnValue(Shapes.empty());
 			}
 		}

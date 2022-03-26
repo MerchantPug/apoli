@@ -56,7 +56,7 @@ public class ApoliEntityConditions {
 
 	public static final RegistryObject<SimpleEntityCondition> DAYTIME = register("daytime", entity -> entity.level.getDayTime() % 24000L < 13000L);
 	public static final RegistryObject<SimpleEntityCondition> FALL_FLYING = registerLiving("fall_flying", LivingEntity::isFallFlying);
-	public static final RegistryObject<SimpleEntityCondition> EXPOSED_TO_SUN = register("exposed_to_sun", entity -> entity.getBrightness() > 0.5F && SimpleEntityCondition.isExposedToSky(entity));
+	public static final RegistryObject<SimpleEntityCondition> EXPOSED_TO_SUN = register("exposed_to_sun", SimpleEntityCondition::isExposedToSun);
 	public static final RegistryObject<SimpleEntityCondition> IN_RAIN = register("in_rain", x -> ((EntityAccessor) x).callIsBeingRainedOn());
 	public static final RegistryObject<SimpleEntityCondition> INVISIBLE = register("invisible", Entity::isInvisible);
 	public static final RegistryObject<SimpleEntityCondition> ON_FIRE = register("on_fire", Entity::isOnFire);
@@ -87,8 +87,8 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<InTagCondition> IN_TAG = register("in_tag", InTagCondition::new);
 	public static final RegistryObject<PowerCondition> POWER = register("power", PowerCondition::new);
 	public static final RegistryObject<FluidHeightCondition> FLUID_HEIGHT = register("fluid_height", FluidHeightCondition::new);
-	public static final RegistryObject<SingleFieldEntityCondition<Optional<ConfiguredBlockCondition<?, ?>>>> ON_BLOCK = register("on_block", CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition"), (entity, configuration) -> entity.isOnGround() && configuration.map(x -> x.check(new BlockInWorld(entity.level, entity.blockPosition(), true))).orElse(true));
-	public static final RegistryObject<SingleFieldEntityCondition<ConfiguredBlockCondition<?, ?>>> IN_BLOCK = register("in_block", ConfiguredBlockCondition.CODEC.fieldOf("block_condition"), (entity, configuration) -> configuration.check(new BlockInWorld(entity.level, entity.blockPosition(), true)));
+	public static final RegistryObject<SingleFieldEntityCondition<Optional<ConfiguredBlockCondition<?, ?>>>> ON_BLOCK = register("on_block", CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition"), (entity, configuration) -> entity.isOnGround() && ConfiguredBlockCondition.check(configuration.orElse(null), entity.level, entity.blockPosition()));
+	public static final RegistryObject<SingleFieldEntityCondition<ConfiguredBlockCondition<?, ?>>> IN_BLOCK = register("in_block", ConfiguredBlockCondition.CODEC.fieldOf("block_condition"), (entity, configuration) -> ConfiguredBlockCondition.check(configuration, entity.level, entity.blockPosition()));
 	public static final RegistryObject<ResourceCondition> RESOURCE = register("resource", ResourceCondition::new);
 	public static final RegistryObject<SingleFieldEntityCondition<ResourceKey<Level>>> DIMENSION = register("dimension", SerializableDataTypes.DIMENSION.fieldOf("dimension"), (entity, dimension) -> entity.getCommandSenderWorld().dimension().equals(dimension));
 	public static final RegistryObject<SingleFieldEntityCondition<MobType>> ENTITY_GROUP = register("entity_group", SerializableDataTypes.ENTITY_GROUP.fieldOf("group"), (entity, group) -> entity instanceof LivingEntity living && living.getMobType().equals(group));

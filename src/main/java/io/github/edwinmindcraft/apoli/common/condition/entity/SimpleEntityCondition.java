@@ -5,7 +5,6 @@ import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 
@@ -17,11 +16,13 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	}
 
 	public static boolean isExposedToSky(Entity entity) {
-		if (!entity.level.isDay() || ((EntityAccessor) entity).callIsBeingRainedOn())
-			return false;
 		BlockPos bp = new BlockPos(entity.getX(), (double) Math.round(entity.getY()), entity.getZ());
 		if (entity.getVehicle() instanceof Boat) bp = bp.above();
 		return entity.level.canSeeSky(bp);
+	}
+
+	public static boolean isExposedToSun(Entity entity) {
+		return entity.getBrightness() > 0.5F && entity.getLevel().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
 	}
 
 	private final Predicate<Entity> predicate;

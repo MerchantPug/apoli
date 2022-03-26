@@ -40,8 +40,14 @@ public class BlockInRadiusCondition extends EntityCondition<BlockInRadiusConfigu
 		for (int x = xStart; x <= xEnd; ++x) {
 			for (int z = zStart; z <= zEnd; ++z) {
 				ChunkAccess chunk = entity.getLevel().getChunk(x, z); //Chunk Will be force loaded.
+				LevelChunkSection[] chunkSections = chunk.getSections();
 				for (int y = yStart; y <= yEnd; ++y) {
-					sections[(y - yStart) + (((x - xStart) + (xSize * (z - zStart))) * ySize)] = chunk.getSection(y);
+					int sectionIndex = chunk.getSectionIndex(y << 4);//16 y
+					int index = (y - yStart) + (((x - xStart) + (xSize * (z - zStart))) * ySize);
+					if (sectionIndex >= 0 & sectionIndex < chunkSections.length)
+						sections[index] = chunkSections[sectionIndex];
+					else
+						sections[index] = null;
 				}
 			}
 		}

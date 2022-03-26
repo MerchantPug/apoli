@@ -17,6 +17,6 @@ public class OnBlockCondition extends EntityCondition<FieldConfiguration<Optiona
 
 	@Override
 	public boolean check(FieldConfiguration<Optional<ConfiguredBlockCondition<?, ?>>> configuration, Entity entity) {
-		return entity.isOnGround() && configuration.value().map(x -> x.check(new BlockInWorld(entity.level, entity.blockPosition(), true))).orElse(true);
+		return entity.isOnGround() && ConfiguredBlockCondition.check(configuration.value().orElse(null), entity.level, entity.blockPosition());
 	}
 }

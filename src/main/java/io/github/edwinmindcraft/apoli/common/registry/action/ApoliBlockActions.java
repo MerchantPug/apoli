@@ -25,7 +25,7 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.BLOC
 
 public class ApoliBlockActions {
 	public static final BiConsumer<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>> EXECUTOR = (action, o) -> action.execute(o.getLeft(), o.getMiddle(), o.getRight());
-	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, Triple<Level, BlockPos, Direction>> PREDICATE = (condition, triple) -> condition.check(new BlockInWorld(triple.getLeft(), triple.getMiddle(), true));
+	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, Triple<Level, BlockPos, Direction>> PREDICATE = (condition, triple) -> ConfiguredBlockCondition.check(condition, triple.getLeft(), triple.getMiddle());
 
 	private static <U extends BlockAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_ACTION_CLASS, Apoli.MODID);

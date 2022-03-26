@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
@@ -355,7 +356,20 @@ public class PowerCommand {
 									String s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, arg).map(JsonElement::toString).result().orElseThrow(() -> new CommandRuntimeException(new TextComponent("Failed to encode " + arg.getRegistryName())));
 									command.getSource().sendSuccess(new TextComponent(s), false);
 									return 1;
-								}))));
+								})))
+						.then(literal("condition")
+								.then(argument("target", EntityArgument.entity())
+										.then(argument("condition_json", EntityConditionArgument.entityCondition()).executes(context -> {
+											Entity target = EntityArgument.getEntity(context, "target");
+											ConfiguredEntityCondition<?, ?> condition = EntityConditionArgument.getEntityCondition(context, "condition_json");
+											if (condition.check(target)) {
+												context.getSource().sendSuccess(new TextComponent("Passed"), false);
+												return 1;
+											} else {
+												context.getSource().sendSuccess(new TextComponent("Failed"), false);
+												return 0;
+											}
+										})))));
 	}
 
 	private static boolean grantPower(LivingEntity entity, ResourceLocation power) {

@@ -100,7 +100,7 @@ public class ApoliPowerEventHandler {
 	@SubscribeEvent
 	public static void breakBlock(BlockEvent.BreakEvent event) {
 		if (event.getPlayer() instanceof ServerPlayer)
-			ActionOnBlockBreakPower.execute(event.getPlayer(), new BlockInWorld(event.getWorld(), event.getPos(), true), !event.isCanceled());
+			ActionOnBlockBreakPower.execute(event.getPlayer(), event.getWorld(), event.getPos(), event::getState, !event.isCanceled());
 	}
 
 	@SubscribeEvent
