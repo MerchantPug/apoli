@@ -6,7 +6,9 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyHarvestConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 import java.util.Optional;
@@ -15,9 +17,9 @@ public class ModifyHarvestPower extends ValueModifyingPowerFactory<ModifyHarvest
 	/**
 	 * This implementation assumes that if a single power says you can harvest, you can harvest.
 	 */
-	public static Optional<Boolean> isHarvestAllowed(Player player, BlockInWorld position) {
+	public static Optional<Boolean> isHarvestAllowed(Player player, LevelReader reader, BlockPos pos) {
 		return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_HARVEST.get()).stream()
-				.filter(x -> x.getFactory().doesApply(x, position))
+				.filter(x -> x.getFactory().doesApply(x, reader, pos))
 				.map(x -> x.getFactory().isHarvestAllowed(x))
 				.reduce((x, y) -> x || y);
 	}
@@ -26,8 +28,8 @@ public class ModifyHarvestPower extends ValueModifyingPowerFactory<ModifyHarvest
 		super(ModifyHarvestConfiguration.CODEC);
 	}
 
-	public boolean doesApply(ConfiguredPower<ModifyHarvestConfiguration, ?> config, BlockInWorld pos) {
-		return ConfiguredBlockCondition.check(config.getConfiguration().condition(), pos);
+	public boolean doesApply(ConfiguredPower<ModifyHarvestConfiguration, ?> config, LevelReader reader, BlockPos pos) {
+		return ConfiguredBlockCondition.check(config.getConfiguration().condition(), reader, pos);
 	}
 
 	public boolean isHarvestAllowed(ConfiguredPower<ModifyHarvestConfiguration, ?> config) {

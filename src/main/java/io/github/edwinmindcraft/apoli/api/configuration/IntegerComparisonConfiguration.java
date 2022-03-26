@@ -38,4 +38,8 @@ public record IntegerComparisonConfiguration(Comparison comparison,
 	public int getOptimalStoppingPoint() {
 		return this.comparison().getOptimalStoppingIndex(this.compareTo());
 	}
+
+	public IntegerComparisonConfiguration inverse() {
+		return new IntegerComparisonConfiguration(this.comparison().inverse(), this.compareTo());
+	}
 }

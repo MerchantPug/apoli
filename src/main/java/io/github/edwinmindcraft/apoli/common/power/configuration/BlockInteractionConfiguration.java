@@ -47,7 +47,7 @@ public record BlockInteractionConfiguration(@Nullable ConfiguredBlockCondition<?
 		if(!this.directions().contains(direction)) {
 			return false;
 		}
-		return ConfiguredBlockCondition.check(this.blockCondition(), new BlockInWorld(level, blockPos, true));
+		return ConfiguredBlockCondition.check(this.blockCondition(), level, blockPos);
 	}
 
 	public InteractionResult executeAction(Entity entity, BlockPos blockPos, Direction direction, InteractionHand hand) {

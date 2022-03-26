@@ -46,6 +46,18 @@ public enum Comparison {
 		};
 	}
 
+	public Comparison inverse() {
+		return switch (this) {
+			case NONE -> NONE;
+			case EQUAL -> NOT_EQUAL;
+			case LESS_THAN -> GREATER_THAN_OR_EQUAL;
+			case GREATER_THAN -> LESS_THAN_OR_EQUAL;
+			case LESS_THAN_OR_EQUAL -> GREATER_THAN;
+			case GREATER_THAN_OR_EQUAL -> LESS_THAN;
+			case NOT_EQUAL -> EQUAL;
+		};
+	}
+
 	@FunctionalInterface
 	interface DoubleBiPredicate {
 		boolean compare(double a, double b);

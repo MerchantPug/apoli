@@ -2,9 +2,13 @@ package io.github.edwinmindcraft.apoli.common.condition.block;
 
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.AdjacentConfiguration;
-import java.util.Arrays;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.NonNullSupplier;
+
+import java.util.Arrays;
 
 public class AdjacentCondition extends BlockCondition<AdjacentConfiguration> {
 	public AdjacentCondition() {
@@ -12,10 +16,9 @@ public class AdjacentCondition extends BlockCondition<AdjacentConfiguration> {
 	}
 
 	@Override
-	protected boolean check(AdjacentConfiguration configuration, BlockInWorld block) {
+	protected boolean check(AdjacentConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
 		int count = Math.toIntExact(Arrays.stream(Direction.values())
-				.map(x -> new BlockInWorld(block.getLevel(), block.getPos().relative(x), true))
-				.filter(configuration.condition()::check).count());
+				.filter(x -> configuration.condition().check(reader, position, stateGetter)).count());
 		return configuration.comparison().check(count);
 	}
 }

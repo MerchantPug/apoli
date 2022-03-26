@@ -11,15 +11,14 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.LevelReader;
 
 public class PreventSleepPower extends PowerFactory<PreventSleepConfiguration> {
 
 	public static boolean tryPreventSleep(Player player, Level world, BlockPos pos) {
-		BlockInWorld cbp = new BlockInWorld(world, pos, true);
 		boolean flag = false;
 		for (ConfiguredPower<PreventSleepConfiguration, PreventSleepPower> p : IPowerContainer.getPowers(player, ApoliPowers.PREVENT_SLEEP.get())) {
-			if (p.getFactory().doesPrevent(p, cbp)) {
+			if (p.getFactory().doesPrevent(p, world, pos)) {
 				if (p.getConfiguration().allowSpawn() && player instanceof ServerPlayer spe)
 					spe.setRespawnPosition(world.dimension(), pos, spe.getYRot(), false, true);
 				player.displayClientMessage(new TranslatableComponent(p.getConfiguration().message()), true);
@@ -33,7 +32,7 @@ public class PreventSleepPower extends PowerFactory<PreventSleepConfiguration> {
 		super(PreventSleepConfiguration.CODEC);
 	}
 
-	public boolean doesPrevent(ConfiguredPower<PreventSleepConfiguration, ?> configuration, BlockInWorld cbp) {
-		return ConfiguredBlockCondition.check(configuration.getConfiguration().condition(), cbp);
+	public boolean doesPrevent(ConfiguredPower<PreventSleepConfiguration, ?> configuration, LevelReader reader, BlockPos pos) {
+		return ConfiguredBlockCondition.check(configuration.getConfiguration().condition(), reader, pos);
 	}
 }

@@ -3,7 +3,7 @@ package io.github.apace100.apoli.power.factory.condition;
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.Comparison;
-import io.github.edwinmindcraft.apoli.common.action.block.DistanceFromPointBlockCondition;
+import io.github.edwinmindcraft.apoli.common.condition.block.DistanceFromPointBlockCondition;
 import io.github.edwinmindcraft.apoli.common.action.configuration.DistanceFromPointConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.configuration.ReferencePoint;
 import io.github.edwinmindcraft.apoli.common.action.entity.DistanceFromPointEntityCondition;

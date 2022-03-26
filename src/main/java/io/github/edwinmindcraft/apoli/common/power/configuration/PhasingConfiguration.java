@@ -7,8 +7,11 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.NonNullSupplier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -28,8 +31,8 @@ public record PhasingConfiguration(@Nullable ConfiguredBlockCondition<?, ?> phas
 		return this.phaseDownCondition() == null ? entity.isCrouching() : this.phaseDownCondition().check(entity);
 	}
 
-	public boolean canPhaseThrough(BlockInWorld cbp) {
-		return this.blacklist() != ConfiguredBlockCondition.check(this.phaseCondition(), cbp);
+	public boolean canPhaseThrough(LevelReader reader, BlockPos pos, NonNullSupplier<BlockState> stateGetter) {
+		return this.blacklist() != ConfiguredBlockCondition.check(this.phaseCondition(), reader, pos, stateGetter);
 	}
 
 	public enum RenderType {

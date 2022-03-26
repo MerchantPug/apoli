@@ -28,8 +28,7 @@ public class ModifyBlockRenderPower extends PowerFactory<ModifyBlockRenderConfig
 	}
 
 	public boolean check(ConfiguredPower<ModifyBlockRenderConfiguration, ?> power, LevelReader world, BlockPos pos) {
-		BlockInWorld cbp = new BlockInWorld(world, pos, true);
-		return ConfiguredBlockCondition.check(power.getConfiguration().blockCondition(), cbp);
+		return ConfiguredBlockCondition.check(power.getConfiguration().blockCondition(), world, pos);
 	}
 
 	@Override

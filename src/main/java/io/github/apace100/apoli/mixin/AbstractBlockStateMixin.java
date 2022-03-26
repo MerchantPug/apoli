@@ -17,6 +17,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -33,7 +34,7 @@ public abstract class AbstractBlockStateMixin {
 	public abstract Block getBlock();
 
 	@Shadow
-	protected abstract BlockState asState();
+	protected abstract @NotNull BlockState asState();
 
 	@SuppressWarnings("deprecation")
 	@Inject(at = @At("HEAD"), method = "getCollisionShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/shapes/CollisionContext;)Lnet/minecraft/world/phys/shapes/VoxelShape;", cancellable = true)
@@ -43,7 +44,7 @@ public abstract class AbstractBlockStateMixin {
 			if (esc.getEntity() != null) {
 				Entity entity = esc.getEntity();
 				boolean isAbove = this.isAbove(entity, blockShape, pos, false);
-				if (world instanceof LevelReader reader && entity instanceof LivingEntity living && PhasingPower.shouldPhaseThrough(living, new BlockInWorld(reader, pos, true), isAbove))
+				if (world instanceof LevelReader reader && entity instanceof LivingEntity living && PhasingPower.shouldPhaseThrough(living, reader, pos, this::asState, isAbove))
 					info.setReturnValue(Shapes.empty());
 			}
 		}

@@ -2,32 +2,30 @@ package io.github.edwinmindcraft.apoli.common.condition.block;
 
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
-
-import java.util.Arrays;
-import java.util.function.Predicate;
-
-import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.LiquidBlockContainer;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 public class SimpleBlockCondition extends BlockCondition<NoConfiguration> {
 
-	public static final Predicate<BlockInWorld> REPLACEABLE = t -> t.getState().getMaterial().isReplaceable();
-	public static final Predicate<BlockInWorld> MOVEMENT_BLOCKING = t -> t.getState().getMaterial().blocksMotion() && !t.getState().getCollisionShape(t.getLevel(), t.getPos()).isEmpty();
-	public static final Predicate<BlockInWorld> LIGHT_BLOCKING = t -> t.getState().getMaterial().isSolidBlocking();
-	public static final Predicate<BlockInWorld> WATER_LOGGABLE = t -> t.getState().getBlock() instanceof LiquidBlockContainer;
-	public static final Predicate<BlockInWorld> EXPOSED_TO_SKY = t -> t.getLevel().canSeeSky(t.getPos());
-	public static final Predicate<BlockInWorld> BLOCK_ENTITY = t -> t.getEntity() != null;
+	public static final BlockPredicate REPLACEABLE = (reader, pos, stateGetter) -> stateGetter.get().getMaterial().isReplaceable();
+	public static final BlockPredicate MOVEMENT_BLOCKING = (reader, pos, stateGetter) -> stateGetter.get().getMaterial().blocksMotion() && !stateGetter.get().getCollisionShape(reader, pos).isEmpty();
+	public static final BlockPredicate LIGHT_BLOCKING = (reader, pos, stateGetter) -> stateGetter.get().getMaterial().isSolidBlocking();
+	public static final BlockPredicate WATER_LOGGABLE = (reader, pos, stateGetter) -> stateGetter.get().getBlock() instanceof LiquidBlockContainer;
+	public static final BlockPredicate EXPOSED_TO_SKY = (reader, pos, stateGetter) -> reader.canSeeSky(pos);
+	public static final BlockPredicate BLOCK_ENTITY = (reader, pos, stateGetter) -> reader.getBlockEntity(pos) != null;
 
-	private final Predicate<BlockInWorld> predicate;
+	private final BlockPredicate blockPredicate;
 
-	public SimpleBlockCondition(Predicate<BlockInWorld> predicate) {
+	public SimpleBlockCondition(BlockPredicate blockPredicate) {
 		super(NoConfiguration.CODEC);
-		this.predicate = predicate;
+		this.blockPredicate = blockPredicate;
 	}
 
 	@Override
-	public boolean check(NoConfiguration configuration, BlockInWorld block) {
-		return this.predicate.test(block);
+	protected boolean check(NoConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+		return this.blockPredicate.test(reader, position, stateGetter);
 	}
 }

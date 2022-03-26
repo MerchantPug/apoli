@@ -3,12 +3,13 @@ package io.github.edwinmindcraft.apoli.common.condition.block;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.NoConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
-import java.util.Arrays;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.NonNullSupplier;
+
+import java.util.Arrays;
 
 public class AttachableCondition extends BlockCondition<NoConfiguration> {
 
@@ -19,9 +20,7 @@ public class AttachableCondition extends BlockCondition<NoConfiguration> {
 	}
 
 	@Override
-	protected boolean check(NoConfiguration configuration, BlockInWorld block) {
-		LevelReader world = block.getLevel();
-		BlockPos pos = block.getPos();
-		return Arrays.stream(Direction.values()).anyMatch(d -> world.getBlockState(pos.relative(d)).isFaceSturdy(world, pos, d.getOpposite()));
+	protected boolean check(NoConfiguration configuration, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter) {
+		return Arrays.stream(Direction.values()).anyMatch(d -> reader.getBlockState(position.relative(d)).isFaceSturdy(reader, position, d.getOpposite()));
 	}
 }

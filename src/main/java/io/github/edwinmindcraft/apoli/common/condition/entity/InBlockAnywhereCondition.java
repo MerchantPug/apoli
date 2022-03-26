@@ -1,5 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.condition.entity;
 
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.InBlockAnywhereConfiguration;
 import net.minecraft.core.BlockPos;
@@ -26,9 +27,8 @@ public class InBlockAnywhereCondition extends EntityCondition<InBlockAnywhereCon
 			for (int j = blockPos.getY(); j <= blockPos2.getY() && count < stopAt; ++j) {
 				for (int k = blockPos.getZ(); k <= blockPos2.getZ() && count < stopAt; ++k) {
 					mutable.set(i, j, k);
-					if (configuration.blockCondition().check(new BlockInWorld(entity.level, mutable, false))) {
+					if (ConfiguredBlockCondition.check(configuration.blockCondition(), entity.level, mutable))
 						count++;
-					}
 				}
 			}
 		}

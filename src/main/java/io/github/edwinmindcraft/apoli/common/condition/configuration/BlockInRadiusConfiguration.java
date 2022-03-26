@@ -19,4 +19,8 @@ public record BlockInRadiusConfiguration(
 			SerializableDataType.enumValue(Shape.class).optionalFieldOf("shape", Shape.CUBE).forGetter(BlockInRadiusConfiguration::shape),
 			IntegerComparisonConfiguration.withDefaults(Comparison.GREATER_THAN_OR_EQUAL, 1).forGetter(BlockInRadiusConfiguration::comparison)
 	).apply(instance, BlockInRadiusConfiguration::new));
+
+	public BlockInRadiusConfiguration inverse() {
+		return new BlockInRadiusConfiguration(this.blockCondition(), this.radius(), this.shape(), this.comparison().inverse());
+	}
 }

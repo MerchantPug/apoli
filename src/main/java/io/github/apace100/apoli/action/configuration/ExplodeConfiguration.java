@@ -51,7 +51,7 @@ public final class ExplodeConfiguration implements IDynamicFeatureConfiguration 
 			@NotNull
 			public Optional<Float> getBlockExplosionResistance(@NotNull Explosion explosion, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull FluidState fluid) {
 				Optional<Float> def = super.getBlockExplosionResistance(explosion, world, pos, state, fluid);
-				Optional<Float> ovr = ConfiguredBlockCondition.check(ExplodeConfiguration.this.indestructible(), new BlockInWorld((LevelReader) world, pos, true)) ? Optional.of(100F) : Optional.empty();
+				Optional<Float> ovr = ConfiguredBlockCondition.check(ExplodeConfiguration.this.indestructible(), (LevelReader) world, pos, () -> state) ? Optional.of(100F) : Optional.empty();
 				return ovr.isPresent() ? def.isPresent() ? def.get() > ovr.get() ? def : ovr : ovr : def;
 			}
 		});

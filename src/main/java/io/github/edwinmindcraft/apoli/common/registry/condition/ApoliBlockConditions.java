@@ -6,12 +6,12 @@ import io.github.apace100.apoli.power.factory.condition.block.MaterialCondition;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
+import io.github.edwinmindcraft.apoli.api.power.factory.context.BlockConditionContext;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.action.block.NbtCondition;
+import io.github.edwinmindcraft.apoli.common.condition.block.NbtCondition;
 import io.github.edwinmindcraft.apoli.common.condition.block.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
@@ -20,15 +20,15 @@ import java.util.function.BiPredicate;
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.BLOCK_CONDITIONS;
 
 public class ApoliBlockConditions {
-	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, BlockInWorld> PREDICATE = (config, position) -> config.check(position);
+	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, BlockConditionContext> PREDICATE = (config, context) -> config.check(context.reader(), context.position(), context.stateGetter());
 
 	private static <U extends BlockCondition<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_CONDITION_CLASS, Apoli.MODID);
 	}
 
-	public static final RegistryObject<DelegatedBlockCondition<ConstantConfiguration<BlockInWorld>>> CONSTANT = of("constant");
-	public static final RegistryObject<DelegatedBlockCondition<ConditionStreamConfiguration<ConfiguredBlockCondition<?, ?>, BlockInWorld>>> AND = of("and");
-	public static final RegistryObject<DelegatedBlockCondition<ConditionStreamConfiguration<ConfiguredBlockCondition<?, ?>, BlockInWorld>>> OR = of("or");
+	public static final RegistryObject<DelegatedBlockCondition<ConstantConfiguration<BlockConditionContext>>> CONSTANT = of("constant");
+	public static final RegistryObject<DelegatedBlockCondition<ConditionStreamConfiguration<ConfiguredBlockCondition<?, ?>, BlockConditionContext>>> AND = of("and");
+	public static final RegistryObject<DelegatedBlockCondition<ConditionStreamConfiguration<ConfiguredBlockCondition<?, ?>, BlockConditionContext>>> OR = of("or");
 
 	public static final RegistryObject<SimpleBlockCondition> MOVEMENT_BLOCKING = BLOCK_CONDITIONS.register("movement_blocking", () -> new SimpleBlockCondition(SimpleBlockCondition.MOVEMENT_BLOCKING));
 	public static final RegistryObject<SimpleBlockCondition> REPLACEABLE_LEGACY = BLOCK_CONDITIONS.register("replacable", () -> new SimpleBlockCondition(SimpleBlockCondition.REPLACEABLE)); //This one has a typo.
@@ -48,9 +48,9 @@ public class ApoliBlockConditions {
 
 	public static final RegistryObject<MaterialCondition> MATERIAL = BLOCK_CONDITIONS.register("material", MaterialCondition::new);
 	public static final RegistryObject<SimpleBlockCondition> BLOCK_ENTITY = BLOCK_CONDITIONS.register("block_entity", () -> new SimpleBlockCondition(SimpleBlockCondition.BLOCK_ENTITY));
-	public static final RegistryObject<FloatComparingBlockCondition> SLIPPERINESS = BLOCK_CONDITIONS.register("slipperiness", () -> new FloatComparingBlockCondition(t -> t.getState().getFriction(t.getLevel(), t.getPos(), null)));
-	public static final RegistryObject<FloatComparingBlockCondition> BLAST_RESISTANCE = BLOCK_CONDITIONS.register("blast_resistance", () -> new FloatComparingBlockCondition(t -> t.getState().getBlock().getExplosionResistance()));
-	public static final RegistryObject<FloatComparingBlockCondition> HARDNESS = BLOCK_CONDITIONS.register("hardness", () -> new FloatComparingBlockCondition(t -> t.getState().getDestroySpeed(t.getLevel(), t.getPos())));
+	public static final RegistryObject<FloatComparingBlockCondition> SLIPPERINESS = BLOCK_CONDITIONS.register("slipperiness", () -> new FloatComparingBlockCondition((level, pos, stateGetter) -> stateGetter.get().getFriction(level, pos, null)));
+	public static final RegistryObject<FloatComparingBlockCondition> BLAST_RESISTANCE = BLOCK_CONDITIONS.register("blast_resistance", () -> new FloatComparingBlockCondition((level, pos, stateGetter) -> stateGetter.get().getBlock().getExplosionResistance()));
+	public static final RegistryObject<FloatComparingBlockCondition> HARDNESS = BLOCK_CONDITIONS.register("hardness", () -> new FloatComparingBlockCondition((level, pos, stateGetter) -> stateGetter.get().getDestroySpeed(level, pos)));
 	public static final RegistryObject<NbtCondition> NBT = BLOCK_CONDITIONS.register("nbt", NbtCondition::new);
 
 	public static ConfiguredBlockCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}

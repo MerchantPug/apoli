@@ -1,6 +1,7 @@
 package io.github.apace100.apoli.power.factory.condition.entity;
 
 import io.github.apace100.apoli.condition.configuration.RaycastConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -22,7 +23,7 @@ public class RaycastCondition extends EntityCondition<RaycastConfiguration> {
 		if (hitResult.getType() == HitResult.Type.MISS)
 			return false;
 		if (hitResult instanceof BlockHitResult bhr && configuration.blockCondition() != null)
-			return configuration.blockCondition().check(new BlockInWorld(entity.level, bhr.getBlockPos(), true));
+			return ConfiguredBlockCondition.check(configuration.blockCondition(), entity.getLevel(), bhr.getBlockPos());
 		if (hitResult instanceof EntityHitResult ehr && configuration.hitCondition() != null)
 			return configuration.hitCondition().check(entity, ehr.getEntity());
 		return true;

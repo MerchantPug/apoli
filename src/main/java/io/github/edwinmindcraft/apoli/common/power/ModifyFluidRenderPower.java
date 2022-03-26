@@ -31,8 +31,7 @@ public class ModifyFluidRenderPower extends PowerFactory<ModifyFluidRenderConfig
 	}
 
 	public boolean check(ConfiguredPower<ModifyFluidRenderConfiguration, ?> power, LevelReader world, BlockPos pos) {
-		BlockInWorld cbp = new BlockInWorld(world, pos, true);
-		return ConfiguredBlockCondition.check(power.getConfiguration().blockCondition(), cbp) && ConfiguredFluidCondition.check(power.getConfiguration().fluidCondition(), world.getFluidState(pos));
+		return ConfiguredBlockCondition.check(power.getConfiguration().blockCondition(), world, pos) && ConfiguredFluidCondition.check(power.getConfiguration().fluidCondition(), world.getFluidState(pos));
 	}
 
 	@Override

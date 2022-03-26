@@ -54,17 +54,15 @@ public class CoreUtils {
 		return null;
 	}
 
-	public static float modifyFriction(float friction, LevelReader level, BlockPos pos, @Nullable Entity entity) {
-		if (entity != null) {
-			BlockInWorld blockInWorld = new BlockInWorld(level, pos, true);
-			return IPowerContainer.modify(entity, ApoliPowers.MODIFY_SLIPPERINESS.get(), friction, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), blockInWorld));
-		}
+	public static float modifyFriction(float friction, LevelReader level, BlockPos pos, @Nullable Entity entity, BlockState state) {
+		if (entity != null)
+			return IPowerContainer.modify(entity, ApoliPowers.MODIFY_SLIPPERINESS.get(), friction, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), level, pos, () -> state));
 		return friction;
 	}
 
 	public static int allowHarvest(BlockGetter level, BlockPos pos, Player player) {
 		if (level instanceof LevelReader reader)
-			return ModifyHarvestPower.isHarvestAllowed(player, new BlockInWorld(reader, pos, true)).map(x -> x ? 1 : 0).orElse(-1);
+			return ModifyHarvestPower.isHarvestAllowed(player, reader, pos).map(x -> x ? 1 : 0).orElse(-1);
 		return -1;
 	}
 }

@@ -68,8 +68,7 @@ public class ApoliPowerEventHandler {
 		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(event.getState(), event.getPlayer());
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
-		BlockInWorld cbp = new BlockInWorld(world, event.getPos(), true);
-		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), cbp)) * factor;
+		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), world, event.getPos(), event::getState)) * factor;
 
 		if (stateCheck == forgeCheck)
 			event.setNewSpeed(speed);

@@ -42,12 +42,14 @@ function initializeCoreMod() {
 				'methodDesc': '(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F'
 			},
 			'transformer': function(node) {
-				//if (CoreUtils.isItemForbidden(this.self(), entity, slot)) return false;
+				//return CoreUtils.modifyFriction(prev, reader, pos, entity, this.self());
 				var ls = new InsnList();
 				ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
 				ls.add(new VarInsnNode(Opcodes.ALOAD, 2));
 				ls.add(new VarInsnNode(Opcodes.ALOAD, 3));
-				ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/edwinmindcraft/apoli/common/util/CoreUtils", "modifyFriction", "(FLnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F"));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 0));
+				ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeBlockState", "self", "()Lnet/minecraft/world/level/block/state/BlockState;", true));
+				ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/edwinmindcraft/apoli/common/util/CoreUtils", "modifyFriction", "(FLnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/block/state/BlockState;)F", false));
 				var iterator = node.instructions.iterator();
 				var insertionSlot = null;
 				while (iterator.hasNext()) {
