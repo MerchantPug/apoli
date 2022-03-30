@@ -17,6 +17,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class ApoliClient {
 
 	public static boolean shouldReloadWorldRenderer = false;
+	public static boolean shouldReapplyShaders = false;
 
 	public static void registerPowerKeybinding(String keyId, KeyMapping keyBinding) {
 		ApoliClientEventHandler.registerPowerKeybinding(keyId, keyBinding);

@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class PowerCondition extends EntityCondition<PowerSourceConfiguration> {
 
-	public PowerCondition() {super(PowerSourceConfiguration.CODEC);}
+	public PowerCondition() {super(PowerSourceConfiguration.OPTIONAL_CODEC);}
 
 	@Override
 	public boolean check(PowerSourceConfiguration configuration, Entity entity) {

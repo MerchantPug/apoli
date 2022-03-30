@@ -18,7 +18,7 @@ public record RaycastConfiguration(RaycastSettingsConfiguration settings,
 	public static final Codec<RaycastConfiguration> CODEC = RecordCodecBuilder.create(instance-> instance.group(
 			RaycastSettingsConfiguration.MAP_CODEC.forGetter(RaycastConfiguration::settings),
 			CalioCodecHelper.optionalField(ConfiguredBiEntityCondition.CODEC, "match_bientity_condition").forGetter(x -> Optional.ofNullable(x.matchCondition())),
-			CalioCodecHelper.optionalField(ConfiguredBiEntityCondition.CODEC, "hit_bientity_condition").forGetter(x -> Optional.ofNullable(x.matchCondition())),
+			CalioCodecHelper.optionalField(ConfiguredBiEntityCondition.CODEC, "hit_bientity_condition").forGetter(x -> Optional.ofNullable(x.hitCondition())),
 			CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition").forGetter(x -> Optional.ofNullable(x.blockCondition()))
 	).apply(instance, (t1, t2, t3, t4) -> new RaycastConfiguration(t1, t2.orElse(null), t3.orElse(null), t4.orElse(null))));
 }

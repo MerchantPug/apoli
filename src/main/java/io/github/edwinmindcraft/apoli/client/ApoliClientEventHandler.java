@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -91,6 +92,10 @@ public class ApoliClientEventHandler {
 	public static void onClientTick(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.START) {
 			Minecraft instance = Minecraft.getInstance();
+			if (ApoliClient.shouldReapplyShaders) {
+				ApoliClient.shouldReapplyShaders = false;
+				instance.gameRenderer.checkEntityPostEffect(instance.options.getCameraType().isFirstPerson() ? instance.getCameraEntity() : null);
+			}
 			LocalPlayer player = instance.player;
 			if (player != null) {
 				IPowerContainer.get(player).ifPresent(container -> {

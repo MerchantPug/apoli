@@ -89,7 +89,8 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent
 	public static void onWakeUp(PlayerWakeUpEvent event) {
-		event.getPlayer().getSleepingPos().ifPresent(pos -> ActionOnWakeUpPower.execute(event.getEntityLiving(), pos));
+		if (!event.wakeImmediately() && !event.updateWorld())
+			event.getPlayer().getSleepingPos().ifPresent(pos -> ActionOnWakeUpPower.execute(event.getEntityLiving(), pos));
 	}
 
 	@SubscribeEvent

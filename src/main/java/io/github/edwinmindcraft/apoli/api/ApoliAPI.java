@@ -51,7 +51,7 @@ public class ApoliAPI {
 
 	public static void synchronizePowerContainer(Entity living) {
 		S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(living);
-		if (packet != null)
+		if (packet != null && !living.getLevel().isClientSide())
 			ApoliCommon.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> living), packet);
 	}
 
