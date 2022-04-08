@@ -87,7 +87,7 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<InTagCondition> IN_TAG = register("in_tag", InTagCondition::new);
 	public static final RegistryObject<PowerCondition> POWER = register("power", PowerCondition::new);
 	public static final RegistryObject<FluidHeightCondition> FLUID_HEIGHT = register("fluid_height", FluidHeightCondition::new);
-	public static final RegistryObject<SingleFieldEntityCondition<Optional<ConfiguredBlockCondition<?, ?>>>> ON_BLOCK = register("on_block", CalioCodecHelper.optionalField(ConfiguredBlockCondition.CODEC, "block_condition"), (entity, configuration) -> entity.isOnGround() && ConfiguredBlockCondition.check(configuration.orElse(null), entity.level, entity.blockPosition()));
+	public static final RegistryObject<OnBlockCondition> ON_BLOCK = register("on_block", OnBlockCondition::new);
 	public static final RegistryObject<SingleFieldEntityCondition<ConfiguredBlockCondition<?, ?>>> IN_BLOCK = register("in_block", ConfiguredBlockCondition.CODEC.fieldOf("block_condition"), (entity, configuration) -> ConfiguredBlockCondition.check(configuration, entity.level, entity.blockPosition()));
 	public static final RegistryObject<ResourceCondition> RESOURCE = register("resource", ResourceCondition::new);
 	public static final RegistryObject<SingleFieldEntityCondition<ResourceKey<Level>>> DIMENSION = register("dimension", SerializableDataTypes.DIMENSION.fieldOf("dimension"), (entity, dimension) -> entity.getCommandSenderWorld().dimension().equals(dimension));
