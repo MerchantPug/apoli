@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 public class ClimbingPower extends PowerFactory<ClimbingConfiguration> {
 	public static boolean check(LivingEntity player, Consumer<BlockPos> climbingPosSetter) {
-		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = IPowerContainer.get(player).map(x -> x.getPowers(ApoliPowers.CLIMBING.get())).orElseGet(ImmutableList::of);
+		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = IPowerContainer.get(player).map(x -> x.getPowers(ApoliPowers.CLIMBING.get(), true)).orElseGet(ImmutableList::of);
 		if (climbingPowers.size() > 0) {
 			if (climbingPowers.stream().anyMatch(x -> x.isActive(player))) {
 				climbingPosSetter.accept(player.blockPosition());
