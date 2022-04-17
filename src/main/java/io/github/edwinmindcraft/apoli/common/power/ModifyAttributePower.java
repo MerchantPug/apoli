@@ -3,18 +3,21 @@ package io.github.edwinmindcraft.apoli.common.power;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.AttributeModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ValueModifyingPowerConfiguration;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 
-public class ModifySwimSpeedPower extends AttributeModifyingPowerFactory<ValueModifyingPowerConfiguration> {
+import java.util.function.Supplier;
 
-	public ModifySwimSpeedPower() {
+public class ModifyAttributePower extends AttributeModifyingPowerFactory<ValueModifyingPowerConfiguration> {
+
+	private Supplier<Attribute> attribute;
+
+	public ModifyAttributePower(Supplier<Attribute> attribute) {
 		super(ValueModifyingPowerConfiguration.CODEC);
+		this.attribute = attribute;
 	}
 
 	@Override
 	public @Nullable Attribute getAttribute() {
-		//FIXME Forge's swim speed doesn't have the same base value.
-		return ForgeMod.SWIM_SPEED.get();
+		return this.attribute.get();
 	}
 }

@@ -13,7 +13,9 @@ import net.minecraft.world.level.material.FogType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(FogRenderer.class)
 @OnlyIn(Dist.CLIENT)
@@ -66,24 +68,4 @@ public abstract class BackgroundRendererMixin {
         }
         return original;
     }*/
-
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 0.25F, ordinal = 1), remap = false)
-	private static float modifyLavaVisibilitySNoPotion(float original, Camera camera) {
-		return LavaVisionPower.getS(camera.getEntity()).orElse(original);
-	}
-
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 1.0F, ordinal = 0), remap = false)
-	private static float modifyLavaVisibilityVNoPotion(float original, Camera camera) {
-		return LavaVisionPower.getV(camera.getEntity()).orElse(original);
-	}
-
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 0.0F, ordinal = 0), remap = false)
-	private static float modifyLavaVisibilitySWithPotion(float original, Camera camera) {
-		return LavaVisionPower.getS(camera.getEntity()).orElse(original);
-	}
-
-	@ModifyConstant(method = "setupFog(Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/FogRenderer$FogMode;FZF)V", constant = @Constant(floatValue = 3.0F, ordinal = 0), remap = false)
-	private static float modifyLavaVisibilityVWithPotion(float original, Camera camera) {
-		return LavaVisionPower.getV(camera.getEntity()).orElse(original);
-	}
 }

@@ -27,7 +27,10 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -126,22 +129,12 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		}
 	}
 
-	// ModifyLavaSpeedPower
-	@ModifyConstant(method = "travel", constant = {
-			@Constant(doubleValue = 0.5D, ordinal = 0),
-			@Constant(doubleValue = 0.5D, ordinal = 1),
-			@Constant(doubleValue = 0.5D, ordinal = 2)
-	})
-	private double modifyLavaSpeed(double original) {
-		return IPowerContainer.modify(this, ApoliPowers.MODIFY_LAVA_SPEED.get(), original);
-	}
-
-	@Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
-	private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
-		if (IPowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()) && livingEntity.isSwimming() && this.getFluidHeight(FluidTags.WATER) <= 0)
-			return false;
-		return livingEntity.isInWaterRainOrBubble();
-	}
+    @Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
+    private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
+        if (IPowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()) && livingEntity.isSwimming() && this.getFluidHeight(FluidTags.WATER) <= 0)
+            return false;
+        return livingEntity.isInWaterRainOrBubble();
+    }
 
 	@Unique
 	private boolean prevPowderSnowState = false;
