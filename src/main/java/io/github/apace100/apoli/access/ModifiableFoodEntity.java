@@ -16,4 +16,8 @@ public interface ModifiableFoodEntity {
 	List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> getCurrentModifyFoodPowers();
 
 	void setCurrentModifyFoodPowers(List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> powers);
+
+	void enforceFoodSync();
+	void resetFoodSync();
+	boolean shouldSyncFood();
 }

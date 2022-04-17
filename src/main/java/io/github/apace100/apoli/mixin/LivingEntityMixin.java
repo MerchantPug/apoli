@@ -259,4 +259,22 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	public void setOriginalFoodStack(ItemStack original) {
 		this.apoli$originalFoodStack = original;
 	}
+
+	@Unique
+	private boolean apoli$shouldSyncFoodData = false;
+
+	@Override
+	public void enforceFoodSync() {
+		this.apoli$shouldSyncFoodData = true;
+	}
+
+	@Override
+	public void resetFoodSync() {
+		this.apoli$shouldSyncFoodData = false;
+	}
+
+	@Override
+	public boolean shouldSyncFood() {
+		return this.apoli$shouldSyncFoodData;
+	}
 }

@@ -34,6 +34,32 @@ function initializeCoreMod() {
 				return node;
 			}
 		},
+		'apoli_override_food_properties': {
+			'target': {
+				'type': 'METHOD',
+				'class': 'net.minecraftforge.common.extensions.IForgeItemStack',
+				'methodName': 'getFoodProperties',
+				'methodDesc': '(Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/food/FoodProperties;'
+			},
+			'transformer': function(node) {
+				//if (CoreUtils.isItemForbidden(this.self(), entity, slot)) return false;
+				var ls = new InsnList();
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 0));
+				ls.add(new MethodInsnNode(Opcodes.INVOKEINTERFACE, "net/minecraftforge/common/extensions/IForgeItemStack", "self", "()Lnet/minecraft/world/item/ItemStack;", true));
+				ls.add(new VarInsnNode(Opcodes.ALOAD, 1));
+				ls.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/edwinmindcraft/apoli/common/util/CoreUtils", "transformFoodProperties", "(Lnet/minecraft/world/food/FoodProperties;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/food/FoodProperties;"));
+				var iterator = node.instructions.iterator();
+				var insertionSlot = null;
+				while (iterator.hasNext()) {
+					var ain = iterator.next();
+					if (ain.getOpcode() === Opcodes.ARETURN)
+						insertionSlot = ain;
+				}
+				if (insertionSlot != null)
+					node.instructions.insertBefore(insertionSlot, ls);
+				return node;
+			}
+		},
 		'apoli_modify_friction': {
 			'target': {
 				'type': 'METHOD',
