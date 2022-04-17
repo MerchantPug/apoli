@@ -6,14 +6,16 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.world.entity.Entity;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface INightVisionPower<T extends IDynamicFeatureConfiguration> {
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	static Optional<Float> getNightVisionStrength(Entity player) {
+	static Optional<Float> getNightVisionStrength(@Nullable Entity player) {
 		return IPowerContainer.get(player).map(x -> x.getPowers().stream()).orElseGet(Stream::of)
-				.filter(x -> x.isActive(player) && x.getFactory() instanceof INightVisionPower)
+				.filter(x -> x.isActive(Objects.requireNonNull(player)) && x.getFactory() instanceof INightVisionPower)
 				.map(x -> getValue((ConfiguredPower) x, player))
 				.max(Float::compareTo);
 	}

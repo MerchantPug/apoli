@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,10 +20,10 @@ import java.util.Optional;
 @OnlyIn(Dist.CLIENT)
 public abstract class LightmapTextureManagerMixin implements AutoCloseable {
 
-    @Shadow @Final private Minecraft mc;
+    @Shadow @Final private Minecraft minecraft;
 
     @ModifyVariable(method = "updateLightTexture", at = @At(value = "STORE"), ordinal = 3)
     private float nightVisionPowerEffect(float value) {
-        return INightVisionPower.getNightVisionStrength(mc.player).map(x -> Math.max(x, value)).orElseGet(() -> value);
+        return INightVisionPower.getNightVisionStrength(this.minecraft.player).map(x -> Math.max(x, value)).orElse(value);
     }
 }
