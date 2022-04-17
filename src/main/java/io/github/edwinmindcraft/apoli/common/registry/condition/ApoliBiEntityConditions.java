@@ -23,7 +23,7 @@ public class ApoliBiEntityConditions {
 	public static final BiPredicate<ConfiguredBiEntityCondition<?, ?>, Pair<Entity, Entity>> PREDICATE = (config, pair) -> config.check(pair.getKey(), pair.getValue());
 
 	private static <U extends BiEntityCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BIENTITY_CONDITION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BIENTITY_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedBiEntityCondition<ConstantConfiguration<Pair<Entity, Entity>>>> CONSTANT = of("constant");

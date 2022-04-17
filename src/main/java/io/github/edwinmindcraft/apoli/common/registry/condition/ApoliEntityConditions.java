@@ -46,7 +46,7 @@ public class ApoliEntityConditions {
 	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = ConfiguredEntityCondition::check;
 
 	private static <U extends EntityCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_CONDITION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ENTITY_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedEntityCondition<ConstantConfiguration<Entity>>> CONSTANT = of("constant");

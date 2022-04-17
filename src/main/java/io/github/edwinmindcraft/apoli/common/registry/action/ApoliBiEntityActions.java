@@ -23,7 +23,7 @@ public class ApoliBiEntityActions {
 	public static final BiPredicate<ConfiguredBiEntityCondition<?, ?>, Pair<Entity, Entity>> PREDICATE = (condition, pair) -> condition.check(pair.getKey(), pair.getValue());
 
 	private static <U extends BiEntityAction<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BIENTITY_ACTION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BIENTITY_ACTION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedBiEntityAction<ExecuteMultipleConfiguration<ConfiguredBiEntityAction<?, ?>, Pair<Entity, Entity>>>> AND = of("and");

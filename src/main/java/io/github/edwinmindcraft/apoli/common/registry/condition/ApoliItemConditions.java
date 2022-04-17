@@ -28,7 +28,7 @@ public class ApoliItemConditions {
 	public static final BiPredicate<ConfiguredItemCondition<?, ?>, Pair<Level, ItemStack>> PREDICATE = (config, pair) -> config.check(pair.getKey(), pair.getValue());
 
 	private static <U extends ItemCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ITEM_CONDITION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ITEM_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedItemCondition<ConstantConfiguration<Pair<Level, ItemStack>>>> CONSTANT = of("constant");

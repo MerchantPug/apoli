@@ -29,7 +29,7 @@ public class ApoliEntityActions {
 	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = ConfiguredEntityCondition::check;
 
 	private static <U extends EntityAction<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ENTITY_ACTION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ENTITY_ACTION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedEntityAction<ExecuteMultipleConfiguration<ConfiguredEntityAction<?, ?>, Entity>>> AND = of("and");

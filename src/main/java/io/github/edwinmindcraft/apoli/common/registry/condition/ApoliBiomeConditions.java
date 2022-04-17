@@ -27,7 +27,7 @@ public class ApoliBiomeConditions {
 	public static final BiPredicate<ConfiguredBiomeCondition<?, ?>, Holder<Biome>> PREDICATE = ConfiguredBiomeCondition::check;
 
 	private static <U extends BiomeCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BIOME_CONDITION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BIOME_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedBiomeCondition<ConstantConfiguration<Holder<Biome>>>> CONSTANT = of("constant");

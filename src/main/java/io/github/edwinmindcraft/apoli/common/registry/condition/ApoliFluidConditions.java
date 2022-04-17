@@ -24,7 +24,7 @@ public class ApoliFluidConditions {
 	public static final BiPredicate<ConfiguredFluidCondition<?, ?>, FluidState> PREDICATE = (config, biome) -> config.check(biome);
 
 	private static <U extends FluidCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.FLUID_CONDITION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.FLUID_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedFluidCondition<ConstantConfiguration<FluidState>>> CONSTANT = of("constant");

@@ -27,7 +27,7 @@ public class ApoliItemActions {
 	public static final BiPredicate<ConfiguredItemCondition<?, ?>, Pair<Level, Mutable<ItemStack>>> PREDICATE = (condition, pair) -> condition.check(pair.getKey(), pair.getValue().getValue());
 
 	private static <U extends ItemAction<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.ITEM_ACTION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ITEM_ACTION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedItemAction<ExecuteMultipleConfiguration<ConfiguredItemAction<?, ?>, Pair<Level, Mutable<ItemStack>>>>> AND = of("and");

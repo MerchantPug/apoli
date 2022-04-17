@@ -27,7 +27,7 @@ public class ApoliBlockActions {
 	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, Triple<Level, BlockPos, Direction>> PREDICATE = (condition, triple) -> condition.check(triple.getLeft(), triple.getMiddle(), () -> triple.getLeft().getBlockState(triple.getMiddle()));
 
 	private static <U extends BlockAction<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_ACTION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BLOCK_ACTION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedBlockAction<ExecuteMultipleConfiguration<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>>>> AND = of("and");

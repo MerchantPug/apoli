@@ -23,7 +23,7 @@ public class ApoliBlockConditions {
 	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, BlockConditionContext> PREDICATE = (config, context) -> config.check(context.reader(), context.position(), context.stateGetter());
 
 	private static <U extends BlockCondition<?>> RegistryObject<U> of(String name) {
-		return RegistryObject.of(Apoli.identifier(name), ApoliRegistries.BLOCK_CONDITION_KEY.location(), Apoli.MODID);
+		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BLOCK_CONDITION_KEY.location(), Apoli.MODID);
 	}
 
 	public static final RegistryObject<DelegatedBlockCondition<ConstantConfiguration<BlockConditionContext>>> CONSTANT = of("constant");
