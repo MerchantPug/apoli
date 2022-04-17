@@ -41,7 +41,7 @@ public record ModifyCraftingConfiguration(@Nullable ResourceLocation recipeIdent
 
 	public boolean doesApply(CraftingContainer container, Recipe<? super CraftingContainer> recipe, Level level) {
 		return (this.recipeIdentifier() == null || Objects.equals(recipe.getId(), this.recipeIdentifier())) &&
-			   (this.itemCondition() == null || !this.itemCondition().check(level, recipe.assemble(container)));
+			   (this.itemCondition() == null || this.itemCondition().check(level, recipe.assemble(container)));
 	}
 
 	public ItemStack createResult(CraftingContainer container, Recipe<? super CraftingContainer> recipe, Level level) {
