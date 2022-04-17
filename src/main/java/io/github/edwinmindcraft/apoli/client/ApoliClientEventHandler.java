@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.ApoliClient;
+import io.github.apace100.apoli.util.MiscUtil;
 import io.github.apace100.calio.Calio;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -132,7 +133,7 @@ public class ApoliClientEventHandler {
 		FogRenderer.FogMode mode = event.getMode();
 		if (event.getCamera().getEntity() instanceof LivingEntity living) {
 			Optional<Float> renderMethod = PhasingPower.getRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS);
-			if (renderMethod.isPresent() && CoreUtils.getInWallBlockState(living) != null) {
+			if (renderMethod.isPresent() && MiscUtil.getInWallBlockState(living) != null) {
 				float view = renderMethod.get();
 				float s;
 				float v;
@@ -152,7 +153,7 @@ public class ApoliClientEventHandler {
 	//Replaces modifyD in BackgroundRendererMixin
 	@SubscribeEvent
 	public static void fogColor(EntityViewRenderEvent.FogColors event) {
-		if (event.getCamera().getEntity() instanceof LivingEntity living && PhasingPower.hasRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS) && CoreUtils.getInWallBlockState(living) != null) {
+		if (event.getCamera().getEntity() instanceof LivingEntity living && PhasingPower.hasRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS) && MiscUtil.getInWallBlockState(living) != null) {
 			event.setBlue(0.0F);
 			event.setGreen(0.0F);
 			event.setRed(0.0F);

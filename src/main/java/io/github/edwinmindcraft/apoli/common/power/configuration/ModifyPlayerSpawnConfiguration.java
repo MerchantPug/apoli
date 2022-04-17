@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
@@ -13,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
@@ -23,45 +25,64 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.level.levelgen.feature.StructureFeature;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
 
 public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float distanceMultiplier,
 											 @Nullable ResourceKey<Biome> biome, String strategy,
-											 @Nullable StructureFeature<?> structure,
+											 @Nullable ResourceKey<ConfiguredStructureFeature<?, ?>> structure,
 											 @Nullable SoundEvent sound) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyPlayerSpawnConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.DIMENSION.fieldOf("dimension").forGetter(ModifyPlayerSpawnConfiguration::dimension),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
 			CalioCodecHelper.resourceKey(Registry.BIOME_REGISTRY).optionalFieldOf("biome").forGetter(x -> Optional.ofNullable(x.biome())),
 			CalioCodecHelper.optionalField(Codec.STRING, "spawn_strategy", "default").forGetter(ModifyPlayerSpawnConfiguration::strategy),
-			CalioCodecHelper.optionalField(Registry.STRUCTURE_FEATURE.byNameCodec(), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
+			CalioCodecHelper.optionalField(SerializableDataType.registryKey(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
+
 	@Nullable
-	private static Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> getStructureLocation(Entity entity, StructureFeature<?> structure, ResourceKey<Level> dimension) {
+	private static Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> getStructureLocation(Level world, @Nullable ResourceKey<ConfiguredStructureFeature<?, ?>> structure, @Nullable TagKey<ConfiguredStructureFeature<?, ?>> structureTag, ResourceKey<Level> dimension) {
+		Registry<ConfiguredStructureFeature<?, ?>> registry = world.registryAccess().registryOrThrow(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY);
+		HolderSet<ConfiguredStructureFeature<?, ?>> entryList = null;
+		String structureOrTagName = "";
+		if (structure != null) {
+			var entry = registry.getHolder(structure);
+			if (entry.isPresent()) {
+				entryList = HolderSet.direct(entry.get());
+			}
+			structureOrTagName = structure.location().toString();
+		}
+		if (entryList == null && structureTag != null) {
+			var optionalList = registry.getTag(structureTag);
+			if (optionalList.isPresent()) {
+				entryList = optionalList.get();
+			}
+			structureOrTagName = "#" + structureTag.location();
+		}
+		if (entryList == null) {
+			Apoli.LOGGER.warn("Could not find feature: \"{}\" in registries.", structure);
+			return null;
+		}
 		BlockPos blockPos = new BlockPos(0, 70, 0);
 		ServerLevel serverWorld = ServerLifecycleHooks.getCurrentServer().getLevel(dimension);
 		if (serverWorld == null) {
-			Apoli.LOGGER.warn("No worlds exist for dimension {}", dimension);
+			Apoli.LOGGER.warn("No such dimension: {}", dimension.location());
 			return null;
 		}
-		RegistryAccess registryAccess = serverWorld.registryAccess();
-		List<Holder.Reference<ConfiguredStructureFeature<?, ?>>> collect = registryAccess.registry(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY).stream().flatMap(Registry::holders).filter(x -> Objects.equals(x.value().feature, structure)).toList();
-		Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> blockPos2 = serverWorld.getChunkSource().getGenerator().findNearestMapFeature(serverWorld, HolderSet.direct(collect), blockPos, 100, false);
-		if (blockPos2 == null) {
-			Apoli.LOGGER.warn("Could not find '{}' in dimension: {}", structure.getRegistryName(), dimension.location());
+		Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> result = serverWorld.getChunkSource().getGenerator().findNearestMapFeature(serverWorld, entryList, blockPos, 100, false);
+		if (result == null) {
+			Apoli.LOGGER.warn("Could not find structure \"{}\" in dimension: {}", structureOrTagName, dimension.location());
 			return null;
 		} else {
-			return blockPos2;
+			return new Pair<>(result.getFirst(), result.getSecond());
 		}
 	}
 
@@ -181,7 +202,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			if (this.structure == null) {
 				tpPos = getValidSpawn(spawnToDimPos, range, world);
 			} else {
-				Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> structure = getStructureLocation(entity, this.structure, this.dimension);
+				Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> structure = getStructureLocation(world, this.structure, null, this.dimension);
 				ChunkPos structureChunkPos;
 
 				if (structure == null) {

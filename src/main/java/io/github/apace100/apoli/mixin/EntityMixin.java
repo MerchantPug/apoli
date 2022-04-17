@@ -1,6 +1,7 @@
 package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.MovingEntity;
+import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
@@ -26,26 +27,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Set;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements MovingEntity {
+public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
+
+    @Inject(method = "fireImmune", at = @At("HEAD"), cancellable = true)
+    private void makeFullyFireImmune(CallbackInfoReturnable<Boolean> cir) {
+        if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.FIRE_IMMUNITY.get())) {
+            cir.setReturnValue(true);
+        }
+    }
 
 	@Shadow
 	public Level level;
 	@Shadow
 	public float moveDist;
-	@Final
-	@Shadow
-	private Set<TagKey<Fluid>> fluidOnEyes;
 	@Shadow
 	protected Object2DoubleMap<TagKey<Fluid>> fluidHeight;
 	private boolean isMoving;
 	private float distanceBefore;
-
-	@Inject(method = "fireImmune", at = @At("HEAD"), cancellable = true)
-	private void makeFullyFireImmune(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower((Entity) (Object) this, ApoliPowers.FIRE_IMMUNITY.get())) {
-			cir.setReturnValue(true);
-		}
-	}
+    @Shadow
+    protected boolean onGround;
+    @Final
+    @Shadow
+    private Set<TagKey<Fluid>> fluidOnEyes;
 
 	@Shadow
 	public abstract double getFluidHeight(TagKey<Fluid> fluid);
@@ -115,8 +118,33 @@ public abstract class EntityMixin implements MovingEntity {
 			this.isMoving = true;
 	}
 
-	@Override
-	public boolean isMoving() {
-		return this.isMoving;
-	}
+    @Override
+    public boolean isSubmergedInLoosely(TagKey<Fluid> tag) {
+        if(tag == null || this.fluidOnEyes == null) {
+            return false;
+        }
+        return this.fluidOnEyes.contains(tag);
+        //return Calio.areTagsEqual(Registry.FLUID_KEY, tag, submergedFluidTag);
+    }
+
+    @Override
+    public double getFluidHeightLoosely(TagKey<Fluid> tag) {
+        if(tag == null) {
+            return 0;
+        }
+        if(this.fluidHeight.containsKey(tag)) {
+            return this.fluidHeight.getDouble(tag);
+        }
+        for(TagKey<Fluid> ft : this.fluidHeight.keySet()) {
+            if(ft.equals(tag)) {
+                return this.fluidHeight.getDouble(ft);
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean isMoving() {
+        return this.isMoving;
+    }
 }

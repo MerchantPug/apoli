@@ -55,8 +55,8 @@ public class DistanceFromCoordinatesConditionRegistry {
         /*return new SerializableData()
             .add("reference", SerializableDataTypes.STRING, alias.equals("distance_from_coordinates") ? "world_origin" : "world_spawn")  // the reference point
 //          .add("check_modified_spawn", SerializableDataTypes.BOOLEAN, true) // whether to check for modified spawns
-            .add("offset", SerializableDataTypes.VECTOR, null) // offset to the reference point
-            .add("coordinates", SerializableDataTypes.VECTOR, null) // adds up (instead of replacing, for simplicity) to the prior for aliasing
+            .add("offset", SerializableDataTypes.VECTOR, Vec3.ZERO) // offset to the reference point
+            .add("coordinates", SerializableDataTypes.VECTOR, Vec3.ZERO) // adds up (instead of replacing, for simplicity) to the prior for aliasing
             .add("ignore_x", SerializableDataTypes.BOOLEAN, false) // ignore the axis in the distance calculation
             .add("ignore_y", SerializableDataTypes.BOOLEAN, false) // idem
             .add("ignore_z", SerializableDataTypes.BOOLEAN, false) // idem
@@ -80,7 +80,7 @@ public class DistanceFromCoordinatesConditionRegistry {
 		return comparison == Comparison.NOT_EQUAL || comparison == Comparison.GREATER_THAN || comparison == Comparison.GREATER_THAN_OR_EQUAL;
 	}
 
-	// Watch Java generic type erasure destroy DRY
+    // Watch Java generic type erasure destroy DRY
 
 	public static void registerBlockConditions() {
 		for (String alias : getAliases())

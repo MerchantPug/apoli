@@ -28,27 +28,28 @@ public class HungerManagerMixin {
 	@Unique
 	private Player player;
 
-	@Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodProperties;getNutrition()I"))
+    @Unique
+    private boolean apoli$ShouldUpdateManually = false;
+
+
+    @Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodProperties;getNutrition()I"))
 	private int modifyHunger(FoodProperties foodComponent, Item item, ItemStack stack) {
 		int nutrition = foodComponent.getNutrition();
 		if (this.player != null) {
 			int change = (int) ModifyFoodPower.apply(((ModifiableFoodEntity) this.player).getCurrentModifyFoodPowers(), this.player.level, stack, nutrition, ModifyFoodConfiguration::foodModifiers);
-			if (change != nutrition)
+			if (change != nutrition && change == 0)
 				this.apoli$ShouldUpdateManually = true;
 			return change;
 		}
 		return nutrition;
 	}
 
-	@Unique
-	private boolean apoli$ShouldUpdateManually = false;
-
 	@Redirect(method = "eat(Lnet/minecraft/world/item/Item;Lnet/minecraft/world/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodProperties;getSaturationModifier()F"))
 	private float modifySaturation(FoodProperties foodComponent, Item item, ItemStack stack) {
 		float saturationModifier = foodComponent.getSaturationModifier();
 		if (this.player != null) {
 			float change = (float) ModifyFoodPower.apply(((ModifiableFoodEntity) this.player).getCurrentModifyFoodPowers(), this.player.level, stack, saturationModifier, ModifyFoodConfiguration::saturationModifiers);
-			if (change != saturationModifier)
+			if (change != saturationModifier && change == 0)
 				this.apoli$ShouldUpdateManually = true;
 			return change;
 		}

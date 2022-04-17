@@ -17,7 +17,7 @@ import java.util.Optional;
 public class PreventFeatureRenderPower extends PowerFactory<ListConfiguration<String>> {
 	@OnlyIn(Dist.CLIENT)
 	public static boolean doesPrevent(Entity entity, RenderLayer<?, ?> layer) {
-		Optional<ClassDataRegistry> optionalCdr = ClassDataRegistry.get(ClassUtil.castClass(RenderLayer.class));
+		Optional<ClassDataRegistry<RenderLayer<?, ?>>> optionalCdr = ClassDataRegistry.get(ClassUtil.castClass(RenderLayer.class));
 		if (optionalCdr.isPresent()) {
 			ClassDataRegistry<? extends RenderLayer<?, ?>> cdr = optionalCdr.get();
 			return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_FEATURE_RENDER.get()).stream()

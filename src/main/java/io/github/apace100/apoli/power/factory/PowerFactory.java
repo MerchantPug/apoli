@@ -76,10 +76,14 @@ public class PowerFactory<P extends Power> {
 			return null;
 		}
 
-		/*public SerializableData.Instance getDataInstance() {
-			return dataInstance;
-		}*/
-	}
+        /*public SerializableData.Instance getDataInstance() {
+            return dataInstance;
+        }*/
+
+        public PowerFactory<?> getFactory() {
+            return PowerFactory.this;
+        }
+    }
 
 	public Instance read(JsonObject json) {
 		return new Instance(ConfiguredPower.CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst).getOrThrow(false, s -> {}));

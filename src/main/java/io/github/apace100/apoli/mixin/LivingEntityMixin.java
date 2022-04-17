@@ -47,12 +47,6 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		super(type, world);
 	}
 
-	@Inject(method = "canStandOnFluid", at = @At("HEAD"), cancellable = true)
-	private void modifyWalkableFluids(FluidState fluid, CallbackInfoReturnable<Boolean> info) {
-		if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.getConfiguration().value()))) {
-			info.setReturnValue(true);
-		}
-	}
    /* @Inject(method = "onEffectAdded", at = @At("TAIL"))
     private void updateStatusEffectWhenApplied(StatusEffectInstance effectInstance, Entity source, CallbackInfo ci) {
         SyncStatusEffectsUtil.sendStatusEffectUpdatePacket((LivingEntity)(Object)this, SyncStatusEffectsUtil.UpdateType.APPLY, effectInstance);
@@ -104,7 +98,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	}
 
 	@Inject(method = "collectEquipmentChanges", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeMap;removeAttributeModifiers(Lcom/google/common/collect/Multimap;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void removeEquipmentPowers(CallbackInfoReturnable<Map> cir, Map map, EquipmentSlot[] var2, int var3, int var4, EquipmentSlot equipmentSlot, ItemStack itemStack3, ItemStack itemStack4) {
+	private void removeEquipmentPowers(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir, Map<EquipmentSlot, ItemStack> map, EquipmentSlot[] var2, int var3, int var4, EquipmentSlot equipmentSlot, ItemStack itemStack3, ItemStack itemStack4) {
 		List<StackPowerUtil.StackPower> powers = StackPowerUtil.getPowers(itemStack3, equipmentSlot);
 		if (powers.size() > 0) {
 			ResourceLocation source = new ResourceLocation(Apoli.MODID, equipmentSlot.getName());
@@ -116,7 +110,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	}
 
 	@Inject(method = "collectEquipmentChanges", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeMap;addTransientAttributeModifiers(Lcom/google/common/collect/Multimap;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void addEquipmentPowers(CallbackInfoReturnable<Map> cir, Map map, EquipmentSlot[] var2, int var3, int var4, EquipmentSlot equipmentSlot, ItemStack itemStack3, ItemStack itemStack4) {
+	private void addEquipmentPowers(CallbackInfoReturnable<Map<EquipmentSlot, ItemStack>> cir, Map<EquipmentSlot, ItemStack> map, EquipmentSlot[] var2, int var3, int var4, EquipmentSlot equipmentSlot, ItemStack itemStack3, ItemStack itemStack4) {
 		List<StackPowerUtil.StackPower> powers = StackPowerUtil.getPowers(itemStack4, equipmentSlot);
 		if (powers.size() > 0) {
 			ResourceLocation source = new ResourceLocation(Apoli.MODID, equipmentSlot.getName());
@@ -128,6 +122,12 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 			IPowerContainer.sync(this);
 		}
 	}
+
+    @Inject(method = "canStandOnFluid", at = @At("HEAD"), cancellable = true)
+    private void modifyWalkableFluids(FluidState fluid, CallbackInfoReturnable<Boolean> cir) {
+        if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.getConfiguration().value())))
+            cir.setReturnValue(true);
+    }
 
     @Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
     private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
@@ -181,7 +181,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@Inject(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ai/attributes/AttributeInstance;getValue()D", ordinal = 0))
 	public void modifyFall(Vec3 motion, CallbackInfo ci) {
-		ModifyFallingPower.apply((Entity) this, this.getDeltaMovement().y <= 0.0D);
+		ModifyFallingPower.apply(this, this.getDeltaMovement().y <= 0.0D);
 	}
 
 	@ModifyVariable(method = "eat", at = @At("HEAD"), argsOnly = true)

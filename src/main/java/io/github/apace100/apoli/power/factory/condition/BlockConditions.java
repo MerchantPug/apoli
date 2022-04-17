@@ -44,7 +44,7 @@ public class BlockConditions {
                 if(block == null || block.getBlockState() == null) {
                     return false;
                 }
-                return block.getBlockState().isIn((Tag<Block>)data.get("tag"));
+                return block.getBlockState().getBlock().getRegistryEntry().isIn(data.get("tag"));
             }));
         register(new ConditionFactory<>(Apoli.identifier("adjacent"), new SerializableData()
             .add("comparison", ApoliDataTypes.COMPARISON)
