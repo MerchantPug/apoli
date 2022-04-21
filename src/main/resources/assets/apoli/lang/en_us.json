@@ -70,5 +70,6 @@
   "text.autoconfig.power_config.option.tooltips.showUsabilityHints": "Show Usability Hints",
   "text.autoconfig.power_config.option.tooltips.compactUsabilityHints": "Compact Usability Hints",
 
-  "config.apoli.prevent_usage.enforce_food_restrictions": "Enforce Food Restrictions"
+  "config.apoli.prevent_usage.enforce_food_restrictions": "Enforce Food Restrictions",
+  "config.apoli.experiment.hud": "Enabled Hud Experiment"
 }
