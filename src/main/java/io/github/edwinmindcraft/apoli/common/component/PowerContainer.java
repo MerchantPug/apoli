@@ -168,7 +168,9 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@SuppressWarnings("unchecked")
 	public @NotNull <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<ConfiguredPower<C, F>> getPowers(F factory, boolean includeInactive) {
 		ImmutableList.Builder<ConfiguredPower<C, F>> builder = ImmutableList.builder();
-		this.powers.values().stream().filter(value -> Objects.equals(factory, value.getFactory()) && (includeInactive || value.isActive(this.owner))).map(value -> (ConfiguredPower<C, F>) value).forEach(builder::add);
+		this.powers.values().stream()
+				.filter(value -> Objects.equals(factory, value.getFactory()) && (includeInactive || value.isActive(this.owner)))
+				.map(value -> (ConfiguredPower<C, F>) value).forEach(builder::add);
 		return builder.build();
 	}
 
