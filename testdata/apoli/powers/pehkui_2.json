@@ -1,0 +1,12 @@
+{
+  "type": "apoli:modify_scale",
+  "scales": [
+    "pehkui:width",
+    "pehkui:height"
+  ],
+  "modifier": {
+    "name": "Test scale modifier",
+    "operation": "MULTIPLY_TOTAL",
+    "value": -0.5
+  }
+}

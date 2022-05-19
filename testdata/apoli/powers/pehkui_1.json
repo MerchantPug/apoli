@@ -1,0 +1,23 @@
+{
+  "type": "apoli:modify_scale",
+  "scales": [
+    "pehkui:width",
+    "pehkui:height"
+  ],
+  "modifiers": [
+    {
+      "name": "Test scale multiply base modifier",
+      "operation": "MULTIPLY_TOTAL",
+      "value": 2
+    },
+    {
+      "name": "Test scale multiply total modifier",
+      "operation": "MULTIPLY_TOTAL",
+      "value": 2
+    }
+  ],
+  "condition": {
+    "type": "apoli:status_effect",
+    "effect": "minecraft:speed"
+  }
+}

@@ -9,7 +9,9 @@ import io.github.apace100.apoli.command.PowerTypeArgumentType;
 import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.component.PowerHolderComponentImpl;
+import io.github.apace100.apoli.integration.PostPowerLoadCallback;
 import io.github.apace100.apoli.networking.ModPacketsC2S;
+import io.github.apace100.apoli.power.IntegrationPowerListeners;
 import io.github.apace100.apoli.power.PowerTypes;
 import io.github.apace100.apoli.power.factory.PowerFactories;
 import io.github.apace100.apoli.power.factory.action.BiEntityActions;
@@ -109,6 +111,8 @@ public class Apoli implements ModInitializer, EntityComponentInitializer {
 		OrderedResourceListeners.register(new PowerTypes()).complete();
 
 		CriteriaRegistryInvoker.callRegister(GainedPowerCriterion.INSTANCE);
+
+		PostPowerLoadCallback.EVENT.register(IntegrationPowerListeners::onPostPowerLoad);
 
 		LOGGER.info("Apoli " + VERSION + " has initialized. Ready to power up your game!");
 	}

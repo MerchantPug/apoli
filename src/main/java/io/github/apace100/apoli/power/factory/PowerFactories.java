@@ -32,6 +32,7 @@ public class PowerFactories {
         register(ModifyHarvestPower::createFactory);
         register(ModifyJumpPower::createFactory);
         register(ModifyPlayerSpawnPower::createFactory);
+        register(ModifyScalePower.getFactory());
         register(NightVisionPower::createFactory);
         register(ParticlePower::createFactory);
         register(PhasingPower::createFactory);

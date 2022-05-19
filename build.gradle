@@ -68,6 +68,10 @@ dependencies {
 
 	modImplementation "com.github.DaFuqs:AdditionalEntityAttributes:${project.aea_version}"
 	include "com.github.DaFuqs:AdditionalEntityAttributes:${project.aea_version}"
+
+	modApi("com.github.Virtuoel:Pehkui:${pehkui_version}") {
+		exclude group: "net.fabricmc.fabric-api"
+	}
 }
 
 processResources {
