@@ -36,7 +36,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 
 	@Override
 	public void activate(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
-		if (!player.level.isClientSide() && player instanceof Player ple)
+		if (!player.level.isClientSide() && player instanceof Player ple && configuration.isActive(player))
 			ple.openMenu(new SimpleMenuProvider(this.getMenuCreator(configuration, player), new TranslatableComponent(configuration.getConfiguration().inventoryName())));
 	}
 
