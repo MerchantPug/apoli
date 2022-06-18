@@ -2,23 +2,25 @@ package io.github.apace100.apoli.action.configuration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,7 +29,7 @@ public final class ExplodeConfiguration implements IDynamicFeatureConfiguration 
 			Codec.FLOAT.fieldOf("power").forGetter(ExplodeConfiguration::power),
 			CalioCodecHelper.optionalField(SerializableDataTypes.DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.BREAK).forGetter(ExplodeConfiguration::destructionType),
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
-			ConfiguredBlockCondition.optional("indestructible").forGetter(ExplodeConfiguration::indestructible),
+			ConfiguredBlockCondition.optional("indestructible", Apoli.identifier("deny")).forGetter(ExplodeConfiguration::indestructible),
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "create_fire", false).forGetter(ExplodeConfiguration::createFire)
 			//ConfiguredBlockCondition.optional("destructible").forGetter(x -> Optional.empty()) //Ignored
 	).apply(instance, ExplodeConfiguration::new));
@@ -45,7 +47,7 @@ public final class ExplodeConfiguration implements IDynamicFeatureConfiguration 
 		this.damageSelf = damageSelf;
 		this.indestructible = indestructible;
 		this.createFire = createFire;
-		this.explosionCalculator = Lazy.of(() -> this.indestructible() == null ? new ExplosionDamageCalculator() : new ExplosionDamageCalculator() {
+		this.explosionCalculator = Lazy.of(() -> !this.indestructible().isBound() ? new ExplosionDamageCalculator() : new ExplosionDamageCalculator() {
 			@Override
 			@NotNull
 			public Optional<Float> getBlockExplosionResistance(@NotNull Explosion explosion, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull FluidState fluid) {

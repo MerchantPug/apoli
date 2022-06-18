@@ -9,14 +9,16 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.NonNullSupplier;
-import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -41,6 +43,14 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 
 	public static MapCodec<Holder<ConfiguredBlockCondition<?, ?>>> optional(String name) {
 		return CalioCodecHelper.registryDefaultedField(HOLDER, name, ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS);
+	}
+
+	public static MapCodec<Holder<ConfiguredBlockCondition<?, ?>>> optional(String name, ResourceKey<ConfiguredBlockCondition<?,?>> key) {
+		return CalioCodecHelper.registryField(HOLDER, name, key, ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS);
+	}
+
+	public static MapCodec<Holder<ConfiguredBlockCondition<?, ?>>> optional(String name, ResourceLocation key) {
+		return CalioCodecHelper.registryField(HOLDER, name, ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, key), ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS);
 	}
 
 	/**
