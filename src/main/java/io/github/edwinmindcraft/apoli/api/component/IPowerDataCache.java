@@ -1,7 +1,7 @@
 package io.github.edwinmindcraft.apoli.api.component;
 
-import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.util.LazyOptional;
@@ -14,5 +14,6 @@ public interface IPowerDataCache {
 	}
 
 	void setDamage(float damage);
+
 	float getDamage();
 }

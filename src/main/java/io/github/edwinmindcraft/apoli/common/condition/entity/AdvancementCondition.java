@@ -18,7 +18,7 @@ import java.util.Objects;
 public class AdvancementCondition extends EntityCondition<FieldConfiguration<ResourceLocation>> {
 
 	public AdvancementCondition() {
-		super(FieldConfiguration.codec(ResourceLocation.CODEC, "builder"));
+		super(FieldConfiguration.codec(ResourceLocation.CODEC, "advancement"));
 	}
 
 	protected boolean testClient(FieldConfiguration<ResourceLocation> configuration, Entity entity) {

@@ -37,6 +37,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
@@ -169,16 +170,22 @@ public class ApoliPowerEventHandler {
 		LivingEntity target = event.getEntityLiving();
 		DamageSource source = event.getSource();
 		Entity attacker = source.getEntity();
-		if (event.getAmount() > 0 && !event.isCanceled()) {
-			SelfActionWhenHitPower.execute(target, source, event.getAmount());
-			AttackerActionWhenHitPower.execute(target, source, event.getAmount());
+		float amount = event.getAmount();
+		LazyOptional<IPowerDataCache> pdc = IPowerDataCache.get(target);
+		//This is only true if the invulnerability path was used. (LivingEntity:1102)
+		//Using this allows me to bypass an inconsistency in the vanilla code.
+		boolean validate = event.getAmount() != target.lastHurt;
+		float prevDamage = pdc.map(IPowerDataCache::getDamage).orElse(Float.POSITIVE_INFINITY);
+		pdc.ifPresent(x -> x.setDamage(amount));
+		if (amount > 0 && !event.isCanceled() && (!validate || target.invulnerableTime > 10F || prevDamage <= amount)) {
+			SelfActionWhenHitPower.execute(target, source, amount);
+			AttackerActionWhenHitPower.execute(target, source, amount);
 			if (attacker != null) {
-				SelfCombatActionPower.onHit(attacker, target, source, event.getAmount());
-				TargetCombatActionPower.onHit(attacker, target, source, event.getAmount());
-				CombatHitActionPower.perform(attacker, target, source, event.getAmount());
+				SelfCombatActionPower.onHit(attacker, target, source, amount);
+				TargetCombatActionPower.onHit(attacker, target, source, amount);
+				CombatHitActionPower.perform(attacker, target, source, amount);
 			}
 		}
-		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(event.getAmount()));
 	}
 
 	@SubscribeEvent
