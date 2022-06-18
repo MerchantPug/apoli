@@ -22,7 +22,7 @@ public abstract class LightmapTextureManagerMixin implements AutoCloseable {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @ModifyVariable(method = "updateLightTexture", at = @At(value = "STORE"), ordinal = 3)
+    @ModifyVariable(method = "updateLightTexture", at = @At(value = "STORE"), ordinal = 4)
     private float nightVisionPowerEffect(float value) {
         return INightVisionPower.getNightVisionStrength(this.minecraft.player).map(x -> Math.max(x, value)).orElse(value);
     }
