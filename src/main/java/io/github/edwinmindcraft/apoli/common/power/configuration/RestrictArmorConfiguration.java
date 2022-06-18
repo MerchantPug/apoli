@@ -47,7 +47,7 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, Holder<ConfiguredIte
 	).apply(instance, RestrictArmorConfiguration::new));
 
 	public boolean check(EquipmentSlot slot, Level level, ItemStack stack) {
-		return ConfiguredItemCondition.check(this.conditions.get(slot), level, stack);
+		return this.conditions.get(slot) != null && ConfiguredItemCondition.check(this.conditions.get(slot), level, stack);
 	}
 
 	public void dropIllegalItems(Entity entity) {
