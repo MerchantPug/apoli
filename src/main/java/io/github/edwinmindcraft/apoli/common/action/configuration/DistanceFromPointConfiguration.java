@@ -52,15 +52,15 @@ public record DistanceFromPointConfiguration(ReferencePoint reference, Vec3 offs
 		return RecordCodecBuilder.create(instance -> instance.group(
 				CalioCodecHelper.optionalField(SerializableDataType.enumValue(ReferencePoint.class), "reference", reference).forGetter(DistanceFromPointConfiguration::reference),
 				OFFSET_CODEC.forGetter(DistanceFromPointConfiguration::offset),
-				CalioCodecHelper.optionalField(Codec.BOOL, "ignore_x", false).forGetter(DistanceFromPointConfiguration::ignoreX),
-				CalioCodecHelper.optionalField(Codec.BOOL, "ignore_y", false).forGetter(DistanceFromPointConfiguration::ignoreY),
-				CalioCodecHelper.optionalField(Codec.BOOL, "ignore_z", false).forGetter(DistanceFromPointConfiguration::ignoreZ),
+				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "ignore_x", false).forGetter(DistanceFromPointConfiguration::ignoreX),
+				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "ignore_y", false).forGetter(DistanceFromPointConfiguration::ignoreY),
+				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "ignore_z", false).forGetter(DistanceFromPointConfiguration::ignoreZ),
 				CalioCodecHelper.optionalField(SerializableDataType.enumValue(Shape.class), "ignore_z", Shape.CUBE).forGetter(DistanceFromPointConfiguration::shape),
-				CalioCodecHelper.optionalField(Codec.BOOL, "scale_reference_to_dimension", true).forGetter(DistanceFromPointConfiguration::scaleReferenceToDimension),
-				CalioCodecHelper.optionalField(Codec.BOOL, "scale_distance_to_dimension", false).forGetter(DistanceFromPointConfiguration::scaleDistanceToDimension),
+				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "scale_reference_to_dimension", true).forGetter(DistanceFromPointConfiguration::scaleReferenceToDimension),
+				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "scale_distance_to_dimension", false).forGetter(DistanceFromPointConfiguration::scaleDistanceToDimension),
 				DoubleComparisonConfiguration.MAP_CODEC.forGetter(DistanceFromPointConfiguration::comparison),
-				CalioCodecHelper.optionalField(Codec.BOOL, "result_on_wrong_dimension").forGetter(DistanceFromPointConfiguration::resultOnWrongDimension),
-				CalioCodecHelper.optionalField(Codec.INT, "round_to_digit").forGetter(DistanceFromPointConfiguration::roundToDigit)
+				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "result_on_wrong_dimension").forGetter(DistanceFromPointConfiguration::resultOnWrongDimension),
+				CalioCodecHelper.optionalField(CalioCodecHelper.INT, "round_to_digit").forGetter(DistanceFromPointConfiguration::roundToDigit)
 		).apply(instance, DistanceFromPointConfiguration::new));
 	}
 

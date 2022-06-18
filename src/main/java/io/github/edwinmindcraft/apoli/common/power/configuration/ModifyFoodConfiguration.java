@@ -31,7 +31,7 @@ public record ModifyFoodConfiguration(ListConfiguration<AttributeModifier> foodM
 			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyFoodConfiguration::entityAction),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "replace_stack").forGetter(x -> Optional.ofNullable(x.replaceStack())),
 			ConfiguredItemAction.optional("item_action").forGetter(ModifyFoodConfiguration::itemAction),
-			CalioCodecHelper.optionalField(Codec.BOOL, "always_edible", false).forGetter(ModifyFoodConfiguration::alwaysEdible),
-			CalioCodecHelper.optionalField(Codec.BOOL, "prevent_effects", false).forGetter(ModifyFoodConfiguration::preventEffects)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "always_edible", false).forGetter(ModifyFoodConfiguration::alwaysEdible),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "prevent_effects", false).forGetter(ModifyFoodConfiguration::preventEffects)
 	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8) -> new ModifyFoodConfiguration(t1, t2, t3, t4, t5.orElse(null), t6, t7, t8)));
 }

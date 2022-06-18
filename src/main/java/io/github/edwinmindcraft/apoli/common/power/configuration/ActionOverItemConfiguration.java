@@ -18,6 +18,6 @@ public record ActionOverItemConfiguration(Holder<ConfiguredEntityAction<?,?>> en
 			ConfiguredEntityAction.optional("entity_action").forGetter(ActionOverItemConfiguration::entityAction),
 			ConfiguredEntityAction.optional("rising_action").forGetter(ActionOverItemConfiguration::risingAction),
 			ConfiguredEntityAction.optional("falling_action").forGetter(ActionOverItemConfiguration::fallingAction),
-			Codec.INT.fieldOf("interval").forGetter(ActionOverItemConfiguration::interval)
+			CalioCodecHelper.INT.fieldOf("interval").forGetter(ActionOverItemConfiguration::interval)
 	).apply(instance, ActionOverItemConfiguration::new));
 }

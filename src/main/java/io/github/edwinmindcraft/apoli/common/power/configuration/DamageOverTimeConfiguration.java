@@ -18,8 +18,8 @@ public record DamageOverTimeConfiguration(int interval, int delay, float damageE
 	public static final DamageSource GENERIC_DAMAGE = new DamageSource("genericDamageOverTime").bypassArmor().bypassMagic();
 
 	public static final Codec<DamageOverTimeConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("interval").forGetter(DamageOverTimeConfiguration::interval),
-			CalioCodecHelper.optionalField(Codec.INT, "onset_delay").forGetter(x -> x.delay() == x.interval() ? Optional.empty() : Optional.of(x.delay())),
+			CalioCodecHelper.INT.fieldOf("interval").forGetter(DamageOverTimeConfiguration::interval),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "onset_delay").forGetter(x -> x.delay() == x.interval() ? Optional.empty() : Optional.of(x.delay())),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "damage_easy").forGetter(x -> x.damageEasy() == x.damage() ? Optional.empty() : Optional.of(x.damageEasy())),
 			Codec.FLOAT.fieldOf("damage").forGetter(DamageOverTimeConfiguration::damage),
 			CalioCodecHelper.optionalField(SerializableDataTypes.DAMAGE_SOURCE, "damage_source", GENERIC_DAMAGE).forGetter(DamageOverTimeConfiguration::damageSource),

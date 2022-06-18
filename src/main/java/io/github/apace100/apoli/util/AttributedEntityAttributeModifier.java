@@ -12,7 +12,7 @@ public record AttributedEntityAttributeModifier(Attribute attribute, AttributeMo
 	public static final Codec<AttributedEntityAttributeModifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.ATTRIBUTE.fieldOf("attribute").forGetter(AttributedEntityAttributeModifier::attribute),
 			SerializableDataTypes.MODIFIER_OPERATION.fieldOf("operation").forGetter(x -> x.modifier().getOperation()),
-			Codec.DOUBLE.fieldOf("value").forGetter(x -> x.modifier().getAmount()),
+			CalioCodecHelper.DOUBLE.fieldOf("value").forGetter(x -> x.modifier().getAmount()),
 			CalioCodecHelper.optionalField(Codec.STRING, "name", "Unnamed EntityAttributeModifier").forGetter(x -> x.modifier().getName())
 	).apply(instance, (attribute, operation, value, name) -> new AttributedEntityAttributeModifier(attribute, new AttributeModifier(name, value, operation))));
 

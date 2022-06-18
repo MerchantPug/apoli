@@ -16,7 +16,7 @@ public record InventoryConfiguration(String inventoryName, boolean dropOnDeath,
 									 IActivePower.Key key) implements IDynamicFeatureConfiguration {
 	public static final Codec<InventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(Codec.STRING, "name", "container.inventory").forGetter(InventoryConfiguration::inventoryName),
-			CalioCodecHelper.optionalField(Codec.BOOL, "drop_on_death", false).forGetter(InventoryConfiguration::dropOnDeath),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "drop_on_death", false).forGetter(InventoryConfiguration::dropOnDeath),
 			ConfiguredItemCondition.optional("drop_on_death_filter").forGetter(InventoryConfiguration::dropFilter),
 			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(InventoryConfiguration::key)
 	).apply(instance, InventoryConfiguration::new));

@@ -15,8 +15,8 @@ public final class ModifyFallingConfiguration implements IDynamicFeatureConfigur
 	private static final Random RANDOM = new Random();
 
 	public static final Codec<ModifyFallingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.DOUBLE.fieldOf("velocity").forGetter(ModifyFallingConfiguration::velocity),
-			CalioCodecHelper.optionalField(Codec.BOOL, "take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage)
+			CalioCodecHelper.DOUBLE.fieldOf("velocity").forGetter(ModifyFallingConfiguration::velocity),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "take_fall_damage", true).forGetter(ModifyFallingConfiguration::takeFallDamage)
 	).apply(instance, ModifyFallingConfiguration::new));
 
 	private final double velocity;

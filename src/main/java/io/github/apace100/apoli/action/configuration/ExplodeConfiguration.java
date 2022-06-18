@@ -26,9 +26,9 @@ public final class ExplodeConfiguration implements IDynamicFeatureConfiguration 
 	public static final Codec<ExplodeConfiguration> CODEC = RecordCodecBuilder.create(instance -> /*, t6*/ instance.group(
 			Codec.FLOAT.fieldOf("power").forGetter(ExplodeConfiguration::power),
 			CalioCodecHelper.optionalField(SerializableDataTypes.DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.BREAK).forGetter(ExplodeConfiguration::destructionType),
-			CalioCodecHelper.optionalField(Codec.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
 			ConfiguredBlockCondition.optional("indestructible").forGetter(ExplodeConfiguration::indestructible),
-			CalioCodecHelper.optionalField(Codec.BOOL, "create_fire", false).forGetter(ExplodeConfiguration::createFire)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "create_fire", false).forGetter(ExplodeConfiguration::createFire)
 			//ConfiguredBlockCondition.optional("destructible").forGetter(x -> Optional.empty()) //Ignored
 	).apply(instance, ExplodeConfiguration::new));
 	private final float power;

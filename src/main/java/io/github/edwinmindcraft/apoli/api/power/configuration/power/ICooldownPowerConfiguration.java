@@ -19,7 +19,7 @@ public interface ICooldownPowerConfiguration extends IDynamicFeatureConfiguratio
 	record Impl(int duration, HudRender hudRender) implements ICooldownPowerConfiguration {}
 
 	MapCodec<ICooldownPowerConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			Codec.INT.fieldOf("cooldown").forGetter(ICooldownPowerConfiguration::duration),
+			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(ICooldownPowerConfiguration::duration),
 			CalioCodecHelper.optionalField(HudRender.CODEC, "hud_render", HudRender.DONT_RENDER).forGetter(ICooldownPowerConfiguration::hudRender)
 	).apply(instance, Impl::new));
 }

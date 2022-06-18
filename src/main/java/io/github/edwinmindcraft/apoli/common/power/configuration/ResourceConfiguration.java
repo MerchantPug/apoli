@@ -18,9 +18,9 @@ public record ResourceConfiguration(HudRender hudRender, int initialValue, int m
 									Holder<ConfiguredEntityAction<?,?>> maxAction) implements IHudRenderedVariableIntPowerConfiguration {
 	public static final Codec<ResourceConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(IHudRenderedVariableIntPowerConfiguration::hudRender),
-			CalioCodecHelper.optionalField(Codec.INT, "start_value").forGetter(x -> x.min() == x.initialValue() ? Optional.empty() : Optional.of(x.initialValue())),
-			Codec.INT.fieldOf("min").forGetter(IVariableIntPowerConfiguration::min),
-			Codec.INT.fieldOf("max").forGetter(IVariableIntPowerConfiguration::max),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "start_value").forGetter(x -> x.min() == x.initialValue() ? Optional.empty() : Optional.of(x.initialValue())),
+			CalioCodecHelper.INT.fieldOf("min").forGetter(IVariableIntPowerConfiguration::min),
+			CalioCodecHelper.INT.fieldOf("max").forGetter(IVariableIntPowerConfiguration::max),
 			ConfiguredEntityAction.optional("min_action").forGetter(ResourceConfiguration::minAction),
 			ConfiguredEntityAction.optional("max_action").forGetter(ResourceConfiguration::maxAction)
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ResourceConfiguration(t1, t2.orElse(t3), t3, t4, t5, t6)));

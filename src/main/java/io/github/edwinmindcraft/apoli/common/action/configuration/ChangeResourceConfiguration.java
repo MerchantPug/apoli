@@ -15,14 +15,14 @@ public record ChangeResourceConfiguration(Holder<ConfiguredPower<?, ?>> resource
 
 	public static final Codec<ChangeResourceConfiguration> ANY_CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredPower.CODEC_SET.holderRef().fieldOf("resource").forGetter(ChangeResourceConfiguration::resource),
-			Codec.INT.fieldOf("change").forGetter(ChangeResourceConfiguration::amount),
+			CalioCodecHelper.INT.fieldOf("change").forGetter(ChangeResourceConfiguration::amount),
 			CalioCodecHelper.optionalField(ApoliDataTypes.RESOURCE_OPERATION, "operation", ResourceOperation.ADD).forGetter(ChangeResourceConfiguration::operation)
 	).apply(instance, ChangeResourceConfiguration::new));
 
 
 	public static final Codec<ChangeResourceConfiguration> SET_CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredPower.CODEC_SET.holderRef().fieldOf("resource").forGetter(ChangeResourceConfiguration::resource),
-			Codec.INT.fieldOf("value").forGetter(ChangeResourceConfiguration::amount)
+			CalioCodecHelper.INT.fieldOf("value").forGetter(ChangeResourceConfiguration::amount)
 	).apply(instance, (resource, amount) -> new ChangeResourceConfiguration(resource, amount, ResourceOperation.SET)));
 
 	@Override

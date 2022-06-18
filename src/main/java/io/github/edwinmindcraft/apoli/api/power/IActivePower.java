@@ -23,7 +23,7 @@ public interface IActivePower<T extends IDynamicFeatureConfiguration> {
 
 		public static final Codec<Key> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				Codec.STRING.fieldOf("key").forGetter(Key::key),
-				CalioCodecHelper.optionalField(Codec.BOOL, "continuous", false).forGetter(Key::continuous)
+				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "continuous", false).forGetter(Key::continuous)
 		).apply(instance, Key::new));
 
 		public static final Codec<Key> BACKWARD_COMPATIBLE_CODEC = Codec.either(CODEC, Codec.STRING).xmap(x -> x.map(Function.identity(), string -> new Key(string.equals("secondary") ? SECONDARY.key() : PRIMARY.key(), false)), Either::left);

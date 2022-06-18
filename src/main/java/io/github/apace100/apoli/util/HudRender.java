@@ -20,11 +20,11 @@ public record HudRender(boolean shouldRender, int barIndex, ResourceLocation spr
 	private static final ResourceLocation DEFAULT_SPRITE = new ResourceLocation("origins", "textures/gui/resource_bar.png");
 
 	public static final MapCodec<HudRender> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.BOOL, "should_render", true).forGetter(HudRender::shouldRender),
-			CalioCodecHelper.optionalField(Codec.INT, "bar_index", 0).forGetter(HudRender::barIndex),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "should_render", true).forGetter(HudRender::shouldRender),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "bar_index", 0).forGetter(HudRender::barIndex),
 			CalioCodecHelper.optionalField(ResourceLocation.CODEC, "sprite_location", DEFAULT_SPRITE).forGetter(HudRender::spriteLocation),
 			ConfiguredEntityCondition.optional("condition").forGetter(HudRender::condition),
-            CalioCodecHelper.optionalField(Codec.BOOL, "inverted", false).forGetter(HudRender::inverted)
+            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "inverted", false).forGetter(HudRender::inverted)
 	).apply(instance, HudRender::new));
 
 	public static final Codec<HudRender> CODEC = MAP_CODEC.codec();

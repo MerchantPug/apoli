@@ -17,8 +17,8 @@ public record OverlayConfiguration(ResourceLocation texture, float strength, Col
 			ColorConfiguration.NO_ALPHA.forGetter(OverlayConfiguration::color),
 			DrawMode.CODEC.fieldOf("draw_mode").forGetter(OverlayConfiguration::mode),
 			DrawPhase.CODEC.fieldOf("draw_phase").forGetter(OverlayConfiguration::phase),
-			CalioCodecHelper.optionalField(Codec.BOOL, "hide_with_hud", true).forGetter(OverlayConfiguration::hideWithHud),
-			CalioCodecHelper.optionalField(Codec.BOOL, "visible_in_third_person", false).forGetter(OverlayConfiguration::visibleInThirdPerson)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "hide_with_hud", true).forGetter(OverlayConfiguration::hideWithHud),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "visible_in_third_person", false).forGetter(OverlayConfiguration::visibleInThirdPerson)
 	).apply(instance, OverlayConfiguration::new));
 
 	public enum DrawMode {

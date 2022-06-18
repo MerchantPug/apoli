@@ -14,6 +14,6 @@ public record ConditionData(boolean inverted) {
 	public static final ConditionData DEFAULT = new ConditionData(false);
 
 	public static final MapCodec<ConditionData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.BOOL, "inverted", false).forGetter(ConditionData::inverted)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "inverted", false).forGetter(ConditionData::inverted)
 	).apply(instance, ConditionData::new));
 }

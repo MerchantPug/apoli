@@ -22,7 +22,7 @@ public record ConditionedCombatActionConfiguration(int duration, HudRender hudRe
 												   Holder<ConfiguredEntityCondition<?,?>> targetCondition,
 												   @MustBeBound Holder<ConfiguredEntityAction<?, ?>> entityAction) implements ICooldownPowerConfiguration {
 	public static final Codec<ConditionedCombatActionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("cooldown").forGetter(ConditionedCombatActionConfiguration::duration),
+			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(ConditionedCombatActionConfiguration::duration),
 			CalioCodecHelper.optionalField(ApoliDataTypes.HUD_RENDER, "hud_render", HudRender.DONT_RENDER).forGetter(ConditionedCombatActionConfiguration::hudRender),
 			ConfiguredDamageCondition.optional("damage_condition").forGetter(ConditionedCombatActionConfiguration::damageCondition),
 			ConfiguredEntityCondition.optional("target_condition").forGetter(ConditionedCombatActionConfiguration::targetCondition),

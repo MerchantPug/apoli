@@ -13,7 +13,7 @@ public record ActiveSelfConfiguration(int duration, HudRender hudRender,
 									  ConfiguredEntityAction<?, ?> action,
 									  IActivePower.Key key) implements IActiveCooldownPowerConfiguration {
 	public static final Codec<ActiveSelfConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.INT, "cooldown", 1).forGetter(ActiveSelfConfiguration::duration),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(ActiveSelfConfiguration::duration),
 			CalioCodecHelper.optionalField(ApoliDataTypes.HUD_RENDER, "hud_render", HudRender.DONT_RENDER).forGetter(ActiveSelfConfiguration::hudRender),
 			ConfiguredEntityAction.CODEC.fieldOf("entity_action").forGetter(ActiveSelfConfiguration::action),
 			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(ActiveSelfConfiguration::key)

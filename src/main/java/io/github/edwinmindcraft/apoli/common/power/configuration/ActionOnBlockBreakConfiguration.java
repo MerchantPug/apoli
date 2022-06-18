@@ -21,6 +21,6 @@ public record ActionOnBlockBreakConfiguration(Holder<ConfiguredBlockCondition<?,
 			ConfiguredBlockCondition.optional("block_condition").forGetter(ActionOnBlockBreakConfiguration::blockCondition),
 			ConfiguredEntityAction.optional("entity_action").forGetter(ActionOnBlockBreakConfiguration::entityAction),
 			ConfiguredBlockAction.optional("block_action").forGetter(ActionOnBlockBreakConfiguration::blockAction),
-			CalioCodecHelper.optionalField(Codec.BOOL, "only_when_harvested", true).forGetter(ActionOnBlockBreakConfiguration::onlyWhenHarvested)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "only_when_harvested", true).forGetter(ActionOnBlockBreakConfiguration::onlyWhenHarvested)
 	).apply(instance, ActionOnBlockBreakConfiguration::new));
 }

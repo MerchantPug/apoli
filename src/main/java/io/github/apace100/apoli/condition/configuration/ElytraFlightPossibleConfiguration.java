@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 public record ElytraFlightPossibleConfiguration(boolean checkState, boolean checkAbility) implements IDynamicFeatureConfiguration {
 	public static final Codec<ElytraFlightPossibleConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.BOOL, "check_state", false).forGetter(ElytraFlightPossibleConfiguration::checkState),
-			CalioCodecHelper.optionalField(Codec.BOOL, "check_ability", true).forGetter(ElytraFlightPossibleConfiguration::checkAbility)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "check_state", false).forGetter(ElytraFlightPossibleConfiguration::checkState),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "check_ability", true).forGetter(ElytraFlightPossibleConfiguration::checkAbility)
 	).apply(instance, ElytraFlightPossibleConfiguration::new));
 }

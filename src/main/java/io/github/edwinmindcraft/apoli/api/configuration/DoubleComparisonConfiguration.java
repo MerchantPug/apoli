@@ -6,12 +6,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 public record DoubleComparisonConfiguration(Comparison comparison,
 											double compareTo) implements IDynamicFeatureConfiguration {
 	public static final MapCodec<DoubleComparisonConfiguration> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			ApoliDataTypes.COMPARISON.fieldOf("comparison").forGetter(DoubleComparisonConfiguration::comparison),
-			Codec.DOUBLE.fieldOf("compare_to").forGetter(DoubleComparisonConfiguration::compareTo)
+			CalioCodecHelper.DOUBLE.fieldOf("compare_to").forGetter(DoubleComparisonConfiguration::compareTo)
 	).apply(instance, DoubleComparisonConfiguration::new));
 
 	public static final Codec<DoubleComparisonConfiguration> CODEC = MAP_CODEC.codec();

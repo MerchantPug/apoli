@@ -8,7 +8,6 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -43,7 +42,7 @@ public record RestrictArmorConfiguration(Map<EquipmentSlot, Holder<ConfiguredIte
 
 	public static final Codec<RestrictArmorConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EQUIPMENT_MAP_CODEC.forGetter(RestrictArmorConfiguration::conditions),
-			CalioCodecHelper.optionalField(Codec.INT, "tick_rate", 80).forGetter(RestrictArmorConfiguration::tickRate)
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "tick_rate", 80).forGetter(RestrictArmorConfiguration::tickRate)
 	).apply(instance, RestrictArmorConfiguration::new));
 
 	public boolean check(EquipmentSlot slot, Level level, ItemStack stack) {

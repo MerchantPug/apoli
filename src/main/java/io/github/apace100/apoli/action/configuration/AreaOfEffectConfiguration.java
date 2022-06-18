@@ -15,9 +15,9 @@ public record AreaOfEffectConfiguration(double radius, @MustBeBound Holder<Confi
 										Holder<ConfiguredBiEntityCondition<?, ?>> condition,
 										boolean includeTarget) implements IDynamicFeatureConfiguration {
 	public static final Codec<AreaOfEffectConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.DOUBLE, "radius", 16.0).forGetter(AreaOfEffectConfiguration::radius),
+			CalioCodecHelper.optionalField(CalioCodecHelper.DOUBLE, "radius", 16.0).forGetter(AreaOfEffectConfiguration::radius),
 			ConfiguredBiEntityAction.required("bientity_action").forGetter(AreaOfEffectConfiguration::action),
 			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(AreaOfEffectConfiguration::condition),
-			CalioCodecHelper.optionalField(Codec.BOOL, "include_target", false).forGetter(AreaOfEffectConfiguration::includeTarget)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "include_target", false).forGetter(AreaOfEffectConfiguration::includeTarget)
 	).apply(instance, AreaOfEffectConfiguration::new));
 }

@@ -14,8 +14,8 @@ public record AddVelocityConfiguration(Vector3f direction, Space space,
 	public static final Codec<AddVelocityConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.VEC3F.forGetter(AddVelocityConfiguration::direction),
 			CalioCodecHelper.optionalField(ApoliDataTypes.SPACE, "space", Space.WORLD).forGetter(AddVelocityConfiguration::space),
-			CalioCodecHelper.optionalField(Codec.BOOL, "set", false).forGetter(AddVelocityConfiguration::set),
-			CalioCodecHelper.optionalField(Codec.BOOL, "client", true).forGetter(AddVelocityConfiguration::client),
-			CalioCodecHelper.optionalField(Codec.BOOL, "server", true).forGetter(AddVelocityConfiguration::server)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "set", false).forGetter(AddVelocityConfiguration::set),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "client", true).forGetter(AddVelocityConfiguration::client),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "server", true).forGetter(AddVelocityConfiguration::server)
 	).apply(instance, AddVelocityConfiguration::new));
 }

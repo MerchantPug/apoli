@@ -3,6 +3,7 @@ package io.github.apace100.apoli.action.block;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BoneMealItem;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class BonemealAction extends BlockAction<FieldConfiguration<Boolean>> {
 
 	public BonemealAction() {
-		super(FieldConfiguration.codec(Codec.BOOL, "effects", true));
+		super(FieldConfiguration.codec(CalioCodecHelper.BOOL, "effects", true));
 	}
 
 	@Override

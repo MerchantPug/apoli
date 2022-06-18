@@ -19,6 +19,6 @@ public record ModifyHarvestConfiguration(ListConfiguration<AttributeModifier> mo
 	public static final Codec<ModifyHarvestConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyHarvestConfiguration::modifiers),
 			ConfiguredBlockCondition.optional("block_condition").forGetter(ModifyHarvestConfiguration::condition),
-			Codec.BOOL.fieldOf("allow").forGetter(ModifyHarvestConfiguration::allow)
+			CalioCodecHelper.BOOL.fieldOf("allow").forGetter(ModifyHarvestConfiguration::allow)
 	).apply(instance, ModifyHarvestConfiguration::new));
 }

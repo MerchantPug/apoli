@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.util.Scheduler;
 import io.github.edwinmindcraft.apoli.api.configuration.MustBeBound;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
 
@@ -16,7 +17,7 @@ public record DelayAction<T, V>(@MustBeBound Holder<T> action, int delay,
 	public static <T, V> Codec<DelayAction<T, V>> codec(CodecSet<T> codec, BiConsumer<T, V> executor) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 				codec.holder().fieldOf("action").forGetter(DelayAction::action),
-				Codec.INT.fieldOf("ticks").forGetter(DelayAction::delay)
+				CalioCodecHelper.INT.fieldOf("ticks").forGetter(DelayAction::delay)
 		).apply(instance, (action, delay) -> new DelayAction<>(action, delay, executor)));
 	}
 

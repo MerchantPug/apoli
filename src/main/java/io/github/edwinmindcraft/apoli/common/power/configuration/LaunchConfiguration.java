@@ -17,7 +17,7 @@ import java.util.Optional;
 public record LaunchConfiguration(int duration, float speed, @Nullable SoundEvent sound, HudRender hudRender,
 								  IActivePower.Key key) implements IActiveCooldownPowerConfiguration {
 	public static final Codec<LaunchConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("cooldown").forGetter(ICooldownPowerConfiguration::duration),
+			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(ICooldownPowerConfiguration::duration),
 			Codec.FLOAT.fieldOf("speed").forGetter(LaunchConfiguration::speed),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.sound())),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(ICooldownPowerConfiguration::hudRender),

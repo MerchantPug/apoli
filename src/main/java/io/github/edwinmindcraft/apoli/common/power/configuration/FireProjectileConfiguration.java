@@ -29,17 +29,17 @@ public record FireProjectileConfiguration(int cooldown, HudRender hudRender, Ent
 										  IActivePower.Key key, int interval, int startDelay) implements IActiveCooldownPowerConfiguration {
 
 	public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::cooldown),
+			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::cooldown),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(FireProjectileConfiguration::hudRender),
 			Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
-			CalioCodecHelper.optionalField(Codec.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.soundEvent())),
 			CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
 			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key),
-			CalioCodecHelper.optionalField(Codec.INT, "interval", 0).forGetter(FireProjectileConfiguration::interval),
-			CalioCodecHelper.optionalField(Codec.INT, "start_delay", 0).forGetter(FireProjectileConfiguration::startDelay)
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "interval", 0).forGetter(FireProjectileConfiguration::interval),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "start_delay", 0).forGetter(FireProjectileConfiguration::startDelay)
 	).apply(instance, (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) -> new FireProjectileConfiguration(t1, t2, t3, t4, t5, t6, t7.orElse(null), t8.orElse(null), t9, t10, t11)));
 
 	public void playSound(Entity player) {

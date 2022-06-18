@@ -13,6 +13,6 @@ public record StartingInventoryConfiguration(ListConfiguration<Tuple<Integer, It
 											 boolean recurrent) implements IDynamicFeatureConfiguration {
 	public static final Codec<StartingInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.mapCodec(ApoliDataTypes.POSITIONED_ITEM_STACK, "stack", "stacks").forGetter(StartingInventoryConfiguration::stacks),
-			CalioCodecHelper.optionalField(Codec.BOOL, "recurrent", false).forGetter(StartingInventoryConfiguration::recurrent)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "recurrent", false).forGetter(StartingInventoryConfiguration::recurrent)
 	).apply(instance, StartingInventoryConfiguration::new));
 }

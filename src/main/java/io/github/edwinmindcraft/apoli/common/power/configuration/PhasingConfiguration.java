@@ -22,7 +22,7 @@ public record PhasingConfiguration(Holder<ConfiguredBlockCondition<?,?>> phaseCo
 								   Holder<ConfiguredEntityCondition<?,?>> phaseDownCondition) implements IDynamicFeatureConfiguration {
 	public static final Codec<PhasingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredBlockCondition.optional("block_condition").forGetter(PhasingConfiguration::phaseCondition),
-			CalioCodecHelper.optionalField(Codec.BOOL, "blacklist", false).forGetter(PhasingConfiguration::blacklist),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "blacklist", false).forGetter(PhasingConfiguration::blacklist),
 			SerializableDataType.enumValue(RenderType.class).optionalFieldOf("render_type", RenderType.BLINDNESS).forGetter(PhasingConfiguration::renderType),
 			CalioCodecHelper.optionalField(Codec.FLOAT, "view_distance", 10F).forGetter(PhasingConfiguration::viewDistance),
 			ConfiguredEntityCondition.optional("phase_down_condition").forGetter(PhasingConfiguration::phaseDownCondition)

@@ -13,9 +13,9 @@ public record StackingStatusEffectConfiguration(ListConfiguration<MobEffectInsta
 												int duration, int tickRate) implements IDynamicFeatureConfiguration {
 	public static final Codec<StackingStatusEffectConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.mapCodec(SerializableDataTypes.STATUS_EFFECT_INSTANCE, "effect", "effects").forGetter(StackingStatusEffectConfiguration::effects),
-			Codec.INT.fieldOf("min_stacks").forGetter(StackingStatusEffectConfiguration::min),
-			Codec.INT.fieldOf("max_stacks").forGetter(StackingStatusEffectConfiguration::max),
-			Codec.INT.fieldOf("duration_per_stack").forGetter(StackingStatusEffectConfiguration::duration),
-			CalioCodecHelper.optionalField(Codec.INT, "tick_rate", 10).forGetter(StackingStatusEffectConfiguration::tickRate)
+			CalioCodecHelper.INT.fieldOf("min_stacks").forGetter(StackingStatusEffectConfiguration::min),
+			CalioCodecHelper.INT.fieldOf("max_stacks").forGetter(StackingStatusEffectConfiguration::max),
+			CalioCodecHelper.INT.fieldOf("duration_per_stack").forGetter(StackingStatusEffectConfiguration::duration),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "tick_rate", 10).forGetter(StackingStatusEffectConfiguration::tickRate)
 	).apply(instance, StackingStatusEffectConfiguration::new));
 }

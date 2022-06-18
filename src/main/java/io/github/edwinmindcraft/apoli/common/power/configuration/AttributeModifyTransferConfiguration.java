@@ -12,6 +12,6 @@ public record AttributeModifyTransferConfiguration(PowerFactory<?> target, Attri
 	public static final Codec<AttributeModifyTransferConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			PowerFactory.IGNORE_NAMESPACE_CODEC.fieldOf("class").forGetter(AttributeModifyTransferConfiguration::target),
 			SerializableDataTypes.ATTRIBUTE.fieldOf("attribute").forGetter(AttributeModifyTransferConfiguration::source),
-			CalioCodecHelper.optionalField(Codec.DOUBLE, "multiplier", 1.0).forGetter(AttributeModifyTransferConfiguration::multiplier)
+			CalioCodecHelper.optionalField(CalioCodecHelper.DOUBLE, "multiplier", 1.0).forGetter(AttributeModifyTransferConfiguration::multiplier)
 	).apply(instance, AttributeModifyTransferConfiguration::new));
 }

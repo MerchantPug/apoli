@@ -20,8 +20,8 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 
 	public static final MapCodec<PowerData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CalioCodecHelper.listOf(ConfiguredEntityCondition.CODEC, "condition", "conditions").forGetter(PowerData::conditions),
-			CalioCodecHelper.optionalField(Codec.BOOL, "hidden", false).forGetter(PowerData::hidden),
-			CalioCodecHelper.optionalField(Codec.INT, "loading_priority", 0).forGetter(PowerData::loadingPriority),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "hidden", false).forGetter(PowerData::hidden),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "loading_priority", 0).forGetter(PowerData::loadingPriority),
 			CalioCodecHelper.optionalField(Codec.STRING, "name", "").forGetter(PowerData::name),
 			CalioCodecHelper.optionalField(Codec.STRING, "description", "").forGetter(PowerData::description)
 	).apply(instance, PowerData::new));
