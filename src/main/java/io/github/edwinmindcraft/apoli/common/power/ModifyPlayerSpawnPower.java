@@ -38,14 +38,14 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 	@Override
 	public void onRemoved(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Entity player) {
 		if (player instanceof ServerPlayer serverPlayer) {
-			if (serverPlayer.getRespawnPosition() != null && serverPlayer.isRespawnForced())
+			if (!serverPlayer.hasDisconnected() && serverPlayer.getRespawnPosition() != null && serverPlayer.isRespawnForced())
 				serverPlayer.setRespawnPosition(Level.OVERWORLD, null, 0F, false, false);
 		}
 	}
 
 	@Override
 	protected void onRespawn(ModifyPlayerSpawnConfiguration configuration, Entity entity) {
-		if (entity instanceof ServerPlayer player && !player.isRespawnForced())
+		if (entity instanceof ServerPlayer player && player.getRespawnPosition() == null)
 			this.teleportToModifiedSpawn(configuration, entity);
 	}
 }
