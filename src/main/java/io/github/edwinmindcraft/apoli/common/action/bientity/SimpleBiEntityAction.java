@@ -41,6 +41,6 @@ public class SimpleBiEntityAction extends BiEntityAction<NoConfiguration> {
 
 	@Override
 	public void execute(NoConfiguration configuration, Entity actor, Entity target) {
-
+		this.action.accept(actor, target);
 	}
 }
