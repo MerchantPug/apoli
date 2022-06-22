@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 
@@ -22,8 +23,7 @@ public class ModifyDamageTakenPower extends ValueModifyingPowerFactory<ModifyDam
 		boolean damage = ConfiguredDamageCondition.check(configuration.damageCondition(), source, amount);
 		if (!damage) return false;
 		Entity attacker = source.getEntity();
-		return attacker == null ?
-				config.getConfiguration().biEntityCondition() == null :
+		return attacker == null ? config.getConfiguration().biEntityCondition().is(ApoliDefaultConditions.BIENTITY_DEFAULT.getId()) :
 				ConfiguredBiEntityCondition.check(configuration.biEntityCondition(), source.getEntity(), entity);
 	}
 

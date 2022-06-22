@@ -11,8 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class IngredientCondition extends ItemCondition<FieldConfiguration<Ingredient>> {
 
 	public IngredientCondition() {
-		//TODO 1.18.1 Fix the ingredient system.
-		super(FieldConfiguration.codec(SerializableDataTypes.VANILLA_INGREDIENT, "ingredient"));
+		super(FieldConfiguration.codec(SerializableDataTypes.EITHER_INGREDIENTS, "ingredient"));
 	}
 
 	@Override

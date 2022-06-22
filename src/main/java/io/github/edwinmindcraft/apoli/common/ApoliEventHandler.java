@@ -114,11 +114,6 @@ public class ApoliEventHandler {
 			IPowerContainer.get(event.getEntityLiving()).ifPresent(IPowerContainer::serverTick);
 	}
 
-	public static void playerTick(TickEvent.PlayerTickEvent event) {
-		//if ((event.player.age & 0x7F) == 0 && event.player instanceof ServerPlayerEntity)
-		//	ModComponentsArchitectury.syncWith((ServerPlayerEntity) event.player, event.player);
-	}
-
 	@SubscribeEvent
 	public static void playerClone(PlayerEvent.Clone event) {
 		event.getOriginal().reviveCaps(); // Revive capabilities.

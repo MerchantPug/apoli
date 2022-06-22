@@ -1,6 +1,9 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
@@ -9,6 +12,7 @@ import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -17,16 +21,38 @@ import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<PowerFactory<?>> {
 	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.POWER_FACTORY);
+	private static final Map<String, ResourceLocation> ALIASES = Util.make(() -> {
+		ImmutableMap.Builder<String, ResourceLocation> builder = ImmutableMap.builder();
+		try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(PowerFactory.class.getResourceAsStream("/data/apoli/power_class_registry.json")))) {
+			Gson gson = new GsonBuilder().create();
+			JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
+			for (String s : jsonObject.keySet()) {
+				builder.put(s, new ResourceLocation(jsonObject.get(s).getAsString()));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return builder.build();
+	});
 
 	private static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> Codec<ConfiguredPower<T, ?>> powerCodec(Codec<T> codec, F factory) {
 		return IFactory.unionCodec(IFactory.asMap(codec), PowerData.CODEC, factory::configure, ConfiguredPower::getConfiguration, ConfiguredPower::getData);
 	}
 
-	public static final Codec<PowerFactory<?>> IGNORE_NAMESPACE_CODEC = ResourceLocation.CODEC.comapFlatMap(id -> {
+	public static final Codec<PowerFactory<?>> IGNORE_NAMESPACE_CODEC = Codec.STRING.comapFlatMap(val -> {
+		if (val.startsWith("io.github.apace100.apoli.power."))
+			val = val.substring("io.github.apace100.apoli.power.".length());
+		ResourceLocation temp = ALIASES.get(val);
+		ResourceLocation id = temp != null ? temp : ResourceLocation.tryParse(val);
+		if (id == null)
+			return DataResult.error("Failed to convert \"" + val + "\" to a resource location");
 		PowerFactory<?> value = ApoliRegistries.POWER_FACTORY.get().getValue(id);
 		if (value != null)
 			return DataResult.success(value); //Avoid the slow code if we can.
@@ -35,7 +61,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 				.findFirst().map(Map.Entry::getValue)
 				.map(DataResult::success)
 				.orElseGet(() -> DataResult.error("Failed to find power factory with path: " + id.getPath()));
-	}, PowerFactory::getRegistryName);
+	}, x -> x.getRegistryName().toString());
 
 	private final Codec<ConfiguredPower<T, ?>> codec;
 	private final boolean allowConditions;

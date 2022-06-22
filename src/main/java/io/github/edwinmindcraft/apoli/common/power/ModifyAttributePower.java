@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class ModifyAttributePower extends AttributeModifyingPowerFactory<ValueModifyingPowerConfiguration> {
 
-	private Supplier<Attribute> attribute;
+	private final Supplier<Attribute> attribute;
 
 	public ModifyAttributePower(Supplier<Attribute> attribute) {
 		super(ValueModifyingPowerConfiguration.CODEC);
