@@ -78,7 +78,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.data;
 	}
 
-	public Map<String, ConfiguredPower<?, ?>> getContainedPowers() {
+	public Map<String, Holder<ConfiguredPower<?, ?>>> getContainedPowers() {
 		return this.getFactory().getContainedPowers(this);
 	}
 
@@ -120,9 +120,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	 * of the fabric version, as such I would recommend using it if you want
 	 * to maintain compatibility between versions.
 	 */
-	public Set<ConfiguredPower<?, ?>> getChildren() {
-		ImmutableSet.Builder<ConfiguredPower<?, ?>> builder = ImmutableSet.builder();
-		this.getContainedPowers().values().forEach(value -> builder.add(value).addAll(value.getChildren()));
+	public Set<Holder<ConfiguredPower<?, ?>>> getChildren() {
+		ImmutableSet.Builder<Holder<ConfiguredPower<?, ?>>> builder = ImmutableSet.builder();
+		this.getContainedPowers().values().forEach(value -> {
+			if (value.isBound())
+				builder.add(value).addAll(value.value().getChildren());
+		});
 		return builder.build();
 	}
 
@@ -249,7 +252,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		this.registryName = this.checkRegistryName(name);
 		this.delegate.setName(this.registryName);
 		this.getContainedPowers().forEach((s, configuredPower) -> {
-			if (configuredPower.getRegistryName() == null) configuredPower.setRegistryName(name + s);
+			if (configuredPower.isBound() && configuredPower.value().getRegistryName() == null) configuredPower.value().setRegistryName(name + s);
 		});
 		return this;
 	}

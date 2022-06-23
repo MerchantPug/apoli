@@ -10,6 +10,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.power.configuration.MultipleConfiguration;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -21,11 +22,11 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	private static final Predicate<String> ALLOWED = str -> !EXCLUDED.contains(str) && !ApoliAPI.isAdditionalDataField(str);
 
 	public MultiplePower() {
-		super(MultipleConfiguration.mapCodec(ConfiguredPower.CODEC, ALLOWED, s -> "_" + s, MultiplePower::reconfigure).codec(), false);
+		super(MultipleConfiguration.mapCodec(ConfiguredPower.CODEC, ConfiguredPower.HOLDER, ALLOWED, s -> "_" + s, MultiplePower::reconfigure).codec(), false);
 	}
 
 	@Override
-	public Map<String, ConfiguredPower<?, ?>> getContainedPowers(ConfiguredPower<MultipleConfiguration<ConfiguredPower<?, ?>>, ?> configuration) {
+	public Map<String, Holder<ConfiguredPower<?, ?>>> getContainedPowers(ConfiguredPower<MultipleConfiguration<ConfiguredPower<?, ?>>, ?> configuration) {
 		return configuration.getConfiguration().children();
 	}
 

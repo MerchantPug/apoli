@@ -64,7 +64,7 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 			builder.put(location, accept.complete(location));
 			accept.getContainedPowers().forEach((s, configuredPower) -> {
 				ResourceLocation path = new ResourceLocation(location.getNamespace(), location.getPath() + s);
-				builder.put(path, configuredPower.complete(path));
+				builder.put(path, configuredPower.value().complete(path));
 			});
 			return builder.build();
 		}

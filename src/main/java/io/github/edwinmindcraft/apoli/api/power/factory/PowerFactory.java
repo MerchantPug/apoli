@@ -13,6 +13,7 @@ import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -120,7 +121,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 	 *
 	 * @return A map containing children of this power.
 	 */
-	public Map<String, ConfiguredPower<?, ?>> getContainedPowers(ConfiguredPower<T, ?> configuration) {
+	public Map<String, Holder<ConfiguredPower<?, ?>>> getContainedPowers(ConfiguredPower<T, ?> configuration) {
 		return ImmutableMap.of();
 	}
 
