@@ -8,25 +8,22 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCo
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
-public record EntityGlowConfiguration(Holder<ConfiguredEntityCondition<?,?>> entityCondition,
-									  Holder<ConfiguredBiEntityCondition<?,?>> biEntityCondition, boolean useTeams,
+public record EntityGlowConfiguration(Holder<ConfiguredEntityCondition<?, ?>> entityCondition,
+									  Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition, boolean useTeams,
 									  ColorConfiguration color) implements IDynamicFeatureConfiguration {
-	public EntityGlowConfiguration(Holder<ConfiguredEntityCondition<?,?>> entityCondition) {
+	public EntityGlowConfiguration(Holder<ConfiguredEntityCondition<?, ?>> entityCondition) {
 		this(entityCondition, null, true, ColorConfiguration.DEFAULT);
 	}
 
 	public static final Codec<EntityGlowConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				ConfiguredEntityCondition.optional("entity_condition").forGetter(EntityGlowConfiguration::entityCondition),
-				ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(EntityGlowConfiguration::biEntityCondition),
-				CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "use_teams", true).forGetter(EntityGlowConfiguration::useTeams),
-				ColorConfiguration.NO_ALPHA.forGetter(EntityGlowConfiguration::color)
-		).apply(instance, EntityGlowConfiguration::new));
+			ConfiguredEntityCondition.optional("entity_condition").forGetter(EntityGlowConfiguration::entityCondition),
+			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(EntityGlowConfiguration::biEntityCondition),
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "use_teams", true).forGetter(EntityGlowConfiguration::useTeams),
+			ColorConfiguration.NO_ALPHA.forGetter(EntityGlowConfiguration::color)
+	).apply(instance, EntityGlowConfiguration::new));
 
 	public boolean applyChecks(Entity actor, Entity target, boolean targetSelf) {
-		return ConfiguredEntityCondition.check(this.entityCondition(), target) && ConfiguredBiEntityCondition.check(this.biEntityCondition(), targetSelf? target : actor, targetSelf ? actor : target);
+		return ConfiguredEntityCondition.check(this.entityCondition(), target) && ConfiguredBiEntityCondition.check(this.biEntityCondition(), targetSelf ? target : actor, targetSelf ? actor : target);
 	}
 }

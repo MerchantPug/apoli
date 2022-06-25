@@ -9,13 +9,12 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.IHudRendered
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IVariableIntPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public record ResourceConfiguration(HudRender hudRender, int initialValue, int min, int max,
-									Holder<ConfiguredEntityAction<?,?>> minAction,
-									Holder<ConfiguredEntityAction<?,?>> maxAction) implements IHudRenderedVariableIntPowerConfiguration {
+									Holder<ConfiguredEntityAction<?, ?>> minAction,
+									Holder<ConfiguredEntityAction<?, ?>> maxAction) implements IHudRenderedVariableIntPowerConfiguration {
 	public static final Codec<ResourceConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(IHudRenderedVariableIntPowerConfiguration::hudRender),
 			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "start_value").forGetter(x -> x.min() == x.initialValue() ? Optional.empty() : Optional.of(x.initialValue())),

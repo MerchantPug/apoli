@@ -13,18 +13,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.NonNullSupplier;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
-public record PhasingConfiguration(Holder<ConfiguredBlockCondition<?,?>> phaseCondition, boolean blacklist,
+public record PhasingConfiguration(Holder<ConfiguredBlockCondition<?, ?>> phaseCondition, boolean blacklist,
 								   RenderType renderType, float viewDistance,
-								   Holder<ConfiguredEntityCondition<?,?>> phaseDownCondition) implements IDynamicFeatureConfiguration {
+								   Holder<ConfiguredEntityCondition<?, ?>> phaseDownCondition) implements IDynamicFeatureConfiguration {
 	public static final Codec<PhasingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredBlockCondition.optional("block_condition").forGetter(PhasingConfiguration::phaseCondition),
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "blacklist", false).forGetter(PhasingConfiguration::blacklist),
 			SerializableDataType.enumValue(RenderType.class).optionalFieldOf("render_type", RenderType.BLINDNESS).forGetter(PhasingConfiguration::renderType),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "view_distance", 10F).forGetter(PhasingConfiguration::viewDistance),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "view_distance", 10F).forGetter(PhasingConfiguration::viewDistance),
 			ConfiguredEntityCondition.optional("phase_down_condition").forGetter(PhasingConfiguration::phaseDownCondition)
 	).apply(instance, PhasingConfiguration::new));
 

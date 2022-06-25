@@ -3,12 +3,11 @@ package io.github.edwinmindcraft.apoli.common.power;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.edwinmindcraft.apoli.api.power.factory.power.VariableIntPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.DamageOverTimeConfiguration;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -78,7 +77,7 @@ public class DamageOverTimePower extends PowerFactory<DamageOverTimeConfiguratio
 			for (ItemStack itemStack : iterable) {
 				int enchLevel = EnchantmentHelper.getItemEnchantmentLevel(configuration.protectionEnchantment(), itemStack);
 				i += enchLevel;
-				if(enchLevel > 0)
+				if (enchLevel > 0)
 					items++;
 			}
 			return i + items;

@@ -5,19 +5,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record ModifyDamageDealtConfiguration(ListConfiguration<AttributeModifier> modifiers,
-											 Holder<ConfiguredDamageCondition<?,?>> damageCondition,
-											 Holder<ConfiguredEntityCondition<?,?>> targetCondition,
-											 Holder<ConfiguredBiEntityCondition<?,?>> biEntityCondition,
-											 Holder<ConfiguredEntityAction<?,?>> selfAction,
-											 Holder<ConfiguredEntityAction<?,?>> targetAction,
+											 Holder<ConfiguredDamageCondition<?, ?>> damageCondition,
+											 Holder<ConfiguredEntityCondition<?, ?>> targetCondition,
+											 Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition,
+											 Holder<ConfiguredEntityAction<?, ?>> selfAction,
+											 Holder<ConfiguredEntityAction<?, ?>> targetAction,
 											 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements IValueModifyingPowerConfiguration {
 
 	public ModifyDamageDealtConfiguration(AttributeModifier... modifiers) {

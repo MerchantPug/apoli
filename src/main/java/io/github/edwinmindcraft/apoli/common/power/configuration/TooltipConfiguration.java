@@ -6,15 +6,11 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Optional;
-
-public record TooltipConfiguration(Holder<ConfiguredItemCondition<?,?>> itemCondition, ListConfiguration<Component> components) implements IDynamicFeatureConfiguration {
+public record TooltipConfiguration(Holder<ConfiguredItemCondition<?, ?>> itemCondition,
+								   ListConfiguration<Component> components) implements IDynamicFeatureConfiguration {
 	public static final Codec<TooltipConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredItemCondition.optional("item_condition").forGetter(TooltipConfiguration::itemCondition),
 			ListConfiguration.mapCodec(SerializableDataTypes.TEXT, "text", "texts").forGetter(TooltipConfiguration::components)

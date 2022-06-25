@@ -10,13 +10,10 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCo
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.ICooldownPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record CombatHitActionConfiguration(int duration, HudRender hudRender,
-										   Holder<ConfiguredDamageCondition<?,?>> damageCondition,
-										   Holder<ConfiguredBiEntityCondition<?,?>> biEntityCondition,
+										   Holder<ConfiguredDamageCondition<?, ?>> damageCondition,
+										   Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition,
 										   @MustBeBound Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements ICooldownPowerConfiguration {
 	public static final Codec<CombatHitActionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(CombatHitActionConfiguration::duration),

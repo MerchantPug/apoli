@@ -1,7 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.configuration.HolderConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -12,8 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.NonNullSupplier;
-
-import java.util.Optional;
 
 public class PreventBlockActionPower extends PowerFactory<HolderConfiguration<ConfiguredBlockCondition<?, ?>>> {
 	public static boolean isSelectionPrevented(Entity entity, BlockPos pos, NonNullSupplier<BlockState> stateGetter) {

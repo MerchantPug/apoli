@@ -18,9 +18,9 @@ public record LaunchConfiguration(int duration, float speed, @Nullable SoundEven
 								  IActivePower.Key key) implements IActiveCooldownPowerConfiguration {
 	public static final Codec<LaunchConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(ICooldownPowerConfiguration::duration),
-			Codec.FLOAT.fieldOf("speed").forGetter(LaunchConfiguration::speed),
+			CalioCodecHelper.FLOAT.fieldOf("speed").forGetter(LaunchConfiguration::speed),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.sound())),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(ICooldownPowerConfiguration::hudRender),
-			CalioCodecHelper.optionalField(IActivePower.Key.CODEC, "key", IActivePower.Key.PRIMARY).forGetter(IActiveCooldownPowerConfiguration::key)
+			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(IActiveCooldownPowerConfiguration::key)
 	).apply(instance, (t1, t2, t3, t4, t5) -> new LaunchConfiguration(t1, t2, t3.orElse(null), t4, t5)));
 }

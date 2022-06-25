@@ -18,16 +18,16 @@ public record ColorConfiguration(float red, float green, float blue,
 	public static ColorConfiguration DEFAULT = new ColorConfiguration(1.0F, 1.0F, 1.0F, 1.0F);
 
 	public static final Codec<ColorConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.FLOAT, "red", 1.0F).forGetter(ColorConfiguration::red),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "green", 1.0F).forGetter(ColorConfiguration::green),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "blue", 1.0F).forGetter(ColorConfiguration::blue),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "alpha", 1.0F).forGetter(ColorConfiguration::alpha)
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "red", 1.0F).forGetter(ColorConfiguration::red),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "green", 1.0F).forGetter(ColorConfiguration::green),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "blue", 1.0F).forGetter(ColorConfiguration::blue),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "alpha", 1.0F).forGetter(ColorConfiguration::alpha)
 	).apply(instance, ColorConfiguration::new));
 
 	public static final MapCodec<ColorConfiguration> NO_ALPHA = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CalioCodecHelper.optionalField(Codec.FLOAT, "red", 1.0F).forGetter(ColorConfiguration::red),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "green", 1.0F).forGetter(ColorConfiguration::green),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "blue", 1.0F).forGetter(ColorConfiguration::blue)
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "red", 1.0F).forGetter(ColorConfiguration::red),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "green", 1.0F).forGetter(ColorConfiguration::green),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "blue", 1.0F).forGetter(ColorConfiguration::blue)
 	).apply(instance, ColorConfiguration::new));
 
 	public static Optional<ColorConfiguration> forPower(Entity entity, PowerFactory<ColorConfiguration> factory) {

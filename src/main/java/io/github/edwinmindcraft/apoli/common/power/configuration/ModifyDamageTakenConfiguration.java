@@ -8,18 +8,14 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntity
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record ModifyDamageTakenConfiguration(ListConfiguration<AttributeModifier> modifiers,
-											 Holder<ConfiguredDamageCondition<?,?>> damageCondition,
-											 Holder<ConfiguredBiEntityCondition<?,?>> biEntityCondition,
-											 Holder<ConfiguredEntityAction<?,?>> selfAction,
-											 Holder<ConfiguredEntityAction<?,?>> targetAction,
+											 Holder<ConfiguredDamageCondition<?, ?>> damageCondition,
+											 Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition,
+											 Holder<ConfiguredEntityAction<?, ?>> selfAction,
+											 Holder<ConfiguredEntityAction<?, ?>> targetAction,
 											 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements IValueModifyingPowerConfiguration {
 
 	public ModifyDamageTakenConfiguration(AttributeModifier... modifiers) {

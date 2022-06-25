@@ -6,15 +6,11 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfigur
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.common.util.NonNullSupplier;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class PhasingPower extends PowerFactory<PhasingConfiguration> {
 	public static boolean shouldPhaseThrough(Entity entity, LevelReader reader, BlockPos pos, NonNullSupplier<BlockState> stateGetter, boolean isAbove) {

@@ -1,8 +1,6 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyStatusEffectConfiguration;
 import net.minecraft.world.effect.MobEffect;

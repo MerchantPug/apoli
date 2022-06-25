@@ -13,13 +13,10 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record ConditionedCombatActionConfiguration(int duration, HudRender hudRender,
-												   Holder<ConfiguredDamageCondition<?,?>> damageCondition,
-												   Holder<ConfiguredEntityCondition<?,?>> targetCondition,
+												   Holder<ConfiguredDamageCondition<?, ?>> damageCondition,
+												   Holder<ConfiguredEntityCondition<?, ?>> targetCondition,
 												   @MustBeBound Holder<ConfiguredEntityAction<?, ?>> entityAction) implements ICooldownPowerConfiguration {
 	public static final Codec<ConditionedCombatActionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(ConditionedCombatActionConfiguration::duration),

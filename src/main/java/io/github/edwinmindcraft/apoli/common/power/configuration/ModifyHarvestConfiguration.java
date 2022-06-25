@@ -8,12 +8,9 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModify
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record ModifyHarvestConfiguration(ListConfiguration<AttributeModifier> modifiers,
-										 Holder<ConfiguredBlockCondition<?,?>> condition,
+										 Holder<ConfiguredBlockCondition<?, ?>> condition,
 										 boolean allow) implements IValueModifyingPowerConfiguration {
 
 	public static final Codec<ModifyHarvestConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(

@@ -34,7 +34,7 @@ public record AttributeConfiguration(ListConfiguration<AttributedEntityAttribute
 				attributeInstance.addTransientModifier(mod.modifier());
 		});
 		float afterMaxHealth = living.getMaxHealth();
-		if(this.updateHealth() && afterMaxHealth != previousMaxHealth)
+		if (this.updateHealth() && afterMaxHealth != previousMaxHealth)
 			living.setHealth(afterMaxHealth * previousHealthPercent);
 	}
 
@@ -49,7 +49,7 @@ public record AttributeConfiguration(ListConfiguration<AttributedEntityAttribute
 				attributeInstance.removeModifier(mod.modifier());
 		});
 		float afterMaxHealth = living.getMaxHealth();
-		if(this.updateHealth() && afterMaxHealth != previousMaxHealth)
+		if (this.updateHealth() && afterMaxHealth != previousMaxHealth)
 			living.setHealth(afterMaxHealth * previousHealthPercent);
 	}
 }

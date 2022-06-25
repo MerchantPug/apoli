@@ -2,9 +2,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 
 import de.dafuqs.additionalentityattributes.AdditionalEntityAttributes;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.AttributeModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.LavaVisionConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;

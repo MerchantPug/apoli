@@ -9,6 +9,6 @@ public record FoodConfiguration(int food, float saturation) implements IDynamicF
 
 	public static Codec<FoodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.INT.fieldOf("food").forGetter(FoodConfiguration::food),
-			Codec.FLOAT.fieldOf("saturation").forGetter(FoodConfiguration::saturation)
+			CalioCodecHelper.FLOAT.fieldOf("saturation").forGetter(FoodConfiguration::saturation)
 	).apply(instance, FoodConfiguration::new));
 }

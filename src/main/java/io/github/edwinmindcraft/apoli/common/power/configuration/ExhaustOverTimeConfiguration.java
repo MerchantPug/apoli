@@ -8,6 +8,6 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 public record ExhaustOverTimeConfiguration(int interval, float exhaustion) implements IDynamicFeatureConfiguration {
 	public static final Codec<ExhaustOverTimeConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.INT.fieldOf("interval").forGetter(ExhaustOverTimeConfiguration::interval),
-			Codec.FLOAT.fieldOf("exhaustion").forGetter(ExhaustOverTimeConfiguration::exhaustion)
+			CalioCodecHelper.FLOAT.fieldOf("exhaustion").forGetter(ExhaustOverTimeConfiguration::exhaustion)
 	).apply(instance, ExhaustOverTimeConfiguration::new));
 }

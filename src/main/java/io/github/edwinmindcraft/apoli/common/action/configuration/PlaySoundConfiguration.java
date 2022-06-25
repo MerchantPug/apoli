@@ -12,7 +12,7 @@ public record PlaySoundConfiguration(SoundEvent sound, float volume,
 
 	public static final Codec<PlaySoundConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.SOUND_EVENT.fieldOf("sound").forGetter(PlaySoundConfiguration::sound),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "volume", 1F).forGetter(PlaySoundConfiguration::volume),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "pitch", 1F).forGetter(PlaySoundConfiguration::pitch)
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "volume", 1F).forGetter(PlaySoundConfiguration::volume),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "pitch", 1F).forGetter(PlaySoundConfiguration::pitch)
 	).apply(instance, PlaySoundConfiguration::new));
 }

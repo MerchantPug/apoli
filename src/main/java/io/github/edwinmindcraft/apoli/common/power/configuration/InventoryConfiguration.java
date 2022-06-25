@@ -7,12 +7,9 @@ import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record InventoryConfiguration(String inventoryName, boolean dropOnDeath,
-									 Holder<ConfiguredItemCondition<?,?>> dropFilter,
+									 Holder<ConfiguredItemCondition<?, ?>> dropFilter,
 									 IActivePower.Key key) implements IDynamicFeatureConfiguration {
 	public static final Codec<InventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(Codec.STRING, "name", "container.inventory").forGetter(InventoryConfiguration::inventoryName),

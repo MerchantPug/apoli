@@ -9,11 +9,12 @@ import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.resources.ResourceLocation;
 
 public record OverlayConfiguration(ResourceLocation texture, float strength, ColorConfiguration color, DrawMode mode,
-								   DrawPhase phase, boolean hideWithHud, boolean visibleInThirdPerson) implements IDynamicFeatureConfiguration {
+								   DrawPhase phase, boolean hideWithHud,
+								   boolean visibleInThirdPerson) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<OverlayConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.IDENTIFIER.fieldOf("texture").forGetter(OverlayConfiguration::texture),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "strength", 1.0F).forGetter(OverlayConfiguration::strength),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "strength", 1.0F).forGetter(OverlayConfiguration::strength),
 			ColorConfiguration.NO_ALPHA.forGetter(OverlayConfiguration::color),
 			DrawMode.CODEC.fieldOf("draw_mode").forGetter(OverlayConfiguration::mode),
 			DrawPhase.CODEC.fieldOf("draw_phase").forGetter(OverlayConfiguration::phase),

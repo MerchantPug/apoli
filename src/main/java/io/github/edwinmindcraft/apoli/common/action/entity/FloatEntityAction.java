@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.action.entity;
 import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,7 @@ public class FloatEntityAction extends EntityAction<FieldConfiguration<Float>> {
 	private final BiConsumer<Entity, Float> action;
 
 	public FloatEntityAction(BiConsumer<Entity, Float> action, String field) {
-		super(FieldConfiguration.codec(Codec.FLOAT, field));
+		super(FieldConfiguration.codec(CalioCodecHelper.FLOAT, field));
 		this.action = action;
 	}
 

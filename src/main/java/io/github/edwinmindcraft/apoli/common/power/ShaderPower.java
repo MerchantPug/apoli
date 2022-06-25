@@ -9,8 +9,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class ShaderPower extends PowerFactory<ShaderConfiguration> {
 
 	public ShaderPower() {

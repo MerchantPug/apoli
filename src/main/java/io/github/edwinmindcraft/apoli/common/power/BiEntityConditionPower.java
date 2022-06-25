@@ -5,9 +5,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntity
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityConditionConfiguration;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.registries.RegistryObject;
-
-import java.util.function.Supplier;
 
 public class BiEntityConditionPower extends PowerFactory<BiEntityConditionConfiguration> {
 	public static boolean any(BiEntityConditionPower power, Entity holder, Entity actor, Entity target) {

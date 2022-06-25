@@ -18,17 +18,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import org.apache.commons.lang3.tuple.Triple;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
-public record BlockInteractionConfiguration(Holder<ConfiguredBlockCondition<?,?>> blockCondition,
-											Holder<ConfiguredBlockAction<?,?>> blockAction,
+public record BlockInteractionConfiguration(Holder<ConfiguredBlockCondition<?, ?>> blockCondition,
+											Holder<ConfiguredBlockAction<?, ?>> blockAction,
 											EnumSet<Direction> directions,
-											Holder<ConfiguredEntityAction<?,?>> entityAction,
+											Holder<ConfiguredEntityAction<?, ?>> entityAction,
 											InteractionPowerConfiguration interaction) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<BlockInteractionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -40,12 +36,10 @@ public record BlockInteractionConfiguration(Holder<ConfiguredBlockCondition<?,?>
 	).apply(instance, BlockInteractionConfiguration::new));
 
 
-
-
 	public boolean check(Level level, BlockPos blockPos, Direction direction, InteractionHand hand, ItemStack heldStack) {
-		if(!this.interaction().appliesTo(level, hand, heldStack))
+		if (!this.interaction().appliesTo(level, hand, heldStack))
 			return false;
-		if(!this.directions().contains(direction)) {
+		if (!this.directions().contains(direction)) {
 			return false;
 		}
 		return ConfiguredBlockCondition.check(this.blockCondition(), level, blockPos);

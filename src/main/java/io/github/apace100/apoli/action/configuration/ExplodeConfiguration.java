@@ -26,7 +26,7 @@ import java.util.Optional;
 
 public final class ExplodeConfiguration implements IDynamicFeatureConfiguration {
 	public static final Codec<ExplodeConfiguration> CODEC = RecordCodecBuilder.create(instance -> /*, t6*/ instance.group(
-			Codec.FLOAT.fieldOf("power").forGetter(ExplodeConfiguration::power),
+			CalioCodecHelper.FLOAT.fieldOf("power").forGetter(ExplodeConfiguration::power),
 			CalioCodecHelper.optionalField(SerializableDataTypes.DESTRUCTION_TYPE, "destruction_type", Explosion.BlockInteraction.BREAK).forGetter(ExplodeConfiguration::destructionType),
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "damage_self", true).forGetter(ExplodeConfiguration::damageSelf),
 			ConfiguredBlockCondition.optional("indestructible", Apoli.identifier("deny")).forGetter(ExplodeConfiguration::indestructible),

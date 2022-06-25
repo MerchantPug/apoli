@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.apoli.common.action.meta;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.MustBeBound;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
 
@@ -13,7 +14,7 @@ public record ChanceConfiguration<T, V>(float chance, @MustBeBound Holder<T> act
 										BiConsumer<T, V> executor) implements IDelegatedActionConfiguration<V> {
 	public static <T, V> Codec<ChanceConfiguration<T, V>> codec(CodecSet<T> codec, BiConsumer<T, V> executor) {
 		return RecordCodecBuilder.create(instance -> instance.group(
-				Codec.FLOAT.fieldOf("chance").forGetter(ChanceConfiguration::chance),
+				CalioCodecHelper.FLOAT.fieldOf("chance").forGetter(ChanceConfiguration::chance),
 				codec.holder().fieldOf("action").forGetter(ChanceConfiguration::action)
 		).apply(instance, (chance, action) -> new ChanceConfiguration<>(chance, action, executor)));
 	}

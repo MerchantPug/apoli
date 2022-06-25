@@ -9,7 +9,6 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 
 import java.util.Optional;
 

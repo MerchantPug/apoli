@@ -6,10 +6,11 @@ import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.TogglePowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
-public record ToggleNightVisionConfiguration(TogglePowerConfiguration toggle, float strength) implements TogglePowerConfiguration.Wrapper {
+public record ToggleNightVisionConfiguration(TogglePowerConfiguration toggle,
+											 float strength) implements TogglePowerConfiguration.Wrapper {
 	public static final Codec<ToggleNightVisionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			TogglePowerConfiguration.INACTIVE_MAP_CODEC.forGetter(ToggleNightVisionConfiguration::toggle),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "strength", 1.0F).forGetter(ToggleNightVisionConfiguration::strength)
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "strength", 1.0F).forGetter(ToggleNightVisionConfiguration::strength)
 	).apply(instance, ToggleNightVisionConfiguration::new));
 
 	public ToggleNightVisionConfiguration(boolean defaultState, IActivePower.Key key, float strength) {

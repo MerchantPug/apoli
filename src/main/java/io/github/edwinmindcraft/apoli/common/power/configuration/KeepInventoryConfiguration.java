@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
-public record KeepInventoryConfiguration(Holder<ConfiguredItemCondition<?,?>> keepCondition,
+public record KeepInventoryConfiguration(Holder<ConfiguredItemCondition<?, ?>> keepCondition,
 										 @Nullable Set<Integer> slots) implements IDynamicFeatureConfiguration {
 	public static final Codec<KeepInventoryConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredItemCondition.optional("item_condition").forGetter(KeepInventoryConfiguration::keepCondition),

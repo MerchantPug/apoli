@@ -14,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record ParticleConfiguration(ParticleType<?> particle,
-									int frequency, boolean visibleInFirstPerson) implements IDynamicFeatureConfiguration {
+									int frequency,
+									boolean visibleInFirstPerson) implements IDynamicFeatureConfiguration {
 
 	public static final Codec<ParticleConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.PARTICLE_TYPE.fieldOf("particle").forGetter(ParticleConfiguration::particle),

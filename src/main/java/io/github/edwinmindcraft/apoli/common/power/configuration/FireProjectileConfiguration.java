@@ -7,7 +7,6 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IActiveCooldownPowerConfiguration;
-import io.github.edwinmindcraft.apoli.common.power.FireProjectilePower;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -26,15 +25,16 @@ import java.util.Optional;
 public record FireProjectileConfiguration(int cooldown, HudRender hudRender, EntityType<?> entityType,
 										  int projectileCount, float speed, float divergence,
 										  @Nullable SoundEvent soundEvent, @Nullable CompoundTag tag,
-										  IActivePower.Key key, int interval, int startDelay) implements IActiveCooldownPowerConfiguration {
+										  IActivePower.Key key, int interval,
+										  int startDelay) implements IActiveCooldownPowerConfiguration {
 
 	public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::cooldown),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(FireProjectileConfiguration::hudRender),
 			Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
 			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
-			CalioCodecHelper.optionalField(Codec.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
+			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "divergence", 1.0F).forGetter(FireProjectileConfiguration::divergence),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "sound").forGetter(x -> Optional.ofNullable(x.soundEvent())),
 			CalioCodecHelper.optionalField(SerializableDataTypes.NBT, "tag").forGetter(x -> Optional.ofNullable(x.tag())),
 			CalioCodecHelper.optionalField(IActivePower.Key.BACKWARD_COMPATIBLE_CODEC, "key", IActivePower.Key.PRIMARY).forGetter(FireProjectileConfiguration::key),
@@ -89,5 +89,4 @@ public record FireProjectileConfiguration(int cooldown, HudRender hudRender, Ent
 	public int duration() {
 		return this.cooldown();
 	}
-
 }

@@ -8,9 +8,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record ActionOnBlockBreakConfiguration(Holder<ConfiguredBlockCondition<?, ?>> blockCondition,
 											  Holder<ConfiguredEntityAction<?, ?>> entityAction,

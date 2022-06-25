@@ -6,11 +6,8 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
-public record PreventSleepConfiguration(Holder<ConfiguredBlockCondition<?,?>> condition, String message,
+public record PreventSleepConfiguration(Holder<ConfiguredBlockCondition<?, ?>> condition, String message,
 										boolean allowSpawn) implements IDynamicFeatureConfiguration {
 	public static final Codec<PreventSleepConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ConfiguredBlockCondition.optional("block_condition").forGetter(PreventSleepConfiguration::condition),

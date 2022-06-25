@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public record ClimbingConfiguration(boolean allowHolding,
-									@Nullable Holder<ConfiguredEntityCondition<?,?>> condition) implements IDynamicFeatureConfiguration {
+									@Nullable Holder<ConfiguredEntityCondition<?, ?>> condition) implements IDynamicFeatureConfiguration {
 	public static final Codec<ClimbingConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "allow_holding", true).forGetter(ClimbingConfiguration::allowHolding),
 			CalioCodecHelper.optionalField(ConfiguredEntityCondition.HOLDER, "hold_condition").forGetter(climbingConfiguration -> Optional.ofNullable(climbingConfiguration.condition()))
