@@ -35,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.LazyOptional;
@@ -46,11 +47,9 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = Apoli.MODID)
@@ -59,16 +58,17 @@ public class ApoliPowerEventHandler {
 	public static void modifyBreakSpeed(PlayerEvent.BreakSpeed event) {
 		Player player = event.getPlayer();
 		Level world = player.getCommandSenderWorld();
-		float hardness = event.getState().getDestroySpeed(world, event.getPos());
+		BlockState state = event.getState();
+		float hardness = state.getDestroySpeed(world, event.getPos());
 		if (hardness <= 0)
 			return;
 		float speed = event.getNewSpeed();
 		//This is less than ideal since it fires two hooks, but hey, I do what I can.
-		boolean stateCheck = event.getState().canHarvestBlock(event.getPlayer().getLevel(), event.getPos(), event.getPlayer());
-		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(event.getState(), event.getPlayer());
+		boolean stateCheck = state.canHarvestBlock(event.getPlayer().getLevel(), event.getPos(), event.getPlayer());
+		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(state, event.getPlayer());
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
-		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), world, event.getPos(), event::getState)) * factor;
+		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), world, event.getPos(), () -> state)) * factor;
 
 		if (stateCheck == forgeCheck)
 			event.setNewSpeed(speed);
@@ -222,7 +222,12 @@ public class ApoliPowerEventHandler {
 	@SubscribeEvent
 	public static void onTooltip(ItemTooltipEvent event) {
 		List<Component> tooltips = event.getToolTip();
-		if (ApoliConfigs.CLIENT.tooltips.showUsabilityHints.get()) {
+		int flags = event.getItemStack().hasTag() &&
+					Objects.requireNonNull(event.getItemStack().getTag()).contains("HideFlags", 99) ?
+				event.getItemStack().getTag().getInt("HideFlags") :
+				event.getItemStack().getItem().getDefaultTooltipHideFlags(event.getItemStack());
+
+		if (ApoliConfigs.CLIENT.tooltips.showUsabilityHints.get() && (flags & ItemStack.TooltipPart.ADDITIONAL.getMask()) == 0) {
 			List<ConfiguredPower<FieldConfiguration<Optional<ConfiguredItemCondition<?, ?>>>, PreventItemActionPower>> powers = new ArrayList<>(PreventItemActionPower.getPreventingForDisplay(event.getEntity(), event.getItemStack()));
 			int size = powers.size();
 			if (!powers.isEmpty()) {

@@ -4,7 +4,7 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverItemConfiguration;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ActionOverTimeConfiguration;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -12,17 +12,17 @@ import net.minecraft.world.entity.Entity;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguration> {
+public class ActionOverTimePower extends PowerFactory<ActionOverTimeConfiguration> {
 	public ActionOverTimePower() {
-		super(ActionOverItemConfiguration.CODEC);
+		super(ActionOverTimeConfiguration.CODEC);
 		this.ticking(true);
 	}
 
 	@Override
-	public void tick(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, Entity player) {
+	public void tick(ConfiguredPower<ActionOverTimeConfiguration, ?> configuration, Entity player) {
 		//TODO Start ticking after the power is added.
 		AtomicBoolean data = configuration.getPowerData(player, () -> new AtomicBoolean(false));
-		ActionOverItemConfiguration config = configuration.getConfiguration();
+		ActionOverTimeConfiguration config = configuration.getConfiguration();
 		if (configuration.isActive(player)) {
 			if (!data.get())
 				ConfiguredEntityAction.execute(config.risingAction(), player);
@@ -36,19 +36,19 @@ public class ActionOverTimePower extends PowerFactory<ActionOverItemConfiguratio
 	}
 
 	@Override
-	protected int tickInterval(ActionOverItemConfiguration configuration, Entity player) {
+	protected int tickInterval(ActionOverTimeConfiguration configuration, Entity player) {
 		return configuration.interval();
 	}
 
 	@Override
-	public void serialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void serialize(ConfiguredPower<ActionOverTimeConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		tag.putBoolean("WasActive", configuration.getPowerData(container, () -> new AtomicBoolean(false)).get());
 	}
 
 	@Override
-	public void deserialize(ConfiguredPower<ActionOverItemConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
+	public void deserialize(ConfiguredPower<ActionOverTimeConfiguration, ?> configuration, IPowerContainer container, CompoundTag tag) {
 		AtomicBoolean data = configuration.getPowerData(container, () -> new AtomicBoolean(false));
 
-		data.set(!Objects.equals(tag, ByteTag.ZERO));
+		data.set(!Objects.equals(tag.get("WasActive"), ByteTag.ZERO));
 	}
 }

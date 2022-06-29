@@ -29,7 +29,7 @@ public record FireProjectileConfiguration(int cooldown, HudRender hudRender, Ent
 										  int startDelay) implements IActiveCooldownPowerConfiguration {
 
 	public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.INT.fieldOf("cooldown").forGetter(FireProjectileConfiguration::cooldown),
+			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(FireProjectileConfiguration::cooldown),
 			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(FireProjectileConfiguration::hudRender),
 			Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
 			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
@@ -49,40 +49,38 @@ public record FireProjectileConfiguration(int cooldown, HudRender hudRender, Ent
 	}
 
 	public void fireProjectile(Entity source) {
-		if (this.entityType() != null) {
-			Entity entity = this.entityType().create(source.level);
-			if (entity == null) {
-				return;
-			}
-			Vec3 rotationVector = source.getLookAngle();
-			float yaw = source.getYRot();
-			float pitch = source.getXRot();
-			Vec3 spawnPos = source.position().add(0, source.getEyeHeightAccess(source.getPose(), source.getDimensions(source.getPose())), 0).add(rotationVector);
-			entity.moveTo(spawnPos.x(), spawnPos.y(), spawnPos.z(), pitch, yaw);
-			if (entity instanceof Projectile projectile) {
-				if (entity instanceof AbstractHurtingProjectile ahp) {
-					ahp.xPower = rotationVector.x * this.speed;
-					ahp.yPower = rotationVector.y * this.speed;
-					ahp.zPower = rotationVector.z * this.speed;
-				}
-				projectile.setOwner(source);
-				projectile.shootFromRotation(source, pitch, yaw, 0F, this.speed(), this.divergence());
-			} else {
-				float f = -Mth.sin(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
-				float g = -Mth.sin(pitch * 0.017453292F);
-				float h = Mth.cos(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
-				Vec3 vec3d = (new Vec3(f, g, h)).normalize().add(source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence(), source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence(), source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence()).scale(this.speed());
-				entity.setDeltaMovement(vec3d);
-				Vec3 entityVelo = source.getDeltaMovement();
-				entity.setDeltaMovement(entity.getDeltaMovement().add(entityVelo.x, source.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
-			}
-			if (this.tag != null) {
-				CompoundTag mergedTag = entity.saveWithoutId(new CompoundTag());
-				mergedTag.merge(this.tag);
-				entity.load(mergedTag);
-			}
-			source.level.addFreshEntity(entity);
+		Entity entity = this.entityType().create(source.level);
+		if (entity == null) {
+			return;
 		}
+		Vec3 rotationVector = source.getLookAngle();
+		float yaw = source.getYRot();
+		float pitch = source.getXRot();
+		Vec3 spawnPos = source.position().add(0, source.getEyeHeightAccess(source.getPose(), source.getDimensions(source.getPose())), 0).add(rotationVector);
+		entity.moveTo(spawnPos.x(), spawnPos.y(), spawnPos.z(), pitch, yaw);
+		if (entity instanceof Projectile projectile) {
+			if (entity instanceof AbstractHurtingProjectile ahp) {
+				ahp.xPower = rotationVector.x * this.speed;
+				ahp.yPower = rotationVector.y * this.speed;
+				ahp.zPower = rotationVector.z * this.speed;
+			}
+			projectile.setOwner(source);
+			projectile.shootFromRotation(source, pitch, yaw, 0F, this.speed(), this.divergence());
+		} else {
+			float f = -Mth.sin(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
+			float g = -Mth.sin(pitch * 0.017453292F);
+			float h = Mth.cos(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
+			Vec3 vec3d = (new Vec3(f, g, h)).normalize().add(source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence(), source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence(), source.level.getRandom().nextGaussian() * 0.007499999832361937D * (double) this.divergence()).scale(this.speed());
+			entity.setDeltaMovement(vec3d);
+			Vec3 entityVelo = source.getDeltaMovement();
+			entity.setDeltaMovement(entity.getDeltaMovement().add(entityVelo.x, source.isOnGround() ? 0.0D : entityVelo.y, entityVelo.z));
+		}
+		if (this.tag != null) {
+			CompoundTag mergedTag = entity.saveWithoutId(new CompoundTag());
+			mergedTag.merge(this.tag);
+			entity.load(mergedTag);
+		}
+		source.level.addFreshEntity(entity);
 	}
 
 	@Override
