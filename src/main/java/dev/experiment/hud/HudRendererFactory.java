@@ -9,7 +9,6 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <T> The configuration of this factory.
  */
-public abstract class HudRendererFactory<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<HudRendererFactory<?>> implements IFactory<T, ConfiguredHudRenderer<T, HudRendererFactory<T>>, HudRendererFactory<T>> {
+public abstract class HudRendererFactory<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredHudRenderer<T, HudRendererFactory<T>>, HudRendererFactory<T>> {
 	public static final Codec<HudRendererFactory<?>> CODEC = ApoliRegistries.codec(HudExperiment.HUD_RENDERERS.registry());
 
 	private final Codec<ConfiguredHudRenderer<T, ?>> codec;

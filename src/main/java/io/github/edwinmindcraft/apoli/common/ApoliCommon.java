@@ -61,9 +61,11 @@ public class ApoliCommon {
 
 		//Vanilla stuff
 		ApoliRecipeSerializers.bootstrap();
+		ApoliArgumentTypes.bootstrap();
 
 		//Powers
 		ApoliPowers.bootstrap();
+		ApoliLootFunctions.bootstrap();
 
 		//Actions
 		ApoliBlockActions.bootstrap();
@@ -89,7 +91,7 @@ public class ApoliCommon {
 	}
 
 	public static void commonSetup(FMLCommonSetupEvent event) {
-		event.enqueueWork(ApoliLootFunctions::bootstrap);
+		event.enqueueWork(ApoliArgumentTypes::initialize);
 		ApoliCompat.apply();
 		initializeNetwork();
 	}

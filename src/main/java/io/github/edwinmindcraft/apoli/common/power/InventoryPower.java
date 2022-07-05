@@ -9,7 +9,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.InventoryConfiguration;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
@@ -36,7 +36,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	@Override
 	public void activate(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		if (!player.level.isClientSide() && player instanceof Player ple && configuration.isActive(player))
-			ple.openMenu(new SimpleMenuProvider(this.getMenuCreator(configuration, player), new TranslatableComponent(configuration.getConfiguration().inventoryName())));
+			ple.openMenu(new SimpleMenuProvider(this.getMenuCreator(configuration, player), Component.translatable(configuration.getConfiguration().inventoryName())));
 	}
 
 	@Override

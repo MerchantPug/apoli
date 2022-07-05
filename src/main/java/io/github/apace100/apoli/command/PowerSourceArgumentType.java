@@ -7,7 +7,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
@@ -15,7 +14,7 @@ import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
@@ -31,7 +30,7 @@ public class PowerSourceArgumentType implements ArgumentType<ResourceLocation> {
 	public static ConfiguredPower<?, ?> getConfiguredPower(CommandContext<CommandSourceStack> context, String argumentName) {
 		ResourceLocation argument = context.getArgument(argumentName, ResourceLocation.class);
 		return CalioAPI.getDynamicRegistries(context.getSource().getServer()).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY)
-				.getOptional(argument).orElseThrow(() -> new CommandRuntimeException(new TranslatableComponent("arguments.apoli.power_source.fail", argument)));
+				.getOptional(argument).orElseThrow(() -> new CommandRuntimeException(Component.translatable("arguments.apoli.power_source.fail", argument)));
 	}
 
 	private final String target;

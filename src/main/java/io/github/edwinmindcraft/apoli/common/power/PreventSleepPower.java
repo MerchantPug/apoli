@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PreventSleepConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -21,7 +21,7 @@ public class PreventSleepPower extends PowerFactory<PreventSleepConfiguration> {
 			if (p.getFactory().doesPrevent(p, world, pos)) {
 				if (p.getConfiguration().allowSpawn() && player instanceof ServerPlayer spe)
 					spe.setRespawnPosition(world.dimension(), pos, spe.getYRot(), false, true);
-				player.displayClientMessage(new TranslatableComponent(p.getConfiguration().message()), true);
+				player.displayClientMessage(Component.translatable(p.getConfiguration().message()), true);
 				flag = true;
 			}
 		}

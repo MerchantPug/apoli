@@ -12,7 +12,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.function.Supplier;
 
@@ -69,7 +68,7 @@ public class ApoliRegistries {
 	 *
 	 * @return The new codec.
 	 */
-	public static <T extends IForgeRegistryEntry<T>> Codec<T> codec(Supplier<IForgeRegistry<T>> registry) {
+	public static <T> Codec<T> codec(Supplier<IForgeRegistry<T>> registry) {
 		Supplier<ForgeRegistry<T>> supplier = () -> (ForgeRegistry<T>) registry.get();
 		return new Codec<>() {
 			@Override

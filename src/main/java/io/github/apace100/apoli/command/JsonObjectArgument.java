@@ -7,13 +7,13 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.Util;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 
 public abstract class JsonObjectArgument<T> implements ArgumentType<T> {
-	public static final DynamicCommandExceptionType ERROR_INVALID_JSON = new DynamicCommandExceptionType((p_87121_) -> new TranslatableComponent("argument.component.invalid", p_87121_));
+	public static final DynamicCommandExceptionType ERROR_INVALID_JSON = new DynamicCommandExceptionType((p_87121_) -> Component.translatable("argument.component.invalid", p_87121_));
 	private static final Field JSON_READER_POS = Util.make(() -> {
 		try {
 			new JsonReader(new java.io.StringReader(""));

@@ -8,7 +8,10 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.*;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -34,20 +37,22 @@ public class ApoliRegisters {
 	//TODO Builtin registries for every type of action & condition.
 
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Apoli.MODID);
+	public static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, Apoli.MODID);
+	public static final DeferredRegister<LootItemFunctionType> LOOT_FUNCTIONS = DeferredRegister.create(Registry.LOOT_FUNCTION_REGISTRY, Apoli.MODID);
 
 	public static void initialize() {
-		ApoliRegistries.POWER_FACTORY = POWER_FACTORIES.makeRegistry(ApoliRegistries.POWER_FACTORY_CLASS, () -> new RegistryBuilder<PowerFactory<?>>().disableSaving().hasTags());
-		ApoliRegistries.ENTITY_CONDITION = ENTITY_CONDITIONS.makeRegistry(ApoliRegistries.ENTITY_CONDITION_CLASS, () -> new RegistryBuilder<EntityCondition<?>>().disableSaving().hasTags());
-		ApoliRegistries.ITEM_CONDITION = ITEM_CONDITIONS.makeRegistry(ApoliRegistries.ITEM_CONDITION_CLASS, () -> new RegistryBuilder<ItemCondition<?>>().disableSaving().hasTags());
-		ApoliRegistries.BLOCK_CONDITION = BLOCK_CONDITIONS.makeRegistry(ApoliRegistries.BLOCK_CONDITION_CLASS, () -> new RegistryBuilder<BlockCondition<?>>().disableSaving().hasTags());
-		ApoliRegistries.DAMAGE_CONDITION = DAMAGE_CONDITIONS.makeRegistry(ApoliRegistries.DAMAGE_CONDITION_CLASS, () -> new RegistryBuilder<DamageCondition<?>>().disableSaving().hasTags());
-		ApoliRegistries.FLUID_CONDITION = FLUID_CONDITIONS.makeRegistry(ApoliRegistries.FLUID_CONDITION_CLASS, () -> new RegistryBuilder<FluidCondition<?>>().disableSaving().hasTags());
-		ApoliRegistries.BIOME_CONDITION = BIOME_CONDITIONS.makeRegistry(ApoliRegistries.BIOME_CONDITION_CLASS, () -> new RegistryBuilder<BiomeCondition<?>>().disableSaving().hasTags());
-		ApoliRegistries.ENTITY_ACTION = ENTITY_ACTIONS.makeRegistry(ApoliRegistries.ENTITY_ACTION_CLASS, () -> new RegistryBuilder<EntityAction<?>>().disableSaving().hasTags());
-		ApoliRegistries.ITEM_ACTION = ITEM_ACTIONS.makeRegistry(ApoliRegistries.ITEM_ACTION_CLASS, () -> new RegistryBuilder<ItemAction<?>>().disableSaving().hasTags());
-		ApoliRegistries.BLOCK_ACTION = BLOCK_ACTIONS.makeRegistry(ApoliRegistries.BLOCK_ACTION_CLASS, () -> new RegistryBuilder<BlockAction<?>>().disableSaving().hasTags());
-		ApoliRegistries.BIENTITY_CONDITION = BIENTITY_CONDITIONS.makeRegistry(ApoliRegistries.BIENTITY_CONDITION_CLASS, () -> new RegistryBuilder<BiEntityCondition<?>>().disableSaving().hasTags());
-		ApoliRegistries.BIENTITY_ACTION = BIENTITY_ACTIONS.makeRegistry(ApoliRegistries.BIENTITY_ACTION_CLASS, () -> new RegistryBuilder<BiEntityAction<?>>().disableSaving().hasTags());
+		ApoliRegistries.POWER_FACTORY = POWER_FACTORIES.makeRegistry(() -> new RegistryBuilder<PowerFactory<?>>().disableSaving().hasTags());
+		ApoliRegistries.ENTITY_CONDITION = ENTITY_CONDITIONS.makeRegistry(() -> new RegistryBuilder<EntityCondition<?>>().disableSaving().hasTags());
+		ApoliRegistries.ITEM_CONDITION = ITEM_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ItemCondition<?>>().disableSaving().hasTags());
+		ApoliRegistries.BLOCK_CONDITION = BLOCK_CONDITIONS.makeRegistry(() -> new RegistryBuilder<BlockCondition<?>>().disableSaving().hasTags());
+		ApoliRegistries.DAMAGE_CONDITION = DAMAGE_CONDITIONS.makeRegistry(() -> new RegistryBuilder<DamageCondition<?>>().disableSaving().hasTags());
+		ApoliRegistries.FLUID_CONDITION = FLUID_CONDITIONS.makeRegistry(() -> new RegistryBuilder<FluidCondition<?>>().disableSaving().hasTags());
+		ApoliRegistries.BIOME_CONDITION = BIOME_CONDITIONS.makeRegistry(() -> new RegistryBuilder<BiomeCondition<?>>().disableSaving().hasTags());
+		ApoliRegistries.ENTITY_ACTION = ENTITY_ACTIONS.makeRegistry(() -> new RegistryBuilder<EntityAction<?>>().disableSaving().hasTags());
+		ApoliRegistries.ITEM_ACTION = ITEM_ACTIONS.makeRegistry(() -> new RegistryBuilder<ItemAction<?>>().disableSaving().hasTags());
+		ApoliRegistries.BLOCK_ACTION = BLOCK_ACTIONS.makeRegistry(() -> new RegistryBuilder<BlockAction<?>>().disableSaving().hasTags());
+		ApoliRegistries.BIENTITY_CONDITION = BIENTITY_CONDITIONS.makeRegistry(() -> new RegistryBuilder<BiEntityCondition<?>>().disableSaving().hasTags());
+		ApoliRegistries.BIENTITY_ACTION = BIENTITY_ACTIONS.makeRegistry(() -> new RegistryBuilder<BiEntityAction<?>>().disableSaving().hasTags());
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		POWER_FACTORIES.register(bus);
@@ -64,6 +69,8 @@ public class ApoliRegisters {
 		BIENTITY_ACTIONS.register(bus);
 
 		RECIPE_SERIALIZERS.register(bus);
+		ARGUMENT_TYPES.register(bus);
+		LOOT_FUNCTIONS.register(bus);
 		bus.addListener(ApoliRegisters::registerCapabilities);
 	}
 

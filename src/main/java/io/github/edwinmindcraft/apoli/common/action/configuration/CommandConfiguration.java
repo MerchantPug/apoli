@@ -8,7 +8,7 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,7 +64,7 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 					(ServerLevel) world,
 					ApoliConfigs.SERVER.executeCommand.permissionLevel.get(),
 					blockName,
-					new TranslatableComponent(blockName),
+					Component.translatable(blockName),
 					server,
 					null);
 			return OptionalInt.of(server.getCommands().performCommand(source, this.command()));

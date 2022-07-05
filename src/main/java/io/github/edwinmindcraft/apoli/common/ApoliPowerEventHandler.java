@@ -18,8 +18,6 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
@@ -238,17 +236,17 @@ public class ApoliPowerEventHandler {
 				if (ApoliConfigs.CLIENT.tooltips.compactUsabilityHints.get() || powers.size() == 0) {
 					if (powers.size() == 1) {
 						ConfiguredPower<?, ?> power = powers.get(0);
-						tooltips.add(new TranslatableComponent(key + ".single", power.getData().getName().withStyle(powerColor)).withStyle(textColor));
+						tooltips.add(Component.translatable(key + ".single", power.getData().getName().withStyle(powerColor)).withStyle(textColor));
 					} else {
-						tooltips.add(new TranslatableComponent(key + ".multiple", new TextComponent((powers.size() == 0 ? size : powers.size()) + "").withStyle(powerColor)).withStyle(textColor));
+						tooltips.add(Component.translatable(key + ".multiple", Component.literal((powers.size() == 0 ? size : powers.size()) + "").withStyle(powerColor)).withStyle(textColor));
 					}
 				} else {
 					MutableComponent powerNameList = powers.get(0).getData().getName().withStyle(powerColor);
 					for (int i = 1; i < powers.size(); i++) {
-						powerNameList = powerNameList.append(new TextComponent(", ").withStyle(textColor));
+						powerNameList = powerNameList.append(Component.literal(", ").withStyle(textColor));
 						powerNameList = powerNameList.append(powers.get(i).getData().getName().withStyle(powerColor));
 					}
-					MutableComponent preventText = new TranslatableComponent(key + ".single", powerNameList).withStyle(textColor);
+					MutableComponent preventText = Component.translatable(key + ".single", powerNameList).withStyle(textColor);
 					tooltips.add(preventText);
 				}
 			}
@@ -259,14 +257,14 @@ public class ApoliPowerEventHandler {
 					.filter(sp -> !sp.isHidden)
 					.toList();
 			if (powers.size() > 0) {
-				tooltips.add(TextComponent.EMPTY);
-				tooltips.add(new TranslatableComponent("item.modifiers." + slot.getName()).withStyle(ChatFormatting.GRAY));
+				tooltips.add(Component.empty());
+				tooltips.add(Component.translatable("item.modifiers." + slot.getName()).withStyle(ChatFormatting.GRAY));
 				powers.forEach(sp -> {
 					if (PowerTypeRegistry.contains(sp.powerId)) {
 						PowerType<?> powerType = PowerTypeRegistry.get(sp.powerId);
-						tooltips.add(new TextComponent(" ").append(powerType.getName()).withStyle(sp.isNegative ? ChatFormatting.RED : ChatFormatting.BLUE));
+						tooltips.add(Component.literal(" ").append(powerType.getName()).withStyle(sp.isNegative ? ChatFormatting.RED : ChatFormatting.BLUE));
 						if (event.getFlags().isAdvanced())
-							tooltips.add(new TextComponent("  ").append(powerType.getDescription()).withStyle(ChatFormatting.GRAY));
+							tooltips.add(Component.literal("  ").append(powerType.getDescription()).withStyle(ChatFormatting.GRAY));
 					}
 				});
 			}

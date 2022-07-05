@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.common.power.OverrideHudTexturePower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,8 +19,8 @@ import java.util.Optional;
 
 @Mixin(ForgeIngameGui.class)
 public abstract class InGameHudMixin extends Gui {
-	public InGameHudMixin(Minecraft pMinecraft) {
-		super(pMinecraft);
+	public InGameHudMixin(Minecraft minecraft, ItemRenderer itemRenderer) {
+		super(minecraft, itemRenderer);
 	}
 
 	@ModifyVariable(method = "bind", at = @At("HEAD"), remap = false, argsOnly = true)

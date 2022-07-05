@@ -70,7 +70,7 @@ public abstract class GameRendererMixin {
 		if (ApoliPowers.SHADER.isPresent()) {
 			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
 				ResourceLocation shaderLoc = shaderPower.getConfiguration().shader();
-				if (this.resourceManager.hasResource(shaderLoc)) {
+				if (this.resourceManager.getResource(shaderLoc).isPresent()) {
 					this.loadEffect(shaderLoc);
 					this.currentlyLoadedShader = shaderLoc;
 				}
@@ -157,7 +157,7 @@ public abstract class GameRendererMixin {
 				BlockState stateAtP = level.getBlockState(p);
 				if (!this.savedStates.containsKey(p) && !level.isEmptyBlock(p) && !(stateAtP.getBlock() instanceof LiquidBlock)) {
 					this.savedStates.put(p, stateAtP);
-					level.setKnownState(p, Blocks.AIR.defaultBlockState());
+					level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
 				}
 			}
 		} else if (this.savedStates.size() > 0) {

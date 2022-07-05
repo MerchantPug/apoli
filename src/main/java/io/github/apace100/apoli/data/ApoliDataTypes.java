@@ -155,7 +155,7 @@ public class ApoliDataTypes {
 
 	public static final SerializableDataType<PlayerAbility> PLAYER_ABILITY = SerializableDataType.wrap(
 			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
-			PlayerAbility::getRegistryName, id -> PlayerAbilities.REGISTRY.get().getValue(id));
+			ability -> PlayerAbilities.REGISTRY.get().getKey(ability), id -> PlayerAbilities.REGISTRY.get().getValue(id));
 
     /*public static <T> SerializableDataType<ConditionFactory<T>.Instance> condition(Class<ConditionFactory<T>.Instance> dataClass, ConditionType<T> conditionType) {
         return new SerializableDataType<>(dataClass, conditionType::write, conditionType::read, conditionType::read);

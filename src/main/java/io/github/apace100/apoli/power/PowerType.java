@@ -4,7 +4,7 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerConfiguration;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -55,9 +55,9 @@ public class PowerType<T extends Power> {
 		//this.descriptionTranslationKey = description;
 	}
 
-    public T create(LivingEntity entity) {
-        return this.getFactory().apply(this, entity);
-    }
+	public T create(LivingEntity entity) {
+		return this.getFactory().apply(this, entity);
+	}
 
 	public boolean isHidden() {
 		return this.configuredPower.getData().hidden();//isHidden;
@@ -86,7 +86,7 @@ public class PowerType<T extends Power> {
 		return this.configuredPower.getData().name();
 	}
 
-	public TranslatableComponent getName() {
+	public Component getName() {
 		return this.configuredPower.getData().getName();
 	}
 
@@ -94,7 +94,7 @@ public class PowerType<T extends Power> {
 		return this.configuredPower.getData().description();
 	}
 
-	public TranslatableComponent getDescription() {
+	public Component getDescription() {
 		return this.configuredPower.getData().getDescription();
 	}
 

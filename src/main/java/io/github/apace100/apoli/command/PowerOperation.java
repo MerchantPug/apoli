@@ -9,17 +9,16 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.scores.Score;
 
 import java.util.concurrent.CompletableFuture;
 
 // Very similar to OperationArgumentType, but modified to make it work with resources.
 public class PowerOperation implements ArgumentType<PowerOperation.Operation> {
-	public static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableComponent("arguments.operation.invalid"));
-	public static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableComponent("arguments.operation.div0"));
+	public static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(Component.translatable("arguments.operation.invalid"));
+	public static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(Component.translatable("arguments.operation.div0"));
 
 	public static PowerOperation operation() {
 		return new PowerOperation();

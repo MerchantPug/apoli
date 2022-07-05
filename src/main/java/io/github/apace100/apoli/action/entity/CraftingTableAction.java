@@ -2,7 +2,6 @@ package io.github.apace100.apoli.action.entity;
 
 import io.github.edwinmindcraft.apoli.common.action.entity.SimpleEntityAction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
@@ -11,7 +10,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.CraftingMenu;
 
 public class CraftingTableAction extends SimpleEntityAction {
-	private static final Component TITLE = new TranslatableComponent("container.crafting");
+	private static final Component TITLE = Component.translatable("container.crafting");
 
 	public static void action(Entity entity) {
 		if (!(entity instanceof Player player)) return;

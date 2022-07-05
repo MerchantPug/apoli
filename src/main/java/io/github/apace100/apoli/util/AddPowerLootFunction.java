@@ -32,7 +32,7 @@ public class AddPowerLootFunction extends LootItemConditionalFunction {
 
 	@NotNull
 	public LootItemFunctionType getType() {
-		return ApoliLootFunctions.ADD_POWER_LOOT_FUNCTION;
+		return ApoliLootFunctions.ADD_POWER_LOOT_FUNCTION.get();
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package io.github.apace100.apoli.action.block;
 
-import com.mojang.serialization.Codec;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;

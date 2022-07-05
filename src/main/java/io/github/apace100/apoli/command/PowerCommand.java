@@ -12,8 +12,7 @@ import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -52,17 +51,17 @@ public class PowerCommand {
 																}
 																if (i == 0) {
 																	if (targets.size() == 1) {
-																		command.getSource().sendFailure(new TranslatableComponent("commands.apoli.grant.fail.single", targets.iterator().next().getDisplayName(), power, COMMAND_POWER_SOURCE));
+																		command.getSource().sendFailure(Component.translatable("commands.apoli.grant.fail.single", targets.iterator().next().getDisplayName(), power, COMMAND_POWER_SOURCE));
 																	} else {
-																		command.getSource().sendFailure(new TranslatableComponent("commands.apoli.grant.fail.multiple", targets.size(), power, COMMAND_POWER_SOURCE));
+																		command.getSource().sendFailure(Component.translatable("commands.apoli.grant.fail.multiple", targets.size(), power, COMMAND_POWER_SOURCE));
 																	}
 																} else if (targets.size() == 1 && i == 1) {
-																	command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.grant.success.single", targets.iterator().next().getDisplayName(), power), true);
+																	command.getSource().sendSuccess(Component.translatable("commands.apoli.grant.success.single", targets.iterator().next().getDisplayName(), power), true);
 																} else {
-																	command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.grant.success.multiple", i, power), true);
+																	command.getSource().sendSuccess(Component.translatable("commands.apoli.grant.success.multiple", i, power), true);
 																}
 															} catch (Exception e) {
-																command.getSource().sendFailure(new TextComponent(e.getMessage()));
+																command.getSource().sendFailure(Component.literal(e.getMessage()));
 															}
 															return i;
 														}
@@ -83,17 +82,17 @@ public class PowerCommand {
 																}
 																if (i == 0) {
 																	if (targets.size() == 1) {
-																		command.getSource().sendFailure(new TranslatableComponent("commands.apoli.grant.fail.single", targets.iterator().next().getDisplayName(), power, source));
+																		command.getSource().sendFailure(Component.translatable("commands.apoli.grant.fail.single", targets.iterator().next().getDisplayName(), power, source));
 																	} else {
-																		command.getSource().sendFailure(new TranslatableComponent("commands.apoli.grant.fail.multiple", targets.size(), power, source));
+																		command.getSource().sendFailure(Component.translatable("commands.apoli.grant.fail.multiple", targets.size(), power, source));
 																	}
 																} else if (targets.size() == 1 && i == 1) {
-																	command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.grant_from_source.success.single", targets.iterator().next().getDisplayName(), power, source), true);
+																	command.getSource().sendSuccess(Component.translatable("commands.apoli.grant_from_source.success.single", targets.iterator().next().getDisplayName(), power, source), true);
 																} else {
-																	command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.grant_from_source.success.multiple", i, power, source), true);
+																	command.getSource().sendSuccess(Component.translatable("commands.apoli.grant_from_source.success.multiple", i, power, source), true);
 																}
 															} catch (Exception e) {
-																command.getSource().sendFailure(new TextComponent(e.getMessage()));
+																command.getSource().sendFailure(Component.literal(e.getMessage()));
 															}
 															return i;
 														})))))
@@ -115,17 +114,17 @@ public class PowerCommand {
 
 														if (i == 0) {
 															if (targets.size() == 1) {
-																command.getSource().sendFailure(new TranslatableComponent("commands.apoli.revoke.fail.single", targets.iterator().next().getDisplayName(), power, COMMAND_POWER_SOURCE));
+																command.getSource().sendFailure(Component.translatable("commands.apoli.revoke.fail.single", targets.iterator().next().getDisplayName(), power, COMMAND_POWER_SOURCE));
 															} else {
-																command.getSource().sendFailure(new TranslatableComponent("commands.apoli.revoke.fail.multiple", power, COMMAND_POWER_SOURCE));
+																command.getSource().sendFailure(Component.translatable("commands.apoli.revoke.fail.multiple", power, COMMAND_POWER_SOURCE));
 															}
 														} else if (targets.size() == 1) {
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.revoke.success.single", targets.iterator().next().getDisplayName(), power), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.revoke.success.single", targets.iterator().next().getDisplayName(), power), false);
 														} else {
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.revoke.success.multiple", i, power), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.revoke.success.multiple", i, power), false);
 														}
 													} catch (Exception e) {
-														command.getSource().sendFailure(new TextComponent(e.getMessage()));
+														command.getSource().sendFailure(Component.literal(e.getMessage()));
 													}
 													return i;
 												})
@@ -146,17 +145,17 @@ public class PowerCommand {
 
 																if (i == 0) {
 																	if (targets.size() == 1) {
-																		command.getSource().sendFailure(new TranslatableComponent("commands.apoli.revoke.fail.single", targets.iterator().next().getDisplayName(), power, source));
+																		command.getSource().sendFailure(Component.translatable("commands.apoli.revoke.fail.single", targets.iterator().next().getDisplayName(), power, source));
 																	} else {
-																		command.getSource().sendFailure(new TranslatableComponent("commands.apoli.revoke.fail.multiple", power, source));
+																		command.getSource().sendFailure(Component.translatable("commands.apoli.revoke.fail.multiple", power, source));
 																	}
 																} else if (targets.size() == 1) {
-																	command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.revoke_from_source.success.single", targets.iterator().next().getDisplayName(), power, source), false);
+																	command.getSource().sendSuccess(Component.translatable("commands.apoli.revoke_from_source.success.single", targets.iterator().next().getDisplayName(), power, source), false);
 																} else {
-																	command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.revoke_from_source.success.multiple", i, power, source), false);
+																	command.getSource().sendSuccess(Component.translatable("commands.apoli.revoke_from_source.success.multiple", i, power, source), false);
 																}
 															} catch (Exception e) {
-																command.getSource().sendFailure(new TextComponent(e.getMessage()));
+																command.getSource().sendFailure(Component.literal(e.getMessage()));
 															}
 															return i;
 														})))))
@@ -176,17 +175,17 @@ public class PowerCommand {
 
 														if (i == 0) {
 															if (targets.size() == 1) {
-																command.getSource().sendFailure(new TranslatableComponent("commands.apoli.revoke_all.fail.single", targets.iterator().next().getDisplayName(), source));
+																command.getSource().sendFailure(Component.translatable("commands.apoli.revoke_all.fail.single", targets.iterator().next().getDisplayName(), source));
 															} else {
-																command.getSource().sendFailure(new TranslatableComponent("commands.apoli.revoke_all.fail.multiple", source));
+																command.getSource().sendFailure(Component.translatable("commands.apoli.revoke_all.fail.multiple", source));
 															}
 														} else if (targets.size() == 1) {
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.revoke_all.success.single", targets.iterator().next().getDisplayName(), i, source), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.revoke_all.success.single", targets.iterator().next().getDisplayName(), i, source), false);
 														} else {
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.revoke_all.success.multiple", targets.size(), i, source), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.revoke_all.success.multiple", targets.size(), i, source), false);
 														}
 													} catch (Exception e) {
-														command.getSource().sendFailure(new TextComponent(e.getMessage()));
+														command.getSource().sendFailure(Component.literal(e.getMessage()));
 													}
 													return i;
 												}))))
@@ -198,7 +197,7 @@ public class PowerCommand {
 											if (target instanceof LivingEntity living) {
 												LazyOptional<IPowerContainer> componentOptional = IPowerContainer.get(living);
 												if (!componentOptional.isPresent()) {
-													command.getSource().sendFailure(new TranslatableComponent("commands.apoli.list.fail"));
+													command.getSource().sendFailure(Component.translatable("commands.apoli.list.fail"));
 												} else {
 													IPowerContainer component = componentOptional.orElseThrow(RuntimeException::new);
 													StringBuilder powers = new StringBuilder();
@@ -208,10 +207,10 @@ public class PowerCommand {
 														powers.append(powerType.toString());
 														i++;
 													}
-													command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.list.pass", i, powers), false);
+													command.getSource().sendSuccess(Component.translatable("commands.apoli.list.pass", i, powers), false);
 												}
 											} else {
-												command.getSource().sendFailure(new TranslatableComponent("commands.apoli.list.fail"));
+												command.getSource().sendFailure(Component.translatable("commands.apoli.list.fail"));
 											}
 											return i;
 										})
@@ -223,7 +222,7 @@ public class PowerCommand {
 													if (target instanceof LivingEntity living) {
 														LazyOptional<IPowerContainer> componentOptional = IPowerContainer.get(living);
 														if (!componentOptional.isPresent()) {
-															command.getSource().sendFailure(new TranslatableComponent("commands.apoli.list.fail"));
+															command.getSource().sendFailure(Component.translatable("commands.apoli.list.fail"));
 														} else {
 															IPowerContainer component = componentOptional.orElseThrow(RuntimeException::new);
 															StringBuilder powers = new StringBuilder();
@@ -233,10 +232,10 @@ public class PowerCommand {
 																powers.append(powerType.toString());
 																i++;
 															}
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.list.pass", i, powers), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.list.pass", i, powers), false);
 														}
 													} else {
-														command.getSource().sendFailure(new TranslatableComponent("commands.apoli.list.fail"));
+														command.getSource().sendFailure(Component.translatable("commands.apoli.list.fail"));
 													}
 													return i;
 												}))))
@@ -255,11 +254,11 @@ public class PowerCommand {
 														}
 													}
 													if (i == 0) {
-														command.getSource().sendFailure(new TranslatableComponent("commands.execute.conditional.fail"));
+														command.getSource().sendFailure(Component.translatable("commands.execute.conditional.fail"));
 													} else if (targets.size() == 1) {
-														command.getSource().sendSuccess(new TranslatableComponent("commands.execute.conditional.pass"), false);
+														command.getSource().sendSuccess(Component.translatable("commands.execute.conditional.pass"), false);
 													} else {
-														command.getSource().sendSuccess(new TranslatableComponent("commands.execute.conditional.pass_count", i), false);
+														command.getSource().sendSuccess(Component.translatable("commands.execute.conditional.pass_count", i), false);
 													}
 													return i;
 												}))))
@@ -273,7 +272,7 @@ public class PowerCommand {
 													if (target instanceof LivingEntity living) {
 														LazyOptional<IPowerContainer> componentOptional = IPowerContainer.get(living);
 														if (!componentOptional.isPresent()) {
-															command.getSource().sendFailure(new TranslatableComponent("commands.apoli.sources.fail", target.getDisplayName(), power));
+															command.getSource().sendFailure(Component.translatable("commands.apoli.sources.fail", target.getDisplayName(), power));
 														} else {
 															IPowerContainer component = componentOptional.orElseThrow(RuntimeException::new);
 															StringBuilder sources = new StringBuilder();
@@ -283,10 +282,10 @@ public class PowerCommand {
 																sources.append(source.toString());
 																i++;
 															}
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.sources.pass", target.getDisplayName(), i, power, sources), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.sources.pass", target.getDisplayName(), i, power, sources), false);
 														}
 													} else {
-														command.getSource().sendFailure(new TranslatableComponent("commands.apoli.sources.fail", target.getDisplayName(), power));
+														command.getSource().sendFailure(Component.translatable("commands.apoli.sources.fail", target.getDisplayName(), power));
 													}
 													return i;
 												}))))
@@ -308,17 +307,17 @@ public class PowerCommand {
 
 														if (i == 0) {
 															if (targets.size() == 1) {
-																command.getSource().sendFailure(new TranslatableComponent("commands.apoli.remove.fail.single", targets.iterator().next().getDisplayName(), power));
+																command.getSource().sendFailure(Component.translatable("commands.apoli.remove.fail.single", targets.iterator().next().getDisplayName(), power));
 															} else {
-																command.getSource().sendFailure(new TranslatableComponent("commands.apoli.remove.fail.multiple", power));
+																command.getSource().sendFailure(Component.translatable("commands.apoli.remove.fail.multiple", power));
 															}
 														} else if (targets.size() == 1) {
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.remove.success.single", targets.iterator().next().getDisplayName(), power), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.remove.success.single", targets.iterator().next().getDisplayName(), power), false);
 														} else {
-															command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.remove.success.multiple", i, power), false);
+															command.getSource().sendSuccess(Component.translatable("commands.apoli.remove.success.multiple", i, power), false);
 														}
 													} catch (Exception e) {
-														command.getSource().sendFailure(new TextComponent(e.getMessage()));
+														command.getSource().sendFailure(Component.literal(e.getMessage()));
 													}
 													return i;
 												}))))
@@ -336,25 +335,25 @@ public class PowerCommand {
 
 												if (i == 0) {
 													if (targets.size() == 1) {
-														command.getSource().sendFailure(new TranslatableComponent("commands.apoli.clear.fail.single", targets.iterator().next().getDisplayName()));
+														command.getSource().sendFailure(Component.translatable("commands.apoli.clear.fail.single", targets.iterator().next().getDisplayName()));
 													} else {
-														command.getSource().sendFailure(new TranslatableComponent("commands.apoli.clear.fail.multiple"));
+														command.getSource().sendFailure(Component.translatable("commands.apoli.clear.fail.multiple"));
 													}
 												} else if (targets.size() == 1) {
-													command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.clear.success.single", targets.iterator().next().getDisplayName(), i), false);
+													command.getSource().sendSuccess(Component.translatable("commands.apoli.clear.success.single", targets.iterator().next().getDisplayName(), i), false);
 												} else {
-													command.getSource().sendSuccess(new TranslatableComponent("commands.apoli.clear.success.multiple", targets.size(), i), false);
+													command.getSource().sendSuccess(Component.translatable("commands.apoli.clear.success.multiple", targets.size(), i), false);
 												}
 											} catch (Exception e) {
-												command.getSource().sendFailure(new TextComponent(e.getMessage()));
+												command.getSource().sendFailure(Component.literal(e.getMessage()));
 											}
 											return i;
 										})))
 						.then(literal("dump")
 								.then(argument("power", PowerTypeArgumentType.power()).executes((command) -> {
 									ConfiguredPower<?, ?> arg = PowerTypeArgumentType.getConfiguredPower(command, "power");
-									String s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, arg).map(JsonElement::toString).result().orElseThrow(() -> new CommandRuntimeException(new TextComponent("Failed to encode " + arg.getRegistryName())));
-									command.getSource().sendSuccess(new TextComponent(s), false);
+									String s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, arg).map(JsonElement::toString).result().orElseThrow(() -> new CommandRuntimeException(Component.literal("Failed to encode " + arg.getRegistryName())));
+									command.getSource().sendSuccess(Component.literal(s), false);
 									return 1;
 								})))
 						.then(literal("condition")
@@ -363,10 +362,10 @@ public class PowerCommand {
 											Entity target = EntityArgument.getEntity(context, "target");
 											ConfiguredEntityCondition<?, ?> condition = EntityConditionArgument.getEntityCondition(context, "condition_json");
 											if (condition.check(target)) {
-												context.getSource().sendSuccess(new TextComponent("Passed"), false);
+												context.getSource().sendSuccess(Component.literal("Passed"), false);
 												return 1;
 											} else {
-												context.getSource().sendSuccess(new TextComponent("Failed"), false);
+												context.getSource().sendSuccess(Component.literal("Failed"), false);
 												return 0;
 											}
 										})))));

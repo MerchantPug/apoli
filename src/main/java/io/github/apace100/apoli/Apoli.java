@@ -1,16 +1,11 @@
 package io.github.apace100.apoli;
 
-import io.github.apace100.apoli.command.EntityConditionArgument;
-import io.github.apace100.apoli.command.PowerOperation;
-import io.github.apace100.apoli.command.PowerTypeArgumentType;
 import io.github.apace100.apoli.util.ApoliConfig;
 import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.apace100.apoli.util.GainedPowerCriterion;
 import io.github.apace100.apoli.util.Scheduler;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -44,9 +39,6 @@ public class Apoli {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ApoliConfigs.COMMON_SPECS);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ApoliConfigs.CLIENT_SPECS);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ApoliConfigs.SERVER_SPECS);
-		ArgumentTypes.register(MODID + ":power", PowerTypeArgumentType.class, new EmptyArgumentSerializer<>(PowerTypeArgumentType::power));
-		ArgumentTypes.register(MODID + ":power_operation", PowerOperation.class, new EmptyArgumentSerializer<>(PowerOperation::operation));
-		ArgumentTypes.register(MODID + ":entity_condition", EntityConditionArgument.class, new EmptyArgumentSerializer<>(EntityConditionArgument::entityCondition));
 
 		//ModPacketsC2S.register();
 

@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @OnlyIn(Dist.CLIENT)
 public abstract class BackgroundRendererMixin {
 
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hasEffect(Lnet/minecraft/world/effect/MobEffect;)Z", ordinal = 1), method = "setupColor")
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hasEffect(Lnet/minecraft/world/effect/MobEffect;)Z", ordinal = 0), method = "setupColor")
 	private static boolean hasStatusEffectProxy(LivingEntity player, MobEffect effect) {
 		if (player instanceof Player && effect == MobEffects.NIGHT_VISION && !player.hasEffect(MobEffects.NIGHT_VISION)) {
 			return INightVisionPower.getNightVisionStrength(player).isPresent();

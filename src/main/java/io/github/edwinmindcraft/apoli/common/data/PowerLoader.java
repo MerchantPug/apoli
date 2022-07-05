@@ -28,7 +28,7 @@ public enum PowerLoader implements DynamicEntryFactory<ConfiguredPower<?, ?>>, D
 	private static final Comparator<ConfiguredPower<?, ?>> LOADING_ORDER_COMPARATOR = Comparator.comparingInt((ConfiguredPower<?, ?> x) -> x.getData().loadingPriority());
 
 	@Override
-	public ConfiguredPower<?, ?> accept(ResourceLocation resourceLocation, List<JsonElement> list) {
+	public ConfiguredPower<?, ?> accept(@NotNull ResourceLocation resourceLocation, @NotNull List<JsonElement> list) {
 		SerializableData.CURRENT_NAMESPACE = resourceLocation.getNamespace();
 		SerializableData.CURRENT_PATH = resourceLocation.getPath();
 		Optional<ConfiguredPower<?, ?>> definition = list.stream().flatMap(x -> {

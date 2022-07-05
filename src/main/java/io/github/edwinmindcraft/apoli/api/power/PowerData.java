@@ -6,7 +6,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,12 +31,12 @@ public record PowerData(List<ConfiguredEntityCondition<?, ?>> conditions, boolea
 		return new Builder();
 	}
 
-	public TranslatableComponent getName() {
-		return new TranslatableComponent(this.name());
+	public MutableComponent getName() {
+		return Component.translatable(this.name());
 	}
 
-	public TranslatableComponent getDescription() {
-		return new TranslatableComponent(this.description());
+	public MutableComponent getDescription() {
+		return Component.translatable(this.description());
 	}
 
 	/**
