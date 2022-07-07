@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
 public class ActionOnLandPower extends PowerFactory<HolderConfiguration<ConfiguredEntityAction<?, ?>>> {
 	public static void execute(Entity player) {
 		var ls = IPowerContainer.getPowers(player, ApoliPowers.ACTION_ON_LAND.get());
-		ls.forEach(x -> x.getFactory().executeAction(x, player));
+		ls.forEach(x -> x.value().getFactory().executeAction(x.value(), player));
 	}
 
 	public ActionOnLandPower() {

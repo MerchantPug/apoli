@@ -7,9 +7,8 @@ import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredFluidCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class FluidCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<FluidCondition<?>> implements IConditionFactory<T, ConfiguredFluidCondition<T, ?>, FluidCondition<T>> {
+public abstract class FluidCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredFluidCondition<T, ?>, FluidCondition<T>> {
 	public static final Codec<FluidCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.FLUID_CONDITION);
 	private final Codec<ConfiguredFluidCondition<T, ?>> codec;
 

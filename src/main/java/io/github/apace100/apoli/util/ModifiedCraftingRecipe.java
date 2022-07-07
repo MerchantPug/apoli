@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyCraftingC
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRecipeSerializers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ModifiedCraftingRecipe extends CustomRecipe {
 
@@ -91,7 +93,7 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 
 	private List<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> getRecipes(Player player) {
 		if (player != null)
-			return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_CRAFTING.get());
+			return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_CRAFTING.get()).stream().map(Holder::value).collect(Collectors.toList());
 		return Lists.newArrayList();
 	}
 

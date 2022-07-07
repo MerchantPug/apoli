@@ -6,7 +6,6 @@ import com.mojang.serialization.MapCodec;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import net.minecraft.core.Holder;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public record HolderConfiguration<T>(Holder<T> holder, boolean required) impleme
 		return new HolderConfiguration<>(holder, false);
 	}
 
-	public static <T extends IForgeRegistryEntry<T>> HolderConfiguration<T> defaultCondition(Supplier<IForgeRegistry<T>> registrySupplier) {
+	public static <T> HolderConfiguration<T> defaultCondition(Supplier<IForgeRegistry<T>> registrySupplier) {
 		return new HolderConfiguration<>(registrySupplier.get().getHolder(registrySupplier.get().getDefaultKey()).orElseThrow(), false);
 	}
 

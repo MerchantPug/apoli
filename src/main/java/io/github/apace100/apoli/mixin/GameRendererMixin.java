@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -69,7 +70,7 @@ public abstract class GameRendererMixin {
 	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
 		if (ApoliPowers.SHADER.isPresent()) {
 			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
-				ResourceLocation shaderLoc = shaderPower.getConfiguration().shader();
+				ResourceLocation shaderLoc = shaderPower.value().getConfiguration().shader();
 				if (this.resourceManager.getResource(shaderLoc).isPresent()) {
 					this.loadEffect(shaderLoc);
 					this.currentlyLoadedShader = shaderLoc;
@@ -106,7 +107,8 @@ public abstract class GameRendererMixin {
 
 	@Inject(at = @At("HEAD"), method = "togglePostEffect", cancellable = true)
 	private void disableShaderToggle(CallbackInfo ci) {
-		if (IPowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream().anyMatch(power -> !power.getConfiguration().toggleable() && power.getConfiguration().shader().equals(this.currentlyLoadedShader))) {
+		if (IPowerContainer.getPowers(this.getMinecraft().cameraEntity, ApoliPowers.SHADER.get()).stream()
+				.anyMatch(power -> !power.value().getConfiguration().toggleable() && power.value().getConfiguration().shader().equals(this.currentlyLoadedShader))) {
 			ci.cancel();
 		}
 	}

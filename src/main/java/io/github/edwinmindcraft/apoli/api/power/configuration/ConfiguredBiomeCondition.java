@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiomeCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
@@ -43,6 +44,6 @@ public final class ConfiguredBiomeCondition<C extends IDynamicFeatureConfigurati
 
 	@Override
 	public String toString() {
-		return "CBiC:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CBiC:" + ApoliRegistries.BIOME_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 
 public class AttackerActionWhenHitPower extends CooldownPowerFactory.Simple<ActionWhenHitConfiguration> {
 	public static void execute(Entity player, DamageSource damageSource, float amount) {
-		IPowerContainer.getPowers(player, ApoliPowers.ATTACKER_ACTION_WHEN_HIT.get()).forEach(x -> x.getFactory().whenHit(x, player, damageSource, amount));
+		IPowerContainer.getPowers(player, ApoliPowers.ATTACKER_ACTION_WHEN_HIT.get()).forEach(x -> x.value().getFactory().whenHit(x.value(), player, damageSource, amount));
 	}
 
 	public AttackerActionWhenHitPower() {

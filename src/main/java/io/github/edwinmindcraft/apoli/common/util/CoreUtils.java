@@ -49,7 +49,7 @@ public class CoreUtils {
 
 	public static float modifyFriction(float friction, LevelReader level, BlockPos pos, @Nullable Entity entity, BlockState state) {
 		if (entity != null)
-			return IPowerContainer.modify(entity, ApoliPowers.MODIFY_SLIPPERINESS.get(), friction, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), level, pos, () -> state));
+			return IPowerContainer.modify(entity, ApoliPowers.MODIFY_SLIPPERINESS.get(), friction, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), level, pos, () -> state));
 		return friction;
 	}
 

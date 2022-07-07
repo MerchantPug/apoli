@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 public class TargetCombatActionPower extends CooldownPowerFactory.Simple<ConditionedCombatActionConfiguration> {
 
 	public static void onHit(Entity player, Entity target, DamageSource source, float amount) {
-		IPowerContainer.getPowers(player, ApoliPowers.TARGET_ACTION_ON_HIT.get()).forEach(x -> x.getFactory().execute(x, player, target, source, amount));
+		IPowerContainer.getPowers(player, ApoliPowers.TARGET_ACTION_ON_HIT.get()).forEach(x -> x.value().getFactory().execute(x.value(), player, target, source, amount));
 	}
 
 	public TargetCombatActionPower() {

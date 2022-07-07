@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
@@ -44,6 +45,6 @@ public final class ConfiguredEntityAction<C extends IDynamicFeatureConfiguration
 
 	@Override
 	public String toString() {
-		return "CEA:" + this.getFactory().getRegistryName() + "-" + this.getConfiguration();
+		return "CEA:" + ApoliRegistries.ENTITY_ACTION.get().getKey(this.getFactory()) + "-" + this.getConfiguration();
 	}
 }

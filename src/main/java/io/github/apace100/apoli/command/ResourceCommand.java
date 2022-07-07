@@ -4,13 +4,16 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ScoreHolderArgument;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.scores.Score;
@@ -77,14 +80,15 @@ public class ResourceCommand {
 		Entity player = EntityArgument.getEntity(command, "target");
 		LazyOptional<IPowerContainer> optional = IPowerContainer.get(player);
 		ResourceLocation power = command.getArgument("power", ResourceLocation.class);
-		ConfiguredPower<?, ?> configuredPower = PowerTypeArgumentType.getConfiguredPower(command, "power");
+		ResourceKey<ConfiguredPower<?, ?>> powerKey = PowerTypeArgumentType.getConfiguredPower(command, "power");
+		Holder<ConfiguredPower<?, ?>> configuredPower = ApoliAPI.getPowers(command.getSource().getServer()).getHolderOrThrow(powerKey);
 		OptionalInt result = switch (sub) {
 			case HAS ->
 					optional.map(x -> x.hasPower(power) ? OptionalInt.of(1) : OptionalInt.empty()).orElse(OptionalInt.empty());
-			case GET -> configuredPower.getValue(player);
-			case SET -> configuredPower.assign(player, IntegerArgumentType.getInteger(command, "value"));
-			case CHANGE -> configuredPower.change(player, IntegerArgumentType.getInteger(command, "value"));
-			case OPERATION -> operation(command, configuredPower, player);
+			case GET -> configuredPower.value().getValue(player);
+			case SET -> configuredPower.value().assign(player, IntegerArgumentType.getInteger(command, "value"));
+			case CHANGE -> configuredPower.value().change(player, IntegerArgumentType.getInteger(command, "value"));
+			case OPERATION -> operation(command, configuredPower.value(), player);
 		};
 		IntFunction<Component> success = switch (sub) {
 			case HAS -> i -> Component.translatable("commands.execute.conditional.pass");

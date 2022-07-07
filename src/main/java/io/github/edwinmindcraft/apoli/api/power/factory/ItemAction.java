@@ -7,10 +7,9 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemActi
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.mutable.Mutable;
 
-public abstract class ItemAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<ItemAction<?>> implements IFactory<T, ConfiguredItemAction<T, ?>, ItemAction<T>> {
+public abstract class ItemAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredItemAction<T, ?>, ItemAction<T>> {
 	public static final Codec<ItemAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ITEM_ACTION);
 	private final Codec<ConfiguredItemAction<T, ?>> codec;
 

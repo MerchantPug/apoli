@@ -11,6 +11,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.OverlayConfigur
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.client.gui.IIngameOverlay;
@@ -85,6 +86,7 @@ public class ApoliPowerOverlay implements IIngameOverlay {
 		boolean hideGui = Minecraft.getInstance().options.hideGui;
 		boolean isFirstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
 		List<ConfiguredPower<OverlayConfiguration, OverlayPower>> powers = IPowerContainer.getPowers(Minecraft.getInstance().getCameraEntity(), ApoliPowers.OVERLAY.get()).stream()
+				.map(Holder::value)
 				.filter(x -> this.shouldDraw.test(x.getConfiguration()) && (!x.getConfiguration().hideWithHud() || !hideGui) && (x.getConfiguration().visibleInThirdPerson() || isFirstPerson))
 				.toList();
 		for (ConfiguredPower<OverlayConfiguration, OverlayPower> power : powers) {

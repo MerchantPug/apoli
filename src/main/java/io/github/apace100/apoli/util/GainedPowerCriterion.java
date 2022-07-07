@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.advancements.critereon.*;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -23,7 +24,7 @@ public class GainedPowerCriterion extends SimpleCriterionTrigger<GainedPowerCrit
 		return new Conditions(composite, id);
 	}
 
-	public void trigger(ServerPlayer player, ConfiguredPower<?, ?> type) {
+	public void trigger(ServerPlayer player, ResourceKey<ConfiguredPower<?, ?>> type) {
 		this.trigger(player, (conditions -> conditions.matches(type)));
 	}
 
@@ -40,8 +41,8 @@ public class GainedPowerCriterion extends SimpleCriterionTrigger<GainedPowerCrit
 			this.powerId = powerId;
 		}
 
-		public boolean matches(ConfiguredPower<?, ?> powerType) {
-			return Objects.equals(powerType.getRegistryName(), this.powerId);
+		public boolean matches(ResourceKey<ConfiguredPower<?, ?>> powerType) {
+			return Objects.equals(powerType.location(), this.powerId);
 		}
 
 		@Override

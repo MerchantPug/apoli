@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionP
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityInteractionConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -17,8 +18,8 @@ import java.util.Optional;
 public class ActionOnEntityUsePower extends PowerFactory<BiEntityInteractionConfiguration> {
 
 	public static Optional<InteractionResult> tryPrevent(Entity self, Entity other, InteractionHand hand) {
-		for (ConfiguredPower<BiEntityInteractionConfiguration, ActionOnEntityUsePower> power : IPowerContainer.getPowers(self, ApoliPowers.PREVENT_ENTITY_USE.get())) {
-			Optional<InteractionResult> result = power.getFactory().tryExecute(power, self, other, hand);
+		for (Holder<ConfiguredPower<BiEntityInteractionConfiguration, ActionOnEntityUsePower>> power : IPowerContainer.getPowers(self, ApoliPowers.PREVENT_ENTITY_USE.get())) {
+			Optional<InteractionResult> result = power.value().getFactory().tryExecute(power.value(), self, other, hand);
 			if (result.isPresent())
 				return result;
 		}
@@ -26,7 +27,7 @@ public class ActionOnEntityUsePower extends PowerFactory<BiEntityInteractionConf
 	}
 
 	public static Optional<InteractionResult> tryInteract(Entity self, Entity other, InteractionHand hand) {
-		return IPowerContainer.getPowers(self, ApoliPowers.ACTION_ON_ENTITY_USE.get()).stream().flatMap(x -> x.getFactory().tryExecute(x, self, other, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
+		return IPowerContainer.getPowers(self, ApoliPowers.ACTION_ON_ENTITY_USE.get()).stream().flatMap(x -> x.value().getFactory().tryExecute(x.value(), self, other, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
 	}
 
 	public ActionOnEntityUsePower(Codec<BiEntityInteractionConfiguration> codec) {

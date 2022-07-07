@@ -16,7 +16,7 @@ import java.util.List;
 public class TooltipPower extends PowerFactory<TooltipConfiguration> {
 	public static void tryAdd(@Nullable Entity entity, ItemStack itemStack, List<Component> tooltips) {
 		if (entity == null) return;
-		IPowerContainer.getPowers(entity, ApoliPowers.TOOLTIP.get()).forEach(power -> power.getFactory().tryAdd(power, entity, itemStack, tooltips));
+		IPowerContainer.getPowers(entity, ApoliPowers.TOOLTIP.get()).forEach(power -> power.value().getFactory().tryAdd(power.value(), entity, itemStack, tooltips));
 	}
 
 	public TooltipPower() {

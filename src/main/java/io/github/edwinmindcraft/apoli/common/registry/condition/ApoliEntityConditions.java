@@ -8,13 +8,16 @@ import io.github.apace100.apoli.mixin.EntityAccessor;
 import io.github.apace100.apoli.power.factory.condition.DistanceFromCoordinatesConditionRegistry;
 import io.github.apace100.apoli.power.factory.condition.entity.ElytraFlightPossibleCondition;
 import io.github.apace100.apoli.power.factory.condition.entity.RaycastCondition;
+import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityCondition;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.condition.entity.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
@@ -67,7 +70,7 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<SimpleEntityCondition> CLIMBING = registerLiving("climbing", living -> living.onClimbable() || IPowerContainer.hasPower(living, ApoliPowers.CLIMBING.get()));
 	public static final RegistryObject<SimpleEntityCondition> TAMED = register("tamed", x -> x instanceof TamableAnimal te && te.isTame());
 	public static final RegistryObject<SimpleEntityCondition> MOVING = register("moving", x -> ((MovingEntity) x).isMoving());
-	public static final RegistryObject<FloatComparingEntityCondition> BRIGHTNESS = registerFloat("brightness", Entity::getBrightness);
+	public static final RegistryObject<FloatComparingEntityCondition> BRIGHTNESS = registerFloat("brightness", Entity::getLightLevelDependentMagicValue);
 	public static final RegistryObject<FloatComparingEntityCondition> SATURATION_LEVEL = registerFloat("saturation_level", x -> x instanceof Player ? ((Player) x).getFoodData().getSaturationLevel() : null);
 	public static final RegistryObject<FloatComparingEntityCondition> HEALTH = registerFloatLiving("health", LivingEntity::getHealth);
 	public static final RegistryObject<FloatComparingEntityCondition> RELATIVE_HEALTH = registerFloatLiving("relative_health", t -> t.getHealth() / t.getMaxHealth());
@@ -115,7 +118,7 @@ public class ApoliEntityConditions {
 	public static final RegistryObject<SingleFieldEntityCondition<CompoundTag>> NBT = register("nbt", SerializableDataTypes.NBT.fieldOf("nbt"), SingleFieldEntityCondition::nbt);
 	public static final RegistryObject<SimpleEntityCondition> EXISTS = register("exists", Objects::nonNull);
 	public static final RegistryObject<SimpleEntityCondition> CREATIVE_FLYING = registerPlayer("creative_flying", x -> x.getAbilities().flying);
-	public static final RegistryObject<SingleFieldEntityCondition<ResourceLocation>> POWER_TYPE = register("power_type", SerializableDataTypes.IDENTIFIER.fieldOf("power_type"), (entity, rl) -> IPowerContainer.get(entity).map(container -> container.getPowerTypes(true).contains(rl)).orElse(false));
+	public static final RegistryObject<SingleFieldEntityCondition<ResourceKey<ConfiguredPower<?, ?>>>> POWER_TYPE = register("power_type", SerializableDataType.registryKey(ApoliDynamicRegistries.CONFIGURED_POWER_KEY).fieldOf("power_type"), (entity, rl) -> IPowerContainer.get(entity).map(container -> container.getPowerTypes(true).contains(rl)).orElse(false));
 	public static final RegistryObject<SingleFieldEntityCondition<PlayerAbility>> ABILITY = register("ability", ApoliDataTypes.PLAYER_ABILITY.fieldOf("player_ability"), IAbilityHolder::has);
 
 

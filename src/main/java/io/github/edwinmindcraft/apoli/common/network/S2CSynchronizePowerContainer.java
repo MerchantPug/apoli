@@ -3,16 +3,19 @@ package io.github.edwinmindcraft.apoli.common.network;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,19 +37,19 @@ public class S2CSynchronizePowerContainer {
 		return IPowerContainer.get(living).map(container -> {
 			Multimap<ResourceLocation, ResourceLocation> powerSources = HashMultimap.create();
 			Map<ResourceLocation, CompoundTag> data = new HashMap<>();
-			for (ResourceLocation power : container.getPowerNames()) {
+			for (ResourceKey<ConfiguredPower<?, ?>> power : container.getPowerTypes(true)) {
 				for (ResourceLocation source : container.getSources(power)) {
-					powerSources.put(power, source);
+					powerSources.put(power.location(), source);
 				}
-				ConfiguredPower<?, ?> configuredPower = container.getPower(power);
-				if (configuredPower == null) {
+				Holder<ConfiguredPower<IDynamicFeatureConfiguration, PowerFactory<IDynamicFeatureConfiguration>>> configuredPower = container.getPower(power);
+				if (configuredPower == null || !configuredPower.isBound()) {
 					Apoli.LOGGER.warn("Invalid power container capability for entity {}", living.getScoreboardName());
 					continue;
 				}
-				CompoundTag tag = configuredPower.serialize(container);
+				CompoundTag tag = configuredPower.value().serialize(container);
 				if (tag.isEmpty())
 					continue;
-				data.put(power, tag);
+				data.put(power.location(), tag);
 			}
 			return new S2CSynchronizePowerContainer(living.getId(), powerSources, data);
 		}).orElse(null);
@@ -84,7 +87,6 @@ public class S2CSynchronizePowerContainer {
 	public void encode(FriendlyByteBuf buffer) {
 		buffer.writeInt(this.entity);
 		buffer.writeVarInt(this.powerSources.keySet().size());
-		WritableRegistry<ConfiguredPower<?, ?>> configuredPowers = CalioAPI.getDynamicRegistries().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
 		for (Map.Entry<ResourceLocation, Collection<ResourceLocation>> powerEntry : this.powerSources.asMap().entrySet()) {
 			ResourceLocation power = powerEntry.getKey();
 			Collection<ResourceLocation> sources = powerEntry.getValue();

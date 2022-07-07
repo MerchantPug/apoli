@@ -15,8 +15,8 @@ public interface INightVisionPower<T extends IDynamicFeatureConfiguration> {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	static Optional<Float> getNightVisionStrength(@Nullable Entity player) {
 		return IPowerContainer.get(player).map(x -> x.getPowers().stream()).orElseGet(Stream::of)
-				.filter(x -> x.isActive(Objects.requireNonNull(player)) && x.getFactory() instanceof INightVisionPower)
-				.map(x -> getValue((ConfiguredPower) x, player))
+				.filter(x -> x.value().isActive(Objects.requireNonNull(player)) && x.value().getFactory() instanceof INightVisionPower)
+				.map(x -> getValue((ConfiguredPower) x.value(), player))
 				.max(Float::compareTo);
 	}
 

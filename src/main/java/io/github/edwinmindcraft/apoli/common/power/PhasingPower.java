@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class PhasingPower extends PowerFactory<PhasingConfiguration> {
 	public static boolean shouldPhaseThrough(Entity entity, LevelReader reader, BlockPos pos, NonNullSupplier<BlockState> stateGetter, boolean isAbove) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().anyMatch(x -> (!isAbove || x.getConfiguration().canPhaseDown(entity)) && x.getConfiguration().canPhaseThrough(reader, pos, stateGetter));
+		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().anyMatch(x -> (!isAbove || x.value().getConfiguration().canPhaseDown(entity)) && x.value().getConfiguration().canPhaseThrough(reader, pos, stateGetter));
 	}
 
 	public static boolean shouldPhaseThrough(Entity entity, LevelReader reader, BlockPos pos, NonNullSupplier<BlockState> stateGetter) {
@@ -26,11 +26,11 @@ public class PhasingPower extends PowerFactory<PhasingConfiguration> {
 	}
 
 	public static boolean hasRenderMethod(Entity entity, PhasingConfiguration.RenderType renderType) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().anyMatch(x -> renderType.equals(x.getConfiguration().renderType()));
+		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().anyMatch(x -> renderType.equals(x.value().getConfiguration().renderType()));
 	}
 
 	public static Optional<Float> getRenderMethod(Entity entity, PhasingConfiguration.RenderType renderType) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().filter(x -> renderType.equals(x.getConfiguration().renderType())).map(x -> x.getConfiguration().viewDistance()).min(Float::compareTo);
+		return IPowerContainer.getPowers(entity, ApoliPowers.PHASING.get()).stream().filter(x -> renderType.equals(x.value().getConfiguration().renderType())).map(x -> x.value().getConfiguration().viewDistance()).min(Float::compareTo);
 	}
 
 

@@ -19,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -27,7 +26,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<PowerFactory<?>> {
+public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.POWER_FACTORY);
 	private static final Map<String, ResourceLocation> ALIASES = Util.make(() -> {
 		ImmutableMap.Builder<String, ResourceLocation> builder = ImmutableMap.builder();
@@ -62,7 +61,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 				.findFirst().map(Map.Entry::getValue)
 				.map(DataResult::success)
 				.orElseGet(() -> DataResult.error("Failed to find power factory with path: " + id.getPath()));
-	}, x -> x.getRegistryName().toString());
+	}, x -> ApoliRegistries.POWER_FACTORY.get().getKey(x).toString());
 
 	private final Codec<ConfiguredPower<T, ?>> codec;
 	private final boolean allowConditions;
@@ -200,7 +199,7 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> exten
 
 	public void deserialize(ConfiguredPower<T, ?> configuration, IPowerContainer container, CompoundTag tag) {}
 
-	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(this.getRegistryName(), this));
+	private final Lazy<io.github.apace100.apoli.power.factory.PowerFactory<?>> legacyType = Lazy.of(() -> new io.github.apace100.apoli.power.factory.PowerFactory<>(ApoliRegistries.POWER_FACTORY.get().getKey(this), this));
 
 	public io.github.apace100.apoli.power.factory.PowerFactory<?> getLegacyFactory() {
 		return this.legacyType.get();

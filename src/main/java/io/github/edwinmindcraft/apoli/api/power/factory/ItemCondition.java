@@ -8,10 +8,9 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ItemCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<ItemCondition<?>> implements IConditionFactory<T, ConfiguredItemCondition<T, ?>, ItemCondition<T>> {
+public abstract class ItemCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredItemCondition<T, ?>, ItemCondition<T>> {
 	public static final Codec<ItemCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ITEM_CONDITION);
 	private final Codec<ConfiguredItemCondition<T, ?>> codec;
 

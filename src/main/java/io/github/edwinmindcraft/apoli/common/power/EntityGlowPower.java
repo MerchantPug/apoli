@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ColorConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.EntityGlowConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
@@ -13,7 +14,7 @@ import java.util.stream.Stream;
 
 public class EntityGlowPower extends PowerFactory<EntityGlowConfiguration> {
 
-	private static Stream<ConfiguredPower<EntityGlowConfiguration, EntityGlowPower>> getGlowPowers(Entity actor, Entity target) {
+	private static Stream<Holder<ConfiguredPower<EntityGlowConfiguration, EntityGlowPower>>> getGlowPowers(Entity actor, Entity target) {
 		return Stream.concat(
 				IPowerContainer.getPowers(actor, ApoliPowers.ENTITY_GLOW.get()).stream(),
 				IPowerContainer.getPowers(target, ApoliPowers.SELF_GLOW.get()).stream()
@@ -21,11 +22,11 @@ public class EntityGlowPower extends PowerFactory<EntityGlowConfiguration> {
 	}
 
 	public static boolean shouldGlow(Entity actor, Entity target) {
-		return getGlowPowers(actor, target).anyMatch(x -> x.getFactory().doesApply(x.getConfiguration(), actor, target));
+		return getGlowPowers(actor, target).anyMatch(x -> x.value().getFactory().doesApply(x.value().getConfiguration(), actor, target));
 	}
 
 	public static Optional<ColorConfiguration> getGlowColor(Entity actor, Entity target) {
-		return getGlowPowers(actor, target).flatMap(x -> x.getFactory().getColor(x.getConfiguration(), actor, target).stream()).findFirst();
+		return getGlowPowers(actor, target).flatMap(x -> x.value().getFactory().getColor(x.value().getConfiguration(), actor, target).stream()).findFirst();
 	}
 
 	private final boolean targetSelf;

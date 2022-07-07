@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 public class PreventEntityRenderPower extends PowerFactory<PreventEntityRenderConfiguration> {
 
 	public static boolean isRenderPrevented(Entity entity, Entity target) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ENTITY_RENDER.get()).stream().anyMatch(x -> x.getFactory().doesPrevent(x, entity, target));
+		return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_ENTITY_RENDER.get()).stream().anyMatch(x -> x.value().getFactory().doesPrevent(x.value(), entity, target));
 	}
 
 	public PreventEntityRenderPower() {

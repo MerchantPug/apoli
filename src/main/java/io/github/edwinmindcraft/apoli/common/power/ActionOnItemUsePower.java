@@ -18,8 +18,8 @@ public class ActionOnItemUsePower extends PowerFactory<ActionOnItemUseConfigurat
 		IPowerContainer component = ApoliAPI.getPowerContainer(player);
 		if (component != null)
 			component.getPowers(ApoliPowers.ACTION_ON_ITEM_USE.get()).stream()
-					.filter(x -> x.getFactory().doesApply(x, player, stack))
-					.forEach(x -> x.getFactory().executeActions(x, player, target));
+					.filter(x -> x.value().getFactory().doesApply(x.value(), player, stack))
+					.forEach(x -> x.value().getFactory().executeActions(x.value(), player, target));
 	}
 
 	public ActionOnItemUsePower() {

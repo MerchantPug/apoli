@@ -3,13 +3,12 @@ package io.github.edwinmindcraft.apoli.api.power;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class ConfiguredFactory<T extends IDynamicFeatureConfiguration, F, CF extends ConfiguredFactory<?, ?, CF>> extends ForgeRegistryEntry.UncheckedRegistryEntry<CF> implements IDynamicFeatureConfiguration {
+public abstract class ConfiguredFactory<T extends IDynamicFeatureConfiguration, F, CF extends ConfiguredFactory<?, ?, CF>> implements IDynamicFeatureConfiguration {
 	private final Lazy<F> factory;
 	private final T configuration;
 

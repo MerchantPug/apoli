@@ -18,8 +18,8 @@ public class ModifyHarvestPower extends ValueModifyingPowerFactory<ModifyHarvest
 	 */
 	public static Optional<Boolean> isHarvestAllowed(Player player, LevelReader reader, BlockPos pos) {
 		return IPowerContainer.getPowers(player, ApoliPowers.MODIFY_HARVEST.get()).stream()
-				.filter(x -> x.getFactory().doesApply(x, reader, pos))
-				.map(x -> x.getFactory().isHarvestAllowed(x))
+				.filter(x -> x.value().getFactory().doesApply(x.value(), reader, pos))
+				.map(x -> x.value().getFactory().isHarvestAllowed(x.value()))
 				.reduce((x, y) -> x || y);
 	}
 

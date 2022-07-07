@@ -8,9 +8,8 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class EntityAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<EntityAction<?>> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
+public abstract class EntityAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
 	public static final Codec<EntityAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ENTITY_ACTION);
 
 	private final Codec<ConfiguredEntityAction<T, ?>> codec;
@@ -30,5 +29,5 @@ public abstract class EntityAction<T extends IDynamicFeatureConfiguration> exten
 
 	public abstract void execute(T configuration, Entity entity);
 
-	private final Lazy<ActionFactory<Entity>> legacyType = Lazy.of(() -> new ActionFactory<>(this.getRegistryName(), CODEC, this));
+	private final Lazy<ActionFactory<Entity>> legacyType = Lazy.of(() -> new ActionFactory<>(ApoliRegistries.ENTITY_ACTION.get().getKey(this), CODEC, this));
 }

@@ -9,7 +9,7 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.BlockPos;
@@ -45,7 +45,7 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 		return CalioCodecHelper.registryDefaultedField(HOLDER, name, ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS);
 	}
 
-	public static MapCodec<Holder<ConfiguredBlockCondition<?, ?>>> optional(String name, ResourceKey<ConfiguredBlockCondition<?,?>> key) {
+	public static MapCodec<Holder<ConfiguredBlockCondition<?, ?>>> optional(String name, ResourceKey<ConfiguredBlockCondition<?, ?>> key) {
 		return CalioCodecHelper.registryField(HOLDER, name, key, ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS);
 	}
 
@@ -105,6 +105,6 @@ public final class ConfiguredBlockCondition<T extends IDynamicFeatureConfigurati
 
 	@Override
 	public String toString() {
-		return "CBC:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CBC:" + ApoliRegistries.BLOCK_CONDITION.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 }

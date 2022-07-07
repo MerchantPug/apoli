@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import com.google.common.collect.ImmutableList;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -14,10 +13,13 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class ClimbingPower extends PowerFactory<ClimbingConfiguration> {
 	public static boolean check(LivingEntity player, Consumer<BlockPos> climbingPosSetter) {
-		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = IPowerContainer.get(player).map(x -> x.getPowers(ApoliPowers.CLIMBING.get(), true)).orElseGet(ImmutableList::of);
+		List<ConfiguredPower<ClimbingConfiguration, ClimbingPower>> climbingPowers = IPowerContainer.get(player)
+				.map(x -> x.getPowers(ApoliPowers.CLIMBING.get(), true).stream().map(Holder::value))
+				.orElseGet(Stream::of).toList();
 		if (climbingPowers.size() > 0) {
 			if (climbingPowers.stream().anyMatch(x -> x.isActive(player))) {
 				climbingPosSetter.accept(player.blockPosition());

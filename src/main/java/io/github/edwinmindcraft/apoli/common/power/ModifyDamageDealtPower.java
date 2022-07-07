@@ -13,19 +13,19 @@ import java.util.Objects;
 
 public class ModifyDamageDealtPower extends ValueModifyingPowerFactory<ModifyDamageDealtConfiguration> {
 	public static float modifyMelee(@Nullable Entity entity, Entity target, DamageSource source, float amount) {
-		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_DAMAGE_DEALT.get(), amount, x -> x.getFactory().check(x, Objects.requireNonNull(entity), target, source, amount), x -> x.getFactory().execute(x, Objects.requireNonNull(entity), target));
+		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_DAMAGE_DEALT.get(), amount, x -> x.value().getFactory().check(x.value(), Objects.requireNonNull(entity), target, source, amount), x -> x.value().getFactory().execute(x.value(), Objects.requireNonNull(entity), target));
 	}
 
 	public static float modifyProjectile(@Nullable Entity entity, Entity target, DamageSource source, float amount) {
-		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get(), amount, x -> x.getFactory().check(x, Objects.requireNonNull(entity), target, source, amount), x -> x.getFactory().execute(x, Objects.requireNonNull(entity), target));
+		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get(), amount, x -> x.value().getFactory().check(x.value(), Objects.requireNonNull(entity), target, source, amount), x -> x.value().getFactory().execute(x.value(), Objects.requireNonNull(entity), target));
 	}
 
 	public static float modifyMeleeNoExec(@Nullable Entity entity, Entity target, DamageSource source, float amount) {
-		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_DAMAGE_DEALT.get(), amount, x -> x.getFactory().check(x, Objects.requireNonNull(entity), target, source, amount), x -> {});
+		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_DAMAGE_DEALT.get(), amount, x -> x.value().getFactory().check(x.value(), Objects.requireNonNull(entity), target, source, amount), x -> {});
 	}
 
 	public static float modifyProjectileNoExec(@Nullable Entity entity, Entity target, DamageSource source, float amount) {
-		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get(), amount, x -> x.getFactory().check(x, Objects.requireNonNull(entity), target, source, amount), x -> {});
+		return IPowerContainer.modify(entity, ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get(), amount, x -> x.value().getFactory().check(x.value(), Objects.requireNonNull(entity), target, source, amount), x -> {});
 	}
 
 

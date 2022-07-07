@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 
 public class ModifyJumpPower extends ValueModifyingPowerFactory<ModifyJumpConfiguration> {
 	public static double apply(Entity player, double baseValue) {
-		return IPowerContainer.modify(player, ApoliPowers.MODIFY_JUMP.get(), baseValue, x -> true, x -> x.getFactory().execute(x, player));
+		return IPowerContainer.modify(player, ApoliPowers.MODIFY_JUMP.get(), baseValue, x -> true, x -> x.value().getFactory().execute(x.value(), player));
 	}
 
 	public ModifyJumpPower() {

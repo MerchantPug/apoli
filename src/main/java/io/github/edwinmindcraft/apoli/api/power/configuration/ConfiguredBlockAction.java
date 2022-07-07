@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.BlockAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.BlockPos;
@@ -47,6 +48,6 @@ public final class ConfiguredBlockAction<C extends IDynamicFeatureConfiguration,
 
 	@Override
 	public String toString() {
-		return "CBA:" + this.getFactory().getRegistryName() + "-" + this.getConfiguration();
+		return "CBA:" + ApoliRegistries.BLOCK_ACTION.get().getKey(this.getFactory()) + "-" + this.getConfiguration();
 	}
 }

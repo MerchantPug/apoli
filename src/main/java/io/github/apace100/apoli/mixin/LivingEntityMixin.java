@@ -12,8 +12,8 @@ import io.github.edwinmindcraft.apoli.common.network.S2CSyncAttacker;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Mixin;
@@ -73,8 +74,8 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		int originalAmp = effect.getAmplifier();
 		int originalDur = effect.getDuration();
 
-		int amplifier = Math.round(IPowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_AMPLIFIER.get(), originalAmp, power -> ModifyStatusEffectPower.doesApply(power, effectType)));
-		int duration = Math.round(IPowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_DURATION.get(), originalDur, power -> ModifyStatusEffectPower.doesApply(power, effectType)));
+		int amplifier = Math.round(IPowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_AMPLIFIER.get(), originalAmp, power -> ModifyStatusEffectPower.doesApply(power.value(), effectType)));
+		int duration = Math.round(IPowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_DURATION.get(), originalDur, power -> ModifyStatusEffectPower.doesApply(power.value(), effectType)));
 
 		if (amplifier != originalAmp || duration != originalDur) {
 			return new MobEffectInstance(
@@ -124,18 +125,18 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		}
 	}
 
-    @Inject(method = "canStandOnFluid", at = @At("HEAD"), cancellable = true)
-    private void modifyWalkableFluids(FluidState fluid, CallbackInfoReturnable<Boolean> cir) {
-        if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.getConfiguration().value())))
-            cir.setReturnValue(true);
-    }
+	@Inject(method = "canStandOnFluid", at = @At("HEAD"), cancellable = true)
+	private void modifyWalkableFluids(FluidState fluid, CallbackInfoReturnable<Boolean> cir) {
+		if (IPowerContainer.getPowers(this, ApoliPowers.WALK_ON_FLUID.get()).stream().anyMatch(p -> fluid.is(p.value().getConfiguration().value())))
+			cir.setReturnValue(true);
+	}
 
-    @Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
-    private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
-        if (IPowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()) && livingEntity.isSwimming() && this.getFluidHeight(FluidTags.WATER) <= 0)
-            return false;
-        return livingEntity.isInWaterRainOrBubble();
-    }
+	@Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
+	private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
+		if (IPowerContainer.hasPower(livingEntity, ApoliPowers.SWIMMING.get()) && livingEntity.isSwimming() && this.getFluidTypeHeight(ForgeMod.WATER_TYPE.get()) <= 0)
+			return false;
+		return livingEntity.isInWaterRainOrBubble();
+	}
 
 	@Unique
 	private boolean prevPowderSnowState = false;
@@ -163,12 +164,12 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	// SetEntityGroupPower
 	@Inject(at = @At("HEAD"), method = "getMobType", cancellable = true)
 	public void getGroup(CallbackInfoReturnable<MobType> info) {
-		List<ConfiguredPower<FieldConfiguration<MobType>, EntityGroupPower>> powers = IPowerContainer.getPowers(this, ApoliPowers.ENTITY_GROUP.get());
+		List<Holder<ConfiguredPower<FieldConfiguration<MobType>, EntityGroupPower>>> powers = IPowerContainer.getPowers(this, ApoliPowers.ENTITY_GROUP.get());
 		if (powers.size() > 0) {
 			if (powers.size() > 1) {
 				Apoli.LOGGER.warn("Entity " + this.getDisplayName() + " has two instances of SetEntityGroupPower.");
 			}
-			info.setReturnValue(powers.get(0).getConfiguration().value());
+			info.setReturnValue(powers.get(0).value().getConfiguration().value());
 		}
 	}
 

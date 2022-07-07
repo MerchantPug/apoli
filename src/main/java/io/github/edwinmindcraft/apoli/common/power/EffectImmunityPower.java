@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 
 public class EffectImmunityPower extends PowerFactory<ListConfiguration<MobEffect>> {
 	public static boolean isImmune(Entity player, MobEffectInstance effect) {
-		return IPowerContainer.getPowers(player, ApoliPowers.EFFECT_IMMUNITY.get()).stream().anyMatch(x -> x.getFactory().isImmune(x, player, effect));
+		return IPowerContainer.getPowers(player, ApoliPowers.EFFECT_IMMUNITY.get()).stream().anyMatch(x -> x.value().getFactory().isImmune(x.value(), player, effect));
 	}
 
 	public EffectImmunityPower() {

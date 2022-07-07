@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,9 +27,9 @@ public abstract class InGameHudMixin extends Gui {
 	@ModifyVariable(method = "bind", at = @At("HEAD"), remap = false, argsOnly = true)
 	public ResourceLocation changeStatusBarTextures(ResourceLocation original) {
 		if (Gui.GUI_ICONS_LOCATION.equals(original)) {
-			Optional<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().findFirst();
+			Optional<Holder<ConfiguredPower<FieldConfiguration<Optional<ResourceLocation>>, OverrideHudTexturePower>>> first = IPowerContainer.getPowers(this.minecraft.player, ApoliPowers.STATUS_BAR_TEXTURE.get()).stream().filter(Holder::isBound).findFirst();
 			if (first.isPresent()) {
-				return first.get().getConfiguration().value().orElse(null);
+				return first.get().value().getConfiguration().value().orElse(null);
 			}
 		}
 		return original;

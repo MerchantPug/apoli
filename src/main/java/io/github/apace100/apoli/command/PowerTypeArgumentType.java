@@ -9,11 +9,11 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.calio.api.CalioAPI;
 import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.concurrent.CompletableFuture;
@@ -24,10 +24,11 @@ public class PowerTypeArgumentType implements ArgumentType<ResourceLocation> {
 		return new PowerTypeArgumentType();
 	}
 
-	public static ConfiguredPower<?, ?> getConfiguredPower(CommandContext<CommandSourceStack> context, String argumentName) {
+	public static ResourceKey<ConfiguredPower<?, ?>> getConfiguredPower(CommandContext<CommandSourceStack> context, String argumentName) {
 		ResourceLocation argument = context.getArgument(argumentName, ResourceLocation.class);
-		return CalioAPI.getDynamicRegistries(context.getSource().getServer()).get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY)
-				.getOptional(argument).orElseThrow(() -> new CommandRuntimeException(Component.translatable("arguments.apoli.power_type.fail", argument)));
+		if (!ApoliAPI.getPowers(context.getSource().getServer()).containsKey(argument))
+			throw new CommandRuntimeException(Component.translatable("arguments.apoli.power_type.fail", argument));
+		return ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, argument);
 	}
 
 	public ResourceLocation parse(StringReader reader) throws CommandSyntaxException {

@@ -8,8 +8,8 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.TogglePowerC
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class TogglePowerFactory<T extends TogglePowerConfiguration> extends PowerFactory<T> implements ITogglePower<T> {

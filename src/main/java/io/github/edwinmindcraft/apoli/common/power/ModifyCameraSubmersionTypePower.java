@@ -13,7 +13,7 @@ import static io.github.edwinmindcraft.apoli.common.registry.ApoliPowers.MODIFY_
 
 public class ModifyCameraSubmersionTypePower extends PowerFactory<ModifyFogTypeConfiguration> {
 	public static Optional<FogType> tryReplace(Entity entity, FogType original) {
-		return IPowerContainer.getPowers(entity, MODIFY_CAMERA_SUBMERSION.get()).stream().flatMap(x -> x.getFactory().tryReplace(x, entity, original).stream()).findFirst();
+		return IPowerContainer.getPowers(entity, MODIFY_CAMERA_SUBMERSION.get()).stream().flatMap(x -> x.value().getFactory().tryReplace(x.value(), entity, original).stream()).findFirst();
 	}
 
 	public ModifyCameraSubmersionTypePower() {

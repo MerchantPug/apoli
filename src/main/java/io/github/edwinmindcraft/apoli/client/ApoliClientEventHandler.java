@@ -13,11 +13,10 @@ import io.github.edwinmindcraft.apoli.common.power.ParticlePower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.PhasingConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,10 +49,8 @@ public class ApoliClientEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onBlockOverlay(RenderBlockOverlayEvent event) {
-		if (event.getPlayer() != null) {
-			if (IPowerContainer.hasPower(event.getPlayer(), ApoliPowers.PHASING.get()))
-				event.setCanceled(true);
-		}
+		if (IPowerContainer.hasPower(event.getPlayer(), ApoliPowers.PHASING.get()))
+			event.setCanceled(true);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -103,14 +100,14 @@ public class ApoliClientEventHandler {
 					HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
 					Set<ResourceLocation> pressedPowers = new HashSet<>();
 					Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
-					for (ConfiguredPower<?, ?> power : container.getPowers()) {
-						power.getKey(player).ifPresent(key -> {
+					for (Holder<ConfiguredPower<?, ?>> holder : container.getPowers()) {
+						holder.value().getKey(player).ifPresent(key -> {
 							KeyMapping binding = getKeyBinding(key.key());
 							if (binding != null) {
 								if (!currentKeyBindingStates.containsKey(key.key()))
 									currentKeyBindingStates.put(key.key(), binding.isDown());
 								if (currentKeyBindingStates.get(key.key()) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false)))
-									pressedPowers.add(powers.getKey(power));
+									pressedPowers.add(powers.getKey(holder.value()));
 							} else if (Calio.isDebugMode())
 								Apoli.LOGGER.warn("No such key: {}", key.key());
 						});
@@ -128,21 +125,19 @@ public class ApoliClientEventHandler {
 	//Replaces redirectFogStart & redirectFogEnd in BackgroundRendererMixin
 	@SubscribeEvent
 	public static void renderFog(EntityViewRenderEvent.RenderFogEvent event) {
-		float start = RenderSystem.getShaderFogStart();
-		float end = RenderSystem.getShaderFogEnd();
-		FogRenderer.FogMode mode = event.getMode();
 		if (event.getCamera().getEntity() instanceof LivingEntity living) {
 			Optional<Float> renderMethod = PhasingPower.getRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS);
 			if (renderMethod.isPresent() && MiscUtil.getInWallBlockState(living) != null) {
 				float view = renderMethod.get();
 				float s;
 				float v;
-				if (mode == FogRenderer.FogMode.FOG_SKY) {
-					s = Math.min(0F, start);
-					v = Math.min(view * 0.8F, end);
+				//TODO Check if this works instead of FogMode.FOG_SKY
+				if (RenderSystem.getShaderFogStart() == 0.0F) {
+					s = 0F;
+					v = view * 0.8F;
 				} else {
-					s = Math.min(view * 0.25F, start);
-					v = Math.min(view, end);
+					s = view * 0.25F;
+					v = view;
 				}
 				RenderSystem.setShaderFogStart(s);
 				RenderSystem.setShaderFogEnd(v);

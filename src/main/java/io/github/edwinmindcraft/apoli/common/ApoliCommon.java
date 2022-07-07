@@ -27,10 +27,6 @@ public class ApoliCommon {
 
 	private static void initializeNetwork() {
 		int messageId = 0;
-		/*CHANNEL.messageBuilder(C2SPlayerLandedPacket.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
-				.encoder(C2SPlayerLandedPacket::encode).decoder(C2SPlayerLandedPacket::decode)
-				.consumer(C2SPlayerLandedPacket::handle).add();*/
-
 		CHANNEL.messageBuilder(C2SUseActivePowers.class, messageId++, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(C2SUseActivePowers::encode).decoder(C2SUseActivePowers::decode)
 				.consumer(C2SUseActivePowers::handle).add();

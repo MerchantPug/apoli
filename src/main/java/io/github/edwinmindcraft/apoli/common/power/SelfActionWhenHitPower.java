@@ -12,8 +12,8 @@ import net.minecraft.world.entity.Entity;
 
 public class SelfActionWhenHitPower extends CooldownPowerFactory.Simple<ActionWhenHitConfiguration> {
 	public static void execute(Entity player, DamageSource damageSource, float amount) {
-		IPowerContainer.getPowers(player, ApoliPowers.SELF_ACTION_WHEN_HIT.get()).forEach(x -> x.getFactory().whenHit(x, player, damageSource, amount));
-		IPowerContainer.getPowers(player, ApoliPowers.ACTION_WHEN_DAMAGE_TAKEN.get()).forEach(x -> x.getFactory().whenHit(x, player, damageSource, amount));
+		IPowerContainer.getPowers(player, ApoliPowers.SELF_ACTION_WHEN_HIT.get()).forEach(x -> x.value().getFactory().whenHit(x.value(), player, damageSource, amount));
+		IPowerContainer.getPowers(player, ApoliPowers.ACTION_WHEN_DAMAGE_TAKEN.get()).forEach(x -> x.value().getFactory().whenHit(x.value(), player, damageSource, amount));
 	}
 
 	public SelfActionWhenHitPower() {

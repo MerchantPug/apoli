@@ -12,11 +12,11 @@ import net.minecraft.world.entity.Entity;
 public class SelfCombatActionPower extends CooldownPowerFactory.Simple<ConditionedCombatActionConfiguration> {
 
 	public static void onHit(Entity player, Entity target, DamageSource source, float amount) {
-		IPowerContainer.getPowers(player, ApoliPowers.SELF_ACTION_ON_HIT.get()).forEach(x -> x.getFactory().execute(x, player, target, source, amount));
+		IPowerContainer.getPowers(player, ApoliPowers.SELF_ACTION_ON_HIT.get()).forEach(x -> x.value().getFactory().execute(x.value(), player, target, source, amount));
 	}
 
 	public static void onKill(Entity player, Entity target, DamageSource source, float amount) {
-		IPowerContainer.getPowers(player, ApoliPowers.SELF_ACTION_ON_KILL.get()).forEach(x -> x.getFactory().execute(x, player, target, source, amount));
+		IPowerContainer.getPowers(player, ApoliPowers.SELF_ACTION_ON_KILL.get()).forEach(x -> x.value().getFactory().execute(x.value(), player, target, source, amount));
 	}
 
 	public SelfCombatActionPower() {

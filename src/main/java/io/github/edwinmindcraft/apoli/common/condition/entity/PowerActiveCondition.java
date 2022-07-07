@@ -15,6 +15,6 @@ public class PowerActiveCondition extends EntityCondition<PowerReference> {
 	public boolean check(PowerReference configuration, Entity entity) {
 		return IPowerContainer.get(entity).filter(x -> x.hasPower(configuration.power()))
 				.map(x -> x.getPower(configuration.power()))
-				.map(x -> x.isActive(entity)).orElse(false);
+				.map(x -> x.value().isActive(entity)).orElse(false);
 	}
 }

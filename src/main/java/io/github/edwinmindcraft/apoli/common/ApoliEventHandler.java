@@ -82,14 +82,18 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void calioLoadComplete(CalioDynamicRegistryEvent.LoadComplete event) {
 		WritableRegistry<ConfiguredPower<?, ?>> configuredPowers = event.getRegistryManager().get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY);
-		for (ConfiguredPower<?, ?> configuredPower : configuredPowers) {
-			List<String> warnings = configuredPower.getWarnings(event.getRegistryManager());
-			List<String> errors = configuredPower.getErrors(event.getRegistryManager());
-			if (errors.isEmpty() && warnings.isEmpty()) continue;
-			Apoli.LOGGER.info("Status report for power: {}", configuredPower.getRegistryName());
-			warnings.forEach(Apoli.LOGGER::warn);
-			errors.forEach(Apoli.LOGGER::error);
-		}
+		configuredPowers.holders().forEach(holder -> {
+			if (!holder.isBound())
+				Apoli.LOGGER.info("Missing power: {}", holder.key());
+			else {
+				List<String> warnings = holder.value().getWarnings(event.getRegistryManager());
+				List<String> errors = holder.value().getErrors(event.getRegistryManager());
+				if (errors.isEmpty() && warnings.isEmpty()) return;
+				Apoli.LOGGER.info("Status report for power: {}", holder.key());
+				warnings.forEach(Apoli.LOGGER::warn);
+				errors.forEach(Apoli.LOGGER::error);
+			}
+		});
 	}
 
 	@SubscribeEvent
@@ -104,7 +108,7 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void playerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-		IPowerContainer.get(event.getEntityLiving()).ifPresent(x -> x.getPowers().forEach(y -> y.onRemoved(event.getEntityLiving())));
+		IPowerContainer.get(event.getEntityLiving()).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getEntityLiving())));
 	}
 
 	@SubscribeEvent
@@ -123,9 +127,9 @@ public class ApoliEventHandler {
 			Apoli.LOGGER.info("Capability mismatch: original:{}, new:{}", original.isPresent(), player.isPresent());
 		}
 		player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
-		original.ifPresent(x -> x.getPowers().forEach(y -> y.onRemoved(event.getOriginal())));
+		original.ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getOriginal())));
 		if (!event.getEntityLiving().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
-			IPowerContainer.getPowers(event.getPlayer(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.getFactory().restoreItems(power, event.getPlayer()));
+			IPowerContainer.getPowers(event.getPlayer(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getPlayer()));
 
 		event.getOriginal().invalidateCaps(); // Unload capabilities.
 	}
@@ -135,7 +139,7 @@ public class ApoliEventHandler {
 		if (event.getPlayer() instanceof ServerPlayer sp) {
 			IPowerContainer.sync(sp);
 			if (!event.isEndConquered())
-				IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.onRespawn(sp)));
+				IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
 		}
 	}
 

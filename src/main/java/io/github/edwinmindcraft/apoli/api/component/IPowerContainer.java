@@ -10,9 +10,13 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IValueModifyingPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.power.AttributeModifyTransferPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -56,27 +60,27 @@ public interface IPowerContainer {
 		ApoliAPI.synchronizePowerContainer(entity, with);
 	}
 
-	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> void withPower(Entity entity, F factory, Predicate<ConfiguredPower<T, F>> power, Consumer<ConfiguredPower<T, F>> with) {
-		get(entity).ifPresent(x -> x.getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
+	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> void withPower(Entity entity, F factory, @Nullable Predicate<Holder<ConfiguredPower<T, F>>> power, Consumer<Holder<ConfiguredPower<T, F>>> with) {
+		get(entity).ifPresent(x -> x.getPowers(factory).stream().filter(Holder::isBound).filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
 	}
 
-	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<ConfiguredPower<T, F>> getPowers(Entity entity, F factory) {
+	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<Holder<ConfiguredPower<T, F>>> getPowers(Entity entity, F factory) {
 		return get(entity).map(x -> x.getPowers(factory)).orElseGet(ImmutableList::of);
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> boolean hasPower(Entity entity, F factory) {
-		return get(entity).map(x -> x.getPowers().stream().anyMatch(p -> Objects.equals(factory, p.getFactory()) && p.isActive(entity))).orElse(false);
+		return get(entity).map(x -> x.getPowers().stream().anyMatch(p -> p.isBound() && Objects.equals(factory, p.value().getFactory()) && p.value().isActive(entity))).orElse(false);
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue) {
 		return (float) modify(entity, factory, (double) baseValue, null, null);
 	}
 
-	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue, Predicate<ConfiguredPower<T, F>> powerFilter) {
+	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue, Predicate<Holder<ConfiguredPower<T, F>>> powerFilter) {
 		return (float) modify(entity, factory, (double) baseValue, powerFilter, null);
 	}
 
-	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue, Predicate<ConfiguredPower<T, F>> powerFilter, Consumer<ConfiguredPower<T, F>> powerAction) {
+	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue, Predicate<Holder<ConfiguredPower<T, F>>> powerFilter, Consumer<Holder<ConfiguredPower<T, F>>> powerAction) {
 		return (float) modify(entity, factory, (double) baseValue, powerFilter, powerAction);
 	}
 
@@ -84,9 +88,9 @@ public interface IPowerContainer {
 		return modify(entity, factory, baseValue, null, null);
 	}
 
-	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, double baseValue, Predicate<ConfiguredPower<T, F>> powerFilter, Consumer<ConfiguredPower<T, F>> powerAction) {
-		List<ConfiguredPower<T, F>> powers = IPowerContainer.getPowers(entity, factory).stream().filter(x -> powerFilter == null || powerFilter.test(x)).toList();
-		List<AttributeModifier> modifiers = powers.stream().flatMap(x -> x.getFactory().getModifiers(x, entity).stream()).collect(Collectors.toCollection(ArrayList::new));
+	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, double baseValue, Predicate<Holder<ConfiguredPower<T, F>>> powerFilter, Consumer<Holder<ConfiguredPower<T, F>>> powerAction) {
+		List<Holder<ConfiguredPower<T, F>>> powers = IPowerContainer.getPowers(entity, factory).stream().filter(x -> powerFilter == null || powerFilter.test(x)).toList();
+		List<AttributeModifier> modifiers = powers.stream().filter(Holder::isBound).flatMap(x -> x.value().getFactory().getModifiers(x.value(), entity).stream()).collect(Collectors.toCollection(ArrayList::new));
 		if (powerAction != null) powers.forEach(powerAction);
 		modifiers.addAll(AttributeModifyTransferPower.apply(entity, factory));
 		ModifyValueEvent event = new ModifyValueEvent(entity, factory, baseValue, modifiers);
@@ -103,7 +107,18 @@ public interface IPowerContainer {
 	 * @param source The source of this power.
 	 */
 	@Contract(mutates = "this")
-	void removePower(ResourceLocation power, ResourceLocation source);
+	default void removePower(ResourceLocation power, ResourceLocation source) {
+		this.removePower(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, power), source);
+	}
+
+	/**
+	 * Removes the given power if it is the only instance for the given source.
+	 *
+	 * @param power  The power to remove.
+	 * @param source The source of this power.
+	 */
+	@Contract(mutates = "this")
+	void removePower(ResourceKey<ConfiguredPower<?, ?>> power, ResourceLocation source);
 
 	/**
 	 * Removes all powers associated with the given source.
@@ -123,7 +138,7 @@ public interface IPowerContainer {
 	 * @return A {@link List} of powers.
 	 */
 	@NotNull
-	List<ResourceLocation> getPowersFromSource(ResourceLocation source);
+	List<ResourceKey<ConfiguredPower<?, ?>>> getPowersFromSource(ResourceLocation source);
 
 	/**
 	 * Adds the given power with the given source.
@@ -134,7 +149,20 @@ public interface IPowerContainer {
 	 * @return {@code true} if the power was added, {@code false} if it was already present.
 	 */
 	@Contract(mutates = "this")
-	boolean addPower(ResourceLocation power, ResourceLocation source);
+	default boolean addPower(ResourceLocation power, ResourceLocation source) {
+		return this.addPower(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, power), source);
+	}
+
+	/**
+	 * Adds the given power with the given source.
+	 *
+	 * @param power  The power to add.
+	 * @param source The source of this power.
+	 *
+	 * @return {@code true} if the power was added, {@code false} if it was already present.
+	 */
+	@Contract(mutates = "this")
+	boolean addPower(ResourceKey<ConfiguredPower<?, ?>> power, ResourceLocation source);
 
 	/**
 	 * Checks if the entity has the given power.
@@ -144,7 +172,19 @@ public interface IPowerContainer {
 	 * @return {@code true} if the player has the power, {@code false} otherwise
 	 */
 	@Contract(pure = true)
-	boolean hasPower(@Nullable ResourceLocation power);
+	default boolean hasPower(@Nullable ResourceLocation power) {
+		return this.hasPower(power == null ? null : ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, power));
+	}
+
+	/**
+	 * Checks if the entity has the given power.
+	 *
+	 * @param power The power to check for.
+	 *
+	 * @return {@code true} if the player has the power, {@code false} otherwise
+	 */
+	@Contract(pure = true)
+	boolean hasPower(@Nullable ResourceKey<ConfiguredPower<?, ?>> power);
 
 	/**
 	 * Checks if the given source gives the requested power.
@@ -155,7 +195,20 @@ public interface IPowerContainer {
 	 * @return {@code true} if the player has the power with the given source, {@code false} otherwise
 	 */
 	@Contract(pure = true)
-	boolean hasPower(ResourceLocation power, ResourceLocation source);
+	default boolean hasPower(ResourceLocation power, ResourceLocation source) {
+		return this.hasPower(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, power), source);
+	}
+
+	/**
+	 * Checks if the given source gives the requested power.
+	 *
+	 * @param power  The power to check for.
+	 * @param source The requested source of this power.
+	 *
+	 * @return {@code true} if the player has the power with the given source, {@code false} otherwise
+	 */
+	@Contract(pure = true)
+	boolean hasPower(ResourceKey<ConfiguredPower<?, ?>> power, ResourceLocation source);
 
 	/**
 	 * Returns the power with the given name if the player has this power, false otherwise.
@@ -168,7 +221,24 @@ public interface IPowerContainer {
 	 */
 	@Nullable
 	@Contract(value = "null -> null", pure = true)
-	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, F> getPower(ResourceLocation power);
+	default <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> Holder<ConfiguredPower<C, F>> getPower(@Nullable ResourceLocation power) {
+		if (power == null)
+			return null;
+		return this.getPower(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, power));
+	}
+
+	/**
+	 * Returns the power with the given name if the player has this power, false otherwise.
+	 *
+	 * @param power The {@link ResourceLocation} of the power to get.
+	 * @param <C>   The type of the {@link IDynamicFeatureConfiguration} of this power.
+	 * @param <F>   The type of the {@link PowerFactory} of this power.
+	 *
+	 * @return The {@link ConfiguredPower} with the given name if this entity has it, {@code null} otherwise.
+	 */
+	@Nullable
+	@Contract(value = "null -> null", pure = true)
+	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> Holder<ConfiguredPower<C, F>> getPower(@Nullable ResourceKey<ConfiguredPower<?, ?>> power);
 
 	/**
 	 * Returns a list of all powers currently on this entity.
@@ -178,17 +248,19 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	List<ConfiguredPower<?, ?>> getPowers();
+	List<Holder<ConfiguredPower<?, ?>>> getPowers();
 
 	/**
-	 * Returns a list of all powers currently on this entity.
+	 * Returns a list of the names of all powers currently on this entity.
 	 * This includes both active and inactive powers.
 	 *
-	 * @return A {@link List} of the instances of {@link ConfiguredPower} currently on this component
+	 * @return A {@link Set} of the names of all the instances of {@link ConfiguredPower} currently on this component
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Set<ResourceLocation> getPowerNames();
+	default Set<ResourceKey<ConfiguredPower<?, ?>>> getPowerNames() {
+		return this.getPowerTypes(true);
+	}
 
 	/**
 	 * Returns a set of Identifiers containing all power currently contained in this component,
@@ -201,7 +273,7 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	Set<ResourceLocation> getPowerTypes(boolean includeSubPowers);
+	Set<ResourceKey<ConfiguredPower<?, ?>>> getPowerTypes(boolean includeSubPowers);
 
 	/**
 	 * Returns a list of all active powers on this component of the given type.
@@ -216,7 +288,7 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	default <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<ConfiguredPower<C, F>> getPowers(F factory) {
+	default <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C, F>>> getPowers(F factory) {
 		return this.getPowers(factory, false);
 	}
 
@@ -234,7 +306,7 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<ConfiguredPower<C, F>> getPowers(F factory, boolean includeInactive);
+	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C, F>>> getPowers(F factory, boolean includeInactive);
 
 	/**
 	 * Returns a list of all sources for the given power.
@@ -245,7 +317,20 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	List<ResourceLocation> getSources(ResourceLocation power);
+	default List<ResourceLocation> getSources(ResourceLocation power) {
+		return this.getSources(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, power));
+	}
+
+	/**
+	 * Returns a list of all sources for the given power.
+	 *
+	 * @param power The power to get the source for.
+	 *
+	 * @return A {@link List} of all sources of this power.
+	 */
+	@NotNull
+	@Contract(pure = true)
+	List<ResourceLocation> getSources(ResourceKey<ConfiguredPower<?, ?>> power);
 
 	/**
 	 * Synchronizes this component with the client.
@@ -308,7 +393,24 @@ public interface IPowerContainer {
 	 *
 	 * @return Either the stored data for this power, or a new instance of the data.
 	 */
-	@NotNull <T> T getPowerData(ConfiguredPower<?, ?> power, NonNullSupplier<? extends T> supplier);
+	@NotNull <T> T getPowerData(ResourceKey<ConfiguredPower<?, ?>> power, NonNullSupplier<? extends T> supplier);
+
+	/**
+	 * This is a replacement for the system used by fabric in which data is stored with the powers.<br/>
+	 * This expects the type to be mutable, as it will only be computed if it is missing.
+	 *
+	 * @param power    The power to create the data for.
+	 * @param supplier The default value of the entry
+	 * @param <T>      The type of the stored data. Should be mutable, you can use Atomic types.
+	 *
+	 * @return Either the stored data for this power, or a new instance of the data.
+	 */
+	default @NotNull <T> T getPowerData(Holder<ConfiguredPower<?, ?>> power, NonNullSupplier<? extends T> supplier) {
+		ResourceKey<ConfiguredPower<?, ?>> key = power.unwrap()
+				.map(Optional::of, pow -> ApoliAPI.getPowers(this.getOwner().getServer()).getResourceKey(pow))
+				.orElseThrow(() -> new IllegalArgumentException("Cannot create data for unregistered power: " + power));
+		return this.getPowerData(key, supplier);
+	}
 
 	Entity getOwner();
 }

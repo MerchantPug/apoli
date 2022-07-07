@@ -8,9 +8,8 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class BlockAction<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BlockAction<?>> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
+public abstract class BlockAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredBlockAction<T, ?>, BlockAction<T>> {
 	public static final Codec<BlockAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_ACTION);
 
 	private final Codec<ConfiguredBlockAction<T, ?>> codec;

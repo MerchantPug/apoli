@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
 public class InvulnerablePower extends PowerFactory<HolderConfiguration<ConfiguredDamageCondition<?, ?>>> {
 
 	public static boolean isInvulnerableTo(Entity entity, DamageSource source) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.INVULNERABILITY.get()).stream().anyMatch(x -> ConfiguredDamageCondition.check(x.getConfiguration().holder(), source, Float.NaN));
+		return IPowerContainer.getPowers(entity, ApoliPowers.INVULNERABILITY.get()).stream().anyMatch(x -> ConfiguredDamageCondition.check(x.value().getConfiguration().holder(), source, Float.NaN));
 	}
 
 	public InvulnerablePower() {

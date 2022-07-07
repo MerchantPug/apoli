@@ -10,6 +10,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +28,7 @@ public class ModifyFoodPower extends PowerFactory<ModifyFoodConfiguration> {
 	}
 
 	public static List<ConfiguredPower<ModifyFoodConfiguration, ModifyFoodPower>> getValidPowers(Entity source, Level level, ItemStack stack) {
-		return IPowerContainer.getPowers(source, ApoliPowers.MODIFY_FOOD.get()).stream()
+		return IPowerContainer.getPowers(source, ApoliPowers.MODIFY_FOOD.get()).stream().map(Holder::value)
 				.filter(x -> x.getFactory().check(x, level, stack)).collect(Collectors.toList());
 	}
 

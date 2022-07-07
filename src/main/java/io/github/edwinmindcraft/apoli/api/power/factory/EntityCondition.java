@@ -7,9 +7,8 @@ import io.github.edwinmindcraft.apoli.api.power.IConditionFactory;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class EntityCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<EntityCondition<?>> implements IConditionFactory<T, ConfiguredEntityCondition<T, ?>, EntityCondition<T>> {
+public abstract class EntityCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredEntityCondition<T, ?>, EntityCondition<T>> {
 	public static final Codec<EntityCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ENTITY_CONDITION);
 	private final Codec<ConfiguredEntityCondition<T, ?>> codec;
 

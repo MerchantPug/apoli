@@ -18,7 +18,7 @@ public class ScoreboardCondition extends EntityCondition<ScoreboardComparisonCon
 		if (entity instanceof Player player) {
 			Scoreboard scoreboard = player.getScoreboard();
 			Objective objective = scoreboard.getOrCreateObjective(configuration.objective());
-			String playerName = player.getName().getContents();
+			String playerName = player.getScoreboardName();
 
 			if (scoreboard.hasPlayerScore(playerName, objective)) {
 				int value = scoreboard.getOrCreatePlayerScore(playerName, objective).getScore();

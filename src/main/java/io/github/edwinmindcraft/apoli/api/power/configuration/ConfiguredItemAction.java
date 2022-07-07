@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.apoli.api.power.ConfiguredFactory;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
@@ -45,6 +46,6 @@ public final class ConfiguredItemAction<C extends IDynamicFeatureConfiguration, 
 
 	@Override
 	public String toString() {
-		return "CIA:" + this.getFactory().getRegistryName() + "-" + this.getConfiguration();
+		return "CIA:" + ApoliRegistries.ITEM_ACTION.get().getKey(this.getFactory()) + "-" + this.getConfiguration();
 	}
 }

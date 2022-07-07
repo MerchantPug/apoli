@@ -34,7 +34,7 @@ public class C2SUseActivePowers {
 				.filter(container::hasPower)
 				.map(container::getPower)
 				.filter(Objects::nonNull)
-				.forEach(x -> x.activate(contextSupplier.get().getSender()))));
+				.forEach(x -> x.value().activate(contextSupplier.get().getSender()))));
 		contextSupplier.get().setPacketHandled(true);
 	}
 }

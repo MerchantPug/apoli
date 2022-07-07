@@ -63,7 +63,7 @@ public class PowerRestrictedCraftingRecipe extends CustomRecipe {
 	private List<Recipe<CraftingContainer>> getRecipes(CraftingContainer inv) {
 		Player player = this.getPlayerFromHandler(inv.menu);
 		if (player != null) {
-			return IPowerContainer.getPowers(player, ApoliPowers.RECIPE.get()).stream().map(x -> (Recipe<CraftingContainer>) x.getConfiguration().value()).toList();
+			return IPowerContainer.getPowers(player, ApoliPowers.RECIPE.get()).stream().map(x -> (Recipe<CraftingContainer>) x.value().getConfiguration().value()).toList();
 		}
 		return Lists.newArrayList();
 	}

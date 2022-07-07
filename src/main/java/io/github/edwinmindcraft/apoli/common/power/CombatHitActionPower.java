@@ -12,8 +12,8 @@ import net.minecraft.world.entity.Entity;
 
 public class CombatHitActionPower extends CooldownPowerFactory.Simple<CombatHitActionConfiguration> {
 	public static void perform(Entity attacker, Entity target, DamageSource source, float amount) {
-		IPowerContainer.getPowers(attacker, ApoliPowers.ACTION_ON_HIT.get()).forEach(x -> x.getFactory().onHit(x, attacker, target, source, amount));
-		IPowerContainer.getPowers(target, ApoliPowers.ACTION_WHEN_HIT.get()).forEach(x -> x.getFactory().whenHit(x, target, attacker, source, amount));
+		IPowerContainer.getPowers(attacker, ApoliPowers.ACTION_ON_HIT.get()).forEach(x -> x.value().getFactory().onHit(x.value(), attacker, target, source, amount));
+		IPowerContainer.getPowers(target, ApoliPowers.ACTION_WHEN_HIT.get()).forEach(x -> x.value().getFactory().whenHit(x.value(), target, attacker, source, amount));
 	}
 
 	public CombatHitActionPower() {

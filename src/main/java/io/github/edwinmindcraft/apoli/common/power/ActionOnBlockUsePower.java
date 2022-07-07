@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ActionOnBlockUsePower extends PowerFactory<BlockInteractionConfiguration> {
 
 	public static Optional<InteractionResult> tryInteract(Entity entity, BlockPos pos, Direction direction, InteractionHand hand) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ACTION_ON_BLOCK_USE.get()).stream().flatMap(x -> x.getFactory().tryExecute(x, entity, pos, direction, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
+		return IPowerContainer.getPowers(entity, ApoliPowers.ACTION_ON_BLOCK_USE.get()).stream().flatMap(x -> x.value().getFactory().tryExecute(x.value(), entity, pos, direction, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
 	}
 
 	public ActionOnBlockUsePower() {

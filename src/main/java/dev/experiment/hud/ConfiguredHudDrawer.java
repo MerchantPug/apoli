@@ -7,10 +7,12 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Holder;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.LazyOptional;
 
 @OnlyIn(Dist.CLIENT)
@@ -31,15 +33,17 @@ public enum ConfiguredHudDrawer implements GameHudRender {
 		int y = client.getWindow().getGuiScaledHeight() - 47 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetY.get();
 		if (player.getVehicle() instanceof LivingEntity vehicle)
 			y -= 8 * (int) (vehicle.getMaxHealth() / 20f);
-		if (player.isEyeInFluid(FluidTags.WATER) || player.getAirSupply() < player.getMaxAirSupply())
+		if (player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) || player.getAirSupply() < player.getMaxAirSupply())
 			y -= 8;
 
-		for (ConfiguredPower<?, ?> power : container.getPowers()) {
+		for (Holder<ConfiguredPower<?, ?>> power : container.getPowers()) {
+			if (!power.isBound())
+				return;
 			ConfiguredHudRenderer<?, ?> renderer = null; //FIXME Actually implement this.
 			DrawType drawType = renderer.shouldDraw(player);
-			if (!power.shouldRender(player).map(drawType).orElse(false)) continue;
+			if (!power.value().shouldRender(player).map(drawType).orElse(false)) continue;
 			int height = renderer.height(player);
-			float fill = power.getFill(player).orElse(0.0F);
+			float fill = power.value().getFill(player).orElse(0.0F);
 			renderer.drawBar(player, matrixStack, x - 2, y - height + 6, BAR_WIDTH, fill);
 			renderer.drawIcon(player, matrixStack, x - height - 2, y - height + 6, fill);
 			y -= height;

@@ -9,11 +9,13 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeMod;
 
 import java.util.Comparator;
 import java.util.List;
@@ -32,13 +34,16 @@ public class PowerHudRenderer extends GuiComponent implements GameHudRender {
 			int y = client.getWindow().getGuiScaledHeight() - 47 + ApoliConfigs.CLIENT.resourcesAndCooldowns.hudOffsetY.get();
 			if (player.getVehicle() instanceof LivingEntity vehicle)
 				y -= 8 * (int) (vehicle.getMaxHealth() / 20f);
-			if (player.isEyeInFluid(FluidTags.WATER) || player.getAirSupply() < player.getMaxAirSupply()) {
+			if (player.isEyeInFluidType(ForgeMod.WATER_TYPE.get()) || player.getAirSupply() < player.getMaxAirSupply()) {
 				y -= 8;
 			}
 			int barWidth = 71;
 			int barHeight = 8;
 			int iconSize = 8;
-			List<ConfiguredPower<?, ?>> configuredPowers = component.getPowers().stream().filter(power -> power.asHudRendered().isPresent()).sorted(Comparator.comparing(power -> power.getRenderSettings(player).orElse(HudRender.DONT_RENDER).spriteLocation())).toList();
+			List<? extends ConfiguredPower<?, ?>> configuredPowers = component.getPowers().stream().map(Holder::value)
+					.filter(power -> power.asHudRendered().isPresent())
+					.sorted(Comparator.comparing(power -> power.getRenderSettings(player).orElse(HudRender.DONT_RENDER).spriteLocation()))
+					.toList();
 			ResourceLocation lastLocation = null;
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 			for (ConfiguredPower<?, ?> hudPower : configuredPowers) {

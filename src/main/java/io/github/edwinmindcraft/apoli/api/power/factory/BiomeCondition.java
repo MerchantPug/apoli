@@ -8,9 +8,8 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCon
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BiomeCondition<?>> implements IConditionFactory<T, ConfiguredBiomeCondition<T, ?>, BiomeCondition<T>> {
+public abstract class BiomeCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredBiomeCondition<T, ?>, BiomeCondition<T>> {
 	public static final Codec<BiomeCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BIOME_CONDITION);
 
 	private final Codec<ConfiguredBiomeCondition<T, ?>> codec;

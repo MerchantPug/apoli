@@ -21,7 +21,7 @@ public class PreventFeatureRenderPower extends PowerFactory<ListConfiguration<St
 		if (optionalCdr.isPresent()) {
 			ClassDataRegistry<? extends RenderLayer<?, ?>> cdr = optionalCdr.get();
 			return IPowerContainer.getPowers(entity, ApoliPowers.PREVENT_FEATURE_RENDER.get()).stream()
-					.flatMap(power -> power.getConfiguration().entries().stream().flatMap(x -> cdr.mapStringToClass(x).stream()))
+					.flatMap(power -> power.value().getConfiguration().entries().stream().flatMap(x -> cdr.mapStringToClass(x).stream()))
 					.anyMatch(x -> x.isInstance(layer));
 		}
 		return false;

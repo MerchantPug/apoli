@@ -1,9 +1,11 @@
 package io.github.apace100.apoli.power;
 
 import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.fabric.FabricPowerConfiguration;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +30,7 @@ public class PowerType<T extends Power> {
 	}
 
 	public PowerType(ConfiguredPower<?, ?> cp) {
-		this.identifier = cp.getRegistryName();
+		this.identifier = ApoliAPI.getPowers().getKey(cp);
 		this.configuredPower = cp;
 		this.factory = null; //TODO Dummy Factory.
 	}
@@ -65,7 +67,7 @@ public class PowerType<T extends Power> {
 
 	public boolean isActive(Entity entity) {
 		if (entity instanceof LivingEntity living && this.identifier != null) {
-			return IPowerContainer.get(living).resolve().map(x -> x.getPower(this.identifier)).map(x -> x.isActive(living)).orElse(false);
+			return IPowerContainer.get(living).resolve().map(x -> x.getPower(this.identifier)).map(x -> x.value().isActive(living)).orElse(false);
 		}
 		return false;
 	}
@@ -74,7 +76,7 @@ public class PowerType<T extends Power> {
 	public T get(Entity entity) {
 		if (entity instanceof LivingEntity living) {
 			return IPowerContainer.get(living).resolve().map(x -> x.getPower(this.identifier)).map(cp -> {
-				if (cp.getConfiguration() instanceof FabricPowerConfiguration config)
+				if (cp.value().getConfiguration() instanceof FabricPowerConfiguration config)
 					return (T) config.power().apply(this, living);
 				return null;
 			}).orElse(null);

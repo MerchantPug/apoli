@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.EntityActionConfiguration;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class EntityActionPower extends PowerFactory<EntityActionConfiguration> {
 	 * @return {@code true} if any power exists, {@code false} otherwise.
 	 */
 	public static boolean execute(EntityActionPower power, Entity entity) {
-		List<ConfiguredPower<EntityActionConfiguration, EntityActionPower>> powers = IPowerContainer.getPowers(entity, power);
-		powers.forEach(x -> ConfiguredEntityAction.execute(x.getConfiguration().entityAction(), entity));
+		List<Holder<ConfiguredPower<EntityActionConfiguration, EntityActionPower>>> powers = IPowerContainer.getPowers(entity, power);
+		powers.forEach(x -> ConfiguredEntityAction.execute(x.value().getConfiguration().entityAction(), entity));
 		return !powers.isEmpty();
 	}
 

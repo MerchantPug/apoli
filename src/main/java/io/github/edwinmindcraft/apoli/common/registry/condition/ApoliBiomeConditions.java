@@ -34,7 +34,7 @@ public class ApoliBiomeConditions {
 	public static final RegistryObject<DelegatedBiomeCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Holder<Biome>>>> AND = of("and");
 	public static final RegistryObject<DelegatedBiomeCondition<ConditionStreamConfiguration<ConfiguredBiomeCondition<?, ?>, Holder<Biome>>>> OR = of("or");
 
-	public static final RegistryObject<PropertyBiomeCondition<Biome.BiomeCategory>> CATEGORY = BIOME_CONDITIONS.register("category", () -> new PropertyBiomeCondition<>("category", SerializableDataType.enumValue(Biome.BiomeCategory.class, Biome.BiomeCategory::getName), Biome::getBiomeCategory));
+	//public static final RegistryObject<PropertyBiomeCondition<Biome.BiomeCategory>> CATEGORY = BIOME_CONDITIONS.register("category", () -> new PropertyBiomeCondition<>("category", SerializableDataType.enumValue(Biome.BiomeCategory.class, Biome.BiomeCategory::getName), Biome::getBiomeCategory));
 	public static final RegistryObject<HighHumidityCondition> HIGH_HUMIDITY = BIOME_CONDITIONS.register("high_humidity", HighHumidityCondition::new);
 	public static final RegistryObject<PropertyBiomeCondition<Biome.Precipitation>> PRECIPITATION = BIOME_CONDITIONS.register("precipitation", () -> new PropertyBiomeCondition<>("precipitation", SerializableDataType.enumValue(Biome.Precipitation.class, Biome.Precipitation::getName), x -> x.isBound() ? x.value().getPrecipitation() : null));
 	public static final RegistryObject<FloatComparingBiomeCondition> TEMPERATURE = BIOME_CONDITIONS.register("temperature", () -> new FloatComparingBiomeCondition(x -> x.isBound() ? x.value().getBaseTemperature() : 0.2F));

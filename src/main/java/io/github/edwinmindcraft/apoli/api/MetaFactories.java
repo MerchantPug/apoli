@@ -10,7 +10,6 @@ import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -18,7 +17,7 @@ import java.util.function.Function;
 
 public class MetaFactories {
 
-	public static <F extends IForgeRegistryEntry<F>, C, V> void defineMetaConditions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedConditionConfiguration<V>>, ? extends F> func, CodecSet<C> conditionCodec, BiPredicate<C, V> predicate) {
+	public static <F, C, V> void defineMetaConditions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedConditionConfiguration<V>>, ? extends F> func, CodecSet<C> conditionCodec, BiPredicate<C, V> predicate) {
 		registry.register("constant", () -> func.apply(ConstantConfiguration.codec()));
 		registry.register("and", () -> func.apply(ConditionStreamConfiguration.andCodec(conditionCodec, predicate)));
 		registry.register("or", () -> func.apply(ConditionStreamConfiguration.orCodec(conditionCodec, predicate)));
@@ -39,7 +38,7 @@ public class MetaFactories {
 	 * @param <C>            The type of the configured condition.
 	 * @param <V>            The intermediate type to reduce arguments to a single type.
 	 */
-	public static <F extends IForgeRegistryEntry<F>, A, C, V> void defineMetaActions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedActionConfiguration<V>>, ? extends F> func, CodecSet<A> actionCodec, CodecSet<C> conditionCodec, Function<String, MapCodec<Holder<A>>> optional, BiConsumer<A, V> executor, BiPredicate<C, V> predicate) {
+	public static <F, A, C, V> void defineMetaActions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedActionConfiguration<V>>, ? extends F> func, CodecSet<A> actionCodec, CodecSet<C> conditionCodec, Function<String, MapCodec<Holder<A>>> optional, BiConsumer<A, V> executor, BiPredicate<C, V> predicate) {
 		registry.register("and", () -> func.apply(ExecuteMultipleConfiguration.codec(actionCodec, executor)));
 		registry.register("chance", () -> func.apply(ChanceConfiguration.codec(actionCodec, executor)));
 		registry.register("if_else", () -> func.apply(IfElseConfiguration.codec(conditionCodec, actionCodec, optional, predicate, executor)));

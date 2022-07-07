@@ -15,6 +15,7 @@ import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
@@ -24,10 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.IRegistryDelegate;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +42,7 @@ import java.util.function.Supplier;
  * @param <C> The type of the configuration.
  * @param <F> The type of the factory.
  */
-public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends CapabilityProvider<ConfiguredPower<?, ?>> implements IForgeRegistryEntry<ConfiguredPower<?, ?>>, IDynamicFeatureConfiguration {
+public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends CapabilityProvider<ConfiguredPower<?, ?>> implements IDynamicFeatureConfiguration {
 	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
 	public static final CodecSet<ConfiguredPower<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
 	public static final Codec<Holder<ConfiguredPower<?, ?>>> HOLDER = CODEC_SET.holder();
@@ -107,11 +105,11 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public <T> T getPowerData(Entity player, NonNullSupplier<? extends T> supplier) {
-		return IPowerContainer.get(player).resolve().<T>map(x -> x.getPowerData(this, supplier)).orElseGet(supplier::get);
+		return IPowerContainer.get(player).resolve().<T>map(x -> x.getPowerData(Holder.direct(this), supplier)).orElseGet(supplier::get);
 	}
 
 	public <T> T getPowerData(IPowerContainer container, NonNullSupplier<? extends T> supplier) {
-		return container.getPowerData(this, supplier);
+		return container.getPowerData(Holder.direct(this), supplier);
 	}
 
 	/**
@@ -237,39 +235,6 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.asActive().map(x -> x.getKey(this, entity));
 	}
 
-	@Override
-	public Class<ConfiguredPower<?, ?>> getRegistryType() {
-		return ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS;
-	}
-
-	public final Delegate<ConfiguredPower<?, ?>> delegate = new Delegate<>(this, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
-	private ResourceLocation registryName = null;
-
-	public ConfiguredPower<?, ?> setRegistryName(String name) {
-		if (this.getRegistryName() != null)
-			throw new IllegalStateException("Attempted to set registry name with existing registry name! New: " + name + " Old: " + this.getRegistryName());
-
-		this.registryName = this.checkRegistryName(name);
-		this.delegate.setName(this.registryName);
-		this.getContainedPowers().forEach((s, configuredPower) -> {
-			if (configuredPower.isBound() && configuredPower.value().getRegistryName() == null) configuredPower.value().setRegistryName(name + s);
-		});
-		return this;
-	}
-
-	//Helper functions
-	@Override
-	public ConfiguredPower<?, ?> setRegistryName(ResourceLocation name) {return this.setRegistryName(name.toString());}
-
-	public ConfiguredPower<?, ?> setRegistryName(String modID, String name) {return this.setRegistryName(modID + ":" + name);}
-
-	@Nullable
-	@Override
-	public ResourceLocation getRegistryName() {
-		if (this.delegate.name() != null) return this.delegate.name();
-		return this.registryName != null ? this.registryName : null;
-	}
-
 	public ConfiguredPower<C, F> complete(ResourceLocation name) {
 		return new ConfiguredPower<>(this::getFactory, this.getConfiguration(), this.getData().complete(name));
 	}
@@ -312,63 +277,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 
 	@Override
 	public String toString() {
-		return "CP:" + this.getFactory().getRegistryName() + "(" + this.getData() + ")-" + this.getConfiguration();
+		return "CP:" + ApoliRegistries.POWER_FACTORY.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
 	}
 
 	private final Lazy<PowerType<?>> type = Lazy.of(() -> new PowerType<>(this));
 
 	public PowerType<?> getPowerType() {
 		return this.type.get();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || this.getClass() != o.getClass()) return false;
-		ConfiguredPower<?, ?> that = (ConfiguredPower<?, ?>) o;
-		return this.delegate.equals(that.delegate);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.delegate);
-	}
-
-	private static final class Delegate<T> implements IRegistryDelegate<T> {
-		private T referent;
-		private ResourceLocation name;
-		private final Class<T> type;
-
-		public Delegate(T referent, Class<T> type) {
-			this.referent = referent;
-			this.type = type;
-		}
-
-		@Override
-		public T get() {return this.referent;}
-
-		@Override
-		@Nullable
-		public ResourceLocation name() {return this.name;}
-
-		@Override
-		public Class<T> type() {return this.type;}
-
-		void changeReference(T newTarget) {this.referent = newTarget;}
-
-		public void setName(ResourceLocation name) {this.name = name;}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof Delegate<?> other) {
-				return Objects.equals(other.name, this.name);
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(this.name);
-		}
 	}
 }

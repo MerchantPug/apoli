@@ -49,7 +49,7 @@ public class PowerSourceArgumentType implements ArgumentType<ResourceLocation> {
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		if (context.getSource() instanceof CommandSourceStack) {
 			try {
-				Set<ResourceLocation> collect = EntityArgument.getEntities((CommandContext<CommandSourceStack>) context, this.target).stream().map(ApoliAPI::getPowerContainer).filter(Objects::nonNull).flatMap(x -> x.getPowerNames().stream().flatMap(name -> x.getSources(name).stream())).collect(Collectors.toSet());
+				Set<ResourceLocation> collect = EntityArgument.getEntities((CommandContext<CommandSourceStack>) context, this.target).stream().map(ApoliAPI::getPowerContainer).filter(Objects::nonNull).flatMap(x -> x.getPowerTypes(true).stream().flatMap(name -> x.getSources(name).stream())).collect(Collectors.toSet());
 				return SharedSuggestionProvider.suggestResource(collect, builder);
 			} catch (CommandSyntaxException e) {
 				return Suggestions.empty();

@@ -16,6 +16,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionP
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,7 +46,6 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -66,7 +66,7 @@ public class ApoliPowerEventHandler {
 		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(state, event.getPlayer());
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
-		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.getConfiguration().condition(), world, event.getPos(), () -> state)) * factor;
+		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), world, event.getPos(), () -> state)) * factor;
 
 		if (stateCheck == forgeCheck)
 			event.setNewSpeed(speed);
@@ -107,7 +107,7 @@ public class ApoliPowerEventHandler {
 		LivingEntity entityLiving = event.getEntityLiving();
 		//TODO Check if this works. It should since MC1.17 seems to fire this on both sides.
 		ActionOnLandPower.execute(entityLiving);
-		if (IPowerContainer.getPowers(entityLiving, ApoliPowers.MODIFY_FALLING.get()).stream().anyMatch(x -> !x.getConfiguration().takeFallDamage()))
+		if (IPowerContainer.getPowers(entityLiving, ApoliPowers.MODIFY_FALLING.get()).stream().anyMatch(x -> !x.value().getConfiguration().takeFallDamage()))
 			event.setDamageMultiplier(0.0F); //Disable fall damage without actually removing distance. This is to avoid breaking compatibility.
 	}
 
@@ -197,7 +197,7 @@ public class ApoliPowerEventHandler {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerDeath(LivingDeathEvent event) {
 		if (event.getEntityLiving() instanceof Player player && !player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
-			IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).forEach(inventory -> {
+			IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
 				if (inventory.getFactory().shouldDropOnDeath(inventory, player)) {
 					Container container = inventory.getFactory().getInventory(inventory, player);
 					for (int i = 0; i < container.getContainerSize(); ++i) {
@@ -213,7 +213,7 @@ public class ApoliPowerEventHandler {
 					}
 				}
 			});
-			IPowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.getFactory().captureItems(power, player));
+			IPowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().captureItems(power.value(), player));
 		}
 	}
 

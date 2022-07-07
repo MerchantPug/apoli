@@ -9,12 +9,9 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.registries.ForgeRegistryEntry;
-import org.jetbrains.annotations.ApiStatus;
 
-public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> extends ForgeRegistryEntry<BlockCondition<?>> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
+public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
 	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_CONDITION);
 
 	private final Codec<ConfiguredBlockCondition<T, ?>> codec;

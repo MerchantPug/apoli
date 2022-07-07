@@ -24,7 +24,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkStatus;
-import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
@@ -35,22 +35,22 @@ import java.util.Optional;
 
 public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float distanceMultiplier,
 											 @Nullable ResourceKey<Biome> biome, String strategy,
-											 @Nullable ResourceKey<ConfiguredStructureFeature<?, ?>> structure,
+											 @Nullable ResourceKey<Structure> structure,
 											 @Nullable SoundEvent sound) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyPlayerSpawnConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			SerializableDataTypes.DIMENSION.fieldOf("dimension").forGetter(ModifyPlayerSpawnConfiguration::dimension),
 			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "dimension_distance_multiplier", 0F).forGetter(ModifyPlayerSpawnConfiguration::distanceMultiplier),
 			CalioCodecHelper.resourceKey(Registry.BIOME_REGISTRY).optionalFieldOf("biome").forGetter(x -> Optional.ofNullable(x.biome())),
 			CalioCodecHelper.optionalField(Codec.STRING, "spawn_strategy", "default").forGetter(ModifyPlayerSpawnConfiguration::strategy),
-			CalioCodecHelper.optionalField(SerializableDataType.registryKey(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
+			CalioCodecHelper.optionalField(SerializableDataType.registryKey(Registry.STRUCTURE_REGISTRY), "structure").forGetter(x -> Optional.ofNullable(x.structure())),
 			CalioCodecHelper.optionalField(SerializableDataTypes.SOUND_EVENT, "respawn_sound").forGetter(x -> Optional.ofNullable(x.sound()))
 	).apply(instance, (t1, t2, t3, t4, t5, t6) -> new ModifyPlayerSpawnConfiguration(t1, t2, t3.orElse(null), t4, t5.orElse(null), t6.orElse(null))));
 
 
 	@Nullable
-	private static Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> getStructureLocation(Level world, @Nullable ResourceKey<ConfiguredStructureFeature<?, ?>> structure, @Nullable TagKey<ConfiguredStructureFeature<?, ?>> structureTag, ResourceKey<Level> dimension) {
-		Registry<ConfiguredStructureFeature<?, ?>> registry = world.registryAccess().registryOrThrow(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY);
-		HolderSet<ConfiguredStructureFeature<?, ?>> entryList = null;
+	private static Pair<BlockPos, Holder<Structure>> getStructureLocation(Level world, @Nullable ResourceKey<Structure> structure, @Nullable TagKey<Structure> structureTag, ResourceKey<Level> dimension) {
+		Registry<Structure> registry = world.registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
+		HolderSet<Structure> entryList = null;
 		String structureOrTagName = "";
 		if (structure != null) {
 			var entry = registry.getHolder(structure);
@@ -76,7 +76,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			Apoli.LOGGER.warn("No such dimension: {}", dimension.location());
 			return null;
 		}
-		Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> result = serverWorld.getChunkSource().getGenerator().findNearestMapFeature(serverWorld, entryList, blockPos, 100, false);
+		Pair<BlockPos, Holder<Structure>> result = serverWorld.getChunkSource().getGenerator().findNearestMapStructure(serverWorld, entryList, blockPos, 100, false);
 		if (result == null) {
 			Apoli.LOGGER.warn("Could not find structure \"{}\" in dimension: {}", structureOrTagName, dimension.location());
 			return null;
@@ -190,7 +190,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			}
 
 			if (this.biome() != null) {
-				Pair<BlockPos, Holder<Biome>> biomePos = world.findNearestBiome(x -> x.is(this.biome()), spawnToDimPos, 6400, 8);
+				Pair<BlockPos, Holder<Biome>> biomePos = world.findClosestBiome3d(x -> x.is(this.biome()), spawnToDimPos, 6400, 8, 8);
 				if (biomePos != null) {
 					spawnToDimPos = biomePos.getFirst();
 				} else {
@@ -201,7 +201,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 			if (this.structure == null) {
 				tpPos = getValidSpawn(spawnToDimPos, range, world);
 			} else {
-				Pair<BlockPos, Holder<ConfiguredStructureFeature<?, ?>>> structure = getStructureLocation(world, this.structure, null, this.dimension);
+				Pair<BlockPos, Holder<Structure>> structure = getStructureLocation(world, this.structure, null, this.dimension);
 				ChunkPos structureChunkPos;
 
 				if (structure == null) {
@@ -209,7 +209,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 				}
 				BlockPos structurePos = structure.getFirst();
 				structureChunkPos = new ChunkPos(structurePos.getX() >> 4, structurePos.getZ() >> 4);
-				StructureStart structureStart = world.structureFeatureManager().getStartForFeature(SectionPos.of(structureChunkPos, 0), structure.getSecond().value(), world.getChunk(structurePos));
+				StructureStart structureStart = world.structureManager().getStartForStructure(SectionPos.of(structureChunkPos, 0), structure.getSecond().value(), world.getChunk(structurePos));
 				if (structureStart != null) {
 					BlockPos structureCenter = new BlockPos(structureStart.getBoundingBox().getCenter());
 					tpPos = getValidSpawn(structureCenter, range, world);

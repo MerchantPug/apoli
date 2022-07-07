@@ -18,7 +18,7 @@ public class ResourceCondition extends EntityCondition<ResourceComparisonConfigu
 	public boolean check(ResourceComparisonConfiguration configuration, Entity entity) {
 		return IPowerContainer.get(entity).resolve().map(x -> x.getPower(configuration.resource().power())).map(power -> {
 			if (entity instanceof Player player) {
-				OptionalInt value = power.getValue(player);
+				OptionalInt value = power.value().getValue(player);
 				return value.isPresent() && configuration.comparison().check(value.getAsInt());
 			}
 			return false;

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class AttributeModifyTransferPower extends PowerFactory<AttributeModifyTransferConfiguration> {
 	public static List<AttributeModifier> apply(Entity entity, PowerFactory<?> power) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ATTRIBUTE_MODIFY_TRANSFER.get()).stream().flatMap(cp -> cp.getFactory().apply(cp, entity, power).stream()).collect(Collectors.toList());
+		return IPowerContainer.getPowers(entity, ApoliPowers.ATTRIBUTE_MODIFY_TRANSFER.get()).stream().flatMap(cp -> cp.value().getFactory().apply(cp.value(), entity, power).stream()).collect(Collectors.toList());
 	}
 
 	public AttributeModifyTransferPower() {

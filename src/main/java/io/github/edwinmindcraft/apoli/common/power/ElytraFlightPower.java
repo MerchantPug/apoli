@@ -20,11 +20,11 @@ public class ElytraFlightPower extends PowerFactory<ElytraFlightConfiguration> {
 	public static final AttributeModifier FLIGHT_MODIFIER = new AttributeModifier(UUID.fromString("29eb14ca-c803-4af6-81e2-86e9bf1d4857"), "Elytra modifier", 1.0F, AttributeModifier.Operation.ADDITION);
 
 	public static boolean shouldRenderElytra(Entity entity) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().anyMatch(x -> x.getConfiguration().render());
+		return IPowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().anyMatch(x -> x.value().getConfiguration().render());
 	}
 
 	public static Optional<ResourceLocation> getElytraTexture(Entity entity) {
-		return IPowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().map(x -> x.getConfiguration().texture()).filter(Objects::nonNull).findFirst();
+		return IPowerContainer.getPowers(entity, ApoliPowers.ELYTRA_FLIGHT.get()).stream().map(x -> x.value().getConfiguration().texture()).filter(Objects::nonNull).findFirst();
 	}
 
 	public static void enableFlight(Entity entity) {

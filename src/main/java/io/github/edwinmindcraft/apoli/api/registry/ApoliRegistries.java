@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import io.github.apace100.apoli.util.NamespaceAlias;
-import io.github.apace100.calio.ClassUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.factory.*;
 import net.minecraft.resources.ResourceKey;
@@ -16,19 +15,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import java.util.function.Supplier;
 
 public class ApoliRegistries {
-	//Because these class technically don't exist, this is a no warning way to obtain those classes.
-	//This is done the same way as Architectury's events. Credit to them for that.
-	public static final Class<PowerFactory<?>> POWER_FACTORY_CLASS = ClassUtil.get();
-	public static final Class<EntityCondition<?>> ENTITY_CONDITION_CLASS = ClassUtil.get();
-	public static final Class<ItemCondition<?>> ITEM_CONDITION_CLASS = ClassUtil.get();
-	public static final Class<BlockCondition<?>> BLOCK_CONDITION_CLASS = ClassUtil.get();
-	public static final Class<DamageCondition<?>> DAMAGE_CONDITION_CLASS = ClassUtil.get();
-	public static final Class<FluidCondition<?>> FLUID_CONDITION_CLASS = ClassUtil.get();
-	public static final Class<BiomeCondition<?>> BIOME_CONDITION_CLASS = ClassUtil.get();
-	public static final Class<EntityAction<?>> ENTITY_ACTION_CLASS = ClassUtil.get();
-	public static final Class<ItemAction<?>> ITEM_ACTION_CLASS = ClassUtil.get();
-	public static final Class<BlockAction<?>> BLOCK_ACTION_CLASS = ClassUtil.get();
-
 	public static final ResourceKey<net.minecraft.core.Registry<PowerFactory<?>>> POWER_FACTORY_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("power_factory"));
 	public static final ResourceKey<net.minecraft.core.Registry<EntityCondition<?>>> ENTITY_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("entity_condition"));
 	public static final ResourceKey<net.minecraft.core.Registry<ItemCondition<?>>> ITEM_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("item_condition"));
@@ -50,9 +36,6 @@ public class ApoliRegistries {
 	public static Supplier<IForgeRegistry<EntityAction<?>>> ENTITY_ACTION;
 	public static Supplier<IForgeRegistry<ItemAction<?>>> ITEM_ACTION;
 	public static Supplier<IForgeRegistry<BlockAction<?>>> BLOCK_ACTION;
-
-	public static final Class<BiEntityCondition<?>> BIENTITY_CONDITION_CLASS = ClassUtil.get();
-	public static final Class<BiEntityAction<?>> BIENTITY_ACTION_CLASS = ClassUtil.get();
 
 	public static final ResourceKey<net.minecraft.core.Registry<BiEntityCondition<?>>> BIENTITY_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("bientity_condition"));
 	public static final ResourceKey<net.minecraft.core.Registry<BiEntityAction<?>>> BIENTITY_ACTION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("bientity_action"));

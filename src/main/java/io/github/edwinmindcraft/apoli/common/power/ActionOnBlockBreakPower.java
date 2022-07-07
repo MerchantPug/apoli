@@ -18,8 +18,8 @@ import net.minecraftforge.common.util.NonNullSupplier;
 public class ActionOnBlockBreakPower extends PowerFactory<ActionOnBlockBreakConfiguration> {
 	public static void execute(Entity player, LevelReader reader, BlockPos position, NonNullSupplier<BlockState> stateGetter, boolean successful) {
 		IPowerContainer.getPowers(player, ApoliPowers.ACTION_ON_BLOCK_BREAK.get()).stream()
-				.filter(p -> p.getFactory().doesApply(p, player, reader, position, stateGetter))
-				.forEach(aobbp -> aobbp.getFactory().executeActions(aobbp, player, successful, position, Direction.UP));
+				.filter(p -> p.value().getFactory().doesApply(p.value(), player, reader, position, stateGetter))
+				.forEach(aobbp -> aobbp.value().getFactory().executeActions(aobbp.value(), player, successful, position, Direction.UP));
 	}
 
 	public ActionOnBlockBreakPower() {

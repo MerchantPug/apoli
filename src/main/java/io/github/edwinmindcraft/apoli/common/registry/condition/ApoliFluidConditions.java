@@ -21,7 +21,7 @@ import java.util.function.BiPredicate;
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.FLUID_CONDITIONS;
 
 public class ApoliFluidConditions {
-	public static final BiPredicate<ConfiguredFluidCondition<?, ?>, FluidState> PREDICATE = (config, biome) -> config.check(biome);
+	public static final BiPredicate<ConfiguredFluidCondition<?, ?>, FluidState> PREDICATE = ConfiguredFluidCondition::check;
 
 	private static <U extends FluidCondition<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.FLUID_CONDITION_KEY.location(), Apoli.MODID);

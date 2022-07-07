@@ -22,7 +22,7 @@ public class SimpleEntityCondition extends EntityCondition<NoConfiguration> {
 	}
 
 	public static boolean isExposedToSun(Entity entity) {
-		return entity.getBrightness() > 0.5F && entity.getLevel().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
+		return entity.getLightLevelDependentMagicValue() > 0.5F && entity.getLevel().isDay() && !((EntityAccessor) entity).callIsBeingRainedOn() && isExposedToSky(entity);
 	}
 
 	private final Predicate<Entity> predicate;

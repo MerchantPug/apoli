@@ -5,6 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.serialization.JsonOps;
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -13,10 +14,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -201,10 +204,10 @@ public class PowerCommand {
 												} else {
 													IPowerContainer component = componentOptional.orElseThrow(RuntimeException::new);
 													StringBuilder powers = new StringBuilder();
-													for (ResourceLocation powerType : component.getPowerTypes(false)) {
+													for (ResourceKey<ConfiguredPower<?, ?>> powerType : component.getPowerTypes(false)) {
 														if (i > 0)
 															powers.append(", ");
-														powers.append(powerType.toString());
+														powers.append(powerType.location());
 														i++;
 													}
 													command.getSource().sendSuccess(Component.translatable("commands.apoli.list.pass", i, powers), false);
@@ -226,10 +229,10 @@ public class PowerCommand {
 														} else {
 															IPowerContainer component = componentOptional.orElseThrow(RuntimeException::new);
 															StringBuilder powers = new StringBuilder();
-															for (ResourceLocation powerType : component.getPowerTypes(listSubpowers)) {
+															for (ResourceKey<ConfiguredPower<?, ?>> powerType : component.getPowerTypes(listSubpowers)) {
 																if (i > 0)
 																	powers.append(", ");
-																powers.append(powerType.toString());
+																powers.append(powerType.location());
 																i++;
 															}
 															command.getSource().sendSuccess(Component.translatable("commands.apoli.list.pass", i, powers), false);
@@ -295,7 +298,7 @@ public class PowerCommand {
 												.executes((command) -> {
 													int i = 0;
 													Collection<? extends Entity> targets = EntityArgument.getEntities(command, "targets");
-													ResourceLocation power = command.getArgument("power", ResourceLocation.class);
+													ResourceKey<ConfiguredPower<?, ?>> power = PowerTypeArgumentType.getConfiguredPower(command, "power");
 													try {
 														for (Entity target : targets) {
 															if (target instanceof LivingEntity) {
@@ -351,8 +354,10 @@ public class PowerCommand {
 										})))
 						.then(literal("dump")
 								.then(argument("power", PowerTypeArgumentType.power()).executes((command) -> {
-									ConfiguredPower<?, ?> arg = PowerTypeArgumentType.getConfiguredPower(command, "power");
-									String s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, arg).map(JsonElement::toString).result().orElseThrow(() -> new CommandRuntimeException(Component.literal("Failed to encode " + arg.getRegistryName())));
+									ResourceKey<ConfiguredPower<?, ?>> arg = PowerTypeArgumentType.getConfiguredPower(command, "power");
+									ConfiguredPower<?, ?> power = ApoliAPI.getPowers(command.getSource().getServer()).getHolderOrThrow(arg).value();
+									String s = ConfiguredPower.CODEC.encodeStart(JsonOps.INSTANCE, power)
+											.map(JsonElement::toString).result().orElseThrow(() -> new CommandRuntimeException(Component.literal("Failed to encode " + arg)));
 									command.getSource().sendSuccess(Component.literal(s), false);
 									return 1;
 								})))
@@ -399,7 +404,7 @@ public class PowerCommand {
 		}).orElse(false);
 	}
 
-	private static boolean revokePowerAllSources(LivingEntity entity, ResourceLocation power) {
+	private static boolean revokePowerAllSources(LivingEntity entity, ResourceKey<ConfiguredPower<?, ?>> power) {
 		return IPowerContainer.get(entity).map(component -> {
 			List<ResourceLocation> sources = component.getSources(power);
 			for (ResourceLocation source : sources) {
@@ -414,8 +419,8 @@ public class PowerCommand {
 
 	private static int revokeAllPowers(LivingEntity entity) {
 		return IPowerContainer.get(entity).map(component -> {
-			Set<ResourceLocation> powers = component.getPowerTypes(false);
-			for (ResourceLocation power : powers) {
+			@NotNull Set<ResourceKey<ConfiguredPower<?, ?>>> powers = component.getPowerTypes(false);
+			for (ResourceKey<ConfiguredPower<?, ?>> power : powers) {
 				revokePowerAllSources(entity, power);
 			}
 			if (powers.size() > 0)
