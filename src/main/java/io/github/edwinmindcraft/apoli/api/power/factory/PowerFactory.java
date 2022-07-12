@@ -1,20 +1,25 @@
 package io.github.edwinmindcraft.apoli.api.power.factory;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -25,6 +30,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.POWER_FACTORY);
@@ -114,7 +122,8 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 
 	/**
 	 * Returns a map containing children of this power.<br/>
-	 * Apoli uses this for the "multiple" power type, which contains children.
+	 * Apoli uses this for the "multiple" power type, which contains children.<br/>
+	 * Should only be used during loading as subpowers to provide subpowers
 	 *
 	 * @param configuration The configuration of this power.
 	 *
@@ -122,6 +131,19 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 	 */
 	public Map<String, Holder<ConfiguredPower<?, ?>>> getContainedPowers(ConfiguredPower<T, ?> configuration) {
 		return ImmutableMap.of();
+	}
+
+	public Set<ResourceKey<ConfiguredPower<?, ?>>> getContainedPowerKeys(ConfiguredPower<T, ?> configuration) {
+		Map<String, Holder<ConfiguredPower<?, ?>>> contained = this.getContainedPowers(configuration);
+		if (contained.isEmpty())
+			return ImmutableSet.of();
+		Optional<ResourceKey<ConfiguredPower<?, ?>>> selfKey = ApoliAPI.getPowers().getResourceKey(configuration);
+		if (selfKey.isEmpty()) {
+			Apoli.LOGGER.error("Cannot access contained keys as this power is unregistered.");
+			return ImmutableSet.of();
+		}
+		ResourceKey<ConfiguredPower<?, ?>> key = selfKey.get();
+		return contained.keySet().stream().map(suffix -> ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, new ResourceLocation(key.location().getNamespace(), key.location().getPath() + suffix))).collect(Collectors.toUnmodifiableSet());
 	}
 
 	@Nullable

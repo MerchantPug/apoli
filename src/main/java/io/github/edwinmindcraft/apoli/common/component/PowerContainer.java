@@ -66,9 +66,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 				}
 			}
 			if (instance != null && instance.isBound()) {
-				Registry<ConfiguredPower<?, ?>> powerRegistry = ApoliAPI.getPowers();
-				for (Holder<ConfiguredPower<?, ?>> value : instance.value().getContainedPowers().values())
-					value.unwrap().map(Optional::of, powerRegistry::getResourceKey).ifPresent(id -> this.removePower(id, source));
+				for (ResourceKey<ConfiguredPower<?, ?>> value : instance.value().getContainedPowerKeys())
+					this.removePower(value, source);
 			}
 		}
 	}
@@ -100,24 +99,16 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 				return false;
 			} else {
 				sources.add(source);
-				for (Holder<ConfiguredPower<?, ?>> value : instance.value().getContainedPowers().values()) {
-					if (value.isBound()) {
-						value.unwrap().map(Optional::of, powers::getResourceKey).ifPresent(id -> {
-							Apoli.LOGGER.info("Adding subpower {} from power {}", id, power);
-							this.addPower(id, source);
-						});
-					}
+				for (ResourceKey<ConfiguredPower<?, ?>> value : instance.value().getContainedPowerKeys()) {
+					Apoli.LOGGER.info("Adding subpower {} from power {}", value, power);
+					this.addPower(value, source);
 				}
 				return true;
 			}
 		} else {
-			for (Holder<ConfiguredPower<?, ?>> value : instance.value().getContainedPowers().values()) {
-				if (value.isBound()) {
-					value.unwrap().map(Optional::of, powers::getResourceKey).ifPresent(id -> {
-						Apoli.LOGGER.info("Adding subpower {} from power {}", id, power);
-						this.addPower(id, source);
-					});
-				}
+			for (ResourceKey<ConfiguredPower<?, ?>> value : instance.value().getContainedPowerKeys()) {
+				Apoli.LOGGER.info("Adding subpower {} from power {}", value, power);
+				this.addPower(value, source);
 			}
 			Set<ResourceLocation> sources = new HashSet<>();
 			sources.add(source);
@@ -159,8 +150,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	public @NotNull Set<ResourceKey<ConfiguredPower<?, ?>>> getPowerTypes(boolean includeSubPowers) {
 		if (includeSubPowers)
 			return ImmutableSet.copyOf(this.powers.keySet());
-		Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers(this.owner.getServer());
-		Set<ResourceKey<ConfiguredPower<?, ?>>> subPowers = this.powers.entrySet().stream().flatMap(x -> x.getValue().value().getChildren().stream().filter(Holder::isBound).map(Holder::value).map(powers::getResourceKey).flatMap(Optional::stream)).collect(Collectors.toUnmodifiableSet());
+		Set<ResourceKey<ConfiguredPower<?, ?>>> subPowers = this.powers.entrySet().stream().flatMap(x -> x.getValue().value().getChildrenKeys().stream()).collect(Collectors.toUnmodifiableSet());
 		return this.powers.keySet().stream().filter(x -> !subPowers.contains(x)).collect(Collectors.toUnmodifiableSet());
 	}
 
@@ -251,13 +241,11 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 					ConfiguredPower<?, ?> power = powers.get(entry.getKey());
 					if (power == null) //This would take a miracle to occur.
 						continue;
-					for (Map.Entry<String, Holder<ConfiguredPower<?, ?>>> subPower : power.getContainedPowers().entrySet()) {
-						subPower.getValue().unwrap().map(Optional::of, powers::getResourceKey).ifPresentOrElse(sub -> {
-							for (ResourceLocation source : entry.getValue()) {
-								if (!this.hasPower(sub, source))
-									this.addPower(sub, source);
-							}
-						}, () -> Apoli.LOGGER.warn("Multiple power type read from data contained unregistered sub-type: \"" + entry.getKey() + subPower.getKey() + "\"."));
+					for (ResourceKey<ConfiguredPower<?, ?>> subPower : power.getContainedPowerKeys()) {
+						for (ResourceLocation source : entry.getValue()) {
+							if (!this.hasPower(subPower, source))
+								this.addPower(subPower, source);
+						}
 					}
 				}
 			}

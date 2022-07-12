@@ -7,7 +7,6 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -56,25 +55,25 @@ public class FabricPowerFactory<P extends Power> extends PowerFactory<FabricPowe
 	@Override
 	public void onLost(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, Entity entity) {
 		if (entity instanceof LivingEntity living)
-		this.getPower(configuration, living).onLost();
+			this.getPower(configuration, living).onLost();
 	}
 
 	@Override
 	public void onAdded(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, Entity entity) {
 		if (entity instanceof LivingEntity living)
-		this.getPower(configuration, living).onAdded();
+			this.getPower(configuration, living).onAdded();
 	}
 
 	@Override
 	public void onRemoved(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, Entity entity) {
 		if (entity instanceof LivingEntity living)
-		this.getPower(configuration, living).onRemoved();
+			this.getPower(configuration, living).onRemoved();
 	}
 
 	@Override
 	public void onRespawn(ConfiguredPower<FabricPowerConfiguration<P>, ?> configuration, Entity entity) {
 		if (entity instanceof LivingEntity living)
-		this.getPower(configuration, living).onRespawn();
+			this.getPower(configuration, living).onRespawn();
 	}
 
 	@Override

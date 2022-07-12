@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
@@ -18,9 +19,12 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
+import io.github.edwinmindcraft.calio.api.registry.DynamicRegistryListener;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
@@ -42,7 +46,7 @@ import java.util.function.Supplier;
  * @param <C> The type of the configuration.
  * @param <F> The type of the factory.
  */
-public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends CapabilityProvider<ConfiguredPower<?, ?>> implements IDynamicFeatureConfiguration {
+public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> extends CapabilityProvider<ConfiguredPower<?, ?>> implements IDynamicFeatureConfiguration, DynamicRegistryListener {
 	public static final Codec<ConfiguredPower<?, ?>> CODEC = PowerFactory.CODEC.dispatch(ConfiguredPower::getFactory, PowerFactory::getCodec);
 	public static final CodecSet<ConfiguredPower<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
 	public static final Codec<Holder<ConfiguredPower<?, ?>>> HOLDER = CODEC_SET.holder();
@@ -60,7 +64,12 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	private final PowerData data;
 
 	public ConfiguredPower(Supplier<F> factory, C configuration, PowerData data) {
+		this(null, factory, configuration, data);
+	}
+
+	private ConfiguredPower(@Nullable ResourceLocation key, Supplier<F> factory, C configuration, PowerData data) {
 		super(ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
+		this.registryName = key;
 		this.configuration = configuration;
 		this.data = data;
 		this.factory = Lazy.of(() -> {
@@ -76,8 +85,19 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.data;
 	}
 
+	/**
+	 * Returns a list of the subpowers contained by this power, as well as the suffix associated
+	 * with that subpower.<br/>
+	 * Should only be used during loading as subpowers to provide subpowers
+	 *
+	 * @see #getContainedPowerKeys()
+	 */
 	public Map<String, Holder<ConfiguredPower<?, ?>>> getContainedPowers() {
 		return this.getFactory().getContainedPowers(this);
+	}
+
+	public Set<ResourceKey<ConfiguredPower<?, ?>>> getContainedPowerKeys() {
+		return this.getFactory().getContainedPowerKeys(this);
 	}
 
 	public boolean isActive(Entity entity) {
@@ -105,11 +125,32 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public <T> T getPowerData(Entity player, NonNullSupplier<? extends T> supplier) {
-		return IPowerContainer.get(player).resolve().<T>map(x -> x.getPowerData(Holder.direct(this), supplier)).orElseGet(supplier::get);
+		return IPowerContainer.get(player).resolve().<T>map(container -> this.getPowerData(container, supplier)).orElseGet(supplier::get);
 	}
 
 	public <T> T getPowerData(IPowerContainer container, NonNullSupplier<? extends T> supplier) {
-		return container.getPowerData(Holder.direct(this), supplier);
+		if (this.registryName == null)
+			return container.getPowerData(Holder.direct(this), supplier);
+		else
+			return container.getPowerData(ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, this.registryName), supplier);
+	}
+
+	/**
+	 * Accesses a list of all children, recursively.<br>
+	 * This allows for nested multiple powers, although this isn't a feature
+	 * of the fabric version, as such I would recommend using it if you want
+	 * to maintain compatibility between versions.<br/>
+	 * Should only be used during loading as subpowers to provide subpowers
+	 *
+	 * @see #getChildrenKeys()
+	 */
+	public Set<Holder<ConfiguredPower<?, ?>>> getChildren() {
+		ImmutableSet.Builder<Holder<ConfiguredPower<?, ?>>> builder = ImmutableSet.builder();
+		this.getContainedPowers().values().forEach(value -> {
+			if (value.isBound())
+				builder.add(value).addAll(value.value().getChildren());
+		});
+		return builder.build();
 	}
 
 	/**
@@ -118,12 +159,13 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	 * of the fabric version, as such I would recommend using it if you want
 	 * to maintain compatibility between versions.
 	 */
-	public Set<Holder<ConfiguredPower<?, ?>>> getChildren() {
-		ImmutableSet.Builder<Holder<ConfiguredPower<?, ?>>> builder = ImmutableSet.builder();
-		this.getContainedPowers().values().forEach(value -> {
-			if (value.isBound())
-				builder.add(value).addAll(value.value().getChildren());
-		});
+	public Set<ResourceKey<ConfiguredPower<?, ?>>> getChildrenKeys() {
+		Registry<ConfiguredPower<?, ?>> registry = ApoliAPI.getPowers();
+		ImmutableSet.Builder<ResourceKey<ConfiguredPower<?, ?>>> builder = ImmutableSet.builder();
+		for (ResourceKey<ConfiguredPower<?, ?>> value : this.getContainedPowerKeys()) {
+			builder.add(value);
+			registry.getHolder(value).filter(Holder::isBound).ifPresent(x -> builder.addAll(x.value().getChildrenKeys()));
+		}
 		return builder.build();
 	}
 
@@ -236,7 +278,7 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public ConfiguredPower<C, F> complete(ResourceLocation name) {
-		return new ConfiguredPower<>(this::getFactory, this.getConfiguration(), this.getData().complete(name));
+		return new ConfiguredPower<>(name, this.factory, this.getConfiguration(), this.getData().complete(name));
 	}
 
 	public F getFactory() {
@@ -262,27 +304,41 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.getConfiguration().isConfigurationValid();
 	}
 
-
-	/**
-	 * This will assert that the registry name is valid and warn about potential registry overrides
-	 * It is important as it detects cases where modders unintentionally register objects with the "minecraft" namespace, leading to dangerous errors later.
-	 *
-	 * @param name The registry name
-	 *
-	 * @return A verified "correct" registry name
-	 */
-	ResourceLocation checkRegistryName(String name) {
-		return new ResourceLocation(name);
-	}
-
 	@Override
 	public String toString() {
-		return "CP:" + ApoliRegistries.POWER_FACTORY.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		String str = "CP:" + ApoliRegistries.POWER_FACTORY.get().getKey(this.getFactory()) + "(" + this.getData() + ")-" + this.getConfiguration();
+		return this.registryName != null ? "[" + this.registryName + "]" + str : str;
 	}
 
 	private final Lazy<PowerType<?>> type = Lazy.of(() -> new PowerType<>(this));
 
 	public PowerType<?> getPowerType() {
 		return this.type.get();
+	}
+
+	//Necessary to uniquely identify each power.
+	private ResourceLocation registryName;
+
+	@Override
+	public int hashCode() {
+		return this.registryName != null ? this.registryName.hashCode() : Objects.hash(this.factory, this.configuration, this.data);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return this.registryName != null ? obj instanceof ConfiguredPower<?, ?> cp && this.registryName.equals(cp.registryName) : super.equals(obj);
+	}
+
+	@Override
+	public void whenAvailable(@NotNull ICalioDynamicRegistryManager manager) {
+		if (this.getFactory() instanceof DynamicRegistryListener drl)
+			drl.whenAvailable(manager);
+	}
+
+	@Override
+	public void whenNamed(@NotNull ResourceLocation name) {
+		this.registryName = name;
+		if (this.getFactory() instanceof DynamicRegistryListener drl)
+			drl.whenNamed(name);
 	}
 }
