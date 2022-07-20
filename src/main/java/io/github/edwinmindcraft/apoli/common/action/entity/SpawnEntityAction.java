@@ -20,7 +20,7 @@ public class SpawnEntityAction extends EntityAction<SpawnEntityConfiguration> {
 			return;
 		Entity newEntity = configuration.type().create(entity.getCommandSenderWorld());
 		if (newEntity == null) {
-			Apoli.LOGGER.error("Failed to create entity for type: {}", ForgeRegistries.ENTITIES.getKey(configuration.type()));
+			Apoli.LOGGER.error("Failed to create entity for type: {}", ForgeRegistries.ENTITY_TYPES.getKey(configuration.type()));
 			return;
 		}
 		newEntity.absMoveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());

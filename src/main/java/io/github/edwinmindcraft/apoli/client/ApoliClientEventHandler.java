@@ -16,15 +16,16 @@ import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.RenderBlockOverlayEvent;
+import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -48,7 +49,7 @@ public class ApoliClientEventHandler {
 	private static boolean initializedKeyBindingMap = false;
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public static void onBlockOverlay(RenderBlockOverlayEvent event) {
+	public static void onBlockOverlay(RenderBlockScreenEffectEvent event) {
 		if (IPowerContainer.hasPower(event.getPlayer(), ApoliPowers.PHASING.get()))
 			event.setCanceled(true);
 	}
@@ -61,13 +62,12 @@ public class ApoliClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void onLivingTick(LivingEvent.LivingUpdateEvent event) {
+	public static void onLivingTick(LivingEvent.LivingTickEvent event) {
 		Player player = Minecraft.getInstance().player;
 		if (player != null) {
 			boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
-			if (!event.getEntity().isInvisibleTo(player)) {
+			if (!event.getEntity().isInvisibleTo(player))
 				ParticlePower.renderParticles(event.getEntity(), player, firstPerson);
-			}
 		}
 	}
 
@@ -124,15 +124,14 @@ public class ApoliClientEventHandler {
 
 	//Replaces redirectFogStart & redirectFogEnd in BackgroundRendererMixin
 	@SubscribeEvent
-	public static void renderFog(EntityViewRenderEvent.RenderFogEvent event) {
+	public static void renderFog(ViewportEvent.RenderFog event) {
 		if (event.getCamera().getEntity() instanceof LivingEntity living) {
 			Optional<Float> renderMethod = PhasingPower.getRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS);
 			if (renderMethod.isPresent() && MiscUtil.getInWallBlockState(living) != null) {
 				float view = renderMethod.get();
 				float s;
 				float v;
-				//TODO Check if this works instead of FogMode.FOG_SKY
-				if (RenderSystem.getShaderFogStart() == 0.0F) {
+				if (event.getMode() == FogRenderer.FogMode.FOG_SKY) {
 					s = 0F;
 					v = view * 0.8F;
 				} else {
@@ -147,7 +146,7 @@ public class ApoliClientEventHandler {
 
 	//Replaces modifyD in BackgroundRendererMixin
 	@SubscribeEvent
-	public static void fogColor(EntityViewRenderEvent.FogColors event) {
+	public static void fogColor(ViewportEvent.ComputeFogColor event) {
 		if (event.getCamera().getEntity() instanceof LivingEntity living && PhasingPower.hasRenderMethod(living, PhasingConfiguration.RenderType.BLINDNESS) && MiscUtil.getInWallBlockState(living) != null) {
 			event.setBlue(0.0F);
 			event.setGreen(0.0F);

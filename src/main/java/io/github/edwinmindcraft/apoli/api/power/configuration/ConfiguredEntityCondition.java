@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 
 public final class ConfiguredEntityCondition<C extends IDynamicFeatureConfiguration, F extends EntityCondition<C>> extends ConfiguredCondition<C, F, ConfiguredEntityCondition<?, ?>> {
 	public static final Codec<ConfiguredEntityCondition<?, ?>> CODEC = EntityCondition.CODEC.dispatch(ConfiguredEntityCondition::getFactory, EntityCondition::getConditionCodec);
-	public static final MapCodec<Optional<ConfiguredEntityCondition<?, ?>>> OPTIONAL_FIELD = CalioCodecHelper.optionalField(CODEC, "entity_condition");
 	public static final CodecSet<ConfiguredEntityCondition<?, ?>> CODEC_SET = CalioCodecHelper.forDynamicRegistry(ApoliDynamicRegistries.CONFIGURED_ENTITY_CONDITION_KEY, SerializableDataTypes.IDENTIFIER, CODEC);
 	public static final Codec<Holder<ConfiguredEntityCondition<?, ?>>> HOLDER = CODEC_SET.holder();
 

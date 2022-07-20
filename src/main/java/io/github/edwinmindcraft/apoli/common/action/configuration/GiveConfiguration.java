@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,4 +21,8 @@ public record GiveConfiguration(ItemStack stack, Holder<ConfiguredItemAction<?, 
 			ConfiguredItemAction.optional("item_action").forGetter(GiveConfiguration::action),
 			CalioCodecHelper.optionalField(SerializableDataTypes.EQUIPMENT_SLOT, "preferred_slot").forGetter(x -> Optional.ofNullable(x.slot()))
 	).apply(instance, (t1, t2, t3) -> new GiveConfiguration(t1, t2, t3.orElse(null))));
+
+	public GiveConfiguration(ItemStack stack) {
+		this(stack, ApoliDefaultActions.ITEM_DEFAULT.getHolder().orElseThrow(), null);
+	}
 }

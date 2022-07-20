@@ -10,15 +10,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
-@Mixin(ForgeIngameGui.class)
+@Mixin(ForgeGui.class)
 public abstract class InGameHudMixin extends Gui {
 	public InGameHudMixin(Minecraft minecraft, ItemRenderer itemRenderer) {
 		super(minecraft, itemRenderer);

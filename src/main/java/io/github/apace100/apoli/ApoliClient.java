@@ -6,10 +6,12 @@ import io.github.apace100.apoli.registry.ApoliClassDataClient;
 import io.github.apace100.apoli.screen.GameHudRender;
 import io.github.apace100.apoli.screen.PowerHudRenderer;
 import io.github.edwinmindcraft.apoli.client.ApoliClientEventHandler;
+import io.github.edwinmindcraft.apoli.client.screen.ApoliOverlay;
 import io.github.edwinmindcraft.apoli.client.screen.ApoliOverlays;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -24,7 +26,9 @@ public class ApoliClient {
 	}
 
 	public static void initialize() {
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ApoliClient::setupClient);
+		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		modEventBus.addListener(ApoliClient::setupClient);
+		modEventBus.addListener(ApoliOverlays::registerOverlays);
 
 		ApoliClassDataClient.registerAll();
 

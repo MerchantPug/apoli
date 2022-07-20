@@ -13,13 +13,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ApoliPowerOverlay implements IIngameOverlay {
+public class ApoliPowerOverlay implements IGuiOverlay {
 	private final Predicate<OverlayConfiguration> shouldDraw;
 
 	public ApoliPowerOverlay(Predicate<OverlayConfiguration> shouldDraw) {
@@ -82,7 +82,7 @@ public class ApoliPowerOverlay implements IIngameOverlay {
 	}
 
 	@Override
-	public void render(ForgeIngameGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+	public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
 		boolean hideGui = Minecraft.getInstance().options.hideGui;
 		boolean isFirstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
 		List<ConfiguredPower<OverlayConfiguration, OverlayPower>> powers = IPowerContainer.getPowers(Minecraft.getInstance().getCameraEntity(), ApoliPowers.OVERLAY.get()).stream()

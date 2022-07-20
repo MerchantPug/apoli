@@ -6,11 +6,9 @@ import io.github.apace100.apoli.command.ResourceCommand;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
-import io.github.edwinmindcraft.apoli.common.data.PowerLoader;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
@@ -24,7 +22,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -50,33 +48,12 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-		if (event.getPlayer() instanceof ServerPlayer spe) {
+		if (event.getEntity() instanceof ServerPlayer spe) {
 			S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(spe);
 			if (packet == null)
 				Apoli.LOGGER.error("Couldn't create synchronization packet for player {}", spe.getScoreboardName());
 			ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), packet);
 		}
-	}
-
-	@SubscribeEvent
-	public static void calioRegistries(CalioDynamicRegistryEvent.Initialize event) {
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, ApoliBuiltinRegistries.CONFIGURED_POWERS, ConfiguredPower.CODEC);
-
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_ACTIONS, ConfiguredBiEntityAction.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BLOCK_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_ACTIONS, ConfiguredBlockAction.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_ACTIONS, ConfiguredEntityAction.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_ACTION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_ACTIONS, ConfiguredItemAction.CODEC);
-
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIENTITY_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIENTITY_CONDITIONS, ConfiguredBiEntityCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BIOME_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BIOME_CONDITIONS, ConfiguredBiomeCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_BLOCK_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS, ConfiguredBlockCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_DAMAGE_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_DAMAGE_CONDITIONS, ConfiguredDamageCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_CONDITIONS, ConfiguredEntityCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_FLUID_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_FLUID_CONDITIONS, ConfiguredFluidCondition.CODEC);
-		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS, ConfiguredItemCondition.CODEC);
-
-		event.getRegistryManager().addReload(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, "powers", PowerLoader.INSTANCE);
-		event.getRegistryManager().addValidation(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, PowerLoader.INSTANCE, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);
 	}
 
 	@SubscribeEvent
@@ -108,13 +85,13 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void playerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-		IPowerContainer.get(event.getEntityLiving()).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getEntityLiving())));
+		IPowerContainer.get(event.getEntity()).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getEntity())));
 	}
 
 	@SubscribeEvent
-	public static void livingTick(LivingEvent.LivingUpdateEvent event) {
-		if (!event.getEntityLiving().level.isClientSide())
-			IPowerContainer.get(event.getEntityLiving()).ifPresent(IPowerContainer::serverTick);
+	public static void livingTick(LivingEvent.LivingTickEvent event) {
+		if (!event.getEntity().level.isClientSide())
+			IPowerContainer.get(event.getEntity()).ifPresent(IPowerContainer::serverTick);
 	}
 
 	@SubscribeEvent
@@ -122,21 +99,21 @@ public class ApoliEventHandler {
 		event.getOriginal().reviveCaps(); // Revive capabilities.
 
 		LazyOptional<IPowerContainer> original = IPowerContainer.get(event.getOriginal());
-		LazyOptional<IPowerContainer> player = IPowerContainer.get(event.getPlayer());
+		LazyOptional<IPowerContainer> player = IPowerContainer.get(event.getEntity());
 		if (original.isPresent() != player.isPresent()) {
 			Apoli.LOGGER.info("Capability mismatch: original:{}, new:{}", original.isPresent(), player.isPresent());
 		}
 		player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getOriginal())));
-		if (!event.getEntityLiving().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
-			IPowerContainer.getPowers(event.getPlayer(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getPlayer()));
+		if (!event.getEntity().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
+			IPowerContainer.getPowers(event.getEntity(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getEntity()));
 
 		event.getOriginal().invalidateCaps(); // Unload capabilities.
 	}
 
 	@SubscribeEvent
 	public static void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-		if (event.getPlayer() instanceof ServerPlayer sp) {
+		if (event.getEntity() instanceof ServerPlayer sp) {
 			IPowerContainer.sync(sp);
 			if (!event.isEndConquered())
 				IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
@@ -145,13 +122,13 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void playerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-		if (event.getPlayer() instanceof ServerPlayer)
-			IPowerContainer.sync(event.getPlayer());
+		if (event.getEntity() instanceof ServerPlayer)
+			IPowerContainer.sync(event.getEntity());
 	}
 
 	@SubscribeEvent
-	public static void trackNew(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide())
+	public static void trackNew(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide())
 			return;
 		if (event.getEntity() instanceof LivingEntity le)
 			IPowerContainer.sync(le);
@@ -159,7 +136,7 @@ public class ApoliEventHandler {
 
 	@SubscribeEvent
 	public static void trackEntity(PlayerEvent.StartTracking event) {
-		if (event.getPlayer() instanceof ServerPlayer se && event.getTarget() instanceof LivingEntity target)
+		if (event.getEntity() instanceof ServerPlayer se && event.getTarget() instanceof LivingEntity target)
 			IPowerContainer.sync(target, se);
 	}
 

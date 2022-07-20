@@ -41,7 +41,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 public class ApoliPowerEventHandler {
 	@SubscribeEvent
 	public static void modifyBreakSpeed(PlayerEvent.BreakSpeed event) {
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		Level world = player.getCommandSenderWorld();
 		BlockState state = event.getState();
 		float hardness = state.getDestroySpeed(world, event.getPos());
@@ -62,8 +62,8 @@ public class ApoliPowerEventHandler {
 			return;
 		float speed = event.getNewSpeed();
 		//This is less than ideal since it fires two hooks, but hey, I do what I can.
-		boolean stateCheck = state.canHarvestBlock(event.getPlayer().getLevel(), event.getPos(), event.getPlayer());
-		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(state, event.getPlayer());
+		boolean stateCheck = state.canHarvestBlock(event.getEntity().getLevel(), event.getPos(), event.getEntity());
+		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(state, event.getEntity());
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
 		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), world, event.getPos(), () -> state)) * factor;
@@ -81,30 +81,30 @@ public class ApoliPowerEventHandler {
 	@SubscribeEvent
 	public static void onSleep(PlayerSleepInBedEvent event) {
 		//FIXME I'm not sure this will work properly.
-		if (PreventSleepPower.tryPreventSleep(event.getPlayer(), event.getPlayer().getCommandSenderWorld(), event.getPos()))
+		if (PreventSleepPower.tryPreventSleep(event.getEntity(), event.getEntity().getCommandSenderWorld(), event.getPos()))
 			event.setResult(Player.BedSleepingProblem.OTHER_PROBLEM);
 	}
 
 	@SubscribeEvent
 	public static void onWakeUp(PlayerWakeUpEvent event) {
-		if (!event.wakeImmediately() && !event.updateWorld())
-			event.getPlayer().getSleepingPos().ifPresent(pos -> ActionOnWakeUpPower.execute(event.getEntityLiving(), pos));
+		if (!event.wakeImmediately() && !event.updateLevel())
+			event.getEntity().getSleepingPos().ifPresent(pos -> ActionOnWakeUpPower.execute(event.getEntity(), pos));
 	}
 
 	@SubscribeEvent
 	public static void finishUsing(LivingEntityUseItemEvent.Finish event) {
-		ActionOnItemUsePower.execute(event.getEntityLiving(), event.getItem(), new VariableAccess<>(event::getResultStack, event::setResultStack));
+		ActionOnItemUsePower.execute(event.getEntity(), event.getItem(), new VariableAccess<>(event::getResultStack, event::setResultStack));
 	}
 
 	@SubscribeEvent
 	public static void breakBlock(BlockEvent.BreakEvent event) {
 		if (event.getPlayer() instanceof ServerPlayer)
-			ActionOnBlockBreakPower.execute(event.getPlayer(), event.getWorld(), event.getPos(), event::getState, !event.isCanceled());
+			ActionOnBlockBreakPower.execute(event.getPlayer(), event.getLevel(), event.getPos(), event::getState, !event.isCanceled());
 	}
 
 	@SubscribeEvent
 	public static void onFall(LivingFallEvent event) {
-		LivingEntity entityLiving = event.getEntityLiving();
+		LivingEntity entityLiving = event.getEntity();
 		//TODO Check if this works. It should since MC1.17 seems to fire this on both sides.
 		ActionOnLandPower.execute(entityLiving);
 		if (IPowerContainer.getPowers(entityLiving, ApoliPowers.MODIFY_FALLING.get()).stream().anyMatch(x -> !x.value().getConfiguration().takeFallDamage()))
@@ -113,13 +113,13 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent
 	public static void modifyDamageTaken(LivingDamageEvent event) {
-		LivingEntity entityLiving = event.getEntityLiving();
+		LivingEntity entityLiving = event.getEntity();
 		event.setAmount(ModifyDamageTakenPower.modify(entityLiving, event.getSource(), event.getAmount()));
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public static void livingDamage(LivingHurtEvent event) {
-		LivingEntity target = event.getEntityLiving();
+		LivingEntity target = event.getEntity();
 		DamageSource source = event.getSource();
 		float amount = event.getAmount();
 		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
@@ -133,7 +133,7 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public static void livingAttack(LivingAttackEvent event) {
-		LivingEntity target = event.getEntityLiving();
+		LivingEntity target = event.getEntity();
 		DamageSource source = event.getSource();
 		float amount = event.getAmount();
 		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
@@ -151,8 +151,8 @@ public class ApoliPowerEventHandler {
 	 */
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void livingJump(LivingEvent.LivingJumpEvent event) {
-		double modified = ModifyJumpPower.apply(event.getEntityLiving(), event.getEntityLiving().getDeltaMovement().y);
-		updateJumpHeight(modified, event.getEntityLiving());
+		double modified = ModifyJumpPower.apply(event.getEntity(), event.getEntity().getDeltaMovement().y);
+		updateJumpHeight(modified, event.getEntity());
 	}
 
 	private static void updateJumpHeight(double height, LivingEntity entity) {
@@ -165,7 +165,7 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent
 	public static void onLivingHurt(LivingHurtEvent event) {
-		LivingEntity target = event.getEntityLiving();
+		LivingEntity target = event.getEntity();
 		DamageSource source = event.getSource();
 		Entity attacker = source.getEntity();
 		float amount = event.getAmount();
@@ -188,15 +188,15 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent
 	public static void onLivingKilled(LivingDeathEvent event) {
-		IPowerDataCache.get(event.getEntityLiving()).map(IPowerDataCache::getDamage).ifPresent(x -> {
+		IPowerDataCache.get(event.getEntity()).map(IPowerDataCache::getDamage).ifPresent(x -> {
 			if (event.getSource().getEntity() instanceof LivingEntity living)
-				SelfCombatActionPower.onKill(living, event.getEntityLiving(), event.getSource(), x);
+				SelfCombatActionPower.onKill(living, event.getEntity(), event.getSource(), x);
 		});
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerDeath(LivingDeathEvent event) {
-		if (event.getEntityLiving() instanceof Player player && !player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+		if (event.getEntity() instanceof Player player && !player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
 			IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
 				if (inventory.getFactory().shouldDropOnDeath(inventory, player)) {
 					Container container = inventory.getFactory().getInventory(inventory, player);
@@ -275,7 +275,7 @@ public class ApoliPowerEventHandler {
 	//If the interaction isn't canceled, let other mod interaction play, as this can cancel interactions.
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void playerEntityInteraction(PlayerInteractEvent.EntityInteract event) {
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		if (player.isSpectator()) return;
 		Entity target = event.getTarget();
 		Optional<InteractionResult> result = Stream.concat(
@@ -299,20 +299,20 @@ public class ApoliPowerEventHandler {
 	//This blocks runs on EventPriority.HIGHEST as cancelling should be final in those cases.
 
 	@SubscribeEvent
-	public static void preventPotionEffect(PotionEvent.PotionApplicableEvent event) {
-		if (EffectImmunityPower.isImmune(event.getEntity(), event.getPotionEffect()))
+	public static void preventPotionEffect(MobEffectEvent.Applicable event) {
+		if (EffectImmunityPower.isImmune(event.getEntity(), event.getEffectInstance()))
 			event.setResult(Event.Result.DENY);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void preventGameEvent(VanillaGameEvent event) {
-		if (PreventGameEventPower.tryPreventGameEvent(event.getCause(), event.getVanillaEvent()))
+		if (event.getCause() != null && PreventGameEventPower.tryPreventGameEvent(event.getCause(), event.getVanillaEvent()))
 			event.setCanceled(true);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void makeInvulnerable(LivingAttackEvent event) {
-		LivingEntity entityLiving = event.getEntityLiving();
+		LivingEntity entityLiving = event.getEntity();
 		if (InvulnerablePower.isInvulnerableTo(entityLiving, event.getSource()))
 			event.setCanceled(true);
 	}
@@ -321,9 +321,9 @@ public class ApoliPowerEventHandler {
 	public static void preventLivingDeath(LivingDeathEvent event) {
 		//I don't know at what priority I should fire this, but as a precaution, I'm firing it at the highest priority,
 		//as actions that happen when you die shouldn't actually happen if you survive.
-		IPowerDataCache.get(event.getEntityLiving()).map(IPowerDataCache::getDamage).ifPresent(x -> {
-			if (PreventDeathPower.tryPreventDeath(event.getEntityLiving(), event.getSource(), x)) {
-				event.getEntityLiving().setHealth(1.0F);
+		IPowerDataCache.get(event.getEntity()).map(IPowerDataCache::getDamage).ifPresent(x -> {
+			if (PreventDeathPower.tryPreventDeath(event.getEntity(), event.getSource(), x)) {
+				event.getEntity().setHealth(1.0F);
 				event.setCanceled(true);
 			}
 		});
@@ -331,7 +331,7 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void preventEntityInteraction(PlayerInteractEvent.EntityInteract event) {
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		if (player.isSpectator()) return;
 		Entity target = event.getTarget();
 		ActionOnEntityUsePower.tryPrevent(player, target, event.getHand())
@@ -343,25 +343,25 @@ public class ApoliPowerEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void preventBlockInteraction(PlayerInteractEvent.RightClickBlock event) {
-		if (PreventBlockActionPower.isUsagePrevented(event.getPlayer(), event.getPos()))
+		if (PreventBlockActionPower.isUsagePrevented(event.getEntity(), event.getPos()))
 			event.setUseBlock(Event.Result.DENY);
 		//Allow food restricted origins to plant carrots and potatoes
-		if (!(event.getItemStack().getItem() instanceof BlockItem) && PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
+		if (!(event.getItemStack().getItem() instanceof BlockItem) && PreventItemActionPower.isUsagePrevented(event.getEntity(), event.getItemStack()))
 			event.setUseItem(Event.Result.DENY);
 		if (event.getItemStack().getItem() instanceof ArmorItem) {
 			EquipmentSlot slot = Mob.getEquipmentSlotForItem(event.getItemStack());
-			if (RestrictArmorPower.isForbidden(event.getPlayer(), slot, event.getItemStack()))
+			if (RestrictArmorPower.isForbidden(event.getEntity(), slot, event.getItemStack()))
 				event.setUseItem(Event.Result.DENY);
 		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void preventItemUsage(PlayerInteractEvent.RightClickItem event) {
-		if (PreventItemActionPower.isUsagePrevented(event.getPlayer(), event.getItemStack()))
+		if (PreventItemActionPower.isUsagePrevented(event.getEntity(), event.getItemStack()))
 			event.setCanceled(true);
 		if (event.getItemStack().getItem() instanceof ArmorItem) {
 			EquipmentSlot slot = Mob.getEquipmentSlotForItem(event.getItemStack());
-			if (RestrictArmorPower.isForbidden(event.getPlayer(), slot, event.getItemStack()))
+			if (RestrictArmorPower.isForbidden(event.getEntity(), slot, event.getItemStack()))
 				event.setCanceled(true);
 		}
 	}

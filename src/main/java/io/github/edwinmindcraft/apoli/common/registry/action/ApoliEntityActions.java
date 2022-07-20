@@ -15,10 +15,14 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.action.configuration.ChangeResourceConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.entity.*;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
+import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
@@ -77,6 +81,16 @@ public class ApoliEntityActions {
 	public static final RegistryObject<SwingHandAction> SWING_HAND = ENTITY_ACTIONS.register("swing_hand", SwingHandAction::new);
 	public static final RegistryObject<RaycastAction> RAYCAST = ENTITY_ACTIONS.register("raycast", RaycastAction::new);
 	public static final RegistryObject<SpawnParticlesAction> SPAWN_PARTICLES = ENTITY_ACTIONS.register("spawn_particles", SpawnParticlesAction::new);
+
+	@SafeVarargs
+	public static ConfiguredEntityAction<?, ?> and(HolderSet<ConfiguredEntityAction<?, ?>>... conditions) {
+		return AND.get().configure(new ExecuteMultipleConfiguration<>(Arrays.asList(conditions), EXECUTOR));
+	}
+
+	public static ConfiguredEntityAction<?, ?> and(ConfiguredEntityAction<?, ?>... conditions) {
+		return and(HolderSet.direct(Holder::direct, conditions));
+	}
+
 
 	public static void bootstrap() {
 		MetaFactories.defineMetaActions(ENTITY_ACTIONS, DelegatedEntityAction::new, ConfiguredEntityAction.CODEC_SET, ConfiguredEntityCondition.CODEC_SET, ConfiguredEntityAction::optional, EXECUTOR, PREDICATE);

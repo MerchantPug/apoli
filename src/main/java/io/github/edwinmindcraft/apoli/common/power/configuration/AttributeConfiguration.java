@@ -20,6 +20,10 @@ public record AttributeConfiguration(ListConfiguration<AttributedEntityAttribute
 			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "update_health", true).forGetter(AttributeConfiguration::updateHealth)
 	).apply(instance, AttributeConfiguration::new));
 
+	public AttributeConfiguration(AttributedEntityAttributeModifier... modifiers) {
+		this(ListConfiguration.of(modifiers), true);
+	}
+
 	public static final Codec<AttributeConfiguration> CODEC = MAP_CODEC.codec();
 
 

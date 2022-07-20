@@ -1,8 +1,14 @@
 package io.github.edwinmindcraft.apoli.common.registry;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import de.dafuqs.additionalentityattributes.AdditionalEntityAttributes;
+import io.github.edwinmindcraft.apoli.api.power.PowerData;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityInteractionConfiguration;
+import io.github.edwinmindcraft.apoli.common.power.configuration.MultipleConfiguration;
+import net.minecraft.core.Holder;
 import net.minecraft.world.inventory.DispenserMenu;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -107,6 +113,10 @@ public class ApoliPowers {
 	public static final RegistryObject<ModifyBlockRenderPower> MODIFY_BLOCK_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_block_render", ModifyBlockRenderPower::new);
 	public static final RegistryObject<ModifyFluidRenderPower> MODIFY_FLUID_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_fluid_render", ModifyFluidRenderPower::new);
 	//endregion
+
+	public static ConfiguredPower<?, ?> multiple(ImmutableMap<String, ConfiguredPower<?, ?>> powers) {
+		return MULTIPLE.get().configure(new MultipleConfiguration<>(Maps.transformValues(powers, Holder::direct)), PowerData.DEFAULT);
+	}
 
 	public static void bootstrap() {}
 }

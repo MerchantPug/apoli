@@ -5,6 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
@@ -17,7 +19,13 @@ public record ModifyDamageDealtConfiguration(ListConfiguration<AttributeModifier
 											 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements IValueModifyingPowerConfiguration {
 
 	public ModifyDamageDealtConfiguration(AttributeModifier... modifiers) {
-		this(ListConfiguration.of(modifiers), null, null, null, null, null, null);
+		this(ListConfiguration.of(modifiers),
+				ApoliDefaultConditions.DAMAGE_DEFAULT.getHolder().orElseThrow(),
+				ApoliDefaultConditions.ENTITY_DEFAULT.getHolder().orElseThrow(),
+				ApoliDefaultConditions.BIENTITY_DEFAULT.getHolder().orElseThrow(),
+				ApoliDefaultActions.ENTITY_DEFAULT.getHolder().orElseThrow(),
+				ApoliDefaultActions.ENTITY_DEFAULT.getHolder().orElseThrow(),
+				ApoliDefaultActions.BIENTITY_DEFAULT.getHolder().orElseThrow());
 	}
 
 	public static final Codec<ModifyDamageDealtConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
