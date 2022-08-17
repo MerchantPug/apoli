@@ -15,7 +15,6 @@ import io.github.edwinmindcraft.calio.api.network.CodecSet;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class ConfiguredEntityCondition<C extends IDynamicFeatureConfiguration, F extends EntityCondition<C>> extends ConfiguredCondition<C, F, ConfiguredEntityCondition<?, ?>> {

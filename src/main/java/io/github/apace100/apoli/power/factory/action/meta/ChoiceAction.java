@@ -10,17 +10,17 @@ import java.util.Random;
 
 public class ChoiceAction {
 
-    public static <T> void action(SerializableData.Instance data, T t) {
-        FilterableWeightedList<ActionFactory<T>.Instance> actionList = data.get("actions");
-        ActionFactory<T>.Instance action = actionList.pickRandom(new Random());
-        action.accept(t);
-    }
+	public static <T> void action(SerializableData.Instance data, T t) {
+		FilterableWeightedList<ActionFactory<T>.Instance> actionList = data.get("actions");
+		ActionFactory<T>.Instance action = actionList.pickRandom(new Random());
+		action.accept(t);
+	}
 
-    public static <T> ActionFactory<T> getFactory(SerializableDataType<ActionFactory<T>.Instance> dataType) {
-        return new ActionFactory<T>(Apoli.identifier("choice"),
-            new SerializableData()
-                .add("actions", SerializableDataType.weightedList(dataType)),
-            ChoiceAction::action
-        );
-    }
+	public static <T> ActionFactory<T> getFactory(SerializableDataType<ActionFactory<T>.Instance> dataType) {
+		return new ActionFactory<T>(Apoli.identifier("choice"),
+				new SerializableData()
+						.add("actions", SerializableDataType.weightedList(dataType)),
+				ChoiceAction::action
+		);
+	}
 }

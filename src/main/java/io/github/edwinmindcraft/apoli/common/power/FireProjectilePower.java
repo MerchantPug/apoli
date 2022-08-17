@@ -6,7 +6,6 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.power.ActiveCooldownPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.FireProjectileConfiguration;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 

@@ -5,17 +5,15 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
-import io.github.apace100.apoli.Apoli;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.Optional;
-
 public record HudRender(boolean shouldRender, int barIndex, ResourceLocation spriteLocation,
-						Holder<ConfiguredEntityCondition<?, ?>> condition, boolean inverted) implements IDynamicFeatureConfiguration {
+						Holder<ConfiguredEntityCondition<?, ?>> condition,
+						boolean inverted) implements IDynamicFeatureConfiguration {
 
 	private static final ResourceLocation DEFAULT_SPRITE = new ResourceLocation("origins", "textures/gui/resource_bar.png");
 
@@ -24,7 +22,7 @@ public record HudRender(boolean shouldRender, int barIndex, ResourceLocation spr
 			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "bar_index", 0).forGetter(HudRender::barIndex),
 			CalioCodecHelper.optionalField(ResourceLocation.CODEC, "sprite_location", DEFAULT_SPRITE).forGetter(HudRender::spriteLocation),
 			ConfiguredEntityCondition.optional("condition").forGetter(HudRender::condition),
-            CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "inverted", false).forGetter(HudRender::inverted)
+			CalioCodecHelper.optionalField(CalioCodecHelper.BOOL, "inverted", false).forGetter(HudRender::inverted)
 	).apply(instance, HudRender::new));
 
 	public static final Codec<HudRender> CODEC = MAP_CODEC.codec();
@@ -39,9 +37,9 @@ public record HudRender(boolean shouldRender, int barIndex, ResourceLocation spr
 		return this.barIndex();
 	}
 
-    public boolean isInverted() {
-        return this.inverted();
-    }
+	public boolean isInverted() {
+		return this.inverted();
+	}
 
 	public boolean shouldRender(Entity entity) {
 		return this.shouldRender() && ConfiguredEntityCondition.check(this.condition(), entity);

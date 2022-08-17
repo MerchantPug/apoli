@@ -9,19 +9,19 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 
 public class DelayAction {
 
-    private static final Scheduler SCHEDULER = new Scheduler();
+	private static final Scheduler SCHEDULER = new Scheduler();
 
-    public static <T> void action(SerializableData.Instance data, T t) {
-        ActionFactory<T>.Instance action = data.get("action");
-        SCHEDULER.queue(s -> action.accept(t), data.getInt("ticks"));
-    }
+	public static <T> void action(SerializableData.Instance data, T t) {
+		ActionFactory<T>.Instance action = data.get("action");
+		SCHEDULER.queue(s -> action.accept(t), data.getInt("ticks"));
+	}
 
-    public static <T> ActionFactory<T> getFactory(SerializableDataType<ActionFactory<T>.Instance> dataType) {
-        return new ActionFactory<T>(Apoli.identifier("delay"),
-            new SerializableData()
-                .add("ticks", SerializableDataTypes.INT)
-                .add("action", dataType),
-            DelayAction::action
-        );
-    }
+	public static <T> ActionFactory<T> getFactory(SerializableDataType<ActionFactory<T>.Instance> dataType) {
+		return new ActionFactory<T>(Apoli.identifier("delay"),
+				new SerializableData()
+						.add("ticks", SerializableDataTypes.INT)
+						.add("action", dataType),
+				DelayAction::action
+		);
+	}
 }

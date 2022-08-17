@@ -33,7 +33,7 @@ public record ChangeResourceConfiguration(Holder<ConfiguredPower<?, ?>> resource
 	@Override
 	public String toString() {
 		return "ChangeResourceConfiguration{" +
-			   "resource=" + (this.resource() instanceof Holder.Reference<ConfiguredPower<?,?>> ref ? ref.isBound() ? ref.key() : "Unbound" : "Unsupported") +
+			   "resource=" + (this.resource() instanceof Holder.Reference<ConfiguredPower<?, ?>> ref ? ref.isBound() ? ref.key() : "Unbound" : "Unsupported") +
 			   ", amount=" + this.amount +
 			   ", operation=" + this.operation +
 			   '}';

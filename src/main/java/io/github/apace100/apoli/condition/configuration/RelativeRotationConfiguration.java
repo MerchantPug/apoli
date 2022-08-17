@@ -13,7 +13,8 @@ import net.minecraft.core.Direction;
 import java.util.EnumSet;
 
 public record RelativeRotationConfiguration(EnumSet<Direction.Axis> axes, RotationType actorRotation,
-											RotationType targetRotation, DoubleComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
+											RotationType targetRotation,
+											DoubleComparisonConfiguration comparison) implements IDynamicFeatureConfiguration {
 	public static final Codec<RelativeRotationConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(SerializableDataTypes.AXIS_SET, "axes", EnumSet.allOf(Direction.Axis.class)).forGetter(RelativeRotationConfiguration::axes),
 			CalioCodecHelper.optionalField(SerializableDataType.enumValue(RotationType.class), "actor_rotation", RotationType.HEAD).forGetter(RelativeRotationConfiguration::actorRotation),

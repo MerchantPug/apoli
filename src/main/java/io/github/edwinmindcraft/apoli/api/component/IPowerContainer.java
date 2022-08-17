@@ -14,7 +14,6 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.power.AttributeModifyTransferPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

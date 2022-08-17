@@ -11,7 +11,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public record VariableAccess<T>(Supplier<T> reader, Consumer<T> writer) implements Mutable<T>{
+public record VariableAccess<T>(Supplier<T> reader, Consumer<T> writer) implements Mutable<T> {
 	public static Mutable<ItemStack> hand(LivingEntity living, InteractionHand hand) {
 		return new VariableAccess<>(() -> living.getItemInHand(hand), stack -> living.setItemInHand(hand, stack));
 	}

@@ -3,10 +3,10 @@ package io.github.apace100.apoli.power.factory.condition;
 import com.mojang.serialization.Codec;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.Comparison;
-import io.github.edwinmindcraft.apoli.common.condition.block.DistanceFromPointBlockCondition;
 import io.github.edwinmindcraft.apoli.common.action.configuration.DistanceFromPointConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.configuration.ReferencePoint;
 import io.github.edwinmindcraft.apoli.common.action.entity.DistanceFromPointEntityCondition;
+import io.github.edwinmindcraft.apoli.common.condition.block.DistanceFromPointBlockCondition;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
 
 import java.util.ArrayList;
@@ -80,7 +80,7 @@ public class DistanceFromCoordinatesConditionRegistry {
 		return comparison == Comparison.NOT_EQUAL || comparison == Comparison.GREATER_THAN || comparison == Comparison.GREATER_THAN_OR_EQUAL;
 	}
 
-    // Watch Java generic type erasure destroy DRY
+	// Watch Java generic type erasure destroy DRY
 
 	public static void registerBlockConditions() {
 		for (String alias : getAliases())

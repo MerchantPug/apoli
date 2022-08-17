@@ -63,6 +63,8 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	private final C configuration;
 	private final PowerData data;
 
+	private final Supplier<F> factorySupplier;
+
 	public ConfiguredPower(Supplier<F> factory, C configuration, PowerData data) {
 		this(null, factory, configuration, data);
 	}
@@ -72,12 +74,13 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		this.registryName = key;
 		this.configuration = configuration;
 		this.data = data;
+		this.factorySupplier = factory;
 		this.factory = Lazy.of(() -> {
 			F f = factory.get();
 			this.gatherCapabilities(f::initCapabilities);
 			return f;
 		});
-		if (!(factory instanceof RegistryObject<F> ro) || !ro.isPresent())
+		if (!(factory instanceof RegistryObject<F> ro) || ro.isPresent())
 			this.factory.get(); //Should be mostly safe.
 	}
 
@@ -278,7 +281,9 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 	}
 
 	public ConfiguredPower<C, F> complete(ResourceLocation name) {
-		return new ConfiguredPower<>(name, this.factory, this.getConfiguration(), this.getData().complete(name));
+		ConfiguredPower<C, F> power = new ConfiguredPower<>(name, this.factorySupplier, this.factorySupplier.get().complete(name, this.getConfiguration()), this.getData().complete(name));
+		this.invalidateCaps(); //Free capabilities that are now unused.
+		return power;
 	}
 
 	public F getFactory() {
@@ -329,6 +334,13 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 		return this.registryName != null ? obj instanceof ConfiguredPower<?, ?> cp && this.registryName.equals(cp.registryName) : super.equals(obj);
 	}
 
+	@Nullable
+	public ResourceLocation getRegistryName() {
+		if (this.registryName != null)
+			return this.registryName;
+		return ApoliAPI.getPowers().getResourceKey(this).map(ResourceKey::location).orElse(null);
+	}
+
 	@Override
 	public void whenAvailable(@NotNull ICalioDynamicRegistryManager manager) {
 		if (this.getFactory() instanceof DynamicRegistryListener drl)
@@ -337,7 +349,10 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 
 	@Override
 	public void whenNamed(@NotNull ResourceLocation name) {
-		this.registryName = name;
+		if (this.registryName == null)
+			this.registryName = name;
+		else if (!Objects.equals(this.registryName, name))
+			throw new IllegalArgumentException("Tried to assign name \"" + name + "\" to power with name \"" + this.registryName + "\"");
 		if (this.getFactory() instanceof DynamicRegistryListener drl)
 			drl.whenNamed(name);
 	}

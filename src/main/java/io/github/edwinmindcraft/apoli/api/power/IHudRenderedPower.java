@@ -1,8 +1,8 @@
 package io.github.edwinmindcraft.apoli.api.power;
 
+import io.github.apace100.apoli.util.HudRender;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.apace100.apoli.util.HudRender;
 import net.minecraft.world.entity.Entity;
 
 public interface IHudRenderedPower<T extends IDynamicFeatureConfiguration> {

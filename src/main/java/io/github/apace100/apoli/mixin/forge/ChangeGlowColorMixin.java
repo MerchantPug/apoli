@@ -19,7 +19,9 @@ import java.util.Optional;
 @Mixin(LevelRenderer.class)
 public class ChangeGlowColorMixin {
 
-	@Shadow @Final private Minecraft minecraft;
+	@Shadow
+	@Final
+	private Minecraft minecraft;
 
 	//I Still can't get @ModifyArgs to not crash my game.
 	//This causes a crash with citadel

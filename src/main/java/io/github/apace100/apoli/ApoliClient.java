@@ -6,7 +6,6 @@ import io.github.apace100.apoli.registry.ApoliClassDataClient;
 import io.github.apace100.apoli.screen.GameHudRender;
 import io.github.apace100.apoli.screen.PowerHudRenderer;
 import io.github.edwinmindcraft.apoli.client.ApoliClientEventHandler;
-import io.github.edwinmindcraft.apoli.client.screen.ApoliOverlay;
 import io.github.edwinmindcraft.apoli.client.screen.ApoliOverlays;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;

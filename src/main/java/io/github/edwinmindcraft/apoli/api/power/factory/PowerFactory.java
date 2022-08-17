@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.github.apace100.apoli.Apoli;
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.IFactory;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -137,13 +135,12 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 		Map<String, Holder<ConfiguredPower<?, ?>>> contained = this.getContainedPowers(configuration);
 		if (contained.isEmpty())
 			return ImmutableSet.of();
-		Optional<ResourceKey<ConfiguredPower<?, ?>>> selfKey = ApoliAPI.getPowers().getResourceKey(configuration);
-		if (selfKey.isEmpty()) {
-			Apoli.LOGGER.error("Cannot access contained keys as this power is unregistered.");
+		ResourceLocation key = configuration.getRegistryName();
+		if (key == null) {
+			Apoli.LOGGER.error("Cannot access contained keys as this power is unregistered: {}", configuration);
 			return ImmutableSet.of();
 		}
-		ResourceKey<ConfiguredPower<?, ?>> key = selfKey.get();
-		return contained.keySet().stream().map(suffix -> ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, new ResourceLocation(key.location().getNamespace(), key.location().getPath() + suffix))).collect(Collectors.toUnmodifiableSet());
+		return contained.keySet().stream().map(suffix -> ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, new ResourceLocation(key.getNamespace(), key.getPath() + suffix))).collect(Collectors.toUnmodifiableSet());
 	}
 
 	@Nullable
@@ -225,5 +222,9 @@ public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
 
 	public io.github.apace100.apoli.power.factory.PowerFactory<?> getLegacyFactory() {
 		return this.legacyType.get();
+	}
+
+	public T complete(ResourceLocation identifier, T configuration) {
+		return configuration;
 	}
 }

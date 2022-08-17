@@ -3,9 +3,9 @@ package io.github.edwinmindcraft.apoli.api.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.Comparison;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 public record DoubleComparisonConfiguration(Comparison comparison,

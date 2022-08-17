@@ -16,6 +16,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionP
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -57,16 +58,19 @@ public class ApoliPowerEventHandler {
 		Player player = event.getEntity();
 		Level world = player.getCommandSenderWorld();
 		BlockState state = event.getState();
-		float hardness = state.getDestroySpeed(world, event.getPos());
+		Optional<BlockPos> position = event.getPosition();
+		if (position.isEmpty())
+			return;
+		float hardness = state.getDestroySpeed(world, position.get());
 		if (hardness <= 0)
 			return;
 		float speed = event.getNewSpeed();
 		//This is less than ideal since it fires two hooks, but hey, I do what I can.
-		boolean stateCheck = state.canHarvestBlock(event.getEntity().getLevel(), event.getPos(), event.getEntity());
+		boolean stateCheck = state.canHarvestBlock(event.getEntity().getLevel(), position.get(), event.getEntity());
 		boolean forgeCheck = ForgeHooks.isCorrectToolForDrops(state, event.getEntity());
 		int toolFactor = forgeCheck ? 30 : 100;
 		float factor = hardness * toolFactor;
-		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), world, event.getPos(), () -> state)) * factor;
+		speed = IPowerContainer.modify(player, ApoliPowers.MODIFY_BREAK_SPEED.get(), speed / factor, p -> ConfiguredBlockCondition.check(p.value().getConfiguration().condition(), world, position.get(), () -> state)) * factor;
 
 		if (stateCheck == forgeCheck)
 			event.setNewSpeed(speed);

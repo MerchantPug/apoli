@@ -2,8 +2,8 @@ package io.github.edwinmindcraft.apoli.api.generator;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.apace100.calio.data.JsonDataProvider;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.server.packs.PackType;
 import net.minecraftforge.common.data.ExistingFileHelper;

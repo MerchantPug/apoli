@@ -15,7 +15,6 @@ import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.apoli.common.action.configuration.ChangeResourceConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.entity.*;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
-import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.world.entity.Entity;

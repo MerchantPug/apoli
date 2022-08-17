@@ -6,11 +6,7 @@ import io.github.apace100.apoli.configuration.RaycastSettingsConfiguration;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
-import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record RaycastConfiguration(RaycastSettingsConfiguration settings,
 								   Holder<ConfiguredBiEntityCondition<?, ?>> matchCondition,
@@ -20,6 +16,6 @@ public record RaycastConfiguration(RaycastSettingsConfiguration settings,
 			RaycastSettingsConfiguration.MAP_CODEC.forGetter(RaycastConfiguration::settings),
 			ConfiguredBiEntityCondition.optional("match_bientity_condition").forGetter(RaycastConfiguration::matchCondition),
 			ConfiguredBiEntityCondition.optional("hit_bientity_condition").forGetter(RaycastConfiguration::hitCondition),
-			ConfiguredBlockCondition.optional( "block_condition").forGetter(RaycastConfiguration::blockCondition)
+			ConfiguredBlockCondition.optional("block_condition").forGetter(RaycastConfiguration::blockCondition)
 	).apply(instance, RaycastConfiguration::new));
 }

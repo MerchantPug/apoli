@@ -3,9 +3,9 @@ package io.github.edwinmindcraft.apoli.api.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.util.Comparison;
+import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 import java.util.Optional;
@@ -20,7 +20,7 @@ public record IntegerComparisonConfiguration(Comparison comparison,
 	public static MapCodec<IntegerComparisonConfiguration> withDefaults(Comparison comparison, int value) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 				CalioCodecHelper.optionalField(ApoliDataTypes.COMPARISON, "comparison", comparison).forGetter(IntegerComparisonConfiguration::comparison),
-				CalioCodecHelper.optionalField(CalioCodecHelper.INT,"compare_to", value).forGetter(IntegerComparisonConfiguration::compareTo)
+				CalioCodecHelper.optionalField(CalioCodecHelper.INT, "compare_to", value).forGetter(IntegerComparisonConfiguration::compareTo)
 		).apply(instance, IntegerComparisonConfiguration::new));
 	}
 

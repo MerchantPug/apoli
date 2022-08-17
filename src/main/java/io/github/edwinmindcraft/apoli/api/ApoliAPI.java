@@ -93,6 +93,7 @@ public class ApoliAPI {
 	/**
 	 * An accessor for the {@link ConfiguredPower} registry.
 	 * You should probably cache this value if you can.
+	 *
 	 * @param access The registry access to get the registry for, or null for the client.
 	 *
 	 * @return The ConfiguredPower registry.

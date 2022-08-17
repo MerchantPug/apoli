@@ -44,7 +44,7 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 					entity.getDisplayName(),
 					server,
 					entity);
-			return OptionalInt.of(server.getCommands().performCommand(source, command));
+			return OptionalInt.of(server.getCommands().performPrefixedCommand(source, command));
 		}
 		return OptionalInt.empty();
 	}
@@ -67,7 +67,7 @@ public record CommandConfiguration(String command) implements IDynamicFeatureCon
 					Component.translatable(blockName),
 					server,
 					null);
-			return OptionalInt.of(server.getCommands().performCommand(source, this.command()));
+			return OptionalInt.of(server.getCommands().performPrefixedCommand(source, this.command()));
 		}
 		return OptionalInt.empty();
 	}

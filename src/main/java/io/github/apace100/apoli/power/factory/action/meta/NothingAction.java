@@ -6,10 +6,10 @@ import io.github.apace100.calio.data.SerializableData;
 
 public class NothingAction {
 
-    public static <T> ActionFactory<T> getFactory() {
-        return new ActionFactory<T>(Apoli.identifier("nothing"),
-            new SerializableData(),
-            (inst, t) -> {}
-        );
-    }
+	public static <T> ActionFactory<T> getFactory() {
+		return new ActionFactory<T>(Apoli.identifier("nothing"),
+				new SerializableData(),
+				(inst, t) -> {}
+		);
+	}
 }

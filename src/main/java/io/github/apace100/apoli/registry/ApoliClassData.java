@@ -5,9 +5,9 @@ import io.github.apace100.calio.data.ClassDataRegistry;
 
 public class ApoliClassData {
 
-    public static void registerAll() {
+	public static void registerAll() {
 
-        ClassDataRegistry<Power> power = ClassDataRegistry.getOrCreate(Power.class, "Power");
-        power.addPackage("io.github.apace100.apoli.power");
-    }
+		ClassDataRegistry<Power> power = ClassDataRegistry.getOrCreate(Power.class, "Power");
+		power.addPackage("io.github.apace100.apoli.power");
+	}
 }
