@@ -121,7 +121,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(at = @At("RETURN"), method = "getNightVisionScale", cancellable = true)
 	private static void updateNightVisionScale(LivingEntity living, float tickDelta, CallbackInfoReturnable<Float> cir) {
-		if (!living.hasEffect(MobEffects.NIGHT_VISION)) //Should fix the flickering
+		if (!living.hasEffect(MobEffects.NIGHT_VISION))
 			INightVisionPower.getNightVisionStrength(living).ifPresent(cir::setReturnValue);
 	}
 

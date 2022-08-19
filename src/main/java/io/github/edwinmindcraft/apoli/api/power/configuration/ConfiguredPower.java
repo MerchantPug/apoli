@@ -331,7 +331,13 @@ public final class ConfiguredPower<C extends IDynamicFeatureConfiguration, F ext
 
 	@Override
 	public boolean equals(Object obj) {
-		return this.registryName != null ? obj instanceof ConfiguredPower<?, ?> cp && this.registryName.equals(cp.registryName) : super.equals(obj);
+		if (!(obj instanceof ConfiguredPower<?, ?> other))
+			return false;
+		if (this.registryName != null && other.registryName != null)
+			return Objects.equals(this.registryName, other.registryName);
+		return Objects.equals(this.factorySupplier.get(), other.factorySupplier.get()) &&
+			   Objects.equals(this.configuration, other.configuration) &&
+			   Objects.equals(this.data, other.data);
 	}
 
 	@Nullable
