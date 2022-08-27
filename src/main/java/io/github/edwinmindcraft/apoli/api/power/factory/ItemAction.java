@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.mutable.Mutable;
 
 public abstract class ItemAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredItemAction<T, ?>, ItemAction<T>> {
-	public static final Codec<ItemAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ITEM_ACTION);
+	public static final Codec<ItemAction<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.ITEM_ACTION.get());
 	private final Codec<ConfiguredItemAction<T, ?>> codec;
 
 	protected ItemAction(Codec<T> codec) {
