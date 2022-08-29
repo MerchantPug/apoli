@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class PowerFactory<T extends IDynamicFeatureConfiguration> {
-	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.POWER_FACTORY);
+	public static final Codec<PowerFactory<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.POWER_FACTORY.get());
 	private static final Map<String, ResourceLocation> ALIASES = Util.make(() -> {
 		ImmutableMap.Builder<String, ResourceLocation> builder = ImmutableMap.builder();
 		try (InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(PowerFactory.class.getResourceAsStream("/data/apoli/power_class_registry.json")))) {

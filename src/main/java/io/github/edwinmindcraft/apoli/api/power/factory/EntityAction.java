@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.util.Lazy;
 
 public abstract class EntityAction<T extends IDynamicFeatureConfiguration> implements IFactory<T, ConfiguredEntityAction<T, ?>, EntityAction<T>> {
-	public static final Codec<EntityAction<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.ENTITY_ACTION);
+	public static final Codec<EntityAction<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.ENTITY_ACTION.get());
 
 	private final Codec<ConfiguredEntityAction<T, ?>> codec;
 

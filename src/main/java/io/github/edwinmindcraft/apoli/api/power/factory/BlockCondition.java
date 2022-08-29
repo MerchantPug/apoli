@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.NonNullSupplier;
 
 public abstract class BlockCondition<T extends IDynamicFeatureConfiguration> implements IConditionFactory<T, ConfiguredBlockCondition<T, ?>, BlockCondition<T>> {
-	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.codec(ApoliRegistries.BLOCK_CONDITION);
+	public static final Codec<BlockCondition<?>> CODEC = ApoliRegistries.codec(() -> ApoliRegistries.BLOCK_CONDITION.get());
 
 	private final Codec<ConfiguredBlockCondition<T, ?>> codec;
 
