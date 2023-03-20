@@ -15,12 +15,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.BIENTITY_ACTIONS;
 
 public class ApoliBiEntityActions {
 	public static final BiConsumer<ConfiguredBiEntityAction<?, ?>, Pair<Entity, Entity>> EXECUTOR = (action, pair) -> action.execute(pair.getKey(), pair.getValue());
 	public static final BiPredicate<ConfiguredBiEntityCondition<?, ?>, Pair<Entity, Entity>> PREDICATE = (condition, pair) -> condition.check(pair.getKey(), pair.getValue());
+	public static final Predicate<Pair<Entity, Entity>> SERVERSIDE_PREDICATE = (pair) -> !pair.getLeft().level.isClientSide;
 
 	private static <U extends BiEntityAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BIENTITY_ACTION_KEY.location(), Apoli.MODID);
@@ -45,6 +47,6 @@ public class ApoliBiEntityActions {
 
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaActions(BIENTITY_ACTIONS, DelegatedBiEntityAction::new, ConfiguredBiEntityAction.CODEC_SET, ConfiguredBiEntityCondition.CODEC_SET, ConfiguredBiEntityAction::optional, EXECUTOR, PREDICATE);
+		MetaFactories.defineMetaActions(BIENTITY_ACTIONS, DelegatedBiEntityAction::new, ConfiguredBiEntityAction.CODEC_SET, ConfiguredBiEntityCondition.CODEC_SET, ConfiguredBiEntityAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);
 	}
 }

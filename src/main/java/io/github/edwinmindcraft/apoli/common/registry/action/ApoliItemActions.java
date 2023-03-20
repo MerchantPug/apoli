@@ -19,12 +19,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ITEM_ACTIONS;
 
 public class ApoliItemActions {
 	public static final BiConsumer<ConfiguredItemAction<?, ?>, Pair<Level, Mutable<ItemStack>>> EXECUTOR = (action, pair) -> action.execute(pair.getKey(), pair.getValue());
 	public static final BiPredicate<ConfiguredItemCondition<?, ?>, Pair<Level, Mutable<ItemStack>>> PREDICATE = (condition, pair) -> condition.check(pair.getKey(), pair.getValue().getValue());
+	public static final Predicate<Pair<Level, Mutable<ItemStack>>> SERVERSIDE_PREDICATE = (pair) -> !pair.getLeft().isClientSide;
 
 	private static <U extends ItemAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ITEM_ACTION_KEY.location(), Apoli.MODID);
@@ -43,6 +45,6 @@ public class ApoliItemActions {
 	public static final RegistryObject<DamageItemAction> DAMAGE = ITEM_ACTIONS.register("damage", DamageItemAction::new);
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaActions(ITEM_ACTIONS, DelegatedItemAction::new, ConfiguredItemAction.CODEC_SET, ConfiguredItemCondition.CODEC_SET, ConfiguredItemAction::optional, EXECUTOR, PREDICATE);
+		MetaFactories.defineMetaActions(ITEM_ACTIONS, DelegatedItemAction::new, ConfiguredItemAction.CODEC_SET, ConfiguredItemCondition.CODEC_SET, ConfiguredItemAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);
 	}
 }
