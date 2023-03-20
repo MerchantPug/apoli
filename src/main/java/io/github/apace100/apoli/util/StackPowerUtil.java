@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 
+import javax.swing.text.html.parser.TagElement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,6 +44,36 @@ public final class StackPowerUtil {
 			nbt.put("Powers", list);
 		}
 		list.add(stackPower.toNbt());
+	}
+
+	public static void removePower(ItemStack stack, EquipmentSlot slot, ResourceLocation powerId) {
+		CompoundTag nbt = stack.getOrCreateTag();
+		ListTag list;
+		if(nbt.contains("Powers")) {
+			Tag elem = nbt.get("Powers");
+			if(elem.getType() != ListTag.TYPE) {
+				Apoli.LOGGER.warn("Can't remove power " + powerId + " from item stack "
+						+ stack + ", as it contains conflicting NBT data.");
+				return;
+			}
+			list = (ListTag) elem;
+			int found = -1;
+			while(list.size() > 0) {
+				for(int i = 0; i < list.size(); i++) {
+					StackPower sp = StackPower.fromNbt(list.getCompound(i));
+					if(sp.powerId.equals(powerId) && sp.slot == slot) {
+						found = i;
+						break;
+					}
+				}
+				if(found >= 0) {
+					list.remove(found);
+					found = -1;
+				} else {
+					break;
+				}
+			}
+		}
 	}
 
 	public static List<StackPower> getPowers(ItemStack stack, EquipmentSlot slot) {
