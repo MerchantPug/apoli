@@ -49,6 +49,10 @@ public class ApoliItemConditions {
 	public static final RegistryObject<PowerCountCondition> POWER_COUNT = ITEM_CONDITIONS.register("power_count", PowerCountCondition::new);
 	public static final RegistryObject<ItemHasPowerCondition> HAS_POWER = ITEM_CONDITIONS.register("has_power", ItemHasPowerCondition::new);
 	public static final RegistryObject<SimpleItemCondition> SMELTABLE = ITEM_CONDITIONS.register("smeltable", () -> new SimpleItemCondition((level, stack) -> SimpleItemCondition.forCookingRecipeType(level, stack, RecipeType.SMELTING)));
+	public static final RegistryObject<SimpleItemCondition> IS_DAMAGEABLE = ITEM_CONDITIONS.register("is_damageable", () -> new SimpleItemCondition(ItemStack::isDamageableItem));
+	public static final RegistryObject<IntComparingItemCondition> DURABILITY = ITEM_CONDITIONS.register("durability", () -> new IntComparingItemCondition(stack -> stack.getMaxDamage() - stack.getDamageValue()));
+	public static final RegistryObject<FloatComparingItemCondition> RELATIVE_DURABILITY = ITEM_CONDITIONS.register("relative_durability", () -> new FloatComparingItemCondition(stack -> (float)(stack.getMaxDamage() - stack.getDamageValue()) / stack.getMaxDamage()));
+	public static final RegistryObject<IsEquippableCondition> IS_EQUIPPABLE = ITEM_CONDITIONS.register("is_equippable", IsEquippableCondition::new);
 
 	public static ConfiguredItemCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 
