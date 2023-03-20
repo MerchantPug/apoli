@@ -7,7 +7,7 @@ public class AddBaseLateModifierOperation extends ModifierOperation {
         super(Phase.BASE, 300, (values, base, current) -> {
             double value = current;
             for(double v : values) {
-                value = v;
+                value += v;
             }
             return value;
         });
