@@ -3,7 +3,6 @@ package io.github.apace100.apoli.mixin;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.access.HiddenEffectStatus;
 import io.github.apace100.apoli.access.ModifiableFoodEntity;
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.StackPowerUtil;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.configuration.FieldConfiguration;
@@ -12,7 +11,6 @@ import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.S2CSyncAttacker;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
-import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFallingConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.Holder;
@@ -23,12 +21,12 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -225,6 +223,15 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		}
 	}
 
+	@Inject(method = "getAttributeValue", at = @At("RETURN"), cancellable = true)
+	private void modifyAttributeValue(Attribute attribute, CallbackInfoReturnable<Double> cir) {
+		double originalValue = this.getAttributes().getValue(attribute);
+		double modified = IPowerContainer.modify(this, ApoliPowers.MODIFY_ATTRIBUTE.get(), (float)originalValue, p -> p.get().getConfiguration().attribute() == attribute);
+		if(originalValue != modified) {
+			cir.setReturnValue(modified);
+		}
+	}
+
 	@Inject(method = "doPush", at = @At("HEAD"), cancellable = true)
 	private void preventPushing(Entity entity, CallbackInfo ci) {
 		if (BiEntityConditionPower.any(ApoliPowers.PREVENT_ENTITY_COLLISION.get(), this, this, entity) ||
@@ -293,6 +300,8 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	@Shadow public abstract int getArmorValue();
 
 	@Shadow public abstract double getAttributeValue(Attribute pAttribute);
+
+	@Shadow public abstract AttributeMap getAttributes();
 
 	@Inject(method = "getFrictionInfluencedSpeed(F)F", at = @At("RETURN"), cancellable = true)
 	private void modifyFlySpeed(float slipperiness, CallbackInfoReturnable<Float> cir) {
