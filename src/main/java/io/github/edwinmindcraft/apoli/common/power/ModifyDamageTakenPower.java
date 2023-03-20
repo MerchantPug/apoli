@@ -18,6 +18,22 @@ public class ModifyDamageTakenPower extends ValueModifyingPowerFactory<ModifyDam
 		super(ModifyDamageTakenConfiguration.CODEC);
 	}
 
+	public boolean modifiesArmorApplicance(ConfiguredPower<ModifyDamageTakenConfiguration, ?> config) {
+		return !config.getConfiguration().applyArmorCondition().is(ApoliDefaultConditions.ENTITY_DEFAULT.getId());
+	}
+
+	public boolean checkArmorApplicance(ConfiguredPower<ModifyDamageTakenConfiguration, ?> config, Entity entity) {
+		return !config.getConfiguration().applyArmorCondition().is(ApoliDefaultConditions.ENTITY_DEFAULT.getId()) && ConfiguredEntityCondition.check(config.getConfiguration().applyArmorCondition(), entity);
+	}
+
+	public boolean modifiesArmorDamaging(ConfiguredPower<ModifyDamageTakenConfiguration, ?> config) {
+		return !config.getConfiguration().damageArmorCondition().is(ApoliDefaultConditions.ENTITY_DEFAULT.getId());
+	}
+
+	public boolean checkArmorDamaging(ConfiguredPower<ModifyDamageTakenConfiguration, ?> config, Entity entity) {
+		return !config.getConfiguration().damageArmorCondition().is(ApoliDefaultConditions.ENTITY_DEFAULT.getId()) && ConfiguredEntityCondition.check(config.getConfiguration().damageArmorCondition(), entity);
+	}
+
 	public boolean check(ConfiguredPower<ModifyDamageTakenConfiguration, ?> config, Entity entity, DamageSource source, float amount) {
 		ModifyDamageTakenConfiguration configuration = config.getConfiguration();
 		boolean damage = ConfiguredDamageCondition.check(configuration.damageCondition(), source, amount);

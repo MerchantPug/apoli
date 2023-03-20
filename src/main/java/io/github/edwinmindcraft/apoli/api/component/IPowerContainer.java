@@ -4,22 +4,22 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.integration.ModifyValueEvent;
-import io.github.apace100.apoli.util.AttributeUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IValueModifyingPower;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.power.AttributeModifyTransferPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
+import io.github.edwinmindcraft.apoli.common.util.ModifierUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
@@ -89,12 +89,12 @@ public interface IPowerContainer {
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, double baseValue, Predicate<Holder<ConfiguredPower<T, F>>> powerFilter, Consumer<Holder<ConfiguredPower<T, F>>> powerAction) {
 		List<Holder<ConfiguredPower<T, F>>> powers = IPowerContainer.getPowers(entity, factory).stream().filter(x -> powerFilter == null || powerFilter.test(x)).toList();
-		List<AttributeModifier> modifiers = powers.stream().filter(Holder::isBound).flatMap(x -> x.value().getFactory().getModifiers(x.value(), entity).stream()).collect(Collectors.toCollection(ArrayList::new));
+		List<ConfiguredModifier<?>> modifiers = powers.stream().filter(Holder::isBound).flatMap(x -> x.value().getFactory().getModifiers(x.value(), entity).stream()).collect(Collectors.toCollection(ArrayList::new));
 		if (powerAction != null) powers.forEach(powerAction);
 		modifiers.addAll(AttributeModifyTransferPower.apply(entity, factory));
 		ModifyValueEvent event = new ModifyValueEvent(entity, factory, baseValue, modifiers);
 		MinecraftForge.EVENT_BUS.post(event);
-		return AttributeUtil.applyModifiers(event.getModifiers(), baseValue);
+		return ModifierUtils.applyModifiers(entity, event.getModifiers(), baseValue);
 	}
 
 	//endregion

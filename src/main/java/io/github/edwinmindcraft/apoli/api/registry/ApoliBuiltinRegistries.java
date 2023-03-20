@@ -23,4 +23,6 @@ public class ApoliBuiltinRegistries {
 	public static Supplier<IForgeRegistry<ConfiguredEntityCondition<?, ?>>> CONFIGURED_ENTITY_CONDITIONS;
 	public static Supplier<IForgeRegistry<ConfiguredFluidCondition<?, ?>>> CONFIGURED_FLUID_CONDITIONS;
 	public static Supplier<IForgeRegistry<ConfiguredItemCondition<?, ?>>> CONFIGURED_ITEM_CONDITIONS;
+
+	public static Supplier<IForgeRegistry<ConfiguredModifier<?>>> CONFIGURED_MODIFIERS;
 }

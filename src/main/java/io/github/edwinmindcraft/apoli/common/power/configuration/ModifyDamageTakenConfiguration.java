@@ -3,23 +3,21 @@ package io.github.edwinmindcraft.apoli.common.power.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityAction;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiEntityCondition;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredDamageCondition;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
+import io.github.edwinmindcraft.apoli.api.power.configuration.*;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import net.minecraft.core.Holder;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-public record ModifyDamageTakenConfiguration(ListConfiguration<AttributeModifier> modifiers,
+public record ModifyDamageTakenConfiguration(ListConfiguration<ConfiguredModifier<?>> modifiers,
 											 Holder<ConfiguredDamageCondition<?, ?>> damageCondition,
 											 Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition,
 											 Holder<ConfiguredEntityAction<?, ?>> selfAction,
 											 Holder<ConfiguredEntityAction<?, ?>> targetAction,
-											 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements IValueModifyingPowerConfiguration {
+											 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction,
+											 Holder<ConfiguredEntityCondition<?, ?>> applyArmorCondition,
+											 Holder<ConfiguredEntityCondition<?, ?>> damageArmorCondition) implements IValueModifyingPowerConfiguration {
 
-	public ModifyDamageTakenConfiguration(AttributeModifier... modifiers) {
-		this(ListConfiguration.of(modifiers), null, null, null, null, null);
+	public ModifyDamageTakenConfiguration(ConfiguredModifier<?>... modifiers) {
+		this(ListConfiguration.of(modifiers), null, null, null, null, null, null, null);
 	}
 
 	public static final Codec<ModifyDamageTakenConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -28,6 +26,8 @@ public record ModifyDamageTakenConfiguration(ListConfiguration<AttributeModifier
 			ConfiguredBiEntityCondition.optional("bientity_condition").forGetter(ModifyDamageTakenConfiguration::biEntityCondition),
 			ConfiguredEntityAction.optional("self_action").forGetter(ModifyDamageTakenConfiguration::selfAction),
 			ConfiguredEntityAction.optional("attacker_action").forGetter(ModifyDamageTakenConfiguration::targetAction),
-			ConfiguredBiEntityAction.optional("bientity_action").forGetter(ModifyDamageTakenConfiguration::biEntityAction)
+			ConfiguredBiEntityAction.optional("bientity_action").forGetter(ModifyDamageTakenConfiguration::biEntityAction),
+			ConfiguredEntityCondition.optional("apply_armor_condition").forGetter(ModifyDamageTakenConfiguration::applyArmorCondition),
+			ConfiguredEntityCondition.optional("damage_armor_condition").forGetter(ModifyDamageTakenConfiguration::damageArmorCondition)
 	).apply(instance, ModifyDamageTakenConfiguration::new));
 }

@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
@@ -14,15 +15,20 @@ import java.util.Optional;
 
 public final class ListConfiguration<T> implements IDynamicFeatureConfiguration, IStreamConfiguration<T> {
 
-	public static final MapCodec<ListConfiguration<AttributeModifier>> MODIFIER_CODEC = modifierCodec("modifier");
+	public static final MapCodec<ListConfiguration<AttributeModifier>> ATTRIBUTE_CODEC = attributeCodec("modifier");
+	public static final MapCodec<ListConfiguration<ConfiguredModifier<?>>> MODIFIER_CODEC = modifierCodec("modifier");
 
 	@SafeVarargs
 	public static <T> ListConfiguration<T> of(T... elements) {
 		return new ListConfiguration<>(ImmutableList.copyOf(elements));
 	}
 
-	public static MapCodec<ListConfiguration<AttributeModifier>> modifierCodec(String singular) {
+	public static MapCodec<ListConfiguration<AttributeModifier>> attributeCodec(String singular) {
 		return ListConfiguration.mapCodec(SerializableDataTypes.ATTRIBUTE_MODIFIER, singular, singular + "s");
+	}
+
+	public static MapCodec<ListConfiguration<ConfiguredModifier<?>>> modifierCodec(String singular) {
+		return ListConfiguration.mapCodec(ConfiguredModifier.CODEC, singular, singular + "s");
 	}
 
 	public static <T> MapCodec<ListConfiguration<T>> mapCodec(Codec<T> codec, String singular, String plural) {

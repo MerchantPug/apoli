@@ -26,6 +26,8 @@ public class ApoliDynamicRegisters {
 	public static final DeferredRegister<ConfiguredFluidCondition<?, ?>> CONFIGURED_FLUID_CONDITIONS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_FLUID_CONDITION_KEY.location(), Apoli.MODID);
 	public static final DeferredRegister<ConfiguredItemCondition<?, ?>> CONFIGURED_ITEM_CONDITIONS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY.location(), Apoli.MODID);
 
+	public static final DeferredRegister<ConfiguredModifier<?>> CONFIGURED_MODIFIERS = DeferredRegister.create(ApoliDynamicRegistries.CONFIGURED_MODIFIER_KEY.location(), Apoli.MODID);
+
 	public static void initialize() {
 		ApoliBuiltinRegistries.CONFIGURED_POWERS = CONFIGURED_POWERS.makeRegistry(() -> new RegistryBuilder<ConfiguredPower<?, ?>>().hasTags().disableSaving());
 
@@ -42,6 +44,8 @@ public class ApoliDynamicRegisters {
 		ApoliBuiltinRegistries.CONFIGURED_FLUID_CONDITIONS = CONFIGURED_FLUID_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredFluidCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
 		ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS = CONFIGURED_ITEM_CONDITIONS.makeRegistry(() -> new RegistryBuilder<ConfiguredItemCondition<?, ?>>().disableSaving().hasTags().setDefaultKey(ApoliDynamicRegistries.CONDITION_DEFAULT));
 
+		ApoliBuiltinRegistries.CONFIGURED_MODIFIERS = CONFIGURED_MODIFIERS.makeRegistry(() -> new RegistryBuilder<ConfiguredModifier<?>>().disableSaving().hasTags());
+
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		CONFIGURED_POWERS.register(bus);
 
@@ -57,5 +61,7 @@ public class ApoliDynamicRegisters {
 		CONFIGURED_ENTITY_CONDITIONS.register(bus);
 		CONFIGURED_FLUID_CONDITIONS.register(bus);
 		CONFIGURED_ITEM_CONDITIONS.register(bus);
+
+		CONFIGURED_MODIFIERS.register(bus);
 	}
 }

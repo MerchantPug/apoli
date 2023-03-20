@@ -1,9 +1,10 @@
 package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.api.power.IAttributeModifyingPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.power.IAttributeModifyingPowerConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -15,11 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPowerConfiguration> extends ValueModifyingPowerFactory<T> {
-	public static <C extends IValueModifyingPowerConfiguration, F extends AttributeModifyingPowerFactory<C>> double apply(Entity entity, F type, double baseValue) {
-		if (type.hasAttributeBacking()) return baseValue;
-		return IPowerContainer.modify(entity, type, baseValue);
-	}
+public abstract class AttributeModifyingPowerFactory<T extends IAttributeModifyingPowerConfiguration> extends PowerFactory<T> implements IAttributeModifyingPower<T> {
 
 	private final Lazy<Attribute> lazyAttribute;
 
@@ -79,6 +76,11 @@ public abstract class AttributeModifyingPowerFactory<T extends IValueModifyingPo
 	@Override
 	protected int tickInterval(T configuration, Entity player) {
 		return 20;
+	}
+
+	@Override
+	public List<AttributeModifier> getModifiers(ConfiguredPower<T, ?> configuration, Entity player) {
+		return configuration.getConfiguration().modifiers().getContent();
 	}
 
 	@Nullable

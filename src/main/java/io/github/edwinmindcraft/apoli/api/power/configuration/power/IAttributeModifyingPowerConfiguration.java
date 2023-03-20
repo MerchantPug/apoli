@@ -5,6 +5,6 @@ import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-public interface IValueModifyingPowerConfiguration extends IDynamicFeatureConfiguration {
-	ListConfiguration<ConfiguredModifier<?>> modifiers();
+public interface IAttributeModifyingPowerConfiguration extends IDynamicFeatureConfiguration {
+	ListConfiguration<AttributeModifier> modifiers();
 }

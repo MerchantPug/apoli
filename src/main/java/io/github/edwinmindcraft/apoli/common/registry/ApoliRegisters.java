@@ -32,6 +32,8 @@ public class ApoliRegisters {
 	public static final DeferredRegister<BiEntityCondition<?>> BIENTITY_CONDITIONS = DeferredRegister.create(ApoliRegistries.BIENTITY_CONDITION_KEY.location(), Apoli.MODID);
 	public static final DeferredRegister<BiEntityAction<?>> BIENTITY_ACTIONS = DeferredRegister.create(ApoliRegistries.BIENTITY_ACTION_KEY.location(), Apoli.MODID);
 
+	public static final DeferredRegister<ModifierOperation> MODIFIER_OPERATIONS = DeferredRegister.create(ApoliRegistries.MODIFIER_OPERATION_KEY.location(), Apoli.MODID);
+
 	//TODO Builtin registries for every type of action & condition.
 
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Apoli.MODID);
@@ -51,6 +53,7 @@ public class ApoliRegisters {
 		ApoliRegistries.BLOCK_ACTION = BLOCK_ACTIONS.makeRegistry(() -> new RegistryBuilder<BlockAction<?>>().disableSaving().hasTags());
 		ApoliRegistries.BIENTITY_CONDITION = BIENTITY_CONDITIONS.makeRegistry(() -> new RegistryBuilder<BiEntityCondition<?>>().disableSaving().hasTags());
 		ApoliRegistries.BIENTITY_ACTION = BIENTITY_ACTIONS.makeRegistry(() -> new RegistryBuilder<BiEntityAction<?>>().disableSaving().hasTags());
+		ApoliRegistries.MODIFIER_OPERATION = MODIFIER_OPERATIONS.makeRegistry(() -> new RegistryBuilder<ModifierOperation>().disableSaving().hasTags());
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		POWER_FACTORIES.register(bus);
@@ -65,6 +68,7 @@ public class ApoliRegisters {
 		BLOCK_ACTIONS.register(bus);
 		BIENTITY_CONDITIONS.register(bus);
 		BIENTITY_ACTIONS.register(bus);
+		MODIFIER_OPERATIONS.register(bus);
 
 		RECIPE_SERIALIZERS.register(bus);
 		ARGUMENT_TYPES.register(bus);

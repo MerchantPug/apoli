@@ -25,8 +25,8 @@ public record ModifyFoodConfiguration(ListConfiguration<AttributeModifier> foodM
 									  boolean alwaysEdible,
 									  boolean preventEffects) implements IDynamicFeatureConfiguration {
 	public static final Codec<ModifyFoodConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			ListConfiguration.modifierCodec("food_modifier").forGetter(ModifyFoodConfiguration::foodModifiers),
-			ListConfiguration.modifierCodec("saturation_modifier").forGetter(ModifyFoodConfiguration::saturationModifiers),
+			ListConfiguration.attributeCodec("food_modifier").forGetter(ModifyFoodConfiguration::foodModifiers),
+			ListConfiguration.attributeCodec("saturation_modifier").forGetter(ModifyFoodConfiguration::saturationModifiers),
 			ConfiguredItemCondition.optional("item_condition").forGetter(ModifyFoodConfiguration::itemCondition),
 			ConfiguredEntityAction.optional("entity_action").forGetter(ModifyFoodConfiguration::entityAction),
 			CalioCodecHelper.optionalField(SerializableDataTypes.ITEM_STACK, "replace_stack").forGetter(x -> Optional.ofNullable(x.replaceStack())),

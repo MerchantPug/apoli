@@ -1,23 +1,17 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
+import io.github.edwinmindcraft.apoli.api.power.factory.power.ValueModifyingPowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFallingConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import net.minecraft.core.Holder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraftforge.common.ForgeMod;
 
-import java.lang.reflect.Field;
-import java.util.OptionalDouble;
-import java.util.UUID;
+public class ModifyFallingPower extends ValueModifyingPowerFactory<ModifyFallingConfiguration> {
 
-public class ModifyFallingPower extends PowerFactory<ModifyFallingConfiguration> {
+	public ModifyFallingPower() {
+		super(ModifyFallingConfiguration.CODEC);
+	}
 
+	// As Origins Fabric now utilises special modifiers for this class, we are now unable to hook into Forge's Entity Gravity attribute.
+
+	/*
 	private static final UUID SLOW_FALLING_ID;
 	private static final AttributeModifier SLOW_FALLING;
 
@@ -34,6 +28,7 @@ public class ModifyFallingPower extends PowerFactory<ModifyFallingConfiguration>
 		}
 	}
 
+	@Deprecated
 	public static void apply(Entity entity, boolean isFalling) {
 		if (!(entity instanceof LivingEntity living))
 			return;
@@ -55,8 +50,5 @@ public class ModifyFallingPower extends PowerFactory<ModifyFallingConfiguration>
 			attribute.removeModifier(SLOW_FALLING_ID);
 		}
 	}
-
-	public ModifyFallingPower() {
-		super(ModifyFallingConfiguration.CODEC, true);
-	}
+	 */
 }
