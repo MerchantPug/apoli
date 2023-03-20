@@ -6,10 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemActi
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.action.item.ConsumeItemAction;
-import io.github.edwinmindcraft.apoli.common.action.item.DamageItemAction;
-import io.github.edwinmindcraft.apoli.common.action.item.DelegatedItemAction;
-import io.github.edwinmindcraft.apoli.common.action.item.ModifyItemAction;
+import io.github.edwinmindcraft.apoli.common.action.item.*;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -43,6 +40,8 @@ public class ApoliItemActions {
 	public static final RegistryObject<ConsumeItemAction> CONSUME = ITEM_ACTIONS.register("consume", ConsumeItemAction::new);
 	public static final RegistryObject<ModifyItemAction> MODIFY = ITEM_ACTIONS.register("modify", ModifyItemAction::new);
 	public static final RegistryObject<DamageItemAction> DAMAGE = ITEM_ACTIONS.register("damage", DamageItemAction::new);
+	public static final RegistryObject<MergeNbtItemAction> MERGE_NBT = ITEM_ACTIONS.register("merge_nbt", MergeNbtItemAction::new);
+	public static final RegistryObject<RemoveEnchantmentItemAction> REMOVE_ENCHANTMENT = ITEM_ACTIONS.register("remove_enchantment", RemoveEnchantmentItemAction::new);
 
 	public static void bootstrap() {
 		MetaFactories.defineMetaActions(ITEM_ACTIONS, DelegatedItemAction::new, ConfiguredItemAction.CODEC_SET, ConfiguredItemCondition.CODEC_SET, ConfiguredItemAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);
