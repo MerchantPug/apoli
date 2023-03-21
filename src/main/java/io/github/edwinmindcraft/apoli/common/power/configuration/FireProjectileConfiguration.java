@@ -30,7 +30,7 @@ public record FireProjectileConfiguration(int cooldown, HudRender hudRender, Ent
 
 	public static final Codec<FireProjectileConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "cooldown", 1).forGetter(FireProjectileConfiguration::cooldown),
-			ApoliDataTypes.HUD_RENDER.fieldOf("hud_render").forGetter(FireProjectileConfiguration::hudRender),
+			CalioCodecHelper.optionalField(ApoliDataTypes.HUD_RENDER, "hud_render", HudRender.DONT_RENDER).forGetter(FireProjectileConfiguration::hudRender),
 			Registry.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(FireProjectileConfiguration::entityType),
 			CalioCodecHelper.optionalField(CalioCodecHelper.INT, "count", 1).forGetter(FireProjectileConfiguration::projectileCount),
 			CalioCodecHelper.optionalField(CalioCodecHelper.FLOAT, "speed", 1.5F).forGetter(FireProjectileConfiguration::speed),
