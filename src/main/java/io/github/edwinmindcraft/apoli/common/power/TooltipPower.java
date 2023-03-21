@@ -11,12 +11,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class TooltipPower extends PowerFactory<TooltipConfiguration> {
 	public static void tryAdd(@Nullable Entity entity, ItemStack itemStack, List<Component> tooltips) {
 		if (entity == null) return;
-		IPowerContainer.getPowers(entity, ApoliPowers.TOOLTIP.get()).forEach(power -> power.value().getFactory().tryAdd(power.value(), entity, itemStack, tooltips));
+		IPowerContainer.getPowers(entity, ApoliPowers.TOOLTIP.get()).stream().sorted(Comparator.comparing(holder -> holder.value().getConfiguration().order())).forEachOrdered(power -> power.value().getFactory().tryAdd(power.value(), entity, itemStack, tooltips));
 	}
 
 	public TooltipPower() {
