@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -52,5 +53,11 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer imple
 	@Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Abilities;getFlyingSpeed()F"))
 	private float modifyFlySpeed(Abilities playerAbilities) {
 		return IPowerContainer.modify(this, ApoliPowers.MODIFY_AIR_SPEED.get(), playerAbilities.getFlyingSpeed());
+	}
+
+	@ModifyVariable(method = "aiStep", at = @At(value = "FIELD", target = "Lnet/minecraft/client/player/LocalPlayer;onGround:Z", ordinal = 0), ordinal = 4)
+	private boolean modifySprintAbility(boolean original) {
+		boolean prevent = IPowerContainer.hasPower(this, ApoliPowers.PREVENT_SPRINTING.get());
+		return !prevent && original;
 	}
 }

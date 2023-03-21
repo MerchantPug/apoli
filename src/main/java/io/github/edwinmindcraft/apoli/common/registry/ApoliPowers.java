@@ -68,6 +68,7 @@ public class ApoliPowers {
 	public static final RegistryObject<PreventEntityRenderPower> PREVENT_ENTITY_RENDER = ApoliRegisters.POWER_FACTORIES.register("prevent_entity_render", PreventEntityRenderPower::new);
 	public static final RegistryObject<PreventItemActionPower> PREVENT_ITEM_USAGE = ApoliRegisters.POWER_FACTORIES.register("prevent_item_use", PreventItemActionPower::new);
 	public static final RegistryObject<PreventSleepPower> PREVENT_SLEEP = ApoliRegisters.POWER_FACTORIES.register("prevent_sleep", PreventSleepPower::new);
+	public static final RegistryObject<DummyPower> PREVENT_SPRINTING = ApoliRegisters.POWER_FACTORIES.register("prevent_sprinting", DummyPower::new);
 	public static final RegistryObject<RecipePower> RECIPE = ApoliRegisters.POWER_FACTORIES.register("recipe", RecipePower::new);
 	public static final RegistryObject<ResourcePower> RESOURCE = ApoliRegisters.POWER_FACTORIES.register("resource", ResourcePower::new);
 	public static final RegistryObject<RestrictArmorPower> RESTRICT_ARMOR = ApoliRegisters.POWER_FACTORIES.register("restrict_armor", RestrictArmorPower::new);
