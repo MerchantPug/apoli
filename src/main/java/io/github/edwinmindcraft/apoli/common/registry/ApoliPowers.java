@@ -44,7 +44,6 @@ public class ApoliPowers {
 	public static final RegistryObject<LaunchPower> LAUNCH = ApoliRegisters.POWER_FACTORIES.register("launch", LaunchPower::new);
 	public static final RegistryObject<LavaVisionPower> LAVA_VISION = ApoliRegisters.POWER_FACTORIES.register("lava_vision", LavaVisionPower::new);
 	public static final RegistryObject<ModelColorPower> MODEL_COLOR = ApoliRegisters.POWER_FACTORIES.register("model_color", ModelColorPower::new);
-	public static final RegistryObject<ModifyAttributePower> MODIFY_ATTRIBUTE = ApoliRegisters.POWER_FACTORIES.register("modify_attribute", ModifyAttributePower::new);
 	public static final RegistryObject<ModifyValueBlockPower> MODIFY_BREAK_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_break_speed", ModifyValueBlockPower::new);
 	public static final RegistryObject<ModifyDamageDealtPower> MODIFY_DAMAGE_DEALT = ApoliRegisters.POWER_FACTORIES.register("modify_damage_dealt", ModifyDamageDealtPower::new);
 	public static final RegistryObject<ModifyDamageTakenPower> MODIFY_DAMAGE_TAKEN = ApoliRegisters.POWER_FACTORIES.register("modify_damage_taken", ModifyDamageTakenPower::new);
@@ -68,7 +67,6 @@ public class ApoliPowers {
 	public static final RegistryObject<PreventEntityRenderPower> PREVENT_ENTITY_RENDER = ApoliRegisters.POWER_FACTORIES.register("prevent_entity_render", PreventEntityRenderPower::new);
 	public static final RegistryObject<PreventItemActionPower> PREVENT_ITEM_USAGE = ApoliRegisters.POWER_FACTORIES.register("prevent_item_use", PreventItemActionPower::new);
 	public static final RegistryObject<PreventSleepPower> PREVENT_SLEEP = ApoliRegisters.POWER_FACTORIES.register("prevent_sleep", PreventSleepPower::new);
-	public static final RegistryObject<DummyPower> PREVENT_SPRINTING = ApoliRegisters.POWER_FACTORIES.register("prevent_sprinting", DummyPower::new);
 	public static final RegistryObject<RecipePower> RECIPE = ApoliRegisters.POWER_FACTORIES.register("recipe", RecipePower::new);
 	public static final RegistryObject<ResourcePower> RESOURCE = ApoliRegisters.POWER_FACTORIES.register("resource", ResourcePower::new);
 	public static final RegistryObject<RestrictArmorPower> RESTRICT_ARMOR = ApoliRegisters.POWER_FACTORIES.register("restrict_armor", RestrictArmorPower::new);
@@ -114,6 +112,9 @@ public class ApoliPowers {
 	public static final RegistryObject<OverrideHudTexturePower> STATUS_BAR_TEXTURE = ApoliRegisters.POWER_FACTORIES.register("status_bar_texture", OverrideHudTexturePower::new);
 	public static final RegistryObject<ModifyBlockRenderPower> MODIFY_BLOCK_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_block_render", ModifyBlockRenderPower::new);
 	public static final RegistryObject<ModifyFluidRenderPower> MODIFY_FLUID_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_fluid_render", ModifyFluidRenderPower::new);
+	public static final RegistryObject<ModifyAttributePower> MODIFY_ATTRIBUTE = ApoliRegisters.POWER_FACTORIES.register("modify_attribute", ModifyAttributePower::new);
+	public static final RegistryObject<DummyPower> PREVENT_SPRINTING = ApoliRegisters.POWER_FACTORIES.register("prevent_sprinting", DummyPower::new);
+	public static final RegistryObject<ModifyValuePower> MODIFY_HEALING = ApoliRegisters.POWER_FACTORIES.register("modify_healing", ModifyValuePower::new);
 	//endregion
 
 	public static ConfiguredPower<?, ?> multiple(ImmutableMap<String, ConfiguredPower<?, ?>> powers) {

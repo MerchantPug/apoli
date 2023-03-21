@@ -198,6 +198,11 @@ public class ApoliPowerEventHandler {
 		});
 	}
 
+	@SubscribeEvent
+	public static void updateHealAmount(LivingHealEvent event) {
+		event.setAmount(IPowerContainer.modify(event.getEntity(), ApoliPowers.MODIFY_HEALING.get(), event.getAmount()));
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onPlayerDeath(LivingDeathEvent event) {
 		if (event.getEntity() instanceof Player player && !player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
