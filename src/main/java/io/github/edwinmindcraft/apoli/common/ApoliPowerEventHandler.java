@@ -291,8 +291,10 @@ public class ApoliPowerEventHandler {
 				ActionOnEntityUsePower.tryInteract(player, target, event.getHand()).stream(),
 				ActionOnBeingUsedPower.tryInteract(target, player, event.getHand()).stream()).reduce(InteractionPowerConfiguration::reduce);
 		result.ifPresent(res -> {
-			event.setCancellationResult(res);
-			event.setCanceled(true);
+			if (res != InteractionResult.PASS) {
+				event.setCancellationResult(res);
+				event.setCanceled(true);
+			}
 		});
 	}
 

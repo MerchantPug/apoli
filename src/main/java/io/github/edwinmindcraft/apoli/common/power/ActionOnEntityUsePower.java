@@ -13,6 +13,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 public class ActionOnEntityUsePower extends PowerFactory<BiEntityInteractionConfiguration> {
@@ -27,7 +28,7 @@ public class ActionOnEntityUsePower extends PowerFactory<BiEntityInteractionConf
 	}
 
 	public static Optional<InteractionResult> tryInteract(Entity self, Entity other, InteractionHand hand) {
-		return IPowerContainer.getPowers(self, ApoliPowers.ACTION_ON_ENTITY_USE.get()).stream().flatMap(x -> x.value().getFactory().tryExecute(x.value(), self, other, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
+		return IPowerContainer.getPowers(self, ApoliPowers.ACTION_ON_ENTITY_USE.get()).stream().filter(p -> p.value().getConfiguration().priority() >= 0).sorted(Comparator.comparing(p -> p.value().getConfiguration().priority(), Comparator.reverseOrder())).flatMap(x -> x.value().getFactory().tryExecute(x.value(), self, other, hand).stream()).reduce(InteractionPowerConfiguration::reduce);
 	}
 
 	public ActionOnEntityUsePower(Codec<BiEntityInteractionConfiguration> codec) {
