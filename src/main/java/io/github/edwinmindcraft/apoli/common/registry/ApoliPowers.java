@@ -115,6 +115,7 @@ public class ApoliPowers {
 	public static final RegistryObject<ModifyAttributePower> MODIFY_ATTRIBUTE = ApoliRegisters.POWER_FACTORIES.register("modify_attribute", ModifyAttributePower::new);
 	public static final RegistryObject<DummyPower> PREVENT_SPRINTING = ApoliRegisters.POWER_FACTORIES.register("prevent_sprinting", DummyPower::new);
 	public static final RegistryObject<ModifyValuePower> MODIFY_HEALING = ApoliRegisters.POWER_FACTORIES.register("modify_healing", ModifyValuePower::new);
+	public static final RegistryObject<ModifyValuePower> MODIFY_INSONMIA_TICKS = ApoliRegisters.POWER_FACTORIES.register("modify_insomnia_ticks", ModifyValuePower::new);
 	//endregion
 
 	public static ConfiguredPower<?, ?> multiple(ImmutableMap<String, ConfiguredPower<?, ?>> powers) {
