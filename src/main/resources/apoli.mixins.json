@@ -13,6 +13,7 @@
     "EntityAccessor",
     "EntityMixin",
     "ExperienceOrbEntityMixin",
+    "GrindstoneScreenHandlerMixin",
     "HungerManagerMixin",
     "ItemMixin",
     "ItemStackMixin",
@@ -21,9 +22,11 @@
     "PlayerEntityMixin",
     "RecipeManagerMixin",
     "StatusEffectInstanceMixin",
+    "forge.AbstractContainerMenuMixin",
     "forge.CaelusMixin",
     "forge.FoodDataMixin",
-    "forge.ForgeHooksMixin"
+    "forge.ForgeHooksMixin",
+    "forge.GrindstoneMenuResultSlotAccessor"
   ],
   "client": [
     "BackgroundRendererMixin",
