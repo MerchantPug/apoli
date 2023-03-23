@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
@@ -35,10 +34,10 @@ public record S2CPlayerMount(int entity, int vehicle) {
 		} else if (vehicle == null) {
 			Apoli.LOGGER.warn("Received unknown passenger for player");
 		} else {
-			if (entity.getVehicle() instanceof Player player) {
-				entity.startRiding(vehicle, true);
-				player.removeVehicle();
-			}
+			if (entity.startRiding(vehicle, true))
+				Apoli.LOGGER.info("{} started riding {}", entity.getDisplayName().getString(), vehicle.getDisplayName().getString());
+			else
+				Apoli.LOGGER.warn("{} failed to start riding {}", entity.getDisplayName().getString(), vehicle.getDisplayName().getString());
 		}
 	}
 
