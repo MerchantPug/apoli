@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.integration.ModifyValueEvent;
+import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.IValueModifyingPower;
@@ -13,7 +14,6 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.power.AttributeModifyTransferPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
-import io.github.edwinmindcraft.apoli.common.util.ModifierUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -94,7 +94,7 @@ public interface IPowerContainer {
 		modifiers.addAll(AttributeModifyTransferPower.apply(entity, factory));
 		ModifyValueEvent event = new ModifyValueEvent(entity, factory, baseValue, modifiers);
 		MinecraftForge.EVENT_BUS.post(event);
-		return ModifierUtils.applyModifiers(entity, event.getModifiers(), baseValue);
+		return ModifierUtil.applyModifiers(entity, event.getModifiers(), baseValue);
 	}
 
 	//endregion

@@ -2,10 +2,10 @@ package io.github.apace100.apoli.mixin;
 
 import io.github.apace100.apoli.access.PowerModifiedGrindstone;
 import io.github.apace100.apoli.mixin.forge.GrindstoneMenuResultSlotAccessor;
+import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.power.ModifyGrindstonePower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyGrindstoneConfiguration;
-import io.github.edwinmindcraft.apoli.common.util.ModifierUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.world.Container;
@@ -72,7 +72,7 @@ public abstract class GrindstoneScreenHandlerMixin extends AbstractContainerMenu
         this.apoli$appliedPowers = applyingPowers;
         ItemStack newOutput = ModifyGrindstonePower.tryCreateOutput(this.apoli$appliedPowers, this.apoli$cachedPlayer.level, top, bottom, this.resultSlots.getItem(0));
         this.resultSlots.setItem(0, newOutput);
-        this.xp = (int) ModifierUtils.applyModifiers(apoli$cachedPlayer, ModifyGrindstonePower.tryGetExperienceModifiers(applyingPowers), ((GrindstoneMenuResultSlotAccessor)this.getSlot(2)).invokeGetExperienceAmount(apoli$cachedPlayer.level));
+        this.xp = (int) ModifierUtil.applyModifiers(apoli$cachedPlayer, ModifyGrindstonePower.tryGetExperienceModifiers(applyingPowers), ((GrindstoneMenuResultSlotAccessor)this.getSlot(2)).invokeGetExperienceAmount(apoli$cachedPlayer.level));
         this.broadcastChanges();
     }
 

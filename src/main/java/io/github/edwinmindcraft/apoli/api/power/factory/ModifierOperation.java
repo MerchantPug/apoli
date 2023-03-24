@@ -4,8 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
@@ -14,7 +14,6 @@ import io.github.edwinmindcraft.apoli.api.power.ModifierData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.util.ModifierUtils;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Holder;
 import net.minecraft.data.models.blockstates.PropertyDispatch;
@@ -96,7 +95,7 @@ public class ModifierOperation {
                             }
                             if(!instance.getData().modifiers().isEmpty()) {
                                 List<ConfiguredModifier<?>> modifiers = instance.getData().modifiers();
-                                value = ModifierUtils.applyModifiers(entity, modifiers, value);
+                                value = ModifierUtil.applyModifiers(entity, modifiers, value);
                             }
                             return value;
                         })

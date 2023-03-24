@@ -1,50 +1,53 @@
 package io.github.apace100.apoli.util.modifier;
 
+import com.google.common.collect.ImmutableList;
+import io.github.edwinmindcraft.apoli.api.power.ModifierData;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
+import io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation;
+import io.github.edwinmindcraft.apoli.common.registry.ApoliModifierOperations;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-public class ModifierUtil {
+import java.util.*;
+import java.util.function.Supplier;
 
-    /*
-    public static Modifier createSimpleModifier(IModifierOperation operation, double value) {
-        SerializableData.Instance data = ModifierOperation.DATA.new Instance();
-        data.set("value", value);
-        data.set("resource", null);
-        data.set("modifier", null);
-        return new Modifier(operation, data);
+public class ModifierUtil {
+    public static ConfiguredModifier<?> createSimpleModifier(Supplier<io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation> operation, double value) {
+        return new ConfiguredModifier<>(operation, new ModifierData(value, Optional.empty(), ImmutableList.of()));
     }
 
-    public static Modifier fromAttributeModifier(AttributeModifier attributeModifier) {
-        IModifierOperation operation = null;
+    public static ConfiguredModifier<?> fromAttributeModifier(AttributeModifier attributeModifier) {
+        Supplier<io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation> operation = null;
         switch(attributeModifier.getOperation()) {
-            case ADDITION -> operation = ModifierOperation.ADD_BASE_EARLY;
-            case MULTIPLY_BASE -> operation = ModifierOperation.MULTIPLY_BASE_ADDITIVE;
-            case MULTIPLY_TOTAL -> operation = ModifierOperation.MULTIPLY_TOTAL_MULTIPLICATIVE;
+            case ADDITION -> operation = ApoliModifierOperations.ADD_BASE_EARLY::get;
+            case MULTIPLY_BASE -> operation = ApoliModifierOperations.MULTIPLY_BASE_ADDITIVE::get;
+            case MULTIPLY_TOTAL -> operation = ApoliModifierOperations.MULTIPLY_TOTAL_MULTIPLICATIVE::get;
         }
         if(operation == null) {
             throw new RuntimeException(
-                "Could not construct generic modifier from attribute modifier. Unknown operation: "
-                    + attributeModifier.getOperation());
+                    "Could not construct generic modifier from attribute modifier. Unknown operation: "
+                            + attributeModifier.getOperation());
         }
-        return createSimpleModifier(operation, attributeModifier.getValue());
+        return createSimpleModifier(operation, attributeModifier.getAmount());
     }
 
-    public static Map<IModifierOperation, List<SerializableData.Instance>> sortModifiers(List<Modifier> modifiers) {
-        Map<IModifierOperation, List<SerializableData.Instance>> buckets = new HashMap<>();
-        for(Modifier modifier : modifiers) {
-            List<SerializableData.Instance> list = buckets.computeIfAbsent(modifier.getOperation(), op -> new LinkedList<>());
-            list.add(modifier.getData());
+    public static Map<io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation, List<ConfiguredModifier<?>>> sortModifiers(List<ConfiguredModifier<?>> modifiers) {
+        Map<io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation, List<ConfiguredModifier<?>>> buckets = new HashMap<>();
+        for(ConfiguredModifier<?> modifier : modifiers) {
+            List<ConfiguredModifier<?>> list = buckets.computeIfAbsent(modifier.getFactory(), op -> new LinkedList<>());
+            list.add(modifier);
         }
         return buckets;
     }
 
-    public static double applyModifiers(Entity entity, List<Modifier> modifiers, double baseValue) {
+    public static double applyModifiers(Entity entity, List<ConfiguredModifier<?>> modifiers, double baseValue) {
         return applyModifiers(entity, sortModifiers(modifiers), baseValue);
     }
 
-    public static double applyModifiers(Entity entity, Map<IModifierOperation, List<SerializableData.Instance>> modifiers, double baseValue) {
+    public static double applyModifiers(Entity entity, Map<io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation, List<ConfiguredModifier<?>>> modifiers, double baseValue) {
         double currentBase = baseValue;
         double currentValue = baseValue;
-        List<IModifierOperation> operations = new LinkedList<>(modifiers.keySet());
+        List<io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation> operations = new LinkedList<>(modifiers.keySet());
         operations.sort(((o1, o2) -> {
             if(o1 == o2) {
                 return 0;
@@ -54,15 +57,14 @@ public class ModifierUtil {
                 return o1.getPhase().ordinal() - o2.getPhase().ordinal();
             }
         }));
-        IModifierOperation.Phase lastPhase = IModifierOperation.Phase.BASE;
-        for(IModifierOperation op : operations) {
-            List<SerializableData.Instance> data = modifiers.get(op);
+        io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation.Phase lastPhase = io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation.Phase.BASE;
+        for(ModifierOperation op : operations) {
+            List<ConfiguredModifier<?>> data = modifiers.get(op);
             if(op.getPhase() != lastPhase) {
                 currentBase = currentValue;
             }
-            currentValue = op.apply(entity, data, currentBase, currentValue);
+            currentValue = op.apply(data, entity, currentBase, currentValue);
         }
         return currentValue;
     }
-     */
 }

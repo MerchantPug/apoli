@@ -1,13 +1,13 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import com.google.common.collect.ImmutableList;
+import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.AttributeModifyTransferConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.util.ModifierUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -35,7 +35,7 @@ public class AttributeModifyTransferPower extends PowerFactory<AttributeModifyTr
 			if (attributes.hasAttribute(config.source())) {
 				AttributeInstance instance = attributes.getInstance(config.source());
 				if (instance != null)
-					instance.getModifiers().forEach(mod -> builder.add(ModifierUtils.fromAttributeModifier(new AttributeModifier(mod.getId(), mod.getName(), mod.getAmount() * config.multiplier(), mod.getOperation()))));
+					instance.getModifiers().forEach(mod -> builder.add(ModifierUtil.fromAttributeModifier(new AttributeModifier(mod.getId(), mod.getName(), mod.getAmount() * config.multiplier(), mod.getOperation()))));
 			}
 		}
 		return builder.build();

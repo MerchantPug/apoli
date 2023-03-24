@@ -2,11 +2,11 @@ package io.github.edwinmindcraft.apoli.common.power.configuration;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliModifierOperations;
-import io.github.edwinmindcraft.apoli.common.util.ModifierUtils;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 
 import java.util.Objects;
@@ -33,7 +33,7 @@ public final class ModifyFallingConfiguration implements IValueModifyingPowerCon
 	}
 
 	public ConfiguredModifier<?> modifier(double velocity) {
-		return ModifierUtils.createSimpleModifier(ApoliModifierOperations.SET_TOTAL::get, velocity);
+		return ModifierUtil.createSimpleModifier(ApoliModifierOperations.SET_TOTAL::get, velocity);
 	}
 
 	public Optional<Double> velocity() {
