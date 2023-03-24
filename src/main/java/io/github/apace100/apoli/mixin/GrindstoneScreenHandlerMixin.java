@@ -78,7 +78,7 @@ public abstract class GrindstoneScreenHandlerMixin extends AbstractContainerMenu
 
     /**
      Likewise with {@link io.github.apace100.apoli.mixin.forge.AbstractContainerMenuMixin}, this is
-     a longer form way of handling GrindstoneScreenHandlerOutputSlotMixin without the need for coremodding.
+     a longer form way of handling GrindstoneScreenHandlerOutputSlotMixin.
       */
     @Unique int apoli$cachedPIndex;
 
