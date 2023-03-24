@@ -1,12 +1,13 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import io.github.edwinmindcraft.apoli.api.power.configuration.*;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemAction;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyGrindstoneConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +22,7 @@ public class ModifyGrindstonePower extends PowerFactory<ModifyGrindstoneConfigur
 
     public static void tryLateExecute(List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> powers, Entity self, Mutable<ItemStack> itemStack, Optional<BlockPos> pos) {
         for (Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>> holder : powers) {
-            holder.value().getFactory().tryExecute(holder.value(), self, itemStack, pos);
+            holder.value().getConfiguration().tryExecute(holder.value(), self, itemStack, pos);
         }
     }
 
@@ -30,7 +31,7 @@ public class ModifyGrindstonePower extends PowerFactory<ModifyGrindstoneConfigur
     }
 
     public static List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> tryGetApplyingPowers(Entity entity, ItemStack top, ItemStack bottom, ItemStack original, Optional<BlockPos> pos) {
-        return IPowerContainer.getPowers(entity, ApoliPowers.MODIFY_GRINDSTONE.get()).stream().filter(holder -> holder.value().getFactory().doesApply(holder.value(), entity.level, top, bottom, original, pos)).toList();
+        return IPowerContainer.getPowers(entity, ApoliPowers.MODIFY_GRINDSTONE.get()).stream().filter(holder -> holder.value().getConfiguration().doesApply(holder.value(), entity.level, top, bottom, original, pos)).toList();
     }
 
     public static ItemStack tryCreateOutput(List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> holders, Level level, ItemStack top, ItemStack bottom, ItemStack currentOutput) {
@@ -52,18 +53,6 @@ public class ModifyGrindstonePower extends PowerFactory<ModifyGrindstoneConfigur
         super(ModifyGrindstoneConfiguration.CODEC);
     }
 
-    public void tryExecute(ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower> configuration, Entity entity, Mutable<ItemStack> itemStack, Optional<BlockPos> pos) {
-        ConfiguredItemAction.execute(configuration.getConfiguration().lateItemAction(), entity.level, itemStack);
-        ConfiguredEntityAction.execute(configuration.getConfiguration().entityAction(), entity);
-        pos.ifPresent(blockPos -> ConfiguredBlockAction.execute(configuration.getConfiguration().blockAction(), entity.level, blockPos, Direction.UP));
-    }
-
-    public boolean doesApply(ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower> configuration, Level level, ItemStack top, ItemStack bottom, ItemStack original, Optional<BlockPos> pos) {
-        return ConfiguredItemCondition.check(configuration.getConfiguration().topItemCondition(), level, top) &&
-                ConfiguredItemCondition.check(configuration.getConfiguration().bottomItemCondition(), level, bottom) &&
-                ConfiguredItemCondition.check(configuration.getConfiguration().outputItemCondition(), level, original) &&
-                (pos.isEmpty() || ConfiguredBlockCondition.check(configuration.getConfiguration().blockCondition(), level, pos.get()));
-    }
 
     public enum ResultType {
         UNCHANGED, SPECIFIED, FROM_TOP, FROM_BOTTOM
