@@ -6,8 +6,10 @@ import io.github.apace100.calio.SerializationHelper;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
 import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
+import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -156,6 +158,10 @@ public class ApoliDataTypes {
 	public static final SerializableDataType<PlayerAbility> PLAYER_ABILITY = SerializableDataType.wrap(
 			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
 			ability -> PlayerAbilities.REGISTRY.get().getKey(ability), id -> PlayerAbilities.REGISTRY.get().getValue(id));
+
+	public static final SerializableDataType<ArgumentWrapper<Integer>> ITEM_SLOT = SerializableDataType.argumentType(SlotArgument.slot());
+
+	public static final SerializableDataType<List<ArgumentWrapper<Integer>>> ITEM_SLOTS = SerializableDataType.list(ITEM_SLOT);
 
     /*public static <T> SerializableDataType<ConditionFactory<T>.Instance> condition(Class<ConditionFactory<T>.Instance> dataClass, ConditionType<T> conditionType) {
         return new SerializableDataType<>(dataClass, conditionType::write, conditionType::read, conditionType::read);

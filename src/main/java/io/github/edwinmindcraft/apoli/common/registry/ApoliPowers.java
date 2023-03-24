@@ -9,7 +9,6 @@ import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityInteractionConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.MultipleConfiguration;
 import net.minecraft.core.Holder;
-import net.minecraft.world.inventory.DispenserMenu;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ApoliPowers {
@@ -38,7 +37,7 @@ public class ApoliPowers {
 	public static final RegistryObject<DummyPower> FIRE_IMMUNITY = ApoliRegisters.POWER_FACTORIES.register("fire_immunity", DummyPower::new);
 	public static final RegistryObject<FireProjectilePower> FIRE_PROJECTILE = ApoliRegisters.POWER_FACTORIES.register("fire_projectile", FireProjectilePower::new);
 	public static final RegistryObject<DummyPower> IGNORE_WATER = ApoliRegisters.POWER_FACTORIES.register("ignore_water", DummyPower::new);
-	public static final RegistryObject<InventoryPower> INVENTORY = ApoliRegisters.POWER_FACTORIES.register("inventory", () -> new InventoryPower(9, inventory -> (i, playerInv, player) -> new DispenserMenu(i, playerInv, inventory)));
+	public static final RegistryObject<InventoryPower> INVENTORY = ApoliRegisters.POWER_FACTORIES.register("inventory", InventoryPower::new);
 	public static final RegistryObject<InvisibilityPower> INVISIBILITY = ApoliRegisters.POWER_FACTORIES.register("invisibility", InvisibilityPower::new);
 	public static final RegistryObject<InvulnerablePower> INVULNERABILITY = ApoliRegisters.POWER_FACTORIES.register("invulnerability", InvulnerablePower::new);
 	public static final RegistryObject<LaunchPower> LAUNCH = ApoliRegisters.POWER_FACTORIES.register("launch", LaunchPower::new);

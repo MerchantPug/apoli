@@ -21,7 +21,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +31,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -207,20 +205,7 @@ public class ApoliPowerEventHandler {
 	public static void onPlayerDeath(LivingDeathEvent event) {
 		if (event.getEntity() instanceof Player player && !player.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
 			IPowerContainer.getPowers(player, ApoliPowers.INVENTORY.get()).stream().map(Holder::value).forEach(inventory -> {
-				if (inventory.getFactory().shouldDropOnDeath(inventory, player)) {
-					Container container = inventory.getFactory().getInventory(inventory, player);
-					for (int i = 0; i < container.getContainerSize(); ++i) {
-						ItemStack itemStack = container.getItem(i);
-						if (inventory.getFactory().shouldDropOnDeath(inventory, player, itemStack)) {
-							if (!itemStack.isEmpty() && EnchantmentHelper.hasVanishingCurse(itemStack)) {
-								container.removeItemNoUpdate(i);
-							} else {
-								player.drop(itemStack, true, false);
-								container.setItem(i, ItemStack.EMPTY);
-							}
-						}
-					}
-				}
+				InventoryPower.tryDropItemsOnDeath(inventory, player);
 			});
 			IPowerContainer.getPowers(player, ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().captureItems(power.value(), player));
 		}

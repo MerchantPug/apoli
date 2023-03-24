@@ -84,6 +84,9 @@ public class ApoliEntityActions {
 	public static final RegistryObject<SpawnParticlesAction> SPAWN_PARTICLES = ENTITY_ACTIONS.register("spawn_particles", SpawnParticlesAction::new);
 	public static final RegistryObject<ModifyDeathTicksAction> MODIFY_DEATH_TICKS = ENTITY_ACTIONS.register("modify_death_ticks", ModifyDeathTicksAction::new);
 	public static final RegistryObject<ModifyResourceAction> MODIFY_RESOURCE = ENTITY_ACTIONS.register("modify_resource", ModifyResourceAction::new);
+	public static final RegistryObject<DropInventoryAction> DROP_INVENTORY = ENTITY_ACTIONS.register("drop_inventory", DropInventoryAction::new);
+	public static final RegistryObject<ModifyInventoryAction> MODIFY_INVENTORY = ENTITY_ACTIONS.register("modify_inventory", ModifyInventoryAction::new);
+	public static final RegistryObject<ReplaceInventoryAction> REPLACE_INVENTORY = ENTITY_ACTIONS.register("replace_inventory", ReplaceInventoryAction::new);
 
 	@SafeVarargs
 	public static ConfiguredEntityAction<?, ?> and(HolderSet<ConfiguredEntityAction<?, ?>>... conditions) {

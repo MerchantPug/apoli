@@ -15,6 +15,7 @@
     "GrindstoneScreenHandlerMixin",
     "HungerManagerMixin",
     "ItemMixin",
+    "ItemSlotArgumentTypeAccessor",
     "ItemStackMixin",
     "LivingEntityMixin",
     "LootContextBuilderMixin",

@@ -16,21 +16,37 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MenuConstructor;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
 public class InventoryPower extends PowerFactory<InventoryConfiguration> implements IInventoryPower<InventoryConfiguration>, IActivePower<InventoryConfiguration> {
 
-	private final int size;
-	private final Function<Container, MenuConstructor> handler;
+	public static void tryDropItemsOnDeath(ConfiguredPower<InventoryConfiguration, InventoryPower> configured, Player player) {
+		if (configured.getFactory().shouldDropOnDeath(configured, player)) {
+			Container container = configured.getFactory().getInventory(configured, player);
+			for (int i = 0; i < container.getContainerSize(); ++i) {
+				ItemStack itemStack = container.getItem(i);
+				if (configured.getFactory().shouldDropOnDeath(configured, player, itemStack)) {
+					if (!itemStack.isEmpty() && EnchantmentHelper.hasVanishingCurse(itemStack)) {
+						container.removeItemNoUpdate(i);
+					} else {
+						player.drop(itemStack, true, false);
+						container.setItem(i, ItemStack.EMPTY);
+					}
+				}
+			}
+		}
+	}
 
-	public InventoryPower(int size, Function<Container, MenuConstructor> handler) {
+	private int size;
+	private Function<Container, MenuConstructor> handler;
+
+	public InventoryPower() {
 		super(InventoryConfiguration.CODEC);
-		this.size = size;
-		this.handler = handler;
 	}
 
 	@Override
@@ -64,6 +80,19 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		return this.handler.apply(this.getData(configuration, player));
 	}
 
+	public int getSize() {
+		return this.size;
+	}
+
+	public void tryDropItemsOnLost(ConfiguredPower<InventoryConfiguration, InventoryPower> configured, Entity entity) {
+		if (!(entity instanceof Player player)) return;
+		for (int i = 0; i < size; ++i) {
+			ItemStack currentItemStack = configured.getFactory().getInventory(configured, player).getItem(i);
+			player.getInventory().placeItemBackInInventory(currentItemStack);
+		}
+	}
+
+
 	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer player) {
 		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
 	}
@@ -88,5 +117,45 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		ContainerHelper.loadAllItems(tag, stacks);
 		for (int i = 0; i < data.getContainerSize(); i++)
 			data.setItem(i, stacks.get(i));
+	}
+
+	@Override
+	public void onAdded(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity entity) {
+		switch (configuration.getConfiguration().containerType()) {
+			case DOUBLE_CHEST:
+				this.size = 54;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x6, i,
+						playerInv, inventory, 6);
+				break;
+			case CHEST:
+				this.size = 27;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x3, i,
+						playerInv, inventory, 3);
+				break;
+			case HOPPER:
+				this.size = 5;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new HopperMenu(i,
+						playerInv, inventory);
+				break;
+			case DISPENSER, DROPPER:
+			default:
+				this.size = 9;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new DispenserMenu(i, playerInv, inventory);
+				break;
+		}
+	}
+
+	@Override
+	public void onLost(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity entity) {
+		if (configuration.getConfiguration().recoverable())
+			tryDropItemsOnLost((ConfiguredPower<InventoryConfiguration, InventoryPower>)configuration, entity);
+	}
+
+	public enum ContainerType {
+		CHEST,
+		DOUBLE_CHEST,
+		DROPPER,
+		DISPENSER,
+		HOPPER
 	}
 }
