@@ -83,6 +83,7 @@ public class ApoliEntityActions {
 	public static final RegistryObject<RaycastAction> RAYCAST = ENTITY_ACTIONS.register("raycast", RaycastAction::new);
 	public static final RegistryObject<SpawnParticlesAction> SPAWN_PARTICLES = ENTITY_ACTIONS.register("spawn_particles", SpawnParticlesAction::new);
 	public static final RegistryObject<ModifyDeathTicksAction> MODIFY_DEATH_TICKS = ENTITY_ACTIONS.register("modify_death_ticks", ModifyDeathTicksAction::new);
+	public static final RegistryObject<ModifyResourceAction> MODIFY_RESOURCE = ENTITY_ACTIONS.register("modify_resource", ModifyResourceAction::new);
 
 	@SafeVarargs
 	public static ConfiguredEntityAction<?, ?> and(HolderSet<ConfiguredEntityAction<?, ?>>... conditions) {
