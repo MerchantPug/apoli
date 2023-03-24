@@ -55,7 +55,7 @@ public class ModifierOperation {
      * the base value or the total. All Phase.BASE modifiers will run before
      * the first Phase.TOTAL modifier.
      *
-     * @return The phase of this
+     * @return
      */
     public Phase getPhase() {
         return phase;
