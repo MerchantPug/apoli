@@ -42,6 +42,8 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Holder<ConfiguredPower<?, ?>>> powers;
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Set<ResourceLocation>> powerSources;
 	private final Map<ResourceKey<ConfiguredPower<?, ?>>, Object> powerData;
+	private final Map<PowerFactory<?>, List<Holder<ConfiguredPower<?, ?>>>> factoryAccessCache;
+
 	private transient final LazyOptional<IPowerContainer> thisOptional = LazyOptional.of(() -> this);
 
 	public PowerContainer(@NotNull LivingEntity owner) {
@@ -49,6 +51,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 		this.powers = new ConcurrentHashMap<>();
 		this.powerSources = new ConcurrentHashMap<>();
 		this.powerData = new ConcurrentHashMap<>();
+		this.factoryAccessCache = new ConcurrentHashMap<>();
 	}
 
 	@Override
@@ -60,10 +63,18 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			if (sources.isEmpty()) {
 				this.powerSources.remove(power);
 				this.powers.remove(power);
+				//If we can't remove the power, we'll rebuild the factory access cache.
+				//This is slower, but still comparably faster than filtering holders
 				if (instance != null && instance.isBound()) {
+					PowerFactory<?> factory = instance.get().getFactory();
 					instance.value().onRemoved(this.owner);
 					instance.value().onLost(this.owner);
-				}
+					if (this.factoryAccessCache.containsKey(factory))
+						this.factoryAccessCache.get(factory).remove(instance);
+					else
+						this.rebuildFactoryAccessCache();
+				} else
+					this.rebuildFactoryAccessCache();
 			}
 			if (instance != null && instance.isBound()) {
 				for (ResourceKey<ConfiguredPower<?, ?>> value : instance.value().getContainedPowerKeys())
@@ -114,6 +125,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			sources.add(source);
 			this.powerSources.put(power, sources);
 			this.powers.put(power, instance);
+			this.factoryAccessCache.computeIfAbsent(instance.value().getFactory(), k -> Collections.synchronizedList(new ArrayList<>())).add(instance);
 			instance.value().onGained(this.owner);
 			instance.value().onAdded(this.owner);
 			if (this.owner instanceof ServerPlayer spe)
@@ -125,6 +137,17 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	public boolean hasPower(@Nullable ResourceKey<ConfiguredPower<?, ?>> power) {
 		return power != null && this.powers.containsKey(power);
+	}
+
+	@Override
+	public boolean hasPower(PowerFactory<?> factory) {
+		List<Holder<ConfiguredPower<?, ?>>> access = this.factoryAccessCache.get(factory);
+		if (access == null) return false;
+		for (Holder<ConfiguredPower<?, ?>> holder : access) {
+			if (holder.isBound() && holder.value().isActive(this.owner))
+				return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -157,12 +180,14 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public @NotNull <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C, F>>> getPowers(F factory, boolean includeInactive) {
-		ImmutableList.Builder<Holder<ConfiguredPower<C, F>>> builder = ImmutableList.builder();
-		this.powers.values().stream()
-				.filter(Holder::isBound)
-				.filter(value -> Objects.equals(factory, value.value().getFactory()) && (includeInactive || value.value().isActive(this.owner)))
-				.map(value -> (Holder<ConfiguredPower<C, F>>) (Holder) value).forEach(builder::add);
-		return builder.build();
+		List<Holder<ConfiguredPower<?, ?>>> access = this.factoryAccessCache.get(factory);
+		if (access == null) return ImmutableList.of();
+		List<Holder<ConfiguredPower<C, F>>> result = new ArrayList<>(access.size());
+		for (Holder<ConfiguredPower<?, ?>> holder : access) {
+			if (holder.isBound() && (includeInactive || holder.value().isActive(this.owner)))
+				result.add((Holder<ConfiguredPower<C, F>>) (Holder) holder);
+		}
+		return result;
 	}
 
 	@Override
@@ -178,13 +203,18 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 	@Override
 	public void serverTick() {
 		Iterator<Holder<ConfiguredPower<?, ?>>> iterator = this.powers.values().iterator();
+		boolean removedAny = false;
 		while (iterator.hasNext()) {
 			Holder<ConfiguredPower<?, ?>> value = iterator.next();
 			if (value.isBound())
 				value.value().tick(this.owner);
-			else
+			else {
 				iterator.remove();
+				removedAny = true;
+			}
 		}
+		if (removedAny)
+			this.rebuildFactoryAccessCache();
 	}
 
 	@Override
@@ -249,8 +279,18 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 					}
 				}
 			}
+			this.rebuildFactoryAccessCache();
 		} catch (Exception e) {
 			Apoli.LOGGER.info("Error while reading data: " + e.getMessage());
+		}
+	}
+
+	private void rebuildFactoryAccessCache() {
+		this.factoryAccessCache.clear();
+		for (var value : this.powers.values()) {
+			if (value.isBound()) {
+				this.factoryAccessCache.computeIfAbsent(value.get().getFactory(), k -> Collections.synchronizedList(new ArrayList<>())).add(value);
+			}
 		}
 	}
 
@@ -267,6 +307,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 				Apoli.LOGGER.warn("Power {} was removed from entity {} as it doesn't exist anymore.", power, this.owner.getScoreboardName());
 			}
 		}
+		this.rebuildFactoryAccessCache();
 	}
 
 	@Override
@@ -288,6 +329,7 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 			if (tag != null)
 				configuredPower.get().value().deserialize(this, tag);
 		}
+		this.rebuildFactoryAccessCache();
 	}
 
 	@Override

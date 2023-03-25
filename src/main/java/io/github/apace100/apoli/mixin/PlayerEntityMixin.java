@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +60,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
 	@Inject(method = "updateSwimming", at = @At("TAIL"))
 	private void updateSwimmingPower(CallbackInfo ci) {
-		if (IPowerContainer.hasPower(this, ApoliPowers.SWIMMING.get())) {
+		LazyOptional<IPowerContainer> lazyContainer = IPowerContainer.get(this);
+		if (!lazyContainer.isPresent())
+			return;
+		IPowerContainer container = lazyContainer.orElseThrow(RuntimeException::new);
+		if (container.hasPower(ApoliPowers.SWIMMING.get())) {
 			this.setSwimming(this.isSprinting() && !this.isPassenger());
 			this.wasTouchingWater = this.isSwimming();
 			if (this.isSwimming()) {
@@ -67,9 +72,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 				Vec3 look = this.getLookAngle();
 				this.move(MoverType.SELF, new Vec3(look.x / 4, look.y / 4, look.z / 4));
 			}
-		} else if (IPowerContainer.hasPower(this, ApoliPowers.IGNORE_WATER.get())) {
+		} else if (container.hasPower(ApoliPowers.IGNORE_WATER.get()))
 			this.setSwimming(false);
-		}
 	}
 
 	@ModifyVariable(method = "eat", at = @At("HEAD"), argsOnly = true)
