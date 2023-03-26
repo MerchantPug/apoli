@@ -55,6 +55,6 @@ public record ColorConfiguration(float red, float green, float blue,
 		int blue = Mth.clamp((int) (this.blue() * 255), 0, 255);
 		int green = Mth.clamp((int) (this.green() * 255), 0, 255);
 		int red = Mth.clamp((int) (this.red() * 255), 0, 255);
-		return (((blue << 8) | green) << 8) | red;
+		return (((red << 8) | green) << 8) | blue;
 	}
 }

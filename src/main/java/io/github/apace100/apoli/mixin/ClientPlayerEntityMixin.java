@@ -9,6 +9,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.ProfilePublicKey;
+import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,9 +30,12 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer imple
 
 	@Inject(at = @At("HEAD"), method = "isUnderWater", cancellable = true)
 	private void allowSwimming(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower(this, ApoliPowers.SWIMMING.get())) {
+		LazyOptional<IPowerContainer> lazyContainer = IPowerContainer.get(this);
+		if (!lazyContainer.isPresent()) return;
+		IPowerContainer container = lazyContainer.orElseThrow(RuntimeException::new);
+		if (container.hasPower(ApoliPowers.SWIMMING.get())) {
 			cir.setReturnValue(true);
-		} else if (IPowerContainer.hasPower(this, ApoliPowers.IGNORE_WATER.get())) {
+		} else if (container.hasPower(ApoliPowers.IGNORE_WATER.get())) {
 			cir.setReturnValue(false);
 		}
 	}

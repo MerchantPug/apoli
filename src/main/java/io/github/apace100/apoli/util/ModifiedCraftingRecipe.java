@@ -25,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeHooks;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,10 +39,11 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 	@Override
 	public boolean matches(@NotNull CraftingContainer inv, @NotNull Level world) {
 		Player player = getCraftingPlayer(inv);
-		Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
-		if (original.isEmpty())
+		List<ConfiguredPower<ModifyCraftingConfiguration, ModifyCraftingPower>> recipes = this.getRecipes(player);
+		if (recipes.isEmpty())
 			return false;
-		return this.getRecipes(player).stream().anyMatch(r -> r.getConfiguration().doesApply(inv, original.get(), world));
+		Optional<CraftingRecipe> original = this.getOriginalMatch(inv, player);
+		return original.isPresent() && recipes.stream().anyMatch(r -> r.getConfiguration().doesApply(inv, original.get(), world));
 	}
 
 	private static Player getCraftingPlayer(@NotNull CraftingContainer inv) {
@@ -99,10 +101,10 @@ public class ModifiedCraftingRecipe extends CustomRecipe {
 
 	private Optional<CraftingRecipe> getOriginalMatch(CraftingContainer inv, Player player) {
 		if (player != null && player.getServer() != null) {
-			List<CraftingRecipe> recipes = player.getServer().getRecipeManager().getAllRecipesFor(RecipeType.CRAFTING);
-			return recipes.stream()
-					.filter(cr -> !(cr instanceof ModifiedCraftingRecipe) && cr.matches(inv, player.level))
-					.findFirst();
+			final Level level = player.level;
+			return player.getServer().getRecipeManager().byType(RecipeType.CRAFTING).values().stream()
+					.filter((cr) -> !(cr instanceof ModifiedCraftingRecipe) && cr.matches(inv, level))
+					.min(Comparator.comparing((p_220247_) -> p_220247_.getResultItem().getDescriptionId()));
 		}
 		return Optional.empty();
 	}

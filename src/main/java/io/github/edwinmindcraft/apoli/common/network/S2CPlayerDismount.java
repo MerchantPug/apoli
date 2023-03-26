@@ -31,9 +31,8 @@ public record S2CPlayerDismount(int entity) {
 		if (entity == null) {
 			Apoli.LOGGER.warn("Unknown player tried to dismount");
 		} else {
-			if (entity.getVehicle() instanceof Player player) {
-				player.removeVehicle();
-			}
+			if (entity.getVehicle() instanceof Player)
+				entity.removeVehicle();
 		}
 	}
 

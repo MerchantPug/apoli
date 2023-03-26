@@ -60,7 +60,7 @@ public interface IPowerContainer {
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> void withPower(Entity entity, F factory, @Nullable Predicate<Holder<ConfiguredPower<T, F>>> power, Consumer<Holder<ConfiguredPower<T, F>>> with) {
-		get(entity).ifPresent(x -> x.getPowers(factory).stream().filter(Holder::isBound).filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
+		get(entity).ifPresent(x -> x.getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<Holder<ConfiguredPower<T, F>>> getPowers(Entity entity, F factory) {
@@ -68,7 +68,7 @@ public interface IPowerContainer {
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> boolean hasPower(Entity entity, F factory) {
-		return get(entity).map(x -> x.getPowers().stream().anyMatch(p -> p.isBound() && Objects.equals(factory, p.value().getFactory()) && p.value().isActive(entity))).orElse(false);
+		return get(entity).map(x -> x.hasPower(factory)).orElse(false);
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> float modify(Entity entity, F factory, float baseValue) {
@@ -184,6 +184,15 @@ public interface IPowerContainer {
 	 */
 	@Contract(pure = true)
 	boolean hasPower(@Nullable ResourceKey<ConfiguredPower<?, ?>> power);
+
+	/**
+	 * Checks if the player has any active power of the given type.
+	 *
+	 * @param factory The type of power to check.
+	 *
+	 * @return {@code true} if the player has a matching power, {@code false} otherwise.
+	 */
+	boolean hasPower(PowerFactory<?> factory);
 
 	/**
 	 * Checks if the given source gives the requested power.

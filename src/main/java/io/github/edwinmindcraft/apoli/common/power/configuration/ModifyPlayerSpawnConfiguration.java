@@ -117,9 +117,7 @@ public record ModifyPlayerSpawnConfiguration(ResourceKey<Level> dimension, float
 				x += dx;
 				z += dz;
 				++segmentPassed;
-				mutable.setX(x);
-				mutable.setZ(z);
-				mutable.setY(center + i);
+				mutable.set(x, center + i, z);
 				tpPos = DismountHelper.findSafeDismountLocation(EntityType.PLAYER, world, mutable, true);
 				if (tpPos != null) {
 					return (tpPos);
