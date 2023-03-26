@@ -23,4 +23,26 @@ public final class MiscUtil {
 
 		return null;
 	}
+
+    /*
+    public static <T> Predicate<T> combineOr(Predicate<T> a, Predicate<T> b) {
+        if(a == null) {
+            return b;
+        }
+        if(b == null) {
+            return a;
+        }
+        return a.or(b);
+    }
+
+    public static <T> Predicate<T> combineAnd(Predicate<T> a, Predicate<T> b) {
+        if(a == null) {
+            return b;
+        }
+        if(b == null) {
+            return a;
+        }
+        return a.and(b);
+    }
+     */
 }
