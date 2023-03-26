@@ -5,11 +5,12 @@ import com.mojang.serialization.MapCodec;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.ModifierData;
 import io.github.edwinmindcraft.apoli.api.power.factory.ModifierOperation;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.network.CodecSet;
+import io.github.edwinmindcraft.calio.api.network.PropagatingDefaultedOptionalFieldCodec;
+import io.github.edwinmindcraft.calio.api.network.PropagatingOptionalFieldCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.util.Lazy;
@@ -26,8 +27,12 @@ public final class ConfiguredModifier<F extends ModifierOperation> {
 		return HOLDER.fieldOf(name);
 	}
 
-	public static MapCodec<Holder<ConfiguredModifier<?>>> optional(String name) {
-		return CalioCodecHelper.registryDefaultedField(HOLDER, name, ApoliDynamicRegistries.CONFIGURED_MODIFIER_KEY, ApoliBuiltinRegistries.CONFIGURED_MODIFIERS);
+	public static PropagatingOptionalFieldCodec<Holder<ConfiguredModifier<?>>> optional(String name) {
+		return CalioCodecHelper.optionalField(HOLDER, name);
+	}
+
+	public static PropagatingDefaultedOptionalFieldCodec<Holder<ConfiguredModifier<?>>> optional(String name, Holder<ConfiguredModifier<?>> key) {
+		return CalioCodecHelper.optionalField(HOLDER, name, key);
 	}
 
 	public static double apply(Holder<ConfiguredModifier<?>> modifier, Entity entity, double value) {
