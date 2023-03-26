@@ -68,6 +68,7 @@ public class ApoliCommon {
 		//Powers
 		ApoliPowers.bootstrap();
 		ApoliLootFunctions.bootstrap();
+		ApoliLootConditions.bootstrap();
 
 		//Actions
 		ApoliBlockActions.bootstrap();

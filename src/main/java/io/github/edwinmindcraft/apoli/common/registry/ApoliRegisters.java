@@ -10,6 +10,7 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -39,6 +40,7 @@ public class ApoliRegisters {
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Apoli.MODID);
 	public static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, Apoli.MODID);
 	public static final DeferredRegister<LootItemFunctionType> LOOT_FUNCTIONS = DeferredRegister.create(Registry.LOOT_FUNCTION_REGISTRY, Apoli.MODID);
+	public static final DeferredRegister<LootItemConditionType> LOOT_CONDITIONS = DeferredRegister.create(Registry.LOOT_ITEM_REGISTRY, Apoli.MODID);
 
 	public static void initialize() {
 		ApoliRegistries.POWER_FACTORY = POWER_FACTORIES.makeRegistry(() -> new RegistryBuilder<PowerFactory<?>>().disableSaving().hasTags());
@@ -73,6 +75,7 @@ public class ApoliRegisters {
 		RECIPE_SERIALIZERS.register(bus);
 		ARGUMENT_TYPES.register(bus);
 		LOOT_FUNCTIONS.register(bus);
+		LOOT_CONDITIONS.register(bus);
 		bus.addListener(ApoliRegisters::registerCapabilities);
 	}
 
