@@ -30,11 +30,11 @@ public final class ConfiguredModifier<F extends ModifierOperation> {
 		return CalioCodecHelper.registryDefaultedField(HOLDER, name, ApoliDynamicRegistries.CONFIGURED_MODIFIER_KEY, ApoliBuiltinRegistries.CONFIGURED_MODIFIERS);
 	}
 
-	public static double apply(Holder<ConfiguredModifier<?>> modifier, Entity entity, double base, double current) {
+	public static double apply(Holder<ConfiguredModifier<?>> modifier, Entity entity, double value) {
 		if (!modifier.isBound())
-			return base;
+			return value;
 		else
-			return modifier.value().apply(entity, base, current);
+			return modifier.value().apply(entity, value, value);
 	}
 
 	private final Lazy<F> factory;
