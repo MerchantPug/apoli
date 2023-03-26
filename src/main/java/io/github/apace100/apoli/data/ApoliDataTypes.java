@@ -10,9 +10,14 @@ import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.edwinmindcraft.calio.api.ability.PlayerAbility;
 import io.github.edwinmindcraft.calio.api.registry.PlayerAbilities;
 import net.minecraft.commands.arguments.SlotArgument;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.stats.Stat;
+import net.minecraft.stats.StatType;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -162,6 +167,29 @@ public class ApoliDataTypes {
 	public static final SerializableDataType<ArgumentWrapper<Integer>> ITEM_SLOT = SerializableDataType.argumentType(SlotArgument.slot());
 
 	public static final SerializableDataType<List<ArgumentWrapper<Integer>>> ITEM_SLOTS = SerializableDataType.list(ITEM_SLOT);
+
+	public static final SerializableDataType<Stat<?>> STAT = SerializableDataType.compound(ClassUtil.castClass(Stat.class),
+			new SerializableData()
+					.add("type", SerializableDataType.registry(ClassUtil.castClass(StatType.class), ForgeRegistries.STAT_TYPES))
+					.add("id", SerializableDataTypes.IDENTIFIER),
+			data -> {
+				StatType statType = data.get("type");
+				Registry<?> statRegistry = statType.getRegistry();
+				ResourceLocation statId = data.get("id");
+				if(statRegistry.containsKey(statId)) {
+					Object statObject = statRegistry.get(statId);
+					return statType.get(statObject);
+				}
+				throw new IllegalArgumentException("Desired stat \"" + statId + "\" does not exist in stat type ");
+			},
+			(data, stat) -> {
+				SerializableData.Instance inst = data.new Instance();
+				inst.set("type", stat.getType());
+				Registry reg = stat.getType().getRegistry();
+				ResourceLocation statId = reg.getKey(stat.getValue());
+				inst.set("id", statId);
+				return inst;
+			});
 
     /*public static <T> SerializableDataType<ConditionFactory<T>.Instance> condition(Class<ConditionFactory<T>.Instance> dataClass, ConditionType<T> conditionType) {
         return new SerializableDataType<>(dataClass, conditionType::write, conditionType::read, conditionType::read);

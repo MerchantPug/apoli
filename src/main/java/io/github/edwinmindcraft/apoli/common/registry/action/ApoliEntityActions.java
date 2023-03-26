@@ -87,6 +87,7 @@ public class ApoliEntityActions {
 	public static final RegistryObject<DropInventoryAction> DROP_INVENTORY = ENTITY_ACTIONS.register("drop_inventory", DropInventoryAction::new);
 	public static final RegistryObject<ModifyInventoryAction> MODIFY_INVENTORY = ENTITY_ACTIONS.register("modify_inventory", ModifyInventoryAction::new);
 	public static final RegistryObject<ReplaceInventoryAction> REPLACE_INVENTORY = ENTITY_ACTIONS.register("replace_inventory", ReplaceInventoryAction::new);
+	public static final RegistryObject<ModifyStatAction> MODIFY_STAT = ENTITY_ACTIONS.register("modify_stat", ModifyStatAction::new);
 
 	@SafeVarargs
 	public static ConfiguredEntityAction<?, ?> and(HolderSet<ConfiguredEntityAction<?, ?>>... conditions) {
