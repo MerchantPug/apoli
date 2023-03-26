@@ -49,6 +49,31 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		super(InventoryConfiguration.CODEC);
 	}
 
+	public void createHandler(ConfiguredPower<InventoryConfiguration, ?> configuration) {
+		switch (configuration.getConfiguration().containerType()) {
+			case DOUBLE_CHEST:
+				this.size = 54;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x6, i,
+						playerInv, inventory, 6);
+				break;
+			case CHEST:
+				this.size = 27;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x3, i,
+						playerInv, inventory, 3);
+				break;
+			case HOPPER:
+				this.size = 5;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new HopperMenu(i,
+						playerInv, inventory);
+				break;
+			case DISPENSER, DROPPER:
+			default:
+				this.size = 9;
+				this.handler = inventory -> (i, playerInv, invPlayer) -> new DispenserMenu(i, playerInv, inventory);
+				break;
+		}
+	}
+
 	@Override
 	public void activate(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
 		if (!player.level.isClientSide() && player instanceof Player ple && configuration.isActive(player))
@@ -94,10 +119,12 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 
 
 	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, IPowerContainer player) {
+		createHandler(configuration);
 		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
 	}
 
 	protected SimpleContainer getData(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity player) {
+		createHandler(configuration);
 		return configuration.getPowerData(player, () -> new SimpleContainer(this.size));
 	}
 
@@ -117,32 +144,6 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 		ContainerHelper.loadAllItems(tag, stacks);
 		for (int i = 0; i < data.getContainerSize(); i++)
 			data.setItem(i, stacks.get(i));
-	}
-
-	@Override
-	public void onAdded(ConfiguredPower<InventoryConfiguration, ?> configuration, Entity entity) {
-		switch (configuration.getConfiguration().containerType()) {
-			case DOUBLE_CHEST:
-				this.size = 54;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x6, i,
-						playerInv, inventory, 6);
-				break;
-			case CHEST:
-				this.size = 27;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new ChestMenu(MenuType.GENERIC_9x3, i,
-						playerInv, inventory, 3);
-				break;
-			case HOPPER:
-				this.size = 5;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new HopperMenu(i,
-						playerInv, inventory);
-				break;
-			case DISPENSER, DROPPER:
-			default:
-				this.size = 9;
-				this.handler = inventory -> (i, playerInv, invPlayer) -> new DispenserMenu(i, playerInv, inventory);
-				break;
-		}
 	}
 
 	@Override
