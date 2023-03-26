@@ -50,6 +50,7 @@ public class InventoryPower extends PowerFactory<InventoryConfiguration> impleme
 	}
 
 	public void createHandler(ConfiguredPower<InventoryConfiguration, ?> configuration) {
+		if (size > 0 || handler != null) return;
 		switch (configuration.getConfiguration().containerType()) {
 			case DOUBLE_CHEST:
 				this.size = 54;
