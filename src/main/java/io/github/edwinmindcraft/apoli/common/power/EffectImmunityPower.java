@@ -19,7 +19,7 @@ public class EffectImmunityPower extends PowerFactory<EffectImmunityConfiguratio
 	}
 
 	public boolean isImmune(ConfiguredPower<EffectImmunityConfiguration, ?> configuration, Entity player, MobEffect effect) {
-		return configuration.getConfiguration().inverted() != configuration.getConfiguration().effects().getContent().contains(effect);
+		return configuration.getConfiguration().inverted() ^ configuration.getConfiguration().effects().getContent().contains(effect);
 	}
 
 	public boolean isImmune(ConfiguredPower<EffectImmunityConfiguration, ?> configuration, Entity player, MobEffectInstance effect) {
