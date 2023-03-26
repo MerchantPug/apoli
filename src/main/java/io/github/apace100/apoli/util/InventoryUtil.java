@@ -33,12 +33,7 @@ public class InventoryUtil {
         POWER
     }
 
-    public static void modifyInventory(ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes,
-                                       Holder<ConfiguredEntityAction<?, ?>> entityAction,
-                                       Holder<ConfiguredItemCondition<?, ?>> itemCondition,
-                                       Holder<ConfiguredItemAction<?, ?>> itemAction,
-                                       Entity entity, Optional<ResourceLocation> powerId) {
-
+    public static Set<Integer> getSlots(ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes) {
         Set<Integer> slots = new HashSet<>();
 
         if (slotArgumentTypes.entries().isEmpty()) {
@@ -50,6 +45,17 @@ public class InventoryUtil {
                 slots.add(slotArgumentType.get());
             }
         }
+
+        return slots;
+    }
+
+    public static void modifyInventory(ListConfiguration<ArgumentWrapper<Integer>> slotArgumentTypes,
+                                       Holder<ConfiguredEntityAction<?, ?>> entityAction,
+                                       Holder<ConfiguredItemCondition<?, ?>> itemCondition,
+                                       Holder<ConfiguredItemAction<?, ?>> itemAction,
+                                       Entity entity, Optional<ResourceLocation> powerId) {
+
+        Set<Integer> slots = getSlots(slotArgumentTypes);
 
         if (powerId.isEmpty()) {
             for (Integer slot : slots) {
@@ -98,17 +104,7 @@ public class InventoryUtil {
                                         Holder<ConfiguredItemAction<?, ?>> itemAction,
                                         Entity entity, Optional<ResourceLocation> powerId) {
 
-        Set<Integer> slots = new HashSet<>();
-
-        if (slotArgumentTypes.entries().isEmpty()) {
-            SlotArgument itemSlotArgumentType = new SlotArgument();
-            Map<String, Integer> slotNamesWithId = ((ItemSlotArgumentTypeAccessor) itemSlotArgumentType).getSlotNamesToSlotCommandId();
-            slots.addAll(slotNamesWithId.values());
-        } else {
-            for (ArgumentWrapper<Integer> slotArgumentType : slotArgumentTypes.entries()) {
-                slots.add(slotArgumentType.get());
-            }
-        }
+        Set<Integer> slots = getSlots(slotArgumentTypes);
 
         if (powerId.isEmpty()) {
             for (Integer slot : slots) {
@@ -153,17 +149,7 @@ public class InventoryUtil {
                                      boolean throwRandomly, boolean retainOwnership,
                                      Entity entity, Optional<ResourceLocation> powerId) {
 
-        Set<Integer> slots = new HashSet<>();
-
-        if (slotArgumentTypes.entries().isEmpty()) {
-            SlotArgument itemSlotArgumentType = new SlotArgument();
-            Map<String, Integer> slotNamesWithId = ((ItemSlotArgumentTypeAccessor) itemSlotArgumentType).getSlotNamesToSlotCommandId();
-            slots.addAll(slotNamesWithId.values());
-        } else {
-            for (ArgumentWrapper<Integer> slotArgumentType : slotArgumentTypes.entries()) {
-                slots.add(slotArgumentType.get());
-            }
-        }
+        Set<Integer> slots = getSlots(slotArgumentTypes);
 
         if (powerId.isEmpty()) {
             for (Integer slot : slots) {
