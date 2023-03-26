@@ -1,7 +1,6 @@
 package io.github.edwinmindcraft.apoli.api.power.factory.power;
 
 import com.mojang.serialization.Codec;
-import io.github.edwinmindcraft.apoli.api.power.IAttributeModifyingPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IAttributeModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AttributeModifyingPowerFactory<T extends IAttributeModifyingPowerConfiguration> extends PowerFactory<T> implements IAttributeModifyingPower<T> {
+public abstract class AttributeModifyingPowerFactory<T extends IAttributeModifyingPowerConfiguration> extends PowerFactory<T> {
 
 	private final Lazy<Attribute> lazyAttribute;
 
@@ -76,11 +75,6 @@ public abstract class AttributeModifyingPowerFactory<T extends IAttributeModifyi
 	@Override
 	protected int tickInterval(T configuration, Entity player) {
 		return 20;
-	}
-
-	@Override
-	public List<AttributeModifier> getModifiers(ConfiguredPower<T, ?> configuration, Entity player) {
-		return configuration.getConfiguration().modifiers().getContent();
 	}
 
 	@Nullable
