@@ -19,12 +19,14 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.BLOCK_ACTIONS;
 
 public class ApoliBlockActions {
 	public static final BiConsumer<ConfiguredBlockAction<?, ?>, Triple<Level, BlockPos, Direction>> EXECUTOR = (action, o) -> action.execute(o.getLeft(), o.getMiddle(), o.getRight());
 	public static final BiPredicate<ConfiguredBlockCondition<?, ?>, Triple<Level, BlockPos, Direction>> PREDICATE = (condition, triple) -> condition.check(triple.getLeft(), triple.getMiddle(), () -> triple.getLeft().getBlockState(triple.getMiddle()));
+	public static final Predicate<Triple<Level, BlockPos, Direction>> SERVERSIDE_PREDICATE = (block) -> !block.getLeft().isClientSide;
 
 	private static <U extends BlockAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.BLOCK_ACTION_KEY.location(), Apoli.MODID);
@@ -47,6 +49,6 @@ public class ApoliBlockActions {
 	public static final RegistryObject<ExplodeAction> EXPLODE = BLOCK_ACTIONS.register("explode", ExplodeAction::new);
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaActions(BLOCK_ACTIONS, DelegatedBlockAction::new, ConfiguredBlockAction.CODEC_SET, ConfiguredBlockCondition.CODEC_SET, ConfiguredBlockAction::optional, EXECUTOR, PREDICATE);
+		MetaFactories.defineMetaActions(BLOCK_ACTIONS, DelegatedBlockAction::new, ConfiguredBlockAction.CODEC_SET, ConfiguredBlockCondition.CODEC_SET, ConfiguredBlockAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);
 	}
 }

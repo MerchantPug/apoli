@@ -7,10 +7,7 @@ import io.github.edwinmindcraft.apoli.api.MetaFactories;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBiomeCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.BiomeCondition;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.condition.biome.DelegatedBiomeCondition;
-import io.github.edwinmindcraft.apoli.common.condition.biome.FloatComparingBiomeCondition;
-import io.github.edwinmindcraft.apoli.common.condition.biome.HighHumidityCondition;
-import io.github.edwinmindcraft.apoli.common.condition.biome.PropertyBiomeCondition;
+import io.github.edwinmindcraft.apoli.common.condition.biome.*;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConstantConfiguration;
 import net.minecraft.core.Holder;
@@ -38,6 +35,7 @@ public class ApoliBiomeConditions {
 	public static final RegistryObject<HighHumidityCondition> HIGH_HUMIDITY = BIOME_CONDITIONS.register("high_humidity", HighHumidityCondition::new);
 	public static final RegistryObject<PropertyBiomeCondition<Biome.Precipitation>> PRECIPITATION = BIOME_CONDITIONS.register("precipitation", () -> new PropertyBiomeCondition<>("precipitation", SerializableDataType.enumValue(Biome.Precipitation.class, Biome.Precipitation::getName), x -> x.isBound() ? x.value().getPrecipitation() : null));
 	public static final RegistryObject<FloatComparingBiomeCondition> TEMPERATURE = BIOME_CONDITIONS.register("temperature", () -> new FloatComparingBiomeCondition(x -> x.isBound() ? x.value().getBaseTemperature() : 0.2F));
+	public static final RegistryObject<InTagCondition> IN_TAG = BIOME_CONDITIONS.register("in_tag", InTagCondition::new);
 
 	public static ConfiguredBiomeCondition<?, ?> constant(boolean value) {return CONSTANT.get().configure(new ConstantConfiguration<>(value));}
 

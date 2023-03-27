@@ -23,6 +23,8 @@ public class ApoliDynamicRegistries {
 	public static final ResourceKey<Registry<ConfiguredFluidCondition<?, ?>>> CONFIGURED_FLUID_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("configured_fluid_condition"));
 	public static final ResourceKey<Registry<ConfiguredItemCondition<?, ?>>> CONFIGURED_ITEM_CONDITION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("configured_item_condition"));
 
+	public static final ResourceKey<Registry<ConfiguredModifier<?>>> CONFIGURED_MODIFIER_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("configured_modifier"));
+
 	public static final ResourceLocation ACTION_DEFAULT = Apoli.identifier("nothing");
 	public static final ResourceLocation CONDITION_DEFAULT = Apoli.identifier("allow");
 	public static final ResourceLocation DENY = Apoli.identifier("deny");

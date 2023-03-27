@@ -9,7 +9,6 @@ import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.BiEntityInteractionConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.MultipleConfiguration;
 import net.minecraft.core.Holder;
-import net.minecraft.world.inventory.DispenserMenu;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ApoliPowers {
@@ -38,7 +37,7 @@ public class ApoliPowers {
 	public static final RegistryObject<DummyPower> FIRE_IMMUNITY = ApoliRegisters.POWER_FACTORIES.register("fire_immunity", DummyPower::new);
 	public static final RegistryObject<FireProjectilePower> FIRE_PROJECTILE = ApoliRegisters.POWER_FACTORIES.register("fire_projectile", FireProjectilePower::new);
 	public static final RegistryObject<DummyPower> IGNORE_WATER = ApoliRegisters.POWER_FACTORIES.register("ignore_water", DummyPower::new);
-	public static final RegistryObject<InventoryPower> INVENTORY = ApoliRegisters.POWER_FACTORIES.register("inventory", () -> new InventoryPower(9, inventory -> (i, playerInv, player) -> new DispenserMenu(i, playerInv, inventory)));
+	public static final RegistryObject<InventoryPower> INVENTORY = ApoliRegisters.POWER_FACTORIES.register("inventory", InventoryPower::new);
 	public static final RegistryObject<InvisibilityPower> INVISIBILITY = ApoliRegisters.POWER_FACTORIES.register("invisibility", InvisibilityPower::new);
 	public static final RegistryObject<InvulnerablePower> INVULNERABILITY = ApoliRegisters.POWER_FACTORIES.register("invulnerability", InvulnerablePower::new);
 	public static final RegistryObject<LaunchPower> LAUNCH = ApoliRegisters.POWER_FACTORIES.register("launch", LaunchPower::new);
@@ -53,10 +52,10 @@ public class ApoliPowers {
 	public static final RegistryObject<ModifyFoodPower> MODIFY_FOOD = ApoliRegisters.POWER_FACTORIES.register("modify_food", ModifyFoodPower::new);
 	public static final RegistryObject<ModifyHarvestPower> MODIFY_HARVEST = ApoliRegisters.POWER_FACTORIES.register("modify_harvest", ModifyHarvestPower::new);
 	public static final RegistryObject<ModifyJumpPower> MODIFY_JUMP = ApoliRegisters.POWER_FACTORIES.register("modify_jump", ModifyJumpPower::new);
-	public static final RegistryObject<ModifyAttributePower> MODIFY_LAVA_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_lava_speed", () -> new ModifyAttributePower(() -> AdditionalEntityAttributes.LAVA_SPEED));
+	public static final RegistryObject<AttributeModifierPower> MODIFY_LAVA_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_lava_speed", () -> new AttributeModifierPower(() -> AdditionalEntityAttributes.LAVA_SPEED));
 	public static final RegistryObject<ModifyPlayerSpawnPower> MODIFY_PLAYER_SPAWN = ApoliRegisters.POWER_FACTORIES.register("modify_player_spawn", ModifyPlayerSpawnPower::new);
 	public static final RegistryObject<ModifyDamageDealtPower> MODIFY_PROJECTILE_DAMAGE = ApoliRegisters.POWER_FACTORIES.register("modify_projectile_damage", ModifyDamageDealtPower::new);
-	public static final RegistryObject<ModifyAttributePower> MODIFY_SWIM_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_swim_speed", () -> new ModifyAttributePower(() -> AdditionalEntityAttributes.WATER_SPEED));
+	public static final RegistryObject<AttributeModifierPower> MODIFY_SWIM_SPEED = ApoliRegisters.POWER_FACTORIES.register("modify_swim_speed", () -> new AttributeModifierPower(() -> AdditionalEntityAttributes.WATER_SPEED));
 	public static final RegistryObject<MultiplePower> MULTIPLE = ApoliRegisters.POWER_FACTORIES.register("multiple", MultiplePower::new);
 	public static final RegistryObject<NightVisionPower> NIGHT_VISION = ApoliRegisters.POWER_FACTORIES.register("night_vision", NightVisionPower::new);
 	public static final RegistryObject<ParticlePower> PARTICLE = ApoliRegisters.POWER_FACTORIES.register("particle", ParticlePower::new);
@@ -112,6 +111,13 @@ public class ApoliPowers {
 	public static final RegistryObject<OverrideHudTexturePower> STATUS_BAR_TEXTURE = ApoliRegisters.POWER_FACTORIES.register("status_bar_texture", OverrideHudTexturePower::new);
 	public static final RegistryObject<ModifyBlockRenderPower> MODIFY_BLOCK_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_block_render", ModifyBlockRenderPower::new);
 	public static final RegistryObject<ModifyFluidRenderPower> MODIFY_FLUID_RENDER = ApoliRegisters.POWER_FACTORIES.register("modify_fluid_render", ModifyFluidRenderPower::new);
+	public static final RegistryObject<ModifyAttributePower> MODIFY_ATTRIBUTE = ApoliRegisters.POWER_FACTORIES.register("modify_attribute", ModifyAttributePower::new);
+	public static final RegistryObject<DummyPower> PREVENT_SPRINTING = ApoliRegisters.POWER_FACTORIES.register("prevent_sprinting", DummyPower::new);
+	public static final RegistryObject<ModifyValuePower> MODIFY_HEALING = ApoliRegisters.POWER_FACTORIES.register("modify_healing", ModifyValuePower::new);
+	public static final RegistryObject<ModifyValuePower> MODIFY_INSONMIA_TICKS = ApoliRegisters.POWER_FACTORIES.register("modify_insomnia_ticks", ModifyValuePower::new);
+	public static final RegistryObject<ModifyGrindstonePower> MODIFY_GRINDSTONE = ApoliRegisters.POWER_FACTORIES.register("modify_grindstone", ModifyGrindstonePower::new);
+	public static final RegistryObject<ReplaceLootTablePower> REPLACE_LOOT_TABLE = ApoliRegisters.POWER_FACTORIES.register("replace_loot_table", ReplaceLootTablePower::new);
+	public static final RegistryObject<ModifyVelocityPower> MODIFY_VELOCITY = ApoliRegisters.POWER_FACTORIES.register("modify_velocity", ModifyVelocityPower::new);
 	//endregion
 
 	public static ConfiguredPower<?, ?> multiple(ImmutableMap<String, ConfiguredPower<?, ?>> powers) {

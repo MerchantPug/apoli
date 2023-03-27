@@ -14,6 +14,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class MetaFactories {
 
@@ -38,13 +39,14 @@ public class MetaFactories {
 	 * @param <C>            The type of the configured condition.
 	 * @param <V>            The intermediate type to reduce arguments to a single type.
 	 */
-	public static <F, A, C, V> void defineMetaActions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedActionConfiguration<V>>, ? extends F> func, CodecSet<A> actionCodec, CodecSet<C> conditionCodec, Function<String, MapCodec<Holder<A>>> optional, BiConsumer<A, V> executor, BiPredicate<C, V> predicate) {
+	public static <F, A, C, V> void defineMetaActions(DeferredRegister<F> registry, Function<Codec<? extends IDelegatedActionConfiguration<V>>, ? extends F> func, CodecSet<A> actionCodec, CodecSet<C> conditionCodec, Function<String, MapCodec<Holder<A>>> optional, BiConsumer<A, V> executor, BiPredicate<C, V> predicate, Predicate<V> serverSidePredicate) {
 		registry.register("and", () -> func.apply(ExecuteMultipleConfiguration.codec(actionCodec, executor)));
 		registry.register("chance", () -> func.apply(ChanceConfiguration.codec(actionCodec, executor)));
 		registry.register("if_else", () -> func.apply(IfElseConfiguration.codec(conditionCodec, actionCodec, optional, predicate, executor)));
 		registry.register("if_else_list", () -> func.apply(IfElseListConfiguration.codec(conditionCodec, actionCodec, predicate, executor)));
 		registry.register("choice", () -> func.apply(ChoiceConfiguration.codec(actionCodec, executor)));
 		registry.register("delay", () -> func.apply(DelayAction.codec(actionCodec, executor)));
+		registry.register("side", () -> func.apply(SideConfiguration.codec(actionCodec, serverSidePredicate, executor)));
 		registry.register("nothing", () -> func.apply(NothingConfiguration.codec()));
 	}
 }

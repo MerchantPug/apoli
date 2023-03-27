@@ -4,12 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-public record ModifyHarvestConfiguration(ListConfiguration<AttributeModifier> modifiers,
+public record ModifyHarvestConfiguration(ListConfiguration<ConfiguredModifier<?>> modifiers,
 										 Holder<ConfiguredBlockCondition<?, ?>> condition,
 										 boolean allow) implements IValueModifyingPowerConfiguration {
 

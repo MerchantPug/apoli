@@ -3,6 +3,8 @@ package io.github.edwinmindcraft.apoli.common.power.configuration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.edwinmindcraft.apoli.api.configuration.ListConfiguration;
+import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
+import io.github.edwinmindcraft.apoli.api.power.configuration.power.IAttributeModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.util.PowerUtils;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
@@ -11,7 +13,7 @@ import net.minecraftforge.common.util.Lazy;
 
 import java.util.Objects;
 
-public final class LavaVisionConfiguration implements IValueModifyingPowerConfiguration {
+public final class LavaVisionConfiguration implements IAttributeModifyingPowerConfiguration {
 	public static final Codec<LavaVisionConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.FLOAT.fieldOf("s").forGetter(LavaVisionConfiguration::s),
 			CalioCodecHelper.FLOAT.fieldOf("v").forGetter(LavaVisionConfiguration::v)

@@ -43,6 +43,10 @@ public class ApoliRegistries {
 	public static Supplier<IForgeRegistry<BiEntityCondition<?>>> BIENTITY_CONDITION;
 	public static Supplier<IForgeRegistry<BiEntityAction<?>>> BIENTITY_ACTION;
 
+	public static final ResourceKey<net.minecraft.core.Registry<ModifierOperation>> MODIFIER_OPERATION_KEY = ResourceKey.createRegistryKey(ApoliAPI.identifier("modifier"));
+
+	public static Supplier<IForgeRegistry<ModifierOperation>> MODIFIER_OPERATION;
+
 	/**
 	 * This is basically {@link net.minecraft.core.Registry}, just altered in such a way that it works with
 	 * architectury's registries.

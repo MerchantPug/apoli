@@ -10,7 +10,7 @@ import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultCond
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-public record ModifyDamageDealtConfiguration(ListConfiguration<AttributeModifier> modifiers,
+public record ModifyDamageDealtConfiguration(ListConfiguration<ConfiguredModifier<?>> modifiers,
 											 Holder<ConfiguredDamageCondition<?, ?>> damageCondition,
 											 Holder<ConfiguredEntityCondition<?, ?>> targetCondition,
 											 Holder<ConfiguredBiEntityCondition<?, ?>> biEntityCondition,
@@ -18,7 +18,7 @@ public record ModifyDamageDealtConfiguration(ListConfiguration<AttributeModifier
 											 Holder<ConfiguredEntityAction<?, ?>> targetAction,
 											 Holder<ConfiguredBiEntityAction<?, ?>> biEntityAction) implements IValueModifyingPowerConfiguration {
 
-	public ModifyDamageDealtConfiguration(AttributeModifier... modifiers) {
+	public ModifyDamageDealtConfiguration(ConfiguredModifier<?>... modifiers) {
 		this(ListConfiguration.of(modifiers),
 				ApoliDefaultConditions.DAMAGE_DEFAULT.getHolder().orElseThrow(),
 				ApoliDefaultConditions.ENTITY_DEFAULT.getHolder().orElseThrow(),

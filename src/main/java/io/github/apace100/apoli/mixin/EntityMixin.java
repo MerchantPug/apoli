@@ -4,6 +4,7 @@ import io.github.apace100.apoli.access.MovingEntity;
 import io.github.apace100.apoli.access.SubmergableEntity;
 import io.github.apace100.apoli.access.WaterMovingEntity;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
+import io.github.edwinmindcraft.apoli.common.power.ModifyVelocityPower;
 import io.github.edwinmindcraft.apoli.common.power.PhasingPower;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -116,6 +118,14 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 	private void checkIsMoving(MoverType type, Vec3 movement, CallbackInfo ci) {
 		if (this.moveDist > this.distanceBefore)
 			this.isMoving = true;
+	}
+
+	@ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
+	private Vec3 modifyMovementVelocity(Vec3 original, MoverType movementType) {
+		if(movementType != MoverType.SELF) {
+			return original;
+		}
+		return ModifyVelocityPower.getModifiedVelocity((Entity)(Object)this, original);
 	}
 
 	@Override

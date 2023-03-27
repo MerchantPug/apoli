@@ -68,6 +68,7 @@ public class ApoliCommon {
 		//Powers
 		ApoliPowers.bootstrap();
 		ApoliLootFunctions.bootstrap();
+		ApoliLootConditions.bootstrap();
 
 		//Actions
 		ApoliBlockActions.bootstrap();
@@ -83,6 +84,9 @@ public class ApoliCommon {
 		ApoliFluidConditions.bootstrap();
 		ApoliItemConditions.bootstrap();
 		ApoliBiEntityConditions.bootstrap();
+
+		//Modifier operations
+		ApoliModifierOperations.bootstrap();
 
 		//Dynamic registries
 		ApoliDefaultActions.bootstrap();
@@ -115,6 +119,8 @@ public class ApoliCommon {
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ENTITY_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ENTITY_CONDITIONS, ConfiguredEntityCondition.CODEC);
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_FLUID_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_FLUID_CONDITIONS, ConfiguredFluidCondition.CODEC);
 		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_ITEM_CONDITION_KEY, ApoliBuiltinRegistries.CONFIGURED_ITEM_CONDITIONS, ConfiguredItemCondition.CODEC);
+
+		event.getRegistryManager().addForge(ApoliDynamicRegistries.CONFIGURED_MODIFIER_KEY, ApoliBuiltinRegistries.CONFIGURED_MODIFIERS, ConfiguredModifier.CODEC);
 
 		event.getRegistryManager().addReload(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, "powers", PowerLoader.INSTANCE);
 		event.getRegistryManager().addValidation(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, PowerLoader.INSTANCE, ApoliBuiltinRegistries.CONFIGURED_POWER_CLASS);

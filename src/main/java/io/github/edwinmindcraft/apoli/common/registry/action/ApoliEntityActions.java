@@ -24,12 +24,14 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ENTITY_ACTIONS;
 
 public class ApoliEntityActions {
 	public static final BiConsumer<ConfiguredEntityAction<?, ?>, Entity> EXECUTOR = ConfiguredEntityAction::execute;
 	public static final BiPredicate<ConfiguredEntityCondition<?, ?>, Entity> PREDICATE = ConfiguredEntityCondition::check;
+	public static final Predicate<Entity> SERVERSIDE_PREDICATE = (entity) -> !entity.level.isClientSide;
 
 	private static <U extends EntityAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ENTITY_ACTION_KEY.location(), Apoli.MODID);
@@ -80,6 +82,12 @@ public class ApoliEntityActions {
 	public static final RegistryObject<SwingHandAction> SWING_HAND = ENTITY_ACTIONS.register("swing_hand", SwingHandAction::new);
 	public static final RegistryObject<RaycastAction> RAYCAST = ENTITY_ACTIONS.register("raycast", RaycastAction::new);
 	public static final RegistryObject<SpawnParticlesAction> SPAWN_PARTICLES = ENTITY_ACTIONS.register("spawn_particles", SpawnParticlesAction::new);
+	public static final RegistryObject<ModifyDeathTicksAction> MODIFY_DEATH_TICKS = ENTITY_ACTIONS.register("modify_death_ticks", ModifyDeathTicksAction::new);
+	public static final RegistryObject<ModifyResourceAction> MODIFY_RESOURCE = ENTITY_ACTIONS.register("modify_resource", ModifyResourceAction::new);
+	public static final RegistryObject<DropInventoryAction> DROP_INVENTORY = ENTITY_ACTIONS.register("drop_inventory", DropInventoryAction::new);
+	public static final RegistryObject<ModifyInventoryAction> MODIFY_INVENTORY = ENTITY_ACTIONS.register("modify_inventory", ModifyInventoryAction::new);
+	public static final RegistryObject<ReplaceInventoryAction> REPLACE_INVENTORY = ENTITY_ACTIONS.register("replace_inventory", ReplaceInventoryAction::new);
+	public static final RegistryObject<ModifyStatAction> MODIFY_STAT = ENTITY_ACTIONS.register("modify_stat", ModifyStatAction::new);
 
 	@SafeVarargs
 	public static ConfiguredEntityAction<?, ?> and(HolderSet<ConfiguredEntityAction<?, ?>>... conditions) {
@@ -92,6 +100,6 @@ public class ApoliEntityActions {
 
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaActions(ENTITY_ACTIONS, DelegatedEntityAction::new, ConfiguredEntityAction.CODEC_SET, ConfiguredEntityCondition.CODEC_SET, ConfiguredEntityAction::optional, EXECUTOR, PREDICATE);
+		MetaFactories.defineMetaActions(ENTITY_ACTIONS, DelegatedEntityAction::new, ConfiguredEntityAction.CODEC_SET, ConfiguredEntityCondition.CODEC_SET, ConfiguredEntityAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);
 	}
 }

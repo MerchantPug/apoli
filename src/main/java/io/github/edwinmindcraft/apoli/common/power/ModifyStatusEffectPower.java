@@ -10,7 +10,7 @@ import java.util.Objects;
 public class ModifyStatusEffectPower extends ValueModifyingPowerFactory<ModifyStatusEffectConfiguration> {
 
 	public static boolean doesApply(ConfiguredPower<ModifyStatusEffectConfiguration, ?> power, MobEffect effect) {
-		return Objects.equals(power.getConfiguration().effect(), effect);
+		return power.getConfiguration().effects().getContent().isEmpty() || power.getConfiguration().effects().getContent().contains(effect);
 	}
 
 	public ModifyStatusEffectPower() {

@@ -6,10 +6,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemActi
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.factory.ItemAction;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliRegistries;
-import io.github.edwinmindcraft.apoli.common.action.item.ConsumeItemAction;
-import io.github.edwinmindcraft.apoli.common.action.item.DamageItemAction;
-import io.github.edwinmindcraft.apoli.common.action.item.DelegatedItemAction;
-import io.github.edwinmindcraft.apoli.common.action.item.ModifyItemAction;
+import io.github.edwinmindcraft.apoli.common.action.item.*;
 import io.github.edwinmindcraft.apoli.common.action.meta.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -19,12 +16,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters.ITEM_ACTIONS;
 
 public class ApoliItemActions {
 	public static final BiConsumer<ConfiguredItemAction<?, ?>, Pair<Level, Mutable<ItemStack>>> EXECUTOR = (action, pair) -> action.execute(pair.getKey(), pair.getValue());
 	public static final BiPredicate<ConfiguredItemCondition<?, ?>, Pair<Level, Mutable<ItemStack>>> PREDICATE = (condition, pair) -> condition.check(pair.getKey(), pair.getValue().getValue());
+	public static final Predicate<Pair<Level, Mutable<ItemStack>>> SERVERSIDE_PREDICATE = (pair) -> !pair.getLeft().isClientSide;
 
 	private static <U extends ItemAction<?>> RegistryObject<U> of(String name) {
 		return RegistryObject.create(Apoli.identifier(name), ApoliRegistries.ITEM_ACTION_KEY.location(), Apoli.MODID);
@@ -41,8 +40,10 @@ public class ApoliItemActions {
 	public static final RegistryObject<ConsumeItemAction> CONSUME = ITEM_ACTIONS.register("consume", ConsumeItemAction::new);
 	public static final RegistryObject<ModifyItemAction> MODIFY = ITEM_ACTIONS.register("modify", ModifyItemAction::new);
 	public static final RegistryObject<DamageItemAction> DAMAGE = ITEM_ACTIONS.register("damage", DamageItemAction::new);
+	public static final RegistryObject<MergeNbtItemAction> MERGE_NBT = ITEM_ACTIONS.register("merge_nbt", MergeNbtItemAction::new);
+	public static final RegistryObject<RemoveEnchantmentItemAction> REMOVE_ENCHANTMENT = ITEM_ACTIONS.register("remove_enchantment", RemoveEnchantmentItemAction::new);
 
 	public static void bootstrap() {
-		MetaFactories.defineMetaActions(ITEM_ACTIONS, DelegatedItemAction::new, ConfiguredItemAction.CODEC_SET, ConfiguredItemCondition.CODEC_SET, ConfiguredItemAction::optional, EXECUTOR, PREDICATE);
+		MetaFactories.defineMetaActions(ITEM_ACTIONS, DelegatedItemAction::new, ConfiguredItemAction.CODEC_SET, ConfiguredItemCondition.CODEC_SET, ConfiguredItemAction::optional, EXECUTOR, PREDICATE, SERVERSIDE_PREDICATE);
 	}
 }
