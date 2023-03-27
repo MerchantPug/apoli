@@ -7,14 +7,9 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredModifier;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.IValueModifyingPowerConfiguration;
 import net.minecraft.core.Holder;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public record ModifyJumpConfiguration(ListConfiguration<ConfiguredModifier<?>> modifiers,
 									  Holder<ConfiguredEntityAction<?, ?>> condition) implements IValueModifyingPowerConfiguration {
-
-	public ModifyJumpConfiguration(ConfiguredModifier<?>... modifiers) {
-		this(ListConfiguration.of(modifiers), null);
-	}
 
 	public static final Codec<ModifyJumpConfiguration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ListConfiguration.MODIFIER_CODEC.forGetter(ModifyJumpConfiguration::modifiers),

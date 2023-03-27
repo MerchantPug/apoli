@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.apoli.common.power.ModifyFoodPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.CoreUtils;
+import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
@@ -113,5 +114,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 		EquipmentSlot slot = Mob.getEquipmentSlotForItem(stack);
 		if (CoreUtils.isItemForbidden(this, slot, stack))
 			info.setReturnValue(false);
+	}
+
+	@Inject(method = "hurt", at = @At("RETURN"), cancellable = true)
+	private void performDamageBypass(DamageSource pSource, float pAmount, CallbackInfoReturnable<Boolean> cir) {
+		if (((LivingDamageCache) this).bypassesDamageCheck() && pAmount == 0)
+			cir.setReturnValue(super.hurt(pSource, pAmount));
 	}
 }

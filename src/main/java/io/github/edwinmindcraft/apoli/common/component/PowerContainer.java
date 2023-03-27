@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class PowerContainer implements IPowerContainer, ICapabilitySerializable<Tag> {
@@ -179,13 +180,14 @@ public class PowerContainer implements IPowerContainer, ICapabilitySerializable<
 
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public @NotNull <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C, F>>> getPowers(F factory, boolean includeInactive) {
+	public @NotNull <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C,F>>> getPowers(F factory, @NotNull Predicate<Holder<ConfiguredPower<C, F>>> filter) {
 		List<Holder<ConfiguredPower<?, ?>>> access = this.factoryAccessCache.get(factory);
 		if (access == null) return ImmutableList.of();
 		List<Holder<ConfiguredPower<C, F>>> result = new ArrayList<>(access.size());
 		for (Holder<ConfiguredPower<?, ?>> holder : access) {
-			if (holder.isBound() && (includeInactive || holder.value().isActive(this.owner)))
-				result.add((Holder<ConfiguredPower<C, F>>) (Holder) holder);
+			Holder<ConfiguredPower<C, F>> holderCast = (Holder) holder;
+			if (holder.isBound() && filter.test(holderCast))
+				result.add(holderCast);
 		}
 		return result;
 	}

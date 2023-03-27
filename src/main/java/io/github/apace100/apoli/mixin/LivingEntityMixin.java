@@ -10,9 +10,11 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.S2CSyncAttacker;
 import io.github.edwinmindcraft.apoli.common.power.*;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyFoodConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.CombatRules;
@@ -41,10 +43,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements ModifiableFoodEntity {
+public abstract class LivingEntityMixin extends Entity implements ModifiableFoodEntity, LivingDamageCache {
 
 	public LivingEntityMixin(EntityType<?> type, Level world) {
 		super(type, world);
@@ -80,16 +85,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		int duration = Math.round(IPowerContainer.modify(this, ApoliPowers.MODIFY_STATUS_EFFECT_DURATION.get(), originalDur, power -> ModifyStatusEffectPower.doesApply(power.value(), effectType)));
 
 		if (amplifier != originalAmp || duration != originalDur) {
-			return new MobEffectInstance(
-					effectType,
-					duration,
-					amplifier,
-					effect.isAmbient(),
-					effect.isVisible(),
-					effect.showIcon(),
-					((HiddenEffectStatus) effect).getHiddenEffect(),
-					effect.getFactorData()
-			);
+			return new MobEffectInstance(effectType, duration, amplifier, effect.isAmbient(), effect.isVisible(), effect.showIcon(), ((HiddenEffectStatus) effect).getHiddenEffect(), effect.getFactorData());
 		}
 		return effect;
 	}
@@ -133,51 +129,55 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 			cir.setReturnValue(true);
 	}
 
-	private Optional<Boolean> apoli$shouldApplyArmor;
-	private Optional<Boolean> apoli$shouldDamageArmor;
+	private List<Holder<ConfiguredPower<ModifyDamageTakenConfiguration, ModifyDamageTakenPower>>> apoli$damageMods;
+	private List<Holder<ConfiguredPower<ModifyDamageDealtConfiguration, ModifyDamageDealtPower>>> apoli$damageSourceMods;
+	private boolean apoli$bypassDamageCheck = false;
+	private int apoli$shouldApplyArmor;
+	private int apoli$shouldDamageArmor;
 
-	@Inject(method = "hurt", at = @At("HEAD"))
-	private void modifyDamageTaken(DamageSource pSource, float pAmount, CallbackInfoReturnable<Boolean> cir) {
-		List<Holder<ConfiguredPower<ModifyDamageTakenConfiguration, ModifyDamageTakenPower>>> mdtps = IPowerContainer.getPowers(this, ApoliPowers.MODIFY_DAMAGE_TAKEN.get()).stream().filter(p -> p.value().getFactory().check(p.value(), this, pSource, pAmount)).toList();
-		long wantArmor = mdtps.stream().filter(p -> p.value().getFactory().modifiesArmorApplicance(p.value()) && p.value().getFactory().checkArmorApplicance(p.value(), this)).count();
-		long dontWantArmor = mdtps.stream().filter(p -> p.value().getFactory().modifiesArmorApplicance(p.value()) && !p.value().getFactory().checkArmorApplicance(p.value(), this)).count();
-		apoli$shouldApplyArmor = wantArmor == dontWantArmor ? Optional.empty() : Optional.of(wantArmor > dontWantArmor);
-		long wantDamage = mdtps.stream().filter(p -> p.value().getFactory().modifiesArmorDamaging(p.value()) && p.value().getFactory().checkArmorDamaging(p.value(), this)).count();
-		long dontWantDamage = mdtps.stream().filter(p -> p.value().getFactory().modifiesArmorDamaging(p.value()) && !p.value().getFactory().checkArmorDamaging(p.value(), this)).count();
-		apoli$shouldDamageArmor = wantDamage == dontWantDamage ? Optional.empty() : Optional.of(wantDamage > dontWantDamage);
+	@Override
+	public List<Holder<ConfiguredPower<ModifyDamageTakenConfiguration, ModifyDamageTakenPower>>> getModifyDamageTakenPowers() {return this.apoli$damageMods;}
+
+	@Override
+	public List<Holder<ConfiguredPower<ModifyDamageDealtConfiguration, ModifyDamageDealtPower>>> getModifyDamageDealtPowers() {return this.apoli$damageSourceMods;}
+
+	@Override
+	public void setModifyDamageTakenPowers(List<Holder<ConfiguredPower<ModifyDamageTakenConfiguration, ModifyDamageTakenPower>>> values) {this.apoli$damageMods = values;}
+
+	@Override
+	public void setModifyDamageDealtPowers(List<Holder<ConfiguredPower<ModifyDamageDealtConfiguration, ModifyDamageDealtPower>>> values) {this.apoli$damageSourceMods = values;}
+
+	@Override
+	public void bypassDamageCheck(boolean value) {this.apoli$bypassDamageCheck = value;}
+
+	@Override
+	public boolean bypassesDamageCheck() {return this.apoli$bypassDamageCheck;}
+
+	@Override
+	public void setArmorValues(int apply, int damage) {
+		this.apoli$shouldApplyArmor = apply;
+		this.apoli$shouldDamageArmor = damage;
 	}
 
 	@Inject(method = "getDamageAfterArmorAbsorb", at = @At("HEAD"), cancellable = true)
 	private void modifyArmorApplicance(DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
-		if(apoli$shouldApplyArmor.isPresent()) {
-			if(apoli$shouldDamageArmor.isPresent() && apoli$shouldDamageArmor.get()) {
-				this.hurtArmor(source, amount);
-			}
-			if(apoli$shouldApplyArmor.get()) {
-				if(!apoli$shouldDamageArmor.isPresent()) {
-					this.hurtArmor(source, amount);
-				}
-				float damageLeft = CombatRules.getDamageAfterAbsorb(amount, this.getArmorValue(), (float)this.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
+		if (this.apoli$shouldApplyArmor != 0) {
+			if (this.apoli$shouldDamageArmor > 0) this.hurtArmor(source, amount);
+			if (this.apoli$shouldApplyArmor > 0) {
+				if (this.apoli$shouldDamageArmor == 0) this.hurtArmor(source, amount);
+				float damageLeft = CombatRules.getDamageAfterAbsorb(amount, this.getArmorValue(), (float) this.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
 				cir.setReturnValue(damageLeft);
 			} else {
 				cir.setReturnValue(amount);
 			}
 		} else {
-			if(apoli$shouldDamageArmor.isPresent()) {
-				if(apoli$shouldDamageArmor.get() && source.isBypassArmor()) {
-					this.hurtArmor(source, amount);
-				}
-			}
+			if (this.apoli$shouldDamageArmor > 0 && source.isBypassArmor()) this.hurtArmor(source, amount);
 		}
 	}
 
 	@Redirect(method = "getDamageAfterArmorAbsorb", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hurtArmor(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
 	private void preventArmorDamaging(LivingEntity instance, DamageSource source, float amount) {
-		if(apoli$shouldDamageArmor.isPresent()) {
-			if(!apoli$shouldDamageArmor.get()) {
-				return;
-			}
-		}
+		if (this.apoli$shouldDamageArmor < 0) return;
 		this.hurtArmor(source, amount);
 	}
 
@@ -201,14 +201,12 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;removeFrost()V"))
 	private void unfreezeEntityFromPower(CallbackInfo ci) {
-		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get()))
-			this.isInPowderSnow = this.prevPowderSnowState;
+		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) this.isInPowderSnow = this.prevPowderSnowState;
 	}
 
 	@Inject(method = "canFreeze", at = @At("RETURN"), cancellable = true)
 	private void allowFreezingPower(CallbackInfoReturnable<Boolean> cir) {
-		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get()))
-			cir.setReturnValue(true);
+		if (IPowerContainer.hasPower(this, ApoliPowers.FREEZE.get())) cir.setReturnValue(true);
 	}
 
 	// SetEntityGroupPower
@@ -226,26 +224,25 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	@Inject(method = "getAttributeValue", at = @At("RETURN"), cancellable = true)
 	private void modifyAttributeValue(Attribute attribute, CallbackInfoReturnable<Double> cir) {
 		double originalValue = this.getAttributes().getValue(attribute);
-		double modified = IPowerContainer.modify(this, ApoliPowers.MODIFY_ATTRIBUTE.get(), (float)originalValue, p -> p.get().getConfiguration().attribute() == attribute);
-		if(originalValue != modified) {
+		double modified = IPowerContainer.modify(this, ApoliPowers.MODIFY_ATTRIBUTE.get(), (float) originalValue, p -> p.get().getConfiguration().attribute() == attribute);
+		if (originalValue != modified) {
 			cir.setReturnValue(modified);
 		}
 	}
 
 	@Inject(method = "doPush", at = @At("HEAD"), cancellable = true)
 	private void preventPushing(Entity entity, CallbackInfo ci) {
-		if (BiEntityConditionPower.any(ApoliPowers.PREVENT_ENTITY_COLLISION.get(), this, this, entity) ||
-			BiEntityConditionPower.any(ApoliPowers.PREVENT_ENTITY_COLLISION.get(), entity, entity, this)) {
+		if (BiEntityConditionPower.any(ApoliPowers.PREVENT_ENTITY_COLLISION.get(), this, this, entity) || BiEntityConditionPower.any(ApoliPowers.PREVENT_ENTITY_COLLISION.get(), entity, entity, this)) {
 			ci.cancel();
 		}
 	}
 
 	@ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getFluidState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/material/FluidState;"), method = "travel", name = "d0", ordinal = 0)
 	public double modifyFallingVelocity(double in) {
-		if(this.getDeltaMovement().y > 0D) {
+		if (this.getDeltaMovement().y > 0D) {
 			return in;
 		}
-		if(IPowerContainer.hasPower(this, ApoliPowers.MODIFY_FALLING.get())) {
+		if (IPowerContainer.hasPower(this, ApoliPowers.MODIFY_FALLING.get())) {
 			return IPowerContainer.modify(this, ApoliPowers.MODIFY_FALLING.get(), in);
 		}
 		return in;
@@ -264,9 +261,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		return stack.getValue();
 	}
 
-	@ModifyVariable(method = "eat",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEatEffect(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)V", shift = At.Shift.AFTER),
-			argsOnly = true)
+	@ModifyVariable(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEatEffect(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)V", shift = At.Shift.AFTER), argsOnly = true)
 	private ItemStack unmodifyEatenItemStack(ItemStack modified) {
 		ModifiableFoodEntity foodEntity = this;
 		ItemStack original = foodEntity.getOriginalFoodStack();
@@ -284,8 +279,7 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 
 	@Redirect(method = "eat", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEatEffect(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)V"))
 	private void preventApplyingFoodEffects(LivingEntity livingEntity, ItemStack stack, Level world, LivingEntity targetEntity) {
-		if (this.getCurrentModifyFoodPowers().stream().anyMatch(x -> x.getConfiguration().preventEffects()))
-			return;
+		if (this.getCurrentModifyFoodPowers().stream().anyMatch(x -> x.getConfiguration().preventEffects())) return;
 		this.addEatEffect(stack, world, targetEntity);
 	}
 
@@ -295,13 +289,17 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 	@Shadow
 	public float flyingSpeed;
 
-	@Shadow protected abstract void hurtArmor(DamageSource pDamageSource, float pDamageAmount);
+	@Shadow
+	protected abstract void hurtArmor(DamageSource pDamageSource, float pDamageAmount);
 
-	@Shadow public abstract int getArmorValue();
+	@Shadow
+	public abstract int getArmorValue();
 
-	@Shadow public abstract double getAttributeValue(Attribute pAttribute);
+	@Shadow
+	public abstract double getAttributeValue(Attribute pAttribute);
 
-	@Shadow public abstract AttributeMap getAttributes();
+	@Shadow
+	public abstract AttributeMap getAttributes();
 
 	@Inject(method = "getFrictionInfluencedSpeed(F)F", at = @At("RETURN"), cancellable = true)
 	private void modifyFlySpeed(float slipperiness, CallbackInfoReturnable<Float> cir) {

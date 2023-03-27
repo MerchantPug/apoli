@@ -20,7 +20,8 @@ import java.util.Optional;
 
 @Mixin(InventoryMenu.class)
 public class InventoryMenuMixin {
-    @Shadow @Final private Player owner;
+    @Shadow @Final
+    public Player owner;
 
     @Shadow @Final private CraftingContainer craftSlots;
 
@@ -32,8 +33,8 @@ public class InventoryMenuMixin {
         if (!this.owner.level.isClientSide && this.craftSlots instanceof PowerCraftingInventory pci && pci.getPower() != null && pci.getPower().getConfiguration() instanceof ModifyCraftingConfiguration config) {
             Optional<BlockPos> blockPos = ModifiedCraftingRecipe.getBlockFromInventory(this.craftSlots);
             Mutable<ItemStack> newStack = new MutableObject<>(stack);
-            config.execute(owner, blockPos.orElse(null));
-            config.executeAfterCraftingAction(owner.level, newStack);
+            config.execute(this.owner, blockPos.orElse(null));
+            config.executeAfterCraftingAction(this.owner.level, newStack);
             return newStack.getValue();
         }
         return stack;

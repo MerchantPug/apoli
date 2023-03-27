@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
+import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.ApoliConfigs;
@@ -14,6 +15,8 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCond
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionPowerConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.*;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -47,6 +50,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = Apoli.MODID)
@@ -113,10 +117,31 @@ public class ApoliPowerEventHandler {
 			event.setDamageMultiplier(0.0F); //Disable fall damage without actually removing distance. This is to avoid breaking compatibility.
 	}
 
-	@SubscribeEvent
-	public static void modifyDamageTaken(LivingDamageEvent event) {
-		LivingEntity entityLiving = event.getEntity();
-		event.setAmount(ModifyDamageTakenPower.modify(entityLiving, event.getSource(), event.getAmount()));
+	private static float computeDamageAmount(Entity target, DamageSource source, float amount, boolean exec) {
+		Entity sourceEntity = source.getEntity();
+		if (sourceEntity != null) {
+			Consumer<Holder<ConfiguredPower<ModifyDamageDealtConfiguration, ModifyDamageDealtPower>>> otherConsumer = exec ?
+					x -> x.value().getFactory().execute(x.value(), sourceEntity, target) :
+					x -> { };
+			ModifyDamageDealtPower factory = source.isProjectile() ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get();
+			if (target instanceof LivingDamageCache pdc)
+				amount = (float) IPowerContainer.modify(sourceEntity, factory, pdc.getModifyDamageDealtPowers(), amount, otherConsumer);
+			else {
+				float finalAmount = amount;
+				amount = IPowerContainer.modify(sourceEntity, factory, amount, x -> factory.check(x.value(), sourceEntity, target, source, finalAmount), otherConsumer);
+			}
+		}
+		Consumer<Holder<ConfiguredPower<ModifyDamageTakenConfiguration, ModifyDamageTakenPower>>> selfConsumer = exec ?
+				x -> x.value().getFactory().execute(x.value(), target, source) :
+				x -> { };
+		if (target instanceof LivingDamageCache pdc) {
+			amount = (float) IPowerContainer.modify(sourceEntity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), pdc.getModifyDamageTakenPowers(), amount, selfConsumer);
+			if (amount > 0) pdc.bypassDamageCheck(true);
+		} else {
+			float finalAmount = amount;
+			amount = IPowerContainer.modify(sourceEntity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), amount, x -> x.value().getFactory().check(x.value(), target, source, finalAmount), selfConsumer);
+		}
+		return amount;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
@@ -124,11 +149,7 @@ public class ApoliPowerEventHandler {
 		LivingEntity target = event.getEntity();
 		DamageSource source = event.getSource();
 		float amount = event.getAmount();
-		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
-		if (source.isProjectile())
-			event.setAmount(ModifyDamageDealtPower.modifyProjectileNoExec(source.getEntity(), target, source, amount));
-		else
-			event.setAmount(ModifyDamageDealtPower.modifyMeleeNoExec(source.getEntity(), target, source, amount));
+		event.setAmount(computeDamageAmount(target, source, amount, false));
 		if (event.getAmount() != amount && event.getAmount() <= 0)
 			event.setCanceled(true);
 	}
@@ -138,12 +159,11 @@ public class ApoliPowerEventHandler {
 		LivingEntity target = event.getEntity();
 		DamageSource source = event.getSource();
 		float amount = event.getAmount();
+		if (target instanceof LivingDamageCache ldc)
+			ldc.gatherDamagePowers(target, source, amount);
 		IPowerDataCache.get(target).ifPresent(x -> x.setDamage(amount));
-		float newAmount;
-		if (source.isProjectile())
-			newAmount = ModifyDamageDealtPower.modifyProjectile(source.getEntity(), target, source, amount);
-		else
-			newAmount = ModifyDamageDealtPower.modifyMelee(source.getEntity(), target, source, amount);
+		float newAmount = computeDamageAmount(target, source, amount, true);
+
 		if (newAmount != amount && newAmount <= 0)
 			event.setCanceled(true);
 	}

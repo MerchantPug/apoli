@@ -30,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 //FIXME Reintroduce PowerHolderComponent
 
@@ -63,6 +62,23 @@ public interface IPowerContainer {
 		get(entity).ifPresent(x -> x.getPowers(factory).stream().filter(p -> power == null || power.test(p)).findAny().ifPresent(with));
 	}
 
+	/**
+	 * Accesses a set of powers with the given filter.<br/>
+	 * Warning: This method returns every power of a given type that match the filter,
+	 * including inactive ones. If you use this, check for inactive powers manually.
+	 *
+	 * @param entity  The entity to check the powers for, or null if not applicable.
+	 * @param factory The type of power to consider.
+	 * @param filter  The conditions that a power needs to validate in order to be included.
+	 * @param <T>     The type of the configuration used.
+	 * @param <F>     The type of the factory used.
+	 *
+	 * @return A list of powers, obtained
+	 */
+	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<Holder<ConfiguredPower<T, F>>> getPowers(Entity entity, F factory, @NotNull Predicate<Holder<ConfiguredPower<T, F>>> filter) {
+		return get(entity).map(x -> x.getPowers(factory, filter)).orElseGet(ImmutableList::of);
+	}
+
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T>> List<Holder<ConfiguredPower<T, F>>> getPowers(Entity entity, F factory) {
 		return get(entity).map(x -> x.getPowers(factory)).orElseGet(ImmutableList::of);
 	}
@@ -88,9 +104,18 @@ public interface IPowerContainer {
 	}
 
 	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, double baseValue, Predicate<Holder<ConfiguredPower<T, F>>> powerFilter, Consumer<Holder<ConfiguredPower<T, F>>> powerAction) {
-		List<Holder<ConfiguredPower<T, F>>> powers = IPowerContainer.getPowers(entity, factory).stream().filter(x -> powerFilter == null || powerFilter.test(x)).toList();
-		List<ConfiguredModifier<?>> modifiers = powers.stream().filter(Holder::isBound).flatMap(x -> x.value().getFactory().getModifiers(x.value(), entity).stream()).collect(Collectors.toCollection(ArrayList::new));
-		if (powerAction != null) powers.forEach(powerAction);
+		List<Holder<ConfiguredPower<T, F>>> powers = IPowerContainer.getPowers(entity, factory, powerFilter == null ? x -> x.value().isActive(entity) : x -> x.value().isActive(entity) && powerFilter.test(x));
+		return modify(entity, factory, powers, baseValue, powerAction);
+	}
+
+	static <T extends IDynamicFeatureConfiguration, F extends PowerFactory<T> & IValueModifyingPower<T>> double modify(Entity entity, F factory, Iterable<Holder<ConfiguredPower<T, F>>> input, double baseValue, Consumer<Holder<ConfiguredPower<T, F>>> powerAction) {
+		List<ConfiguredModifier<?>> modifiers = new ArrayList<>();
+		for (Holder<ConfiguredPower<T, F>> holder : input) {
+			if (holder.isBound()) {
+				modifiers.addAll(holder.value().getFactory().getModifiers(holder.value(), entity));
+				if (powerAction != null) powerAction.accept(holder);
+			}
+		}
 		modifiers.addAll(AttributeModifyTransferPower.apply(entity, factory));
 		ModifyValueEvent event = new ModifyValueEvent(entity, factory, baseValue, modifiers);
 		MinecraftForge.EVENT_BUS.post(event);
@@ -300,6 +325,10 @@ public interface IPowerContainer {
 		return this.getPowers(factory, false);
 	}
 
+	@NotNull
+	@Contract(pure = true)
+	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C, F>>> getPowers(F factory, @NotNull Predicate<Holder<ConfiguredPower<C, F>>> filter);
+
 	/**
 	 * Returns a list of all powers on this component of the given type.
 	 *
@@ -314,7 +343,9 @@ public interface IPowerContainer {
 	 */
 	@NotNull
 	@Contract(pure = true)
-	<C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C, F>>> getPowers(F factory, boolean includeInactive);
+	default <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> List<Holder<ConfiguredPower<C, F>>> getPowers(F factory, boolean includeInactive) {
+		return this.getPowers(factory, includeInactive ? x -> true : x -> x.value().isActive(this.getOwner()));
+	}
 
 	/**
 	 * Returns a list of all sources for the given power.

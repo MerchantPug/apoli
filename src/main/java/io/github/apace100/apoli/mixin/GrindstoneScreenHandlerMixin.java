@@ -56,8 +56,8 @@ public abstract class GrindstoneScreenHandlerMixin extends AbstractContainerMenu
 
     @Inject(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V", at = @At("RETURN"))
     private void cachePlayer(int syncId, Inventory playerInventory, ContainerLevelAccess context, CallbackInfo ci) {
-        apoli$cachedPlayer = playerInventory.player;
-        apoli$cachedPosition = context.evaluate((w, bp) -> bp);
+        this.apoli$cachedPlayer = playerInventory.player;
+        this.apoli$cachedPosition = context.evaluate((w, bp) -> bp);
     }
 
     /*
@@ -67,12 +67,12 @@ public abstract class GrindstoneScreenHandlerMixin extends AbstractContainerMenu
     @Inject(method = "createResult", at = @At("RETURN"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void modifyResult(CallbackInfo ci, ItemStack top, ItemStack bottom) {
         this.apoli$appliedPowers.clear();
-        List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> applyingPowers = ModifyGrindstonePower.tryGetApplyingPowers(apoli$cachedPlayer, top, bottom, this.resultSlots.getItem(0), apoli$cachedPosition);
+        List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> applyingPowers = ModifyGrindstonePower.tryGetApplyingPowers(this.apoli$cachedPlayer, top, bottom, this.resultSlots.getItem(0), this.apoli$cachedPosition);
         if (applyingPowers.isEmpty()) return;
         this.apoli$appliedPowers = applyingPowers;
         ItemStack newOutput = ModifyGrindstonePower.tryCreateOutput(this.apoli$appliedPowers, this.apoli$cachedPlayer.level, top, bottom, this.resultSlots.getItem(0));
         this.resultSlots.setItem(0, newOutput);
-        this.xp = (int) ModifierUtil.applyModifiers(apoli$cachedPlayer, ModifyGrindstonePower.tryGetExperienceModifiers(applyingPowers), ((GrindstoneMenuResultSlotAccessor)this.getSlot(2)).invokeGetExperienceAmount(apoli$cachedPlayer.level));
+        this.xp = (int) ModifierUtil.applyModifiers(this.apoli$cachedPlayer, ModifyGrindstonePower.tryGetExperienceModifiers(applyingPowers), ((GrindstoneMenuResultSlotAccessor)this.getSlot(2)).invokeGetExperienceAmount(this.apoli$cachedPlayer.level));
         this.broadcastChanges();
     }
 
@@ -89,9 +89,9 @@ public abstract class GrindstoneScreenHandlerMixin extends AbstractContainerMenu
 
     @ModifyVariable(method = "quickMoveStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;copy()Lnet/minecraft/world/item/ItemStack;"), ordinal = 1)
     private ItemStack handleGrindstoneLateActionsQuickMove(ItemStack original) {
-        if (apoli$cachedPIndex == 2) {
+        if (this.apoli$cachedPIndex == 2) {
             Mutable<ItemStack> newStack = new MutableObject<>(original.copy());
-            ModifyGrindstonePower.tryLateExecute(apoli$appliedPowers, apoli$cachedPlayer, newStack, apoli$cachedPosition);
+            ModifyGrindstonePower.tryLateExecute(this.apoli$appliedPowers, this.apoli$cachedPlayer, newStack, this.apoli$cachedPosition);
             return newStack.getValue();
         }
         return original;
@@ -117,16 +117,16 @@ public abstract class GrindstoneScreenHandlerMixin extends AbstractContainerMenu
 
     @Override
     public List<Holder<ConfiguredPower<ModifyGrindstoneConfiguration, ModifyGrindstonePower>>> getAppliedPowers() {
-        return apoli$appliedPowers;
+        return this.apoli$appliedPowers;
     }
 
     @Override
     public Player getPlayer() {
-        return apoli$cachedPlayer;
+        return this.apoli$cachedPlayer;
     }
 
     @Override
     public Optional<BlockPos> getPos() {
-        return apoli$cachedPosition;
+        return this.apoli$cachedPosition;
     }
 }

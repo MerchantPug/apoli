@@ -64,6 +64,6 @@ public final class ConfiguredModifier<F extends ModifierOperation> {
 
 	@Override
 	public String toString() {
-		return "CIA:" + ApoliRegistries.MODIFIER_OPERATION.get().getKey(this.getFactory()) + "-" + this.getData();
+		return "CM:" + ApoliRegistries.MODIFIER_OPERATION.get().getKey(this.getFactory()) + "-" + this.getData();
 	}
 }
