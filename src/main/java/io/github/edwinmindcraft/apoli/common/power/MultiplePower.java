@@ -39,7 +39,7 @@ public class MultiplePower extends PowerFactory<MultipleConfiguration<Configured
 	 * Additionally, this will post the event to {@link PowerLoadEvent.Post} which will be used to handle additional data.
 	 */
 	private static <C extends IDynamicFeatureConfiguration, F extends PowerFactory<C>> ConfiguredPower<C, ?> reconfigure(String suffix, ConfiguredPower<C, F> source, JsonElement root) {
-		ResourceLocation name = new ResourceLocation(SerializableData.CURRENT_NAMESPACE, SerializableData.CURRENT_PATH + suffix);
+		ResourceLocation name = new ResourceLocation(SerializableData.CURRENT_NAMESPACE, SerializableData.CURRENT_PATH + "_" + suffix);
 		MinecraftForge.EVENT_BUS.post(new PowerLoadEvent.Post(name, root, source));
 		return source.getFactory().configure(source.getConfiguration(), source.getData().copyOf().hidden().build());
 	}
