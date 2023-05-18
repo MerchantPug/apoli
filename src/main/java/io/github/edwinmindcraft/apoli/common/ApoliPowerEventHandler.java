@@ -1,7 +1,6 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.ApoliConfigs;
@@ -18,6 +17,7 @@ import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -64,8 +64,9 @@ public class ApoliPowerEventHandler {
 		if (position.isEmpty())
 			return;
 		float hardness = state.getDestroySpeed(world, position.get());
-		if (hardness <= 0)
-			return;
+		if (hardness < 0) {
+			hardness = 0.0F;
+		}
 		float speed = event.getNewSpeed();
 		//This is less than ideal since it fires two hooks, but hey, I do what I can.
 		boolean stateCheck = state.canHarvestBlock(event.getEntity().getLevel(), position.get(), event.getEntity());

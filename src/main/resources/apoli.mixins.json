@@ -27,6 +27,7 @@
     "RecipeManagerMixin",
     "StatusEffectInstanceMixin",
     "forge.AbstractContainerMenuMixin",
+    "forge.BlockBehaviourMixin",
     "forge.CaelusMixin",
     "forge.FoodDataMixin",
     "forge.ForgeHooksMixin",
