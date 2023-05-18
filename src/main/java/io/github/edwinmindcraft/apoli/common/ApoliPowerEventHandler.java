@@ -64,9 +64,8 @@ public class ApoliPowerEventHandler {
 		if (position.isEmpty())
 			return;
 		float hardness = state.getDestroySpeed(world, position.get());
-		if (hardness < 0) {
-			hardness = 0.0F;
-		}
+		if (hardness <= 0)
+			return;
 		float speed = event.getNewSpeed();
 		//This is less than ideal since it fires two hooks, but hey, I do what I can.
 		boolean stateCheck = state.canHarvestBlock(event.getEntity().getLevel(), position.get(), event.getEntity());
