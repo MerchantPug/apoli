@@ -7,7 +7,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.EntityAction;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 
 public class TriggerCooldownAction extends EntityAction<PowerReference> {
 	public TriggerCooldownAction() {
@@ -17,11 +17,11 @@ public class TriggerCooldownAction extends EntityAction<PowerReference> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void execute(PowerReference configuration, Entity entity) {
-		if (entity instanceof Player player) {
-			ConfiguredPower<?, ?> power = IPowerContainer.get(player).resolve()
+		if (entity instanceof LivingEntity living) {
+			ConfiguredPower<?, ?> power = IPowerContainer.get(living).resolve()
 					.map(x -> x.getPower(configuration.power())).map(Holder::value).orElse(null);
-			if (power.getFactory() instanceof ICooldownPower cp)
-				cp.use(power, player);
+			if (power != null && power.getFactory() instanceof ICooldownPower cp)
+				cp.use(power, living);
 		}
 	}
 }
