@@ -54,6 +54,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.biome.Biome;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public class EntityConditions {
@@ -522,9 +523,13 @@ public class EntityConditions {
         register(RaycastCondition.getFactory());
         register(ElytraFlightPossibleCondition.getFactory());
         register(InventoryCondition.getFactory());
+        register(UsingEffectiveToolCondition.getFactory());
+        register(GamemodeCondition.getFactory());
+        register(GlowingCondition.getFactory());
     }
 
     private static void register(ConditionFactory<Entity> conditionFactory) {
         Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
+
 }

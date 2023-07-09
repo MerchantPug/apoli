@@ -39,11 +39,13 @@ import net.minecraft.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
+
 public class Apoli implements ModInitializer, EntityComponentInitializer, OrderedResourceListenerInitializer {
 
 	public static ApoliConfig config;
 
-	public static MinecraftServer server;
+	private static MinecraftServer server;
 
 	public static final Scheduler SCHEDULER = new Scheduler();
 
@@ -115,6 +117,15 @@ public class Apoli implements ModInitializer, EntityComponentInitializer, Ordere
 
 		LOGGER.info("Apoli " + VERSION + " has initialized. Ready to power up your game!");
 	}
+
+    @Nullable
+    public static MinecraftServer getServer() {
+        return server;
+    }
+
+    public static boolean isServer() {
+        return server != null;
+    }
 
 	public static Identifier identifier(String path) {
 		return new Identifier(MODID, path);
