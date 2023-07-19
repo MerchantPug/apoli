@@ -35,10 +35,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -175,11 +172,13 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 		}
 	}
 
-	@Redirect(method = "getDamageAfterArmorAbsorb", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hurtArmor(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
-	private void preventArmorDamaging(LivingEntity instance, DamageSource source, float amount) {
-		if (this.apoli$shouldDamageArmor < 0) return;
-		this.hurtArmor(source, amount);
-	}
+	@ModifyArg(method = "getDamageAfterArmorAbsorb", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hurtArmor(Lnet/minecraft/world/damagesource/DamageSource;F)V"), index = 1)
+	private float preventArmorDamaging(float amount) {
+		if (this.apoli$shouldDamageArmor < 0) {
+            return 0;
+        }
+        return amount;
+    }
 
 	@Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInWaterRainOrBubble()Z"))
 	private boolean preventExtinguishingFromSwimming(LivingEntity livingEntity) {
