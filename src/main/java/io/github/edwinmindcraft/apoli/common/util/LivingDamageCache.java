@@ -34,9 +34,10 @@ public interface LivingDamageCache {
 		this.setModifyDamageTakenPowers(IPowerContainer.getPowers(entity,
 				ApoliPowers.MODIFY_DAMAGE_TAKEN.get(),
 				x -> x.value().isActive(entity) && x.value().getFactory().check(x.value(), entity, source, amount)));
-		this.setModifyDamageDealtPowers(IPowerContainer.getPowers(source.getEntity(),
-				source.isProjectile() ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get(),
-				x -> x.value().isActive(entity) && x.value().getFactory().check(x.value(), Objects.requireNonNull(source.getEntity()), entity, source, amount)));
+        ModifyDamageDealtPower dealtFactory = source.isProjectile() ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get();
+        this.setModifyDamageDealtPowers(IPowerContainer.getPowers(source.getEntity(),
+                dealtFactory,
+				x -> x.value().isActive(Objects.requireNonNull(source.getEntity())) && dealtFactory.check(x.value(), Objects.requireNonNull(source.getEntity()), entity, source, amount)));
 		this.bypassDamageCheck(false);
 		int apply = 0;
 		int damage = 0;
