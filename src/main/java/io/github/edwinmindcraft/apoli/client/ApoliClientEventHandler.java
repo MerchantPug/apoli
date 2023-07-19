@@ -101,13 +101,17 @@ public class ApoliClientEventHandler {
 					Set<ResourceLocation> pressedPowers = new HashSet<>();
 					Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
 					for (Holder<ConfiguredPower<?, ?>> holder : container.getPowers()) {
+                        if (!holder.isBound()) continue;
 						holder.value().getKey(player).ifPresent(key -> {
 							KeyMapping binding = getKeyBinding(key.key());
 							if (binding != null) {
 								if (!currentKeyBindingStates.containsKey(key.key()))
 									currentKeyBindingStates.put(key.key(), binding.isDown());
-								if (currentKeyBindingStates.get(key.key()) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false)))
-									pressedPowers.add(powers.getKey(holder.value()));
+								if (currentKeyBindingStates.get(key.key()) && (key.continuous() || !lastKeyBindingStates.getOrDefault(key.key(), false))) {
+                                    ResourceLocation keyValue = powers.getKey(holder.value());
+                                    if (keyValue != null)
+                                        pressedPowers.add(keyValue);
+                                }
 							} else if (Calio.isDebugMode())
 								Apoli.LOGGER.warn("No such key: {}", key.key());
 						});
