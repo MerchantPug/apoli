@@ -1,7 +1,6 @@
 package io.github.edwinmindcraft.apoli.common;
 
 import io.github.apace100.apoli.Apoli;
-import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.util.ApoliConfigs;
@@ -18,6 +17,7 @@ import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
