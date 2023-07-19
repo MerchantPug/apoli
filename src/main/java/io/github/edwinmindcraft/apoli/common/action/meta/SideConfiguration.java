@@ -14,7 +14,7 @@ public record SideConfiguration<T, V>(Side side, @MustBeBound Holder<T> action, 
                                       BiConsumer<T, V> executor) implements IDelegatedActionConfiguration<V> {
 	public static <T, V> Codec<SideConfiguration<T, V>> codec(CodecSet<T> codec, Predicate<V> serverCheck, BiConsumer<T, V> executor) {
 		return RecordCodecBuilder.create(instance -> instance.group(
-				SerializableDataType.enumValue(Side.class).fieldOf("chance").forGetter(SideConfiguration::side),
+				SerializableDataType.enumValue(Side.class).fieldOf("side").forGetter(SideConfiguration::side),
 				codec.holder().fieldOf("action").forGetter(SideConfiguration::action)
 		).apply(instance, (side, action) -> new SideConfiguration<>(side, action, serverCheck, executor)));
 	}
