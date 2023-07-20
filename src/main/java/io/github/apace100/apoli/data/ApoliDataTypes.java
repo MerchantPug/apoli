@@ -162,7 +162,18 @@ public class ApoliDataTypes {
 
 	public static final SerializableDataType<PlayerAbility> PLAYER_ABILITY = SerializableDataType.wrap(
 			PlayerAbility.class, SerializableDataTypes.IDENTIFIER,
-			ability -> PlayerAbilities.REGISTRY.get().getKey(ability), id -> PlayerAbilities.REGISTRY.get().getValue(id));
+			ability -> PlayerAbilities.REGISTRY.get().getKey(ability), id -> {
+                ResourceLocation resolvedId = id;
+                // TODO:
+                if (id.getNamespace().equals("minecraft")) {
+                    resolvedId = new ResourceLocation("calio", id.getPath());
+                }
+                PlayerAbility ability = PlayerAbilities.REGISTRY.get().getValue(resolvedId);
+                if (ability == null) {
+                    throw new NullPointerException(id + " has not been registered");
+                }
+                return ability;
+            });
 
 	public static final SerializableDataType<ArgumentWrapper<Integer>> ITEM_SLOT = SerializableDataType.argumentType(SlotArgument.slot());
 

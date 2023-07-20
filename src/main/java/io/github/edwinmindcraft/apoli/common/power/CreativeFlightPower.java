@@ -39,14 +39,14 @@ public class CreativeFlightPower extends PowerFactory<NoConfiguration> {
 	}
 
 	public boolean hasAbility(Entity entity) {
-		return CalioAPI.getAbilityHolder(entity).map(x -> x.has(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE)).orElse(false);
+		return CalioAPI.getAbilityHolder(entity).map(x -> x.has(PlayerAbilities.ALLOW_FLYING.get(), ApoliCommon.POWER_SOURCE)).orElse(false);
 	}
 
 	public void grantAbility(Entity entity) {
-		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.grant(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE));
+		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.grant(PlayerAbilities.ALLOW_FLYING.get(), ApoliCommon.POWER_SOURCE));
 	}
 
 	public void revokeAbility(Entity entity) {
-		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.revoke(PlayerAbilities.ALLOW_FLIGHT.get(), ApoliCommon.POWER_SOURCE));
+		CalioAPI.getAbilityHolder(entity).ifPresent(x -> x.revoke(PlayerAbilities.ALLOW_FLYING.get(), ApoliCommon.POWER_SOURCE));
 	}
 }
