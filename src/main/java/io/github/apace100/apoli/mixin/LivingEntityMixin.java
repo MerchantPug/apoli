@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Mixin;
@@ -197,6 +198,22 @@ public abstract class LivingEntityMixin extends Entity implements ModifiableFood
 			this.isInPowderSnow = true;
 		}
 	}
+
+    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isInFluidType(Lnet/minecraft/world/level/material/FluidState;)Z"))
+    private boolean dontCountEntityAsInFluid(LivingEntity instance, FluidState fluidState) {
+        if (fluidState.getFluidType() == ForgeMod.WATER_TYPE.get()) {
+            return false;
+        }
+        return instance.isInFluidType(fluidState);
+    }
+
+    @ModifyVariable(method = "aiStep", at = @At(value = "STORE", ordinal = 0), ordinal = 0)
+    private FluidType allowJumpingInIgnoredWater(FluidType fluidType) {
+        if (IPowerContainer.hasPower(this, ApoliPowers.IGNORE_WATER.get())) {
+            return ForgeMod.EMPTY_TYPE.get();
+        }
+        return fluidType;
+    }
 
 	@Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;removeFrost()V"))
 	private void unfreezeEntityFromPower(CallbackInfo ci) {

@@ -22,6 +22,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -93,4 +95,8 @@ public class CoreUtils {
 		}
 		return original;
 	}
+
+    public static boolean shouldIgnoreWater(LivingEntity living, FluidState state) {
+        return IPowerContainer.hasPower(living, ApoliPowers.IGNORE_WATER.get()) && state.getFluidType() == ForgeMod.WATER_TYPE.get();
+    }
 }
