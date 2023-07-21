@@ -11,6 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -37,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
@@ -65,7 +67,11 @@ public abstract class GameRendererMixin {
 	@Shadow
 	public abstract Minecraft getMinecraft();
 
-	@Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
+    @Shadow @Nullable private PostChain postEffect;
+
+    @Shadow private boolean effectActive;
+
+    @Inject(at = @At("TAIL"), method = "checkEntityPostEffect")
 	private void loadShaderFromPowerOnCameraEntity(Entity entity, CallbackInfo ci) {
 		if (ApoliPowers.SHADER.isPresent()) {
 			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
@@ -78,15 +84,17 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	/*@Inject(at = @At("HEAD"), method = "render")
+	@Inject(at = @At("HEAD"), method = "render")
 	private void loadShaderFromPower(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
 		if (ApoliPowers.SHADER.isPresent()) {
 			IPowerContainer.withPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get(), null, shaderPower -> {
-				ResourceLocation shaderLoc = shaderPower.getConfiguration().shader();
-				if (this.currentlyLoadedShader != shaderLoc) {
-					this.loadEffect(shaderLoc);
-					this.currentlyLoadedShader = shaderLoc;
-				}
+                if (shaderPower.isBound()) {
+                    ResourceLocation shaderLoc = shaderPower.get().getConfiguration().shader();
+                    if (this.currentlyLoadedShader != shaderLoc) {
+                        this.loadEffect(shaderLoc);
+                        this.currentlyLoadedShader = shaderLoc;
+                    }
+                }
 			});
 			if (!IPowerContainer.hasPower(this.minecraft.getCameraEntity(), ApoliPowers.SHADER.get()) && this.currentlyLoadedShader != null) {
 				if (this.postEffect != null) {
@@ -97,7 +105,7 @@ public abstract class GameRendererMixin {
 				this.currentlyLoadedShader = null;
 			}
 		}
-	}*/
+	}
 
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getMainRenderTarget()Lcom/mojang/blaze3d/pipeline/RenderTarget;"), method = "render")
 	private void fixHudWithShaderEnabled(float tickDelta, long nanoTime, boolean renderLevel, CallbackInfo info) {
