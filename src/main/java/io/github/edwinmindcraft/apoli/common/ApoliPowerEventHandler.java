@@ -124,7 +124,7 @@ public class ApoliPowerEventHandler {
 					x -> x.value().getFactory().execute(x.value(), sourceEntity, target) :
 					x -> { };
 			ModifyDamageDealtPower factory = source.isProjectile() ? ApoliPowers.MODIFY_PROJECTILE_DAMAGE.get() : ApoliPowers.MODIFY_DAMAGE_DEALT.get();
-			if (target instanceof LivingDamageCache pdc)
+			if (target instanceof LivingDamageCache pdc && pdc.getModifyDamageDealtPowers() != null)
 				amount = (float) IPowerContainer.modify(sourceEntity, factory, pdc.getModifyDamageDealtPowers(), amount, otherConsumer);
 			else {
 				float finalAmount = amount;
@@ -134,7 +134,7 @@ public class ApoliPowerEventHandler {
 		Consumer<Holder<ConfiguredPower<ModifyDamageTakenConfiguration, ModifyDamageTakenPower>>> selfConsumer = exec ?
 				x -> x.value().getFactory().execute(x.value(), target, source) :
 				x -> { };
-		if (target instanceof LivingDamageCache pdc) {
+		if (target instanceof LivingDamageCache pdc && pdc.getModifyDamageTakenPowers() != null) {
 			amount = (float) IPowerContainer.modify(sourceEntity, ApoliPowers.MODIFY_DAMAGE_TAKEN.get(), pdc.getModifyDamageTakenPowers(), amount, selfConsumer);
 			if (amount > 0) pdc.bypassDamageCheck(true);
 		} else {
