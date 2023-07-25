@@ -392,13 +392,10 @@ public class InventoryUtil {
     }
 
     private static void deduplicateSlots(Entity entity, Set<Integer> slots) {
-        if(entity instanceof PlayerEntity player) {
-            int selectedSlot = player.getInventory().selectedSlot;
-            Integer hotbarSlot = ItemSlotArgumentTypeAccessor.getSlotMappings().get("hotbar." + selectedSlot);
-            if(slots.contains(hotbarSlot)) {
-                Integer mainHandSlot = ItemSlotArgumentTypeAccessor.getSlotMappings().get("weapon.mainhand");
-                slots.remove(mainHandSlot);
-            }
+        int hotbarSlot = getDuplicatedSlotIndex(entity);
+        if(hotbarSlot != Integer.MIN_VALUE && slots.contains(hotbarSlot)) {
+            Integer mainHandSlot = ItemSlotArgumentTypeAccessor.getSlotMappings().get("weapon.mainhand");
+            slots.remove(mainHandSlot);
         }
     }
 
