@@ -356,11 +356,17 @@ public class InventoryUtil {
 
     }
 
+    /*
+     * The below has been modified to contain the optimisations of PR #132: https://github.com/apace100/apoli/pull/132
+     */
     public static void forEachStack(Entity entity, Consumer<ItemStack> itemStackConsumer) {
-        Set<Integer> slots = Sets.newHashSet(ItemSlotArgumentTypeAccessor.getSlotMappings().values());
-        deduplicateSlots(entity, slots);
+        int skip = getDuplicatedSlotIndex(entity);
 
-        for(int slot : slots) {
+        for(int slot : ItemSlotArgumentTypeAccessor.getSlotMappings().values()) {
+            if(slot == skip) {
+                skip = Integer.MIN_VALUE;
+                continue;
+            }
             StackReference stackReference = entity.getStackReference(slot);
             if (stackReference == StackReference.EMPTY) continue;
 
@@ -394,5 +400,20 @@ public class InventoryUtil {
                 slots.remove(mainHandSlot);
             }
         }
+    }
+
+    /**
+     * For players, their selected hotbar slot will overlap with the `weapon.mainhand` slot reference.
+     * This method returns the slot id of the selected hotbar slot.
+     * Otherwise, if no slot is duplicated because the entity is not a player, returns Integer.MIN_VALUE
+     * @param entity The entity
+     * @return Slot id of hotbar slot if entity is a player, Integer.MIN_VALUE otherwise
+     */
+    private static int getDuplicatedSlotIndex(Entity entity) {
+        if(entity instanceof PlayerEntity player) {
+            int selectedSlot = player.getInventory().selectedSlot;
+            return ItemSlotArgumentTypeAccessor.getSlotMappings().get("hotbar." + selectedSlot);
+        }
+        return Integer.MIN_VALUE;
     }
 }
