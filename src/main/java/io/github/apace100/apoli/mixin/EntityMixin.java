@@ -122,7 +122,7 @@ public abstract class EntityMixin implements MovingEntity, SubmergableEntity {
 
 	@ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
 	private Vec3 modifyMovementVelocity(Vec3 original, MoverType movementType) {
-		if(movementType != MoverType.SELF) {
+		if(!IPowerContainer.hasPower((Entity)(Object)this, ApoliPowers.MODIFY_VELOCITY.get()) || movementType != MoverType.SELF) {
 			return original;
 		}
 		return ModifyVelocityPower.getModifiedVelocity((Entity)(Object)this, original);
