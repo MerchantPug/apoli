@@ -3,14 +3,20 @@ package io.github.edwinmindcraft.apoli.common;
 import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.command.PowerCommand;
 import io.github.apace100.apoli.command.ResourceCommand;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.component.IPowerDataCache;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.component.PowerContainer;
 import io.github.edwinmindcraft.apoli.common.component.PowerDataCache;
+import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
+import io.github.edwinmindcraft.apoli.common.power.ModifyPlayerSpawnPower;
+import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
+import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
+import io.github.edwinmindcraft.apoli.common.util.SpawnSearchThread;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
@@ -25,9 +31,11 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.List;
 
@@ -53,6 +61,7 @@ public class ApoliEventHandler {
 			if (packet == null)
 				Apoli.LOGGER.error("Couldn't create synchronization packet for player {}", spe.getScoreboardName());
 			ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), packet);
+            ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> spe), new S2CCachedSpawnsPacket(SpawnSearchThread.getPowersWithSpawns()));
 		}
 	}
 
@@ -105,6 +114,11 @@ public class ApoliEventHandler {
 		}
 		original.ifPresent(x -> x.getPowers().forEach(y -> y.value().onRemoved(event.getOriginal())));
         player.ifPresent(p -> original.ifPresent(o -> p.readFromNbt(o.writeToNbt(new CompoundTag()))));
+
+        if (event.getEntity() instanceof ServerPlayer) {
+            ((ModifyPlayerSpawnCache)event.getEntity()).setActiveSpawnPower(((ModifyPlayerSpawnCache)event.getOriginal()).getActiveSpawnPower());
+        }
+
 		if (!event.getEntity().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY))
 			IPowerContainer.getPowers(event.getEntity(), ApoliPowers.KEEP_INVENTORY.get()).forEach(power -> power.value().getFactory().restoreItems(power.value(), event.getEntity()));
 
@@ -115,8 +129,10 @@ public class ApoliEventHandler {
 	public static void playerRespawn(PlayerEvent.PlayerRespawnEvent event) {
 		if (event.getEntity() instanceof ServerPlayer sp) {
 			IPowerContainer.sync(sp);
-			if (!event.isEndConquered())
-				IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
+			if (!event.isEndConquered()) {
+                ApoliPowers.MODIFY_PLAYER_SPAWN.get().schedulePlayerToRespawn(sp);
+                IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
+            }
 		}
 	}
 
