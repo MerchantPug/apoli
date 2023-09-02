@@ -82,12 +82,11 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
                 return new Tuple<>(otherKey, SpawnSearchThread.getSpawnCache(otherKey));
 
             ResourceKey<ConfiguredPower<?, ?>> key = ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, configuration.getRegistryName());
+            ((ModifyPlayerSpawnCache)serverPlayer).setActiveSpawnPower(key);
+            if (sendToClient)
+                ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(key));
 
             if (SpawnSearchThread.getSpawnCache(key) != null) {
-                ((ModifyPlayerSpawnCache)serverPlayer).setActiveSpawnPower(key);
-                if (sendToClient)
-                    ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(key));
-
                 return new Tuple<>(key, SpawnSearchThread.getSpawnCache(key));
             }
         }
@@ -112,11 +111,11 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 
     // This is not the same tick method because we'd prefer it to only run once.
     public void tick(Entity entity) {
-        if (entity instanceof ModifyPlayerSpawnCache cache && cache.getActiveSpawnPower() != null) {
+        if (entity instanceof ModifyPlayerSpawnCache cache && entity instanceof ServerPlayer spe && cache.getActiveSpawnPower() != null) {
             IPowerContainer.get(entity).ifPresent(container -> {
-                if ((!container.hasPower(cache.getActiveSpawnPower()) || !container.getPower(cache.getActiveSpawnPower()).isBound() || ApoliAPI.getPowers().containsKey(cache.getActiveSpawnPower()) && !ApoliAPI.getPowers().get(cache.getActiveSpawnPower()).isActive(entity))) {
+                if ((!container.hasPower(cache.getActiveSpawnPower()) || !container.getPower(cache.getActiveSpawnPower()).isBound() || ApoliAPI.getPowers().containsKey(cache.getActiveSpawnPower()) && !ApoliAPI.getPowers().get(cache.getActiveSpawnPower()).isConfigurationValid() || ApoliAPI.getPowers().containsKey(cache.getActiveSpawnPower()) && !ApoliAPI.getPowers().get(cache.getActiveSpawnPower()).isActive(entity))) {
                     Optional<ConfiguredPower<ModifyPlayerSpawnConfiguration, ModifyPlayerSpawnPower>> optional = container.getPowers(ApoliPowers.MODIFY_PLAYER_SPAWN.get()).stream().filter(Holder::isBound).map(Holder::value).findFirst();
-                    getSpawn(optional, entity, false);
+                    getSpawn(optional, entity, spe.isDeadOrDying());
                 }
             });
         }

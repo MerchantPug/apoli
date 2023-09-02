@@ -81,19 +81,22 @@ public class SpawnSearchThread extends Thread {
         String strategy = configuration.getConfiguration().strategy();
         float distanceMultiplier = configuration.getConfiguration().distanceMultiplier();
         switch (strategy) {
-            case "center":
-                spawnToDimPos = new BlockPos(0, center, 0);
-                break; case "default": if (distanceMultiplier != 0) {
-                    spawnToDimPos = new BlockPos(regularSpawn.getX() * distanceMultiplier, regularSpawn.getY(), regularSpawn.getZ() * distanceMultiplier);
-                } else {
-                    spawnToDimPos = new BlockPos(regularSpawn.getX(), regularSpawn.getY(), regularSpawn.getZ());
-                }
-                break; default: Apoli.LOGGER.warn("This case does nothing. The game crashes if there is no spawn strategy set");
+            case "center" -> spawnToDimPos = new BlockPos(0, center, 0);
+            case "default" -> {
                 if (distanceMultiplier != 0) {
                     spawnToDimPos = new BlockPos(regularSpawn.getX() * distanceMultiplier, regularSpawn.getY(), regularSpawn.getZ() * distanceMultiplier);
                 } else {
                     spawnToDimPos = new BlockPos(regularSpawn.getX(), regularSpawn.getY(), regularSpawn.getZ());
                 }
+            }
+            default -> {
+                Apoli.LOGGER.warn("This case does nothing. The game crashes if there is no spawn strategy set");
+                if (distanceMultiplier != 0) {
+                    spawnToDimPos = new BlockPos(regularSpawn.getX() * distanceMultiplier, regularSpawn.getY(), regularSpawn.getZ() * distanceMultiplier);
+                } else {
+                    spawnToDimPos = new BlockPos(regularSpawn.getX(), regularSpawn.getY(), regularSpawn.getZ());
+                }
+            }
         }
         @Nullable ResourceKey<Biome> biome = configuration.getConfiguration().biome();
         if (biome != null) {

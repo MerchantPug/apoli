@@ -15,18 +15,18 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.power.InteractionPowerConfiguration;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.network.S2CActiveSpawnPowerPacket;
 import io.github.edwinmindcraft.apoli.common.power.*;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageDealtConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyDamageTakenConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliDynamicRegisters;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliRegisters;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
 import io.github.edwinmindcraft.apoli.common.util.SpawnSearchThread;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
+import io.github.edwinmindcraft.calio.common.registry.CalioDynamicRegistryManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -54,6 +54,7 @@ import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -247,10 +248,11 @@ public class ApoliPowerEventHandler {
     private static boolean initializedSpawns = false;
 
     @SubscribeEvent
-    public static void onAboutToStartServer(ServerAboutToStartEvent event) {
-        ApoliDynamicRegisters.CONFIGURED_POWERS.getEntries().stream()
-                .filter(p -> p.get().isConfigurationValid() && p.get().getConfiguration() instanceof ModifyPlayerSpawnConfiguration)
-                .forEach(p -> ((ModifyPlayerSpawnPower)p.get().getFactory()).findSpawn((ConfiguredPower<ModifyPlayerSpawnConfiguration, ?>) p.get()));
+    public static void onAboutToStartServer(ServerStartedEvent event) {
+        CalioDynamicRegistryManager.getInstance(event.getServer().registryAccess())
+                .get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY).stream()
+                .filter(p -> p.getConfiguration() instanceof ModifyPlayerSpawnConfiguration)
+                .forEach(p -> ((ModifyPlayerSpawnPower)p.getFactory()).findSpawn((ConfiguredPower<ModifyPlayerSpawnConfiguration, ?>) p));
         initializedSpawns = true;
     }
 
