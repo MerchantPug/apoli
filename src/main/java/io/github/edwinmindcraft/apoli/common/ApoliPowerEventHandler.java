@@ -24,7 +24,7 @@ import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpa
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.LivingDamageCache;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
-import io.github.edwinmindcraft.apoli.common.util.SpawnSearchThread;
+import io.github.edwinmindcraft.apoli.common.util.SpawnSearchInstance;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import io.github.edwinmindcraft.calio.common.registry.CalioDynamicRegistryManager;
 import net.minecraft.ChatFormatting;
@@ -53,8 +53,8 @@ import net.minecraftforge.event.VanillaGameEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -242,18 +242,25 @@ public class ApoliPowerEventHandler {
 
     @SubscribeEvent
     public static void onCalioReload(CalioDynamicRegistryEvent.Reload event) {
-        SpawnSearchThread.resetSpawnCache();
+        SpawnSearchInstance.resetSpawnCache();
     }
 
     private static boolean initializedSpawns = false;
 
     @SubscribeEvent
-    public static void onAboutToStartServer(ServerStartedEvent event) {
+    public static void onServerStarted(ServerStartedEvent event) {
         CalioDynamicRegistryManager.getInstance(event.getServer().registryAccess())
                 .get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY).stream()
                 .filter(p -> p.getConfiguration() instanceof ModifyPlayerSpawnConfiguration)
                 .forEach(p -> ((ModifyPlayerSpawnPower)p.getFactory()).findSpawn((ConfiguredPower<ModifyPlayerSpawnConfiguration, ?>) p));
         initializedSpawns = true;
+    }
+
+    @SubscribeEvent
+    public static void onStopServer(ServerStoppingEvent event) {
+        // Reset the state of initializedSpawns on integrated servers.
+        initializedSpawns = false;
+        SpawnSearchInstance.resetSpawnCache();
     }
 
     @SubscribeEvent

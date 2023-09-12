@@ -20,19 +20,17 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class SpawnSearchThread extends Thread {
+public class SpawnSearchInstance {
     private final ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration;
     private final Optional<ResourceLocation> powerId;
 
-    public SpawnSearchThread(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Optional<ResourceLocation> powerId) {
-        super(SidedThreadGroups.SERVER, "Apoli Spawn Finder");
+    public SpawnSearchInstance(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Optional<ResourceLocation> powerId) {
         this.configuration = configuration;
         this.powerId = powerId;
     }
@@ -65,7 +63,6 @@ public class SpawnSearchThread extends Thread {
         SPAWN_CACHE.clear();
     }
 
-    @Override
     public void run() {
         ResourceKey<Level> dimension = configuration.getConfiguration().dimension();
         ServerLevel world = ServerLifecycleHooks.getCurrentServer().getLevel(dimension);

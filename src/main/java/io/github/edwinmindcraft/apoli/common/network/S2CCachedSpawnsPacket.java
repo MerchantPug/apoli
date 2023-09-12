@@ -2,8 +2,7 @@ package io.github.edwinmindcraft.apoli.common.network;
 
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.util.SpawnSearchThread;
+import io.github.edwinmindcraft.apoli.common.util.SpawnSearchInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.api.distmarker.Dist;
@@ -34,7 +33,7 @@ public record S2CCachedSpawnsPacket(Set<ResourceKey<ConfiguredPower<?, ?>>> powe
 
     @OnlyIn(Dist.CLIENT)
     private void handleSync() {
-        powers().forEach(SpawnSearchThread::addToPowersWithSpawns);
+        powers().forEach(SpawnSearchInstance::addToPowersWithSpawns);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {

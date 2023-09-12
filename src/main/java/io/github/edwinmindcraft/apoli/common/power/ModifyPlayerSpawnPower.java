@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.apoli.common.power;
 
 import com.google.common.collect.Sets;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -12,7 +13,7 @@ import io.github.edwinmindcraft.apoli.common.network.S2CActiveSpawnPowerPacket;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
-import io.github.edwinmindcraft.apoli.common.util.SpawnSearchThread;
+import io.github.edwinmindcraft.apoli.common.util.SpawnSearchInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
@@ -54,7 +55,7 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 				if (tpPos != null) {
 					serverPlayer.teleportTo(spawn.getA(), tpPos.x, tpPos.y, tpPos.z, entity.getXRot(), entity.getYRot());
                     if (tpPos != spawn.getB()) {
-                        SpawnSearchThread.changeSpawnCacheValue(cachedSpawn.getA(), spawn.getA(), tpPos);
+                        SpawnSearchInstance.changeSpawnCacheValue(cachedSpawn.getA(), spawn.getA(), tpPos);
                     }
 				} else {
 					serverPlayer.teleportTo(spawn.getA(), spawn.getB().x(), spawn.getB().y(), spawn.getB().z(), entity.getXRot(), entity.getYRot());
@@ -78,16 +79,16 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
     public Tuple<ResourceKey<ConfiguredPower<?, ?>>, Tuple<ServerLevel, Vec3>> getSpawn(ConfiguredPower<?, ?> configuration, Entity entity, boolean sendToClient) {
         if (entity instanceof ServerPlayer serverPlayer) {
             @Nullable ResourceKey<ConfiguredPower<?, ?>> otherKey = ((ModifyPlayerSpawnCache)entity).getActiveSpawnPower();
-            if (otherKey != null && SpawnSearchThread.getSpawnCache(otherKey) != null && ApoliAPI.getPowerContainer(entity).hasPower(otherKey))
-                return new Tuple<>(otherKey, SpawnSearchThread.getSpawnCache(otherKey));
+            if (otherKey != null && SpawnSearchInstance.getSpawnCache(otherKey) != null && ApoliAPI.getPowerContainer(entity).hasPower(otherKey))
+                return new Tuple<>(otherKey, SpawnSearchInstance.getSpawnCache(otherKey));
 
             ResourceKey<ConfiguredPower<?, ?>> key = ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, configuration.getRegistryName());
             ((ModifyPlayerSpawnCache)serverPlayer).setActiveSpawnPower(key);
             if (sendToClient)
                 ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(key));
 
-            if (SpawnSearchThread.getSpawnCache(key) != null) {
-                return new Tuple<>(key, SpawnSearchThread.getSpawnCache(key));
+            if (SpawnSearchInstance.getSpawnCache(key) != null) {
+                return new Tuple<>(key, SpawnSearchInstance.getSpawnCache(key));
             }
         }
         return null;
@@ -142,8 +143,11 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
     }
 
     public void findSpawn(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, @Nullable ResourceLocation powerId) {
-        SpawnSearchThread searchThread = new SpawnSearchThread(configuration, Optional.ofNullable(powerId));
-        FINDER_POOL.submit(searchThread::start);
+        SpawnSearchInstance searchThread = new SpawnSearchInstance(configuration, Optional.ofNullable(powerId));
+        if (ApoliConfigs.SERVER.separateSpawnFindingThread.get())
+            FINDER_POOL.submit(searchThread::run);
+        else
+            searchThread.run();
     }
 }
 

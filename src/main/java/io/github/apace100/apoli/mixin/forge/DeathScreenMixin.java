@@ -1,8 +1,7 @@
 package io.github.apace100.apoli.mixin.forge;
 
-import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
-import io.github.edwinmindcraft.apoli.common.util.SpawnSearchThread;
+import io.github.edwinmindcraft.apoli.common.util.SpawnSearchInstance;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -35,12 +34,12 @@ public class DeathScreenMixin extends Screen {
     @Inject(method = "tick", at = @At("TAIL"))
     private void waitForRespawnPoint(CallbackInfo ci) {
         if (this.minecraft.player != null && ((ModifyPlayerSpawnCache)this.minecraft.player).getActiveSpawnPower() != null && this.delayTicker >= 20) {
-            if (!this.apoli$previouslyInactive && !SpawnSearchThread.hasSpawnCached(((ModifyPlayerSpawnCache)this.minecraft.player).getActiveSpawnPower())) {
+            if (!this.apoli$previouslyInactive && !SpawnSearchInstance.hasSpawnCached(((ModifyPlayerSpawnCache)this.minecraft.player).getActiveSpawnPower())) {
                 for(Button button : this.exitButtons) {
                     button.active = false;
                 }
                 this.apoli$previouslyInactive = true;
-            } else if (this.apoli$previouslyInactive && SpawnSearchThread.hasSpawnCached(((ModifyPlayerSpawnCache)this.minecraft.player).getActiveSpawnPower())) {
+            } else if (this.apoli$previouslyInactive && SpawnSearchInstance.hasSpawnCached(((ModifyPlayerSpawnCache)this.minecraft.player).getActiveSpawnPower())) {
                 for(Button button : this.exitButtons) {
                     button.active = true;
                 }
