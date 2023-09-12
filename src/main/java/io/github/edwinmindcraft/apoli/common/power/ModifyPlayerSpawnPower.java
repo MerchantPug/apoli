@@ -138,10 +138,6 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 
     private static final ExecutorService FINDER_POOL = Executors.newFixedThreadPool(1);
 
-    public void findSpawn(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration) {
-        findSpawn(configuration, null);
-    }
-
     public void findSpawn(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, @Nullable ResourceLocation powerId) {
         SpawnSearchInstance searchThread = new SpawnSearchInstance(configuration, Optional.ofNullable(powerId));
         if (ApoliConfigs.SERVER.separateSpawnFindingThread.get())

@@ -250,9 +250,9 @@ public class ApoliPowerEventHandler {
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {
         CalioDynamicRegistryManager.getInstance(event.getServer().registryAccess())
-                .get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY).stream()
-                .filter(p -> p.getConfiguration() instanceof ModifyPlayerSpawnConfiguration)
-                .forEach(p -> ((ModifyPlayerSpawnPower)p.getFactory()).findSpawn((ConfiguredPower<ModifyPlayerSpawnConfiguration, ?>) p));
+                .get(ApoliDynamicRegistries.CONFIGURED_POWER_KEY).holders()
+                .filter(p -> p.isBound() && p.unwrapKey().isPresent() && p.value().getConfiguration() instanceof ModifyPlayerSpawnConfiguration)
+                .forEach(p -> ((ModifyPlayerSpawnPower)p.value().getFactory()).findSpawn((ConfiguredPower<ModifyPlayerSpawnConfiguration, ?>) p.value(), p.unwrapKey().get().location()));
         initializedSpawns = true;
     }
 

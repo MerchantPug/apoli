@@ -52,11 +52,11 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 		if (event.getEntity() instanceof ServerPlayer spe) {
+            ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> spe), new S2CCachedSpawnsPacket(SpawnSearchInstance.getPowersWithSpawns()));
 			S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(spe);
 			if (packet == null)
 				Apoli.LOGGER.error("Couldn't create synchronization packet for player {}", spe.getScoreboardName());
 			ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), packet);
-            ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> spe), new S2CCachedSpawnsPacket(SpawnSearchInstance.getPowersWithSpawns()));
 		}
 	}
 
