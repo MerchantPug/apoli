@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class C2SFetchActiveSpawnPowerPacket {
@@ -17,7 +18,7 @@ public class C2SFetchActiveSpawnPowerPacket {
 	public void encode(FriendlyByteBuf buffer) { }
 
     private void handleSync(ServerPlayer sender) {
-        ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CActiveSpawnPowerPacket(((ModifyPlayerSpawnCache)sender).getActiveSpawnPower()));
+        ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CActiveSpawnPowerPacket(Optional.ofNullable(((ModifyPlayerSpawnCache)sender).getActiveSpawnPower())));
     }
 
 	public void handle(Supplier<NetworkEvent.Context> contextSupplier) {

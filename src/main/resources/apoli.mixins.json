@@ -29,7 +29,6 @@
     "forge.AbstractContainerMenuMixin",
     "forge.BlockBehaviourMixin",
     "forge.CaelusMixin",
-    "forge.EntityMixin",
     "forge.FoodDataMixin",
     "forge.ForgeHooksMixin",
     "forge.GrindstoneMenuResultSlotAccessor",
@@ -52,6 +51,7 @@
     "PlayerEntityRendererMixin",
     "WorldRendererMixin",
     "forge.ChangeGlowColorMixin",
+    "forge.ConfirmScreenMixin",
     "forge.DeathScreenMixin",
     "forge.EarsCompatMixin"
   ],

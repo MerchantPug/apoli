@@ -1,23 +1,21 @@
 package io.github.edwinmindcraft.apoli.common.power;
 
 import com.google.common.collect.Sets;
-import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
-import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
 import io.github.edwinmindcraft.apoli.common.network.S2CActiveSpawnPowerPacket;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
-import io.github.edwinmindcraft.apoli.common.util.SpawnSearchInstance;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
@@ -34,8 +32,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfiguration> {
 
@@ -50,45 +46,63 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
                 Tuple<ServerLevel, Vec3> spawn = cachedSpawn.getB();
                 BlockPos spawnLocation = new BlockPos(spawn.getB().x, spawn.getB().y, spawn.getB().z).mutable();
                 spawn.getA().getChunkSource().addRegionTicket(TicketType.START, new ChunkPos(spawnLocation), 11, Unit.INSTANCE);
-
-				Vec3 tpPos = DismountHelper.findSafeDismountLocation(EntityType.PLAYER, spawn.getA(), new BlockPos(spawn.getB()), true);
-				if (tpPos != null) {
-					serverPlayer.teleportTo(spawn.getA(), tpPos.x, tpPos.y, tpPos.z, entity.getXRot(), entity.getYRot());
-                    if (tpPos != spawn.getB()) {
-                        SpawnSearchInstance.changeSpawnCacheValue(cachedSpawn.getA(), spawn.getA(), tpPos);
-                    }
-				} else {
-					serverPlayer.teleportTo(spawn.getA(), spawn.getB().x(), spawn.getB().y(), spawn.getB().z(), entity.getXRot(), entity.getYRot());
-					Apoli.LOGGER.warn("Could not spawn player with `ModifySpawnPower` at the desired location.");
-				}
+                serverPlayer.teleportTo(spawn.getA(), spawn.getB().x, spawn.getB().y, spawn.getB().z, entity.getXRot(), entity.getYRot());
 			}
 		}
 	}
 
-    @Nullable
-    public Tuple<ResourceKey<ConfiguredPower<?, ?>>, Tuple<ServerLevel, Vec3>> getSpawn(Optional<ConfiguredPower<ModifyPlayerSpawnConfiguration, ModifyPlayerSpawnPower>> configuration, Entity entity, boolean sendToClient) {
-        if (configuration.isPresent())
-            return getSpawn(configuration.get(), entity, sendToClient);
-        else {
-            ((ModifyPlayerSpawnCache)entity).removeActiveSpawnPower();
-            return null;
+    public void checkSpawn(ServerPlayer entity) {
+        @Nullable ResourceKey<ConfiguredPower<?, ?>> activeKey = ((ModifyPlayerSpawnCache)entity).getActiveSpawnPower();
+        if (activeKey != null && SpawnLookupUtil.hasSpawnCached(activeKey)) {
+            Tuple<ServerLevel, Vec3> spawn = SpawnLookupUtil.getSpawnCache(activeKey);
+
+            if (spawn == null) return;
+
+            Vec3 tpPos = DismountHelper.findSafeDismountLocation(EntityType.PLAYER, spawn.getA(), new BlockPos(spawn.getB()), true);
+            if (tpPos != spawn.getB()) {
+                SpawnLookupScheduler.INSTANCE.invalidate(activeKey);
+            }
+        }
+    }
+
+    public void resetSpawn(Optional<ConfiguredPower<ModifyPlayerSpawnConfiguration, ModifyPlayerSpawnPower>> configuration, Entity entity, boolean sendToClient) {
+        if (entity instanceof ServerPlayer serverPlayer) {
+            if (configuration.isPresent()) {
+                getSpawn(configuration.get(), entity, sendToClient);
+            } else {
+                ((ModifyPlayerSpawnCache)entity).removeActiveSpawnPower();
+                if (sendToClient) {
+                    ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(Optional.empty()));
+                }
+            }
         }
     }
 
     @Nullable
     public Tuple<ResourceKey<ConfiguredPower<?, ?>>, Tuple<ServerLevel, Vec3>> getSpawn(ConfiguredPower<?, ?> configuration, Entity entity, boolean sendToClient) {
+        if (!ApoliConfigs.SERVER.separateSpawnFindingThread.get()) {
+            SpawnLookupScheduler.INSTANCE.run();
+            Optional<ResourceKey<ConfiguredPower<?, ?>>> key = ApoliAPI.getPowers().getResourceKey(configuration);
+            if (key.isPresent() && SpawnLookupUtil.getSpawnCache(key.get()) != null)
+                return new Tuple<>(key.get(), SpawnLookupUtil.getSpawnCache(key.get()));
+            return null;
+        }
+
         if (entity instanceof ServerPlayer serverPlayer) {
             @Nullable ResourceKey<ConfiguredPower<?, ?>> otherKey = ((ModifyPlayerSpawnCache)entity).getActiveSpawnPower();
-            if (otherKey != null && SpawnSearchInstance.getSpawnCache(otherKey) != null && ApoliAPI.getPowerContainer(entity).hasPower(otherKey))
-                return new Tuple<>(otherKey, SpawnSearchInstance.getSpawnCache(otherKey));
+            if (otherKey != null && SpawnLookupUtil.getSpawnCache(otherKey) != null && ApoliAPI.getPowerContainer(entity).hasPower(otherKey))
+                return new Tuple<>(otherKey, SpawnLookupUtil.getSpawnCache(otherKey));
 
-            ResourceKey<ConfiguredPower<?, ?>> key = ResourceKey.create(ApoliDynamicRegistries.CONFIGURED_POWER_KEY, configuration.getRegistryName());
-            ((ModifyPlayerSpawnCache)serverPlayer).setActiveSpawnPower(key);
-            if (sendToClient)
-                ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(key));
+            Optional<ResourceKey<ConfiguredPower<?, ?>>> key = ApoliAPI.getPowers().getResourceKey(configuration);
+            if (key.isPresent()) {
+                ((ModifyPlayerSpawnCache)serverPlayer).setActiveSpawnPower(key.get());
+                SpawnLookupScheduler.INSTANCE.increasePriority(key.get());
 
-            if (SpawnSearchInstance.getSpawnCache(key) != null) {
-                return new Tuple<>(key, SpawnSearchInstance.getSpawnCache(key));
+                if (sendToClient)
+                    ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new S2CActiveSpawnPowerPacket(key));
+
+                if (SpawnLookupUtil.getSpawnCache(key.get()) != null)
+                    return new Tuple<>(key.get(), SpawnLookupUtil.getSpawnCache(key.get()));
             }
         }
         return null;
@@ -97,26 +111,27 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 
     @Override
     public void onAdded(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Entity entity) {
-        if (entity instanceof ServerPlayer serverPlayer && ((ModifyPlayerSpawnCache)entity).getActiveSpawnPower() == null) {
-            getSpawn(configuration, entity, serverPlayer.isDeadOrDying());
+        if (ApoliConfigs.SERVER.separateSpawnFindingThread.get() && entity instanceof ServerPlayer serverPlayer && serverPlayer.isDeadOrDying() && ((ModifyPlayerSpawnCache)entity).getActiveSpawnPower() == null) {
+            getSpawn(configuration, entity, true);
         }
     }
 
 
     @Override
     public void onRemoved(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, Entity entity) {
-        if (entity instanceof ServerPlayer serverPlayer)
+        if (entity instanceof ServerPlayer serverPlayer) {
             if (!serverPlayer.hasDisconnected() && serverPlayer.getRespawnPosition() != null && serverPlayer.isRespawnForced())
                 serverPlayer.setRespawnPosition(Level.OVERWORLD, null, 0F, false, false);
+        }
     }
 
     // This is not the same tick method because we'd prefer it to only run once.
     public void tick(Entity entity) {
-        if (entity instanceof ModifyPlayerSpawnCache cache && entity instanceof ServerPlayer spe && cache.getActiveSpawnPower() != null) {
+        if (ApoliConfigs.SERVER.separateSpawnFindingThread.get() && entity instanceof ModifyPlayerSpawnCache cache && entity instanceof ServerPlayer spe && cache.getActiveSpawnPower() != null) {
             IPowerContainer.get(entity).ifPresent(container -> {
                 if ((!container.hasPower(cache.getActiveSpawnPower()) || !container.getPower(cache.getActiveSpawnPower()).isBound() || ApoliAPI.getPowers().containsKey(cache.getActiveSpawnPower()) && !ApoliAPI.getPowers().get(cache.getActiveSpawnPower()).isConfigurationValid() || ApoliAPI.getPowers().containsKey(cache.getActiveSpawnPower()) && !ApoliAPI.getPowers().get(cache.getActiveSpawnPower()).isActive(entity))) {
                     Optional<ConfiguredPower<ModifyPlayerSpawnConfiguration, ModifyPlayerSpawnPower>> optional = container.getPowers(ApoliPowers.MODIFY_PLAYER_SPAWN.get()).stream().filter(Holder::isBound).map(Holder::value).findFirst();
-                    getSpawn(optional, entity, spe.isDeadOrDying());
+                    resetSpawn(optional, entity, spe.isDeadOrDying());
                 }
             });
         }
@@ -124,7 +139,7 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
 
     private static final Set<ServerPlayer> PLAYERS_TO_RESPAWN = Sets.newHashSet();
 
-    public void schedulePlayerToRespawn(ServerPlayer player) {
+    public void schedulePlayerToSpawn(ServerPlayer player) {
         PLAYERS_TO_RESPAWN.add(player);
     }
 
@@ -135,15 +150,5 @@ public class ModifyPlayerSpawnPower extends PowerFactory<ModifyPlayerSpawnConfig
             PLAYERS_TO_RESPAWN.remove(player);
         }
 	}
-
-    private static final ExecutorService FINDER_POOL = Executors.newFixedThreadPool(1);
-
-    public void findSpawn(ConfiguredPower<ModifyPlayerSpawnConfiguration, ?> configuration, @Nullable ResourceLocation powerId) {
-        SpawnSearchInstance searchThread = new SpawnSearchInstance(configuration, Optional.ofNullable(powerId));
-        if (ApoliConfigs.SERVER.separateSpawnFindingThread.get())
-            FINDER_POOL.submit(searchThread::run);
-        else
-            searchThread.run();
-    }
 }
 

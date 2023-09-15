@@ -13,7 +13,8 @@ import io.github.edwinmindcraft.apoli.common.network.S2CCachedSpawnsPacket;
 import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
 import io.github.edwinmindcraft.apoli.common.util.ModifyPlayerSpawnCache;
-import io.github.edwinmindcraft.apoli.common.util.SpawnSearchInstance;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupScheduler;
+import io.github.edwinmindcraft.apoli.common.util.SpawnLookupUtil;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.nbt.CompoundTag;
@@ -52,7 +53,7 @@ public class ApoliEventHandler {
 	@SubscribeEvent
 	public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 		if (event.getEntity() instanceof ServerPlayer spe) {
-            ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> spe), new S2CCachedSpawnsPacket(SpawnSearchInstance.getPowersWithSpawns()));
+            ApoliCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> spe), new S2CCachedSpawnsPacket(SpawnLookupUtil.getPowersWithSpawns()));
 			S2CSynchronizePowerContainer packet = S2CSynchronizePowerContainer.forEntity(spe);
 			if (packet == null)
 				Apoli.LOGGER.error("Couldn't create synchronization packet for player {}", spe.getScoreboardName());
@@ -125,7 +126,7 @@ public class ApoliEventHandler {
 		if (event.getEntity() instanceof ServerPlayer sp) {
 			IPowerContainer.sync(sp);
 			if (!event.isEndConquered()) {
-                ApoliPowers.MODIFY_PLAYER_SPAWN.get().schedulePlayerToRespawn(sp);
+                ApoliPowers.MODIFY_PLAYER_SPAWN.get().schedulePlayerToSpawn(sp);
                 IPowerContainer.get(sp).ifPresent(x -> x.getPowers().forEach(y -> y.value().onRespawn(sp)));
             }
 		}
