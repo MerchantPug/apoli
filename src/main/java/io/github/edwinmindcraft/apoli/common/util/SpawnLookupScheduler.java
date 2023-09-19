@@ -1,7 +1,9 @@
 package io.github.edwinmindcraft.apoli.common.util;
 
+import com.google.common.util.concurrent.Futures;
 import com.mojang.datafixers.util.Pair;
 import io.github.apace100.apoli.Apoli;
+import io.github.apace100.apoli.util.ApoliConfigs;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.common.ApoliCommon;
@@ -22,18 +24,80 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.*;
 
-public class SpawnLookupScheduler extends Thread {
-    private static SpawnLookupScheduler INSTANCE = new SpawnLookupScheduler();
+public class SpawnLookupScheduler {
+    public static final SpawnLookupScheduler INSTANCE = new SpawnLookupScheduler();
 
+    private static final Executor EXECUTOR = Executors.newSingleThreadExecutor();
+
+    private static class CompletionTracker implements Future<Void> {
+        private boolean isComplete;
+
+        public void complete() {
+            synchronized (this) {
+                this.isComplete = true;
+                this.notifyAll();
+            }
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        @Override
+        public boolean isDone() {
+            synchronized (this) {
+                return this.isComplete;
+            }
+        }
+
+        @Override
+        public Void get() throws InterruptedException {
+            while (true) {
+                synchronized (this) {
+                    if (this.isComplete)
+                        return null;
+                }
+                //Always timeout to avoid weird logic
+                this.wait(1000L);
+            }
+        }
+
+        @Override
+        public Void get(long timeout, @NotNull TimeUnit unit) throws InterruptedException, TimeoutException {
+            long end = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(timeout, unit);
+            while (true) {
+                synchronized (this) {
+                    if (this.isComplete)
+                        return null;
+                }
+                if (end >= System.currentTimeMillis())
+                    throw new TimeoutException();
+                //Always timeout to avoid weird logic
+                this.wait(Math.min(1000L, end - System.currentTimeMillis()));
+            }
+        }
+
+    }
+
+    private final HashMap<ResourceKey<ConfiguredPower<?, ?>>, CompletionTracker> trackers = new HashMap<>();
     private final Object2IntMap<ResourceKey<ConfiguredPower<?, ?>>> powers = new Object2IntOpenHashMap<>();
     private final HashSet<ResourceKey<ConfiguredPower<?, ?>>> handled = new HashSet<>();
     private boolean isRunning = false;
 
-    private SpawnLookupScheduler() {}
+    private SpawnLookupScheduler() {
+    }
 
     /**
      * Registers a power for lookup or increases priority if this power is already being looked up.
@@ -41,15 +105,49 @@ public class SpawnLookupScheduler extends Thread {
      *
      * @param power The name of the power to increase the priority of.
      */
-    public void increasePriority(ResourceKey<ConfiguredPower<?, ?>> power) {
+    public Future<Void> requestSpawn(ResourceKey<ConfiguredPower<?, ?>> power) {
+        if (!ApoliConfigs.SERVER.separateSpawnFindingThread.get()) {
+            if (!SpawnLookupUtil.hasSpawnCached(power))
+                this.doSpawnLookup(power);
+            return Futures.immediateVoidFuture();
+        }
         synchronized (this) {
+            CompletionTracker result;
             if (this.handled.contains(power))
-                return;
+                return Futures.immediateVoidFuture();
             this.powers.compute(power, (key, oldValue) -> oldValue != null ? oldValue + 1 : 0);
+            synchronized (this.trackers) {
+                result = this.trackers.computeIfAbsent(power, i -> new CompletionTracker());
+            }
             if (!this.isRunning) {
                 this.isRunning = true;
-                this.start();
+                this.queueNext();
             }
+            return result;
+        }
+    }
+
+    private CompletionTracker getTracker(ResourceKey<ConfiguredPower<?, ?>> power) {
+        synchronized (this.trackers) {
+            return this.trackers.computeIfAbsent(power, i -> new CompletionTracker());
+        }
+    }
+
+    private void queueNext() {
+        synchronized (this) {
+            // At each step, lookup the most requested power, and treat it. If there is no maximum, max should return a random entry in the map.
+            Optional<ResourceKey<ConfiguredPower<?, ?>>> next = this.powers.object2IntEntrySet().stream().max(Comparator.comparingInt(Object2IntMap.Entry::getIntValue)).map(Map.Entry::getKey);
+            if (next.isEmpty()) {
+                // Keep this in the synchronized block to ensure the thread restarts if it had stopped.
+                this.isRunning = false;
+                return;
+            }
+            ResourceKey<ConfiguredPower<?, ?>> power = next.get();
+            this.handled.add(power);
+            this.powers.removeInt(power);
+            //This is technically tail recursive, meaning that we should be fine until we hit between 250 and 1000 powers ish,
+            // or if the compiler optimizes calls, which I'm skeptical about.
+            CompletableFuture.runAsync(() -> this.doSpawnLookup(power), EXECUTOR).thenRun(this::queueNext);
         }
     }
 
@@ -60,15 +158,15 @@ public class SpawnLookupScheduler extends Thread {
         synchronized (this) {
             this.handled.remove(power);
             // Clear cache position for power.
-			SpawnLookupUtil.clearSpawnCacheValue(power);
+            SpawnLookupUtil.clearSpawnCacheValue(power);
             ApoliCommon.CHANNEL.send(PacketDistributor.ALL.noArg(), new S2CCachedSpawnsPacket(Set.of(power), true));
 
-            // The following isn't necessary if the we're using lazy loading.
+            // The following isn't necessary if we're using lazy loading.
             // Adds the newly invalidated position to the positions to recompute.
             this.powers.compute(power, (key, oldValue) -> oldValue != null ? oldValue : 0);
             if (!this.isRunning) {
                 this.isRunning = true;
-                this.start();
+                this.queueNext();
             }
         }
     }
@@ -85,7 +183,7 @@ public class SpawnLookupScheduler extends Thread {
         }
         while (true) {
             boolean flag;
-            synchronized(this) {
+            synchronized (this) {
                 flag = this.isRunning;
             }
             if (flag) {
@@ -99,28 +197,7 @@ public class SpawnLookupScheduler extends Thread {
             this.handled.clear();
         }
         // Clear cache position for all powers.
-		SpawnLookupUtil.resetSpawnCache();
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            ResourceKey<ConfiguredPower<?, ?>> power;
-            synchronized (this) {
-                // At each step, lookup the most requested power, and treat it. If there is no maximum, max should return a random entry in the map.
-                Optional<ResourceKey<ConfiguredPower<?, ?>>> next = this.powers.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue)).map(Map.Entry::getKey);
-                if (next.isEmpty()) {
-                    // Keep this in the synchronized block to ensure the thread restarts if it had stopped.
-                    this.isRunning = false;
-                    break;
-                }
-                power = next.get();
-                this.handled.add(power);
-                this.powers.removeInt(power);
-            }
-            // Basically the only part of the code that is threaded is the spawn lookup.
-            doSpawnLookup(power);
-        }
+        SpawnLookupUtil.resetSpawnCache();
     }
 
     public void doSpawnLookup(ResourceKey<ConfiguredPower<?, ?>> power) {
@@ -196,6 +273,9 @@ public class SpawnLookupScheduler extends Thread {
             } else
                 handleFailure(power);
         }
+        CompletionTracker tracker = this.getTracker(power);
+        if (tracker != null)
+            tracker.complete();
     }
 
     private void handleFailure(ResourceKey<ConfiguredPower<?, ?>> power) {
